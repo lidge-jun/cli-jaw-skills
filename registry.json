@@ -14,7 +14,8 @@
                     "NOTION_API_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "trello": {
             "name": "Trello",
@@ -31,7 +32,8 @@
                     "TRELLO_TOKEN"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "obsidian": {
             "name": "Obsidian",
@@ -47,7 +49,8 @@
                     "obsidian-cli"
                 ]
             },
-            "install": "brew install obsidian-cli"
+            "install": "brew install obsidian-cli",
+            "version": "1.0.0"
         },
         "things-mac": {
             "name": "Things 3 (macOS)",
@@ -59,7 +62,8 @@
             "desc_ko": "Things 3 할일 추가·완료·검색. AppleScript + URL scheme.",
             "desc_en": "Things 3 todo add/complete/search. AppleScript + URL scheme.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "apple-notes": {
             "name": "Apple Notes",
@@ -71,7 +75,8 @@
             "desc_ko": "Apple Notes 메모 생성·검색. AppleScript 기반.",
             "desc_en": "Apple Notes create/search. AppleScript-based.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "apple-reminders": {
             "name": "Apple Reminders",
@@ -83,7 +88,8 @@
             "desc_ko": "Apple 미리알림 추가·완료·목록 관리. AppleScript 기반.",
             "desc_en": "Apple Reminders add/complete/list management. AppleScript-based.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "linear": {
             "name": "Linear",
@@ -99,7 +105,8 @@
                     "linear"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "himalaya": {
             "name": "이메일 (Himalaya)",
@@ -115,7 +122,8 @@
                     "himalaya"
                 ]
             },
-            "install": "brew install himalaya"
+            "install": "brew install himalaya",
+            "version": "1.0.0"
         },
         "gog": {
             "name": "Google Workspace",
@@ -131,7 +139,8 @@
                     "gog"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "xurl": {
             "name": "X (Twitter)",
@@ -147,7 +156,8 @@
                     "xurl"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "telegram-send": {
             "name": "Telegram Send",
@@ -163,7 +173,8 @@
                     "curl"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "github": {
             "name": "GitHub (범용)",
@@ -179,7 +190,8 @@
                     "gh"
                 ]
             },
-            "install": "brew install gh"
+            "install": "brew install gh",
+            "version": "1.0.0"
         },
         "tmux": {
             "name": "tmux",
@@ -195,7 +207,8 @@
                     "tmux"
                 ]
             },
-            "install": "brew install tmux"
+            "install": "brew install tmux",
+            "version": "1.0.0"
         },
         "skill-creator": {
             "name": "스킬 생성기",
@@ -207,7 +220,8 @@
             "desc_ko": "새 SKILL.md 자동 생성. 템플릿 + 가이드라인 제공.",
             "desc_en": "Auto-generate new SKILL.md. Template + guidelines provided.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "weather": {
             "name": "날씨",
@@ -219,7 +233,8 @@
             "desc_ko": "wttr.in 날씨·예보 조회. API 키 불필요.",
             "desc_en": "wttr.in weather/forecast lookup. No API key needed.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "video-frames": {
             "name": "영상 프레임 추출",
@@ -235,7 +250,8 @@
                     "ffmpeg"
                 ]
             },
-            "install": "brew install ffmpeg"
+            "install": "brew install ffmpeg",
+            "version": "1.0.0"
         },
         "summarize": {
             "name": "URL 요약",
@@ -251,7 +267,8 @@
                     "summarize"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "goplaces": {
             "name": "장소 검색",
@@ -270,7 +287,8 @@
                     "GOOGLE_PLACES_API_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "1password": {
             "name": "1Password",
@@ -286,7 +304,8 @@
                     "op"
                 ]
             },
-            "install": "brew install 1password-cli"
+            "install": "brew install 1password-cli",
+            "version": "1.0.0"
         },
         "nano-banana-pro": {
             "name": "이미지 생성 (Gemini)",
@@ -305,7 +324,8 @@
                     "uv"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "spotify-player": {
             "name": "Spotify",
@@ -321,7 +341,8 @@
                     "spotify_player"
                 ]
             },
-            "install": "brew install spotify_player"
+            "install": "brew install spotify_player",
+            "version": "1.0.0"
         },
         "openhue": {
             "name": "Philips Hue",
@@ -337,7 +358,8 @@
                     "openhue"
                 ]
             },
-            "install": "brew install openhue"
+            "install": "brew install openhue",
+            "version": "1.0.0"
         },
         "browser": {
             "name": "브라우저 조작",
@@ -363,7 +385,8 @@
             ],
             "workflow": "interactive",
             "provider": "n/a",
-            "status": "active"
+            "status": "active",
+            "version": "1.0.0"
         },
         "vision-click": {
             "name": "Vision Click",
@@ -391,7 +414,8 @@
             ],
             "workflow": "vision_coordinate",
             "provider": "openai",
-            "status": "active"
+            "status": "active",
+            "version": "1.0.0"
         },
         "tts": {
             "name": "Text-to-Speech",
@@ -403,7 +427,8 @@
             "desc_ko": "macOS say 명령으로 텍스트 음성 변환. 다국어 지원, 파일 저장.",
             "desc_en": "macOS say command text-to-speech. Multi-language, file output.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "screen-capture": {
             "name": "Screen Capture",
@@ -415,7 +440,8 @@
             "desc_ko": "macOS 스크린샷·웹캠·녹화. 전체/영역/윈도우/다중모니터. 도구별 캡처 불가 시 기본 폴백.",
             "desc_en": "macOS screenshot/webcam/recording. Full/region/window/multi-monitor. Default fallback when tool-specific capture unavailable.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "atlas": {
             "name": "ChatGPT Atlas",
@@ -431,7 +457,8 @@
                     "python3"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "cloudflare-deploy": {
             "name": "Cloudflare Deploy",
@@ -447,7 +474,8 @@
                     "wrangler"
                 ]
             },
-            "install": "npm i -g wrangler"
+            "install": "npm i -g wrangler",
+            "version": "1.0.0"
         },
         "develop-web-game": {
             "name": "웹 게임 개발",
@@ -463,7 +491,8 @@
                     "npx"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "figma-implement-design": {
             "name": "Figma → 코드",
@@ -479,7 +508,8 @@
                     "codex"
                 ]
             },
-            "install": "codex mcp add figma"
+            "install": "codex mcp add figma",
+            "version": "1.0.0"
         },
         "jupyter-notebook": {
             "name": "Jupyter Notebook",
@@ -495,7 +525,8 @@
                     "python3"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "netlify-deploy": {
             "name": "Netlify Deploy",
@@ -511,7 +542,8 @@
                     "netlify"
                 ]
             },
-            "install": "npm i -g netlify-cli"
+            "install": "npm i -g netlify-cli",
+            "version": "1.0.0"
         },
         "notion-knowledge-capture": {
             "name": "Notion 지식 캡처",
@@ -527,7 +559,8 @@
                     "NOTION_API_KEY"
                 ]
             },
-            "install": "codex mcp add notion --url https://mcp.notion.com/mcp"
+            "install": "codex mcp add notion --url https://mcp.notion.com/mcp",
+            "version": "1.0.0"
         },
         "notion-meeting-intelligence": {
             "name": "Notion 회의 준비",
@@ -543,7 +576,8 @@
                     "NOTION_API_KEY"
                 ]
             },
-            "install": "codex mcp add notion --url https://mcp.notion.com/mcp"
+            "install": "codex mcp add notion --url https://mcp.notion.com/mcp",
+            "version": "1.0.0"
         },
         "notion-research-documentation": {
             "name": "Notion 리서치 합성",
@@ -559,7 +593,8 @@
                     "NOTION_API_KEY"
                 ]
             },
-            "install": "codex mcp add notion --url https://mcp.notion.com/mcp"
+            "install": "codex mcp add notion --url https://mcp.notion.com/mcp",
+            "version": "1.0.0"
         },
         "notion-spec-to-implementation": {
             "name": "Notion 스펙→태스크",
@@ -575,7 +610,8 @@
                     "NOTION_API_KEY"
                 ]
             },
-            "install": "codex mcp add notion --url https://mcp.notion.com/mcp"
+            "install": "codex mcp add notion --url https://mcp.notion.com/mcp",
+            "version": "1.0.0"
         },
         "render-deploy": {
             "name": "Render Deploy",
@@ -594,7 +630,8 @@
                     "RENDER_API_KEY"
                 ]
             },
-            "install": "brew install render"
+            "install": "brew install render",
+            "version": "1.0.0"
         },
         "sentry": {
             "name": "Sentry",
@@ -613,7 +650,8 @@
                     "SENTRY_AUTH_TOKEN"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "sora": {
             "name": "Sora 비디오",
@@ -632,7 +670,8 @@
                     "OPENAI_API_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "speech": {
             "name": "OpenAI TTS",
@@ -651,7 +690,8 @@
                     "OPENAI_API_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "transcribe": {
             "name": "음성→텍스트",
@@ -670,7 +710,8 @@
                     "OPENAI_API_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "vercel-deploy": {
             "name": "Vercel Deploy",
@@ -686,7 +727,8 @@
                     "vercel"
                 ]
             },
-            "install": "npm i -g vercel"
+            "install": "npm i -g vercel",
+            "version": "1.0.0"
         },
         "memory": {
             "name": "Long-term Memory",
@@ -698,7 +740,8 @@
             "desc_ko": "세션 간 장기 기억. 마크다운 파일에 저장, grep 검색.",
             "desc_en": "Long-term memory across sessions. Stored in markdown files, grep search.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "imagegen": {
             "name": "이미지 생성 (OpenAI)",
@@ -717,7 +760,8 @@
                     "python3"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "openai-docs": {
             "name": "OpenAI Docs",
@@ -729,7 +773,8 @@
             "desc_ko": "OpenAI 제품/API 공식 문서 참조. 빌드 가이드.",
             "desc_en": "OpenAI product/API official documentation reference. Build guides.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "pdf": {
             "name": "PDF 읽기/리뷰",
@@ -745,7 +790,8 @@
                     "python3"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "docx": {
             "name": "DOCX",
@@ -757,7 +803,8 @@
             "desc_ko": ".docx 문서 생성·편집·읽기. 시각 검증(soffice→PDF→PNG), tracked changes, python-docx.",
             "desc_en": ".docx document create/edit/read. Visual verification (soffice→PDF→PNG), tracked changes, python-docx.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "xlsx": {
             "name": "XLSX",
@@ -769,7 +816,8 @@
             "desc_ko": ".xlsx/.xlsm/.csv/.tsv 파일 생성·편집·분석·포맷팅. pandas 데이터 분석 포함.",
             "desc_en": ".xlsx/.xlsm/.csv/.tsv file create/edit/analyze/format. Includes pandas data analysis.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "mcp-builder": {
             "name": "MCP Builder",
@@ -781,7 +829,8 @@
             "desc_ko": "외부 API 연동용 MCP 서버를 설계/구현하는 스킬.",
             "desc_en": "Design/implement MCP servers for external API integration.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "pptx": {
             "name": "PPTX",
@@ -793,7 +842,8 @@
             "desc_ko": "프레젠테이션(.pptx) 생성/수정/분석 전용 스킬.",
             "desc_en": "Presentation (.pptx) create/edit/analyze skill.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "doc-coauthoring": {
             "name": "Doc Coauthoring",
@@ -805,7 +855,8 @@
             "desc_ko": "기획/스펙/문서 공동작성 워크플로우를 구조화하는 스킬.",
             "desc_en": "Structured planning/spec/document co-authoring workflow skill.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "web-artifacts-builder": {
             "name": "Web Artifacts Builder",
@@ -817,7 +868,8 @@
             "desc_ko": "React/Tailwind 기반 복합 웹 아티팩트 제작 스킬.",
             "desc_en": "React/Tailwind complex web artifact creation skill.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "theme-factory": {
             "name": "Theme Factory",
@@ -829,7 +881,8 @@
             "desc_ko": "문서/슬라이드/HTML 산출물에 재사용 가능한 테마를 적용하는 스킬.",
             "desc_en": "Apply reusable themes to document/slide/HTML outputs.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "web-routing": {
             "name": "Web Routing",
@@ -849,7 +902,8 @@
             ],
             "workflow": "routing_guide",
             "provider": "n/a",
-            "status": "active"
+            "status": "active",
+            "version": "1.0.0"
         },
         "algorithmic-art": {
             "name": "Algorithmic Art",
@@ -861,7 +915,8 @@
             "desc_ko": "p5.js 제너러티브 아트. 알고리즘 기반 시각 작품 생성.",
             "desc_en": "p5.js generative art. Algorithm-based visual artwork creation.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "canvas-design": {
             "name": "Canvas Design",
@@ -873,7 +928,8 @@
             "desc_ko": "Canvas API로 PNG/PDF 시각 디자인 생성.",
             "desc_en": "Create PNG/PDF visual designs via Canvas API.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "react-best-practices": {
             "name": "React Best Practices",
@@ -885,7 +941,8 @@
             "desc_ko": "React 코드 패턴, 성능 최적화, 컴포넌트 설계 모범사례.",
             "desc_en": "React code patterns, performance optimization, component design best practices.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "web-perf": {
             "name": "Web Perf",
@@ -897,7 +954,8 @@
             "desc_ko": "Core Web Vitals 감사. Lighthouse/CrUX 기반 성능 분석.",
             "desc_en": "Core Web Vitals audit. Lighthouse/CrUX-based performance analysis.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "agents-sdk": {
             "name": "Agents Sdk",
@@ -909,7 +967,8 @@
             "desc_ko": "Cloudflare Workers AI 에이전트 SDK 사용 가이드.",
             "desc_en": "Cloudflare Workers AI Agents SDK usage guide.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "durable-objects": {
             "name": "Durable Objects",
@@ -921,7 +980,8 @@
             "desc_ko": "Cloudflare Durable Objects (RPC+SQLite+WebSocket) 스테이트풀 워커.",
             "desc_en": "Cloudflare Durable Objects (RPC+SQLite+WebSocket) stateful workers.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "static-analysis": {
             "name": "Static Analysis",
@@ -935,7 +995,8 @@
             "requires": {
                 "env": []
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "insecure-defaults": {
             "name": "Insecure Defaults",
@@ -947,7 +1008,8 @@
             "desc_ko": "하드코딩 시크릿, 약한 암호, 안전하지 않은 기본값 탐지.",
             "desc_en": "Detect hardcoded secrets, weak crypto, and insecure defaults.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "modern-python": {
             "name": "Modern Python",
@@ -959,7 +1021,8 @@
             "desc_ko": "uv+ruff+ty+pytest Python 모범사례.",
             "desc_en": "uv+ruff+ty+pytest Python best practices.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "differential-review": {
             "name": "Differential Review",
@@ -971,7 +1034,8 @@
             "desc_ko": "보안 관점 diff 리뷰. 변경된 코드의 보안 영향 분석.",
             "desc_en": "Security-focused diff review. Analyze security impact of code changes.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "property-based-testing": {
             "name": "Property Based Testing",
@@ -983,7 +1047,8 @@
             "desc_ko": "다언어 속성 기반 테스트 (Hypothesis/fast-check 등).",
             "desc_en": "Multi-language property-based testing (Hypothesis/fast-check etc.).",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "security-best-practices": {
             "name": "Security Best Practices",
@@ -995,7 +1060,8 @@
             "desc_ko": "언어별 보안 취약점 패턴 리뷰.",
             "desc_en": "Language-specific security vulnerability pattern review.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "security-ownership-map": {
             "name": "Security Ownership Map",
@@ -1007,7 +1073,8 @@
             "desc_ko": "코드베이스 소유자/버스팩터 매핑.",
             "desc_en": "Codebase owner/bus-factor mapping.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "security-threat-model": {
             "name": "Security Threat Model",
@@ -1019,7 +1086,8 @@
             "desc_ko": "리포별 위협 모델 생성 (STRIDE/DREAD).",
             "desc_en": "Per-repo threat model generation (STRIDE/DREAD).",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "hugging-face-cli": {
             "name": "Hugging Face Cli",
@@ -1035,7 +1103,8 @@
                     "HF_TOKEN"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "hugging-face-model-trainer": {
             "name": "Hugging Face Model Trainer",
@@ -1051,7 +1120,8 @@
                     "HF_TOKEN"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "hugging-face-evaluation": {
             "name": "Hugging Face Evaluation",
@@ -1067,7 +1137,8 @@
                     "HF_TOKEN"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "fal-image-edit": {
             "name": "Fal Image Edit",
@@ -1083,7 +1154,8 @@
                     "FAL_KEY"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "brainstorming": {
             "name": "Brainstorming",
@@ -1095,7 +1167,8 @@
             "desc_ko": "코딩 전 아이디어 정제→디자인 문서 작성 (obra/superpowers).",
             "desc_en": "Pre-coding idea refinement → design document creation (obra/superpowers).",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "writing-plans": {
             "name": "Writing Plans",
@@ -1107,7 +1180,8 @@
             "desc_ko": "2-5분 단위 태스크 분해. 파일 경로/코드/검증 포함.",
             "desc_en": "2-5 minute task decomposition. File paths/code/verification included.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "tdd": {
             "name": "Tdd",
@@ -1119,7 +1193,8 @@
             "desc_ko": "RED-GREEN-REFACTOR TDD 사이클 강제.",
             "desc_en": "RED-GREEN-REFACTOR TDD cycle enforcement.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "requesting-code-review": {
             "name": "Requesting Code Review",
@@ -1131,7 +1206,8 @@
             "desc_ko": "에이전트 내부 코드 리뷰. severity 기반 차단.",
             "desc_en": "Internal agent code review. Severity-based blocking.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "receiving-code-review": {
             "name": "Receiving Code Review",
@@ -1143,7 +1219,8 @@
             "desc_ko": "코드 리뷰 피드백 수신 및 대응 패턴.",
             "desc_en": "Code review feedback reception and response patterns.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dispatching-parallel-agents": {
             "name": "Dispatching Parallel Agents",
@@ -1155,7 +1232,8 @@
             "desc_ko": "병렬 서브에이전트 디스패치 패턴.",
             "desc_en": "Parallel sub-agent dispatch patterns.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "debugging-helpers": {
             "name": "Debugging Helpers",
@@ -1167,7 +1245,8 @@
             "desc_ko": "체계적 디버깅 보조 (systematic-debugging).",
             "desc_en": "Systematic debugging helpers.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "git-worktrees": {
             "name": "Git Worktrees",
@@ -1179,7 +1258,8 @@
             "desc_ko": "git worktree 기반 격리 브랜치 워크플로.",
             "desc_en": "git worktree-based isolated branch workflow.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "codebase-orientation": {
             "name": "Codebase Orientation",
@@ -1191,7 +1271,8 @@
             "desc_ko": "프로젝트 엔트리포인트/모듈/빌드 매핑. 온보딩 가이드.",
             "desc_en": "Project entrypoint/module/build mapping. Onboarding guide.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "debugging-checklist": {
             "name": "Debugging Checklist",
@@ -1203,7 +1284,8 @@
             "desc_ko": "재현→격리→로깅→가설검증 디버깅 체크리스트.",
             "desc_en": "Reproduce → isolate → log → hypothesis verification debugging checklist.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "error-message-explainer": {
             "name": "Error Message Explainer",
@@ -1215,7 +1297,8 @@
             "desc_ko": "컴파일러/런타임 에러 → 원인 + 수정 제안.",
             "desc_en": "Compiler/runtime error → cause + fix suggestions.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "config-file-explainer": {
             "name": "Config File Explainer",
@@ -1227,7 +1310,8 @@
             "desc_ko": "설정 파일 구조/키/기본값 설명.",
             "desc_en": "Config file structure/keys/defaults explanation.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "data-structure-chooser": {
             "name": "Data Structure Chooser",
@@ -1239,7 +1323,8 @@
             "desc_ko": "자료구조 시간/공간 트레이드오프 추천.",
             "desc_en": "Data structure time/space tradeoff recommendations.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "log-summarizer": {
             "name": "Log Summarizer",
@@ -1251,7 +1336,8 @@
             "desc_ko": "로그 그룹핑 + 첫 실패 식별 + 액션 제안.",
             "desc_en": "Log grouping + first failure identification + action suggestions.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "linter-fix-guide": {
             "name": "Linter Fix Guide",
@@ -1263,7 +1349,8 @@
             "desc_ko": "린트 룰 설명 + 패턴 제시 + 최소 수정 제안.",
             "desc_en": "Lint rule explanation + pattern examples + minimal fix suggestions.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dependency-install-helper": {
             "name": "Dependency Install Helper",
@@ -1275,7 +1362,8 @@
             "desc_ko": "플랫폼별 의존성 설치 단계 + 검증 명령.",
             "desc_en": "Platform-specific dependency installation steps + verification commands.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "changelog-generator": {
             "name": "Changelog Generator",
@@ -1287,7 +1375,8 @@
             "desc_ko": "git commit → 체인지로그/릴리스 노트 생성.",
             "desc_en": "git commit → changelog/release notes generation.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "video-downloader": {
             "name": "Video Downloader",
@@ -1303,7 +1392,8 @@
                     "yt-dlp"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "email-draft-polish": {
             "name": "Email Draft Polish",
@@ -1315,7 +1405,8 @@
             "desc_ko": "이메일 초안 톤 조절/포맷팅.",
             "desc_en": "Email draft tone adjustment/formatting.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "postgres": {
             "name": "Postgres",
@@ -1331,7 +1422,8 @@
                     "DATABASE_URL"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "deep-research": {
             "name": "Deep Research",
@@ -1343,7 +1435,8 @@
             "desc_ko": "멀티스텝 리서치 에이전트. 검색→분석→요약.",
             "desc_en": "Multi-step research agent. Search → analyze → summarize.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "context-compression": {
             "name": "Context Compression",
@@ -1355,7 +1448,8 @@
             "desc_ko": "컨텍스트 압축 전략. 긴 세션 최적화.",
             "desc_en": "Context compression strategies. Long session optimization.",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "ios-simulator": {
             "name": "Ios Simulator",
@@ -1371,7 +1465,8 @@
                     "xcrun"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "apple-hig-skills": {
             "name": "Apple Hig Skills",
@@ -1383,7 +1478,8 @@
             "desc_ko": "Apple HIG 14개 가이드 (foundations/platforms/components/patterns).",
             "desc_en": "Apple HIG 14 guides (foundations/platforms/components/patterns).",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "whatsapp": {
             "name": "Whatsapp",
@@ -1395,7 +1491,8 @@
             "desc_ko": "WhatsApp 메시지 자동화 (automate-whatsapp).",
             "desc_en": "WhatsApp message automation (automate-whatsapp).",
             "requires": {},
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "aws-skills": {
             "name": "Aws Skills",
@@ -1411,7 +1508,8 @@
                     "aws"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "terraform": {
             "name": "Terraform",
@@ -1427,7 +1525,8 @@
                     "terraform"
                 ]
             },
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dev": {
             "name": "Dev Common",
@@ -1439,7 +1538,8 @@
             "desc_ko": "공통 개발 가이드. 모듈화, 체계적 디버깅, 완료 전 검증, 코드 품질 시그널.",
             "desc_en": "Common development guidelines. Modular dev, systematic debugging, verification-before-completion, code quality signals.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.1.0"
         },
         "dev-frontend": {
             "name": "Dev Frontend",
@@ -1451,7 +1551,8 @@
             "desc_ko": "프런트엔드 역할 가이드. 독창적 UI/UX 구현, 컴포넌트 설계, 미적 기준.",
             "desc_en": "Frontend role guide. Unique UI/UX implementation, component design, aesthetic standards.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dev-backend": {
             "name": "Dev Backend",
@@ -1463,7 +1564,8 @@
             "desc_ko": "백엔드 개발 가이드. API 설계, 아키텍처 패턴, DB 최적화, 에러 핸들링, 보안, 로깅.",
             "desc_en": "Backend development guide. API design, architecture patterns, database optimization, error handling, security, logging.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dev-data": {
             "name": "Dev Data",
@@ -1475,7 +1577,8 @@
             "desc_ko": "데이터 엔지니어링 가이드. 파이프라인, ETL/ELT, 데이터 품질, SQL 최적화, 분석, 아키텍처 결정.",
             "desc_en": "Data engineering and analysis guide. Pipelines, ETL/ELT, data quality, SQL optimization, reporting, architecture decisions.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "dev-testing": {
             "name": "Dev Testing",
@@ -1487,7 +1590,8 @@
             "desc_ko": "디버깅 phase 전용. Playwright 웹앱 테스팅, 정찰-행동 패턴.",
             "desc_en": "Debugging phase only. Playwright web app testing, recon-action pattern.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.1.0"
         },
         "dev-code-reviewer": {
             "name": "Dev Code Reviewer",
@@ -1499,7 +1603,8 @@
             "desc_ko": "코드 리뷰 가이드. 리뷰 프로세스, 품질 임계값, 안티패턴, 피드백 주고받기. 모든 에이전트 참고 가능.",
             "desc_en": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "api-design-reviewer": {
             "name": "API Design Reviewer",
@@ -1511,7 +1616,8 @@
             "desc_ko": "REST API 설계 리뷰. 명명 규칙, HTTP 메서드, 페이지네이션, 에러 포맷, 버저닝, 브레이킹 체인지, 레이트 리미팅.",
             "desc_en": "REST API design review: naming conventions, HTTP methods, pagination, error formats, versioning, breaking changes, rate limiting.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "database-designer": {
             "name": "Database Designer",
@@ -1523,7 +1629,8 @@
             "desc_ko": "스키마 설계, 정규화(1NF~BCNF), 인덱스 최적화, 마이그레이션 전략, 파티셔닝, DB 선택 가이드.",
             "desc_en": "Schema design, normalization (1NF–BCNF), index optimization, migration strategies, partitioning, database selection guide.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "ui-design-system": {
             "name": "UI Design System",
@@ -1535,7 +1642,8 @@
             "desc_ko": "디자인 토큰 생성, 색상 팔레트, 타이포그래피 스케일, 컴포넌트 아키텍처, WCAG 접근성, 개발자 핸드오프.",
             "desc_en": "Design token generation, color palettes, typography scales, component architecture, WCAG accessibility, developer handoff.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "senior-architect": {
             "name": "Senior Architect",
@@ -1547,7 +1655,8 @@
             "desc_ko": "아키텍처 결정 기록(ADR), 패턴 선택(모노리스, 마이크로서비스, CQRS, 이벤트 소싱), 의존성 분석, 기술 스택 결정.",
             "desc_en": "Architecture decision records (ADR), pattern selection (monolith, microservices, CQRS, event sourcing), dependency analysis, tech stack decisions.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         },
         "ux-researcher": {
             "name": "UX Researcher",
@@ -1559,7 +1668,8 @@
             "desc_ko": "유저 페르소나 생성, 고객 여정 맵, 유저빌리티 테스팅, 리서치 합성. 데이터 기반 UX 리서치 툴킷.",
             "desc_en": "User persona generation, journey mapping, usability testing frameworks, research synthesis. Data-driven UX research toolkit.",
             "requires": null,
-            "install": null
+            "install": null,
+            "version": "1.0.0"
         }
     }
 }
