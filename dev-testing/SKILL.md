@@ -4,9 +4,97 @@ description: "Testing and debugging guide for orchestrated sub-agents. Playwrigh
 license: Complete terms in LICENSE.txt
 ---
 
-# Web Application Testing
+# Web Application Testing & QA
 
-To test local web applications, write native Python Playwright scripts.
+This skill covers two areas: **test strategy & coverage analysis** (general) and **Playwright browser testing** (specific).
+
+---
+
+## 1. Test Strategy Overview
+
+### Test Pyramid
+
+| Layer | Scope | Tools | Speed | Proportion |
+|-------|-------|-------|-------|------------|
+| Unit | Single function/component | Jest, Vitest, node:test | Fast | ~70% |
+| Integration | Module interactions | Supertest, MSW, test containers | Medium | ~20% |
+| E2E | Full user flows | Playwright, Cypress | Slow | ~10% |
+
+### Coverage Targets
+
+| Metric | Minimum | Ideal |
+|--------|---------|-------|
+| Line coverage | 70% | 85%+ |
+| Branch coverage | 60% | 80%+ |
+| Function coverage | 80% | 90%+ |
+
+### When to Write Tests
+
+- **Always:** New features, bug fixes, refactoring, behavior changes
+- **Test-first preferred:** Write failing test → implement → verify green
+- See `tdd/SKILL.md` for the full TDD workflow
+
+---
+
+## 2. Component Test Scaffolding
+
+When testing React/TypeScript components, follow this pattern:
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+describe('ComponentName', () => {
+  it('renders with default props', () => {
+    render(<Component />);
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+
+  it('handles user interaction', async () => {
+    const onClick = vi.fn();
+    render(<Component onClick={onClick} />);
+    await userEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows error state', () => {
+    render(<Component error="Something failed" />);
+    expect(screen.getByText(/something failed/i)).toBeInTheDocument();
+  });
+});
+```
+
+**Prioritize testing:**
+- Components with event handlers and state
+- Components with conditional rendering
+- Components with data fetching
+- Form components with validation
+
+---
+
+## 3. Coverage Analysis Workflow
+
+1. **Generate coverage report:**
+   ```bash
+   npm test -- --coverage
+   # or: npx vitest run --coverage
+   ```
+
+2. **Review by priority:**
+   - P0: Uncovered critical paths (auth, payment, data mutations)
+   - P1: Untested error/edge cases in business logic
+   - P2: Missing branch coverage in utility functions
+
+3. **Write targeted tests for gaps** — focus on behavior, not line-counting
+
+4. **Verify improvement:**
+   ```bash
+   npm test -- --coverage --coverageReporters=lcov,json
+   ```
+
+---
+
+## 4. Playwright Browser Testing
 
 **Helper Scripts Available**:
 - `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)

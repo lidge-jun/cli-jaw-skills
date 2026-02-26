@@ -49,6 +49,8 @@ Every file, function, and class must have a single, clear responsibility.
 
 Random fixes waste time and create new bugs. Follow this process for ANY technical issue — test failures, unexpected behavior, build errors, performance problems.
 
+**The Iron Law:** NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.
+
 ### Phase 1: Root Cause Investigation
 
 **Before attempting any fix:**
@@ -58,18 +60,30 @@ Random fixes waste time and create new bugs. Follow this process for ANY technic
 3. **Check recent changes.** `git diff`, recent commits, new dependencies, config changes, environment differences.
 4. **Trace data flow.** Where does the bad value originate? Trace backward through the call stack until you find the source. Fix at the source, not the symptom.
 
+**Multi-component systems** (CI → build → signing, API → service → database): add diagnostic instrumentation at each component boundary BEFORE proposing fixes.
+
+```
+For EACH component boundary:
+  - Log what data enters the component
+  - Log what data exits the component
+  - Verify environment/config propagation
+Run once → analyze evidence → identify failing layer → investigate THAT component
+```
+
 ### Phase 2: Pattern Analysis
 
 1. Find working code in the same codebase that does something similar.
-2. List every difference between working and broken — however small.
-3. Don't assume "that can't matter."
+2. Compare against reference implementations — read them COMPLETELY, don't skim.
+3. List every difference between working and broken — however small.
+4. Don't assume "that can't matter."
 
 ### Phase 3: Hypothesis Testing
 
-1. Form ONE clear hypothesis: "X is the root cause because Y."
+1. Form ONE clear hypothesis: "X is the root cause because Y." Write it down.
 2. Make the SMALLEST possible change to test it.
 3. One variable at a time. Never fix multiple things at once.
 4. Didn't work? Form a NEW hypothesis. Don't pile fixes on top.
+5. Don't pretend to know. Say "I don't understand X" and research further.
 
 ### Phase 4: Implementation
 
@@ -77,13 +91,17 @@ Random fixes waste time and create new bugs. Follow this process for ANY technic
 2. Implement a single fix addressing the root cause.
 3. Verify: test passes, no regressions, output is clean.
 
-**If 3+ fix attempts fail:** Stop. The problem is likely architectural, not a simple bug. Discuss with your human partner before attempting more fixes.
+**If 3+ fix attempts fail:** STOP. Each fix revealing a new problem in a different place is a sign of **architectural issues**, not simple bugs. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with your human partner before attempting more fixes.
 
 **Red flags — stop and return to Phase 1:**
-- "Quick fix for now, investigate later"
-- "Just try changing X and see"
-- "I don't fully understand but this might work"
-- Proposing solutions before investigating
+
+| Rationalization | Reality |
+|---|---|
+| "Quick fix for now, investigate later" | First fix sets the pattern. Do it right from the start. |
+| "Just try changing X and see" | Guessing guarantees rework. |
+| "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause. |
+| "Proposing solutions before investigating" | You haven't done Phase 1. |
+| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. |
 
 ---
 
@@ -105,11 +123,16 @@ Never claim work is complete without running verification. Evidence before asser
 | "Build succeeds" | Build command: exit 0 | "Linter passed" |
 | "Bug fixed" | Original symptom verified resolved | "Code changed, assumed fixed" |
 | "Feature complete" | Each requirement checked line-by-line | "Tests pass" |
+| "Agent completed" | VCS diff shows actual changes | Agent report says "success" |
+| "Regression test works" | Red-green cycle verified | Test passes once |
+
+**Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
 **Red flags — you're about to lie:**
 - Using words like "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Done!")
 - Relying on partial verification or a previous run
+- Trusting agent success reports without independent verification
 - Thinking "just this once"
 
 ---

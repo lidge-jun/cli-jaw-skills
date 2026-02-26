@@ -1500,6 +1500,66 @@
             "desc_en": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
             "requires": null,
             "install": null
+        },
+        "api-design-reviewer": {
+            "name": "API Design Reviewer",
+            "name_ko": "API 설계 리뷰어",
+            "name_en": "API Design Reviewer",
+            "emoji": "📐",
+            "category": "devtools",
+            "description": "REST API design review: naming conventions, HTTP methods, pagination, error formats, versioning, breaking changes, rate limiting.",
+            "desc_ko": "REST API 설계 리뷰. 명명 규칙, HTTP 메서드, 페이지네이션, 에러 포맷, 버저닝, 브레이킹 체인지, 레이트 리미팅.",
+            "desc_en": "REST API design review: naming conventions, HTTP methods, pagination, error formats, versioning, breaking changes, rate limiting.",
+            "requires": null,
+            "install": null
+        },
+        "database-designer": {
+            "name": "Database Designer",
+            "name_ko": "데이터베이스 설계",
+            "name_en": "Database Designer",
+            "emoji": "🗃️",
+            "category": "devtools",
+            "description": "Schema design, normalization (1NF–BCNF), index optimization, migration strategies, partitioning, database selection guide.",
+            "desc_ko": "스키마 설계, 정규화(1NF~BCNF), 인덱스 최적화, 마이그레이션 전략, 파티셔닝, DB 선택 가이드.",
+            "desc_en": "Schema design, normalization (1NF–BCNF), index optimization, migration strategies, partitioning, database selection guide.",
+            "requires": null,
+            "install": null
+        },
+        "ui-design-system": {
+            "name": "UI Design System",
+            "name_ko": "UI 디자인 시스템",
+            "name_en": "UI Design System",
+            "emoji": "🎨",
+            "category": "devtools",
+            "description": "Design token generation, color palettes, typography scales, component architecture, WCAG accessibility, developer handoff.",
+            "desc_ko": "디자인 토큰 생성, 색상 팔레트, 타이포그래피 스케일, 컴포넌트 아키텍처, WCAG 접근성, 개발자 핸드오프.",
+            "desc_en": "Design token generation, color palettes, typography scales, component architecture, WCAG accessibility, developer handoff.",
+            "requires": null,
+            "install": null
+        },
+        "senior-architect": {
+            "name": "Senior Architect",
+            "name_ko": "시니어 아키텍트",
+            "name_en": "Senior Architect",
+            "emoji": "🏛️",
+            "category": "devtools",
+            "description": "Architecture decision records (ADR), pattern selection (monolith, microservices, CQRS, event sourcing), dependency analysis, tech stack decisions.",
+            "desc_ko": "아키텍처 결정 기록(ADR), 패턴 선택(모노리스, 마이크로서비스, CQRS, 이벤트 소싱), 의존성 분석, 기술 스택 결정.",
+            "desc_en": "Architecture decision records (ADR), pattern selection (monolith, microservices, CQRS, event sourcing), dependency analysis, tech stack decisions.",
+            "requires": null,
+            "install": null
+        },
+        "ux-researcher": {
+            "name": "UX Researcher",
+            "name_ko": "UX 리서처",
+            "name_en": "UX Researcher",
+            "emoji": "🔬",
+            "category": "devtools",
+            "description": "User persona generation, journey mapping, usability testing frameworks, research synthesis. Data-driven UX research toolkit.",
+            "desc_ko": "유저 페르소나 생성, 고객 여정 맵, 유저빌리티 테스팅, 리서치 합성. 데이터 기반 UX 리서치 툴킷.",
+            "desc_en": "User persona generation, journey mapping, usability testing frameworks, research synthesis. Data-driven UX research toolkit.",
+            "requires": null,
+            "install": null
         }
     }
 }
