@@ -35,7 +35,8 @@ Uses ref-based snapshots to identify page elements, then click/type by ref ID.
 ## Quick Start
 
 ```bash
-cli-jaw browser start                          # Start Chrome (CDP port 9240)
+cli-jaw browser start                          # Start Chrome (CDP auto port)
+cli-jaw browser start --headless               # Headless mode (server/CI/WSL)
 cli-jaw browser navigate "https://example.com" # Go to URL
 cli-jaw browser snapshot                        # Get page structure with ref IDs
 cli-jaw browser click e3                        # Click ref e3
@@ -55,7 +56,7 @@ cli-jaw browser screenshot                      # Save screenshot
 ### Browser Management
 
 ```bash
-cli-jaw browser start [--port 9240]  # Start Chrome (default CDP port: 9240)
+cli-jaw browser start [--port <auto>] [--headless]  # Start Chrome
 cli-jaw browser stop                 # Stop Chrome
 cli-jaw browser status               # Connection status
 ```
@@ -165,13 +166,36 @@ cliclick c:500,300
 cliclick t:"text input"
 ```
 
+## Headless Mode (Server/CI/WSL)
+
+```bash
+cli-jaw browser start --headless               # CLI flag
+CHROME_HEADLESS=1 cli-jaw browser start         # env var
+```
+
+- GUI 없는 환경(WSL, SSH, Docker, CI)에서 사용
+- `--headless=new` (Chrome 112+) 사용 — full browser 기능 유지
+
+## Troubleshooting
+
+| 증상                               | 원인                                | 해결                                              |
+| ---------------------------------- | ----------------------------------- | ------------------------------------------------- |
+| CDP 연결 거부                      | Chrome이 이미 기본 프로필로 실행 중 | 모든 Chrome 종료 후 재시도, 또는 `browser reset`  |
+| Windows에서 테스트 브라우저만 열림 | Chrome 싱글턴이 launch 흡수         | 기존 Chrome 완전 종료 후 `browser start`          |
+| Headless에서 CDP 안 열림           | `--headless` 미지정                 | `--headless` 플래그 추가                          |
+| 포트 충돌                          | 다른 프로세스가 CDP 포트 점유       | `--port <다른포트>` 지정                          |
+| 서버 재시작 후 연결 안 됨          | 이전 Chrome이 여전히 포트 점유      | `browser start`가 자동 재사용 (readiness 확인 후) |
+
 ## Notes
 
 - Ref IDs **reset on navigation**. Always re-run `snapshot` after `navigate`.
 - Use `--interactive` to show only clickable/typeable elements (shorter list).
 - Screenshots are saved to `~/.cli-jaw/screenshots/`.
-- Default CDP port is 9240 (change via `browser.cdpPort` in settings.json).
-- If Chrome is already running, `start` connects to the existing instance.
+- Default CDP port is auto-derived from server port (server_port + 5783).
+- If CDP is already responding on the auto-derived port, `start` reuses the existing instance without spawning a new Chrome.
+- If the port is occupied by a non-CDP process, `start` will fail with a clear error.
+- `CHROME_NO_SANDBOX=1` — disable sandbox (Docker/CI).
+- `CHROME_HEADLESS=1` — enable headless mode.
 
 ## Non-DOM Elements
 
