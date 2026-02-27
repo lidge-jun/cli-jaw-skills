@@ -1,99 +1,202 @@
 ---
 name: tts
-description: "Text-to-speech using macOS built-in `say` command. Generate spoken audio from text with voice selection, speed control, and file output."
+description: "Text-to-speech with edge-tts (primary, high-quality neural voices) and macOS say (fallback). Supports Korean, English, Japanese, and 40+ languages. Includes Telegram voice delivery workflow."
 metadata:
   {
     "openclaw":
       {
         "emoji": "🔊",
-        "requires": null,
-        "install": null,
+        "requires": "edge-tts (pip), ffmpeg (brew)",
+        "install": "pip install edge-tts && brew install ffmpeg",
       },
   }
 ---
 
-# Text-to-Speech (macOS)
+# Text-to-Speech
 
-Convert text to speech using the built-in `say` command. No dependencies required.
+## Tool Priority
 
-## Quick Start
+| Tool | Quality | Languages | File Output | Use When |
+|------|---------|-----------|-------------|----------|
+| **edge-tts** (primary) | Neural, natural | 40+ | Fast, reliable | Default for all TTS tasks |
+| **macOS say** (fallback) | Robotic | ~30 | ⚠️ Hangs on Korean | English-only speaker output |
 
-```bash
-say "Hello world"                          # Speak text
-say -v Samantha "Hello world"              # Use specific voice
-say -o ~/output.aiff "Hello world"         # Save to file
-```
+> ⚠️ macOS `say -o` hangs indefinitely for Korean text. Always use edge-tts for Korean file output.
 
-## Commands
+## Quick Start (edge-tts)
 
-### Speak Text
-
-```bash
-say "Text to speak"
-say -v Yuna "안녕하세요"                    # Korean voice
-say -v Samantha "Hello"                     # English voice (female)
-say -v Daniel "Hello"                       # English voice (male)
-say -r 200 "Fast speech"                    # Speed (words per minute, default: ~175)
-say -r 100 "Slow speech"
-```
-
-### Save to File
+### Install
 
 ```bash
-say -o ~/output.aiff "Hello world"                           # AIFF format
-say -o ~/output.aiff --data-format=LEF32@22050 "Hello"       # WAV-like format
+pip install edge-tts  # In your project venv
+brew install ffmpeg   # For format conversion
 ```
 
-### Convert to MP3/WAV (with ffmpeg)
+### Generate Voice File
+
+Write a Python script (heredoc/inline causes encoding issues with non-ASCII text):
+
+```python
+# /tmp/tts_gen.py
+import asyncio, edge_tts
+
+async def main():
+    text = "Hello! This is a test voice message from Jaw agent."
+    voice = "en-US-JennyNeural"  # or "ko-KR-SunHiNeural" for Korean
+    comm = edge_tts.Communicate(text, voice)
+    await comm.save("/tmp/voice.mp3")
+
+asyncio.run(main())
+```
 
 ```bash
-say -o /tmp/speech.aiff "Hello world"
-ffmpeg -i /tmp/speech.aiff ~/speech.mp3    # Requires: brew install ffmpeg
-ffmpeg -i /tmp/speech.aiff ~/speech.wav
+python3 /tmp/tts_gen.py
 ```
 
-### List Available Voices
+### Send to Telegram as Voice Message
 
 ```bash
-say -v '?'                                 # List all voices
-say -v '?' | grep en_                      # English voices only
-say -v '?' | grep ko_                      # Korean voices only
+# Convert to OGG Opus (Telegram voice format)
+ffmpeg -y -i /tmp/voice.mp3 -c:a libopus /tmp/voice.ogg
+
+# Send via Bot API (use python requests — curl multipart may hang)
+python3 /tmp/tg_voice.py
 ```
 
-### Read from File
+```python
+# /tmp/tg_voice.py
+import json, requests
+
+with open("/Users/junny/.cli-jaw/settings.json") as f:
+    s = json.load(f)
+token = s["telegram"]["token"]
+chat_id = s["telegram"]["allowedChatIds"][-1]
+
+with open("/tmp/voice.ogg", "rb") as f:
+    r = requests.post(
+        f"https://api.telegram.org/bot{token}/sendVoice",
+        data={"chat_id": chat_id, "caption": "Voice message"},
+        files={"voice": f}
+    )
+print(r.status_code, r.json().get("ok"))
+```
+
+## Available Voices
+
+### Korean (Recommended)
+
+| Voice | Gender | Style |
+|-------|--------|-------|
+| `ko-KR-SunHiNeural` | Female | Friendly, natural |
+| `ko-KR-InJoonNeural` | Male | Friendly, natural |
+| `ko-KR-HyunsuMultilingualNeural` | Male | Multilingual capable |
+
+### English
+
+| Voice | Gender | Style |
+|-------|--------|-------|
+| `en-US-JennyNeural` | Female | Natural, conversational |
+| `en-US-GuyNeural` | Male | Natural, conversational |
+| `en-US-AriaNeural` | Female | Professional |
+| `en-GB-SoniaNeural` | Female | British |
+
+### Japanese
+
+| Voice | Gender |
+|-------|--------|
+| `ja-JP-NanamiNeural` | Female |
+| `ja-JP-KeitaNeural` | Male |
+
+### List All Voices
 
 ```bash
-say -f ~/document.txt                      # Read file contents
-cat ~/document.txt | say                   # Pipe to say
+edge-tts --list-voices                    # All voices
+edge-tts --list-voices | grep ko-KR      # Korean only
+edge-tts --list-voices | grep en-US      # US English only
 ```
 
-## Common Voice Selections
+## Advanced Options
 
-| Language     | Voice    | Example                     |
-| ------------ | -------- | --------------------------- |
-| English (US) | Samantha | `say -v Samantha "Hello"`   |
-| English (US) | Alex     | `say -v Alex "Hello"`       |
-| English (UK) | Daniel   | `say -v Daniel "Hello"`     |
-| Korean       | Yuna     | `say -v Yuna "안녕하세요"`  |
-| Japanese     | Kyoko    | `say -v Kyoko "こんにちは"` |
+### Speed and Pitch Control
 
-## Advanced: External TTS (Optional)
+```python
+comm = edge_tts.Communicate(
+    text,
+    "ko-KR-SunHiNeural",
+    rate="+20%",     # Speed: -50% to +100%
+    pitch="+5Hz",    # Pitch adjustment
+    volume="+0%"     # Volume adjustment
+)
+```
 
-For higher quality or more voices, install sherpa-onnx:
+### SSML for Fine Control
+
+```python
+ssml = """
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+  <voice name="en-US-JennyNeural">
+    <prosody rate="medium" pitch="medium">
+      Hello there. <break time="500ms"/> Pausing briefly before continuing.
+    </prosody>
+  </voice>
+</speak>
+"""
+```
+
+### Batch Generation
+
+```python
+import asyncio, edge_tts
+
+async def generate(text, output, voice="en-US-JennyNeural"):
+    comm = edge_tts.Communicate(text, voice)
+    await comm.save(output)
+
+async def main():
+    tasks = [
+        generate("First message", "/tmp/msg1.mp3"),
+        generate("Second message", "/tmp/msg2.mp3"),
+        generate("Third in Korean", "/tmp/msg3.mp3", "ko-KR-SunHiNeural"),
+    ]
+    await asyncio.gather(*tasks)
+
+asyncio.run(main())
+```
+
+## macOS `say` (Fallback — English Only)
 
 ```bash
-brew install sherpa-onnx
-sherpa-onnx-offline-tts \
-  --vits-model=model.onnx \
-  --vits-tokens=tokens.txt \
-  --output-filename=output.wav \
-  "Text to speak"
+say "Hello world"                          # Speak through speakers
+say -v Samantha "Hello world"              # Specific voice
+say -r 200 "Fast speech"                   # Speed control
+say -o /tmp/out.aiff "Hello world"         # Save to file (English OK)
+say -v '?' | grep en_                      # List English voices
 ```
 
-## Notes
+> ⚠️ Do NOT use `say -o` with Korean/CJK text — it hangs indefinitely on macOS.
 
-- `say` is macOS-only (pre-installed, no setup needed).
-- Default voice depends on system language settings.
-- Audio plays through system speakers by default.
-- Use `-o` flag to save without playing.
-- For Telegram delivery, convert to OGG: `ffmpeg -i speech.aiff -c:a libopus speech.ogg`
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `edge-tts` not found | `pip install edge-tts` in active venv |
+| Korean `say -o` hangs | Use edge-tts instead |
+| Telegram curl hangs | Use python `requests` instead |
+| OGG conversion fails | `brew install ffmpeg` |
+| Inline Python encoding error | Write to .py file first, then `python3 file.py` |
+
+## Complete Workflow Example
+
+```bash
+# 1. Generate voice
+python3 /tmp/tts_gen.py
+
+# 2. Convert for Telegram
+ffmpeg -y -i /tmp/voice.mp3 -c:a libopus /tmp/voice.ogg
+
+# 3. Send to Telegram
+python3 /tmp/tg_voice.py
+
+# 4. Cleanup
+rm /tmp/tts_gen.py /tmp/tg_voice.py /tmp/voice.mp3 /tmp/voice.ogg
+```
