@@ -4,7 +4,7 @@ description: |
   PABCD orchestration workflow for structured multi-step development.
   Phases: Plan → Plan Audit → Build → Check → Done.
   Triggers: "orchestrate", "지휘 모드", "pabcd", "orchestration mode"
-version: 1.0.0
+version: 2.0.0
 ---
 
 # PABCD Orchestration Skill
@@ -23,131 +23,246 @@ Each letter is a **phase** with a specific job. The agent must complete ONE phas
 IDLE → P → (user OK) → A → (user OK) → B → (user OK) → C → D → IDLE
 ```
 
+---
+
 ## Phase Details
 
 ### P — Plan
 
-**Job**: Write a structured plan with two parts.
+**Intent**: Force the agent to think before coding. Without this phase, agents jump straight into implementation and miss edge cases, break existing code, or misunderstand requirements.
 
+**Job**:
 1. Read structural documentation and dev skill docs first.
 2. Write **Part 1**: Easy explanation (non-developer friendly).
 3. Write **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
-4. Present the plan and ask:
+4. Ask the user:
    - "Any business logic I shouldn't decide alone?"
    - "Does Part 1 match your intent?"
 
-⛔ **STOP**. Wait for user approval. Revise if needed.
+**How to enter P (IDLE → P)**:
+- **Trigger word**: User says `orchestrate`, `pabcd`, `지휘 모드`, `오케스트레이션 모드`, or `orchestration mode`
+- Inside `orchestrate()` in `pipeline.ts`:
+```typescript
+// shouldAutoActivatePABCD() matches trigger patterns
+if (state === 'IDLE' && shouldAutoActivatePABCD(userText, meta)) {
+    setState('P', { originalPrompt: userText, plan: null, workerResults: [], origin, chatId });
+    state = 'P';
+    prompt = `${getStatePrompt('P')}\n\nUser request:\n${userText}`;
+}
+```
+- **CLI**: `jaw orchestrate P` → `PUT /api/orchestrate/state {state:"P"}` → `setState('P', {originalPrompt:'', plan:null, workerResults:[], origin:'api'})`
+- **API**: `PUT /api/orchestrate/state {state:"P"}` directly
+
+**How to transition → A**:
+- **User approval**: User says approval keyword → `isApproveIntent()` triggers `AUTO_APPROVE_NEXT[P] → A`
+- **CLI**: `jaw orchestrate A`
+- **API**: `PUT /api/orchestrate/state {state:"A"}`
+
+⛔ **STOP**. Wait for user approval. Revise if the user gives feedback.
+
+---
 
 ### A — Plan Audit
 
-**Job**: Verify THE PLAN before any coding begins.
+**Intent**: Catch integration bugs BEFORE writing code. Plans often contain hallucinated imports, wrong function signatures, or files that don't exist. An independent worker agent reads the plan and verifies it against the actual codebase.
 
-⚠️ This phase audits the **plan**, NOT existing code. Do NOT skip.
-⚠️ Do NOT say "audit is unnecessary."
+**Why not skip**: Even simple plans can reference non-existent paths. The cost of auditing is far less than the cost of implementing a broken plan and rolling back.
 
-1. Output a worker JSON to spawn an audit worker:
+**Job**:
+1. Output a worker JSON to spawn a **read-only** audit worker:
 ```json
-{"subtasks":[{"agent":"Data","task":"Audit the PLAN (not code). Verify: 1) All imports in the plan resolve to real files. 2) Function signatures match actual code. 3) No copy-paste integration risks. Report PASS or FAIL with itemized issues.","priority":1}]}
+{"subtasks":[{"agent":"Data","task":"⛔ READ-ONLY. Audit the PLAN (not code). Verify: 1) All imports resolve to real files. 2) Function signatures match actual code. 3) No integration risks. Report PASS or FAIL with itemized issues. ⛔ Do NOT touch any files.","priority":1}]}
 ```
-2. The system spawns the worker automatically.
-3. Wait for results.
-4. If FAIL → fix plan → re-audit (output worker JSON again).
-5. If PASS → report to user.
+2. System detects subtask JSON via `parseSubtasks(result.text)` in `orchestrate()`.
+3. System finds matching employee via `findEmployee()` (3-tier: exact → case-insensitive → fuzzy).
+4. System spawns worker via `runSingleAgent()` with phase=2 (`PABCD_PHASE_MAP[A]=2`).
+5. Worker result is fed back to main agent via `orchestrate(wResult.text, {_workerResult: true})`.
+6. Main agent receives result with prefix `[PLAN AUDIT — Worker Results]` (from `getPrefix('A', 'worker')`).
+7. If FAIL → fix plan → re-audit (output worker JSON again).
+8. If PASS → report to user.
+
+**How to transition → B**:
+- **User approval**: `isApproveIntent()` → `AUTO_APPROVE_NEXT[A] → B`
+- **CLI**: `jaw orchestrate B`
+- **API**: `PUT /api/orchestrate/state {state:"B"}`
 
 ⛔ **STOP**. Wait for user approval.
+
+---
 
 ### B — Build
 
-**Job**: Implement the audited plan.
+**Intent**: The Boss agent implements the code directly. Workers are **verifiers only** — they check the Boss's work but never write code themselves. This prevents conflicting edits and ensures one coherent implementation.
 
-Rules:
-- Follow dev skill conventions strictly.
-- No TODOs or placeholders — every file must be complete.
-- All imports must resolve to real files.
-
-After implementation:
-1. Output a worker JSON to verify code:
+**Job**:
+1. Read the approved, audited plan.
+2. **YOU implement ALL changes** — create/modify/delete files as specified.
+3. After finishing, output a worker JSON for **read-only verification**:
 ```json
-{"subtasks":[{"agent":"Data","task":"Verify the implemented code: 1) Integrates cleanly with existing modules. 2) No runtime issues. 3) All exports used correctly. Report DONE or NEEDS_FIX.","priority":1}]}
+{"subtasks":[{"agent":"Data","task":"⛔ READ-ONLY. Verify: 1) Files exist with expected content. 2) No syntax errors (tsc --noEmit if TS). 3) Imports resolve. 4) No integration conflicts. Report DONE or NEEDS_FIX. ⛔ Do NOT touch any files.","priority":1}]}
 ```
-2. Wait for worker results.
-3. Fix any NEEDS_FIX items.
-4. Once DONE → report to user.
+4. System spawns verification worker with phase=3 (`PABCD_PHASE_MAP[B]=3`).
+5. Worker result fed back with prefix `[IMPLEMENTATION REVIEW — Worker Results]`.
+6. If NEEDS_FIX → **you** fix the issues, then re-verify.
+7. If DONE → report to user.
+
+**How to transition → C**:
+- **User approval**: `isApproveIntent()` → `AUTO_APPROVE_NEXT[B] → C`
+- **CLI**: `jaw orchestrate C`
+- **API**: `PUT /api/orchestrate/state {state:"C"}`
 
 ⛔ **STOP**. Wait for user approval.
 
+---
+
 ### C — Check
 
-**Job**: Final verification.
+**Intent**: Final sanity check after implementation.
 
+**Job**:
 1. Verify all files saved and consistent.
 2. Run `npx tsc --noEmit` for build verification (if TypeScript).
 3. Update project structure docs if applicable.
 4. Report completion summary.
 
-Then advance to D.
+**How to transition → D**:
+- **CLI**: `jaw orchestrate D`
+- **API**: `PUT /api/orchestrate/state {state:"D"}` → `setState('D')` then `resetState()` (auto IDLE)
+- Automatic after Check completes.
+
+---
 
 ### D — Done
 
-**Job**: Summarize and close.
+**Intent**: Clean closure with structured summary.
 
-Report:
-- What was planned (P), audited (A), implemented (B), verified (C).
-- List of files changed.
-- Any follow-up items.
+**Job**: Summarize P/A/B/C results, list files changed, note follow-ups.
 
-State returns to IDLE automatically.
+**Transition**: State returns to IDLE automatically.
 
-## How to Activate
+---
 
-The user says one of:
-- `orchestrate`
-- `지휘 모드`
-- `pabcd`
-- `orchestration mode`
+## Transition Mechanisms
 
-Or the system can call `cli-jaw orchestrate` via shell.
+### 1. Auto-Advance via Approval Intent (primary)
+
+Inside `orchestrate()` in `pipeline.ts`:
+
+```typescript
+const AUTO_APPROVE_NEXT = { P: 'A', A: 'B', B: 'C' };
+
+// When user message is an approval during active PABCD:
+if (state !== 'IDLE' && !meta._workerResult && isApproveIntent(userText)) {
+    const next = AUTO_APPROVE_NEXT[state];
+    if (next) {
+        setState(next);  // DB update + broadcast('orc_state')
+        prompt = `${getStatePrompt(next)}\n\nUser approval:\n${userText}`;
+    }
+}
+```
+
+`isApproveIntent()` recognizes: `ok`, `okay`, `lgtm`, `approved`, `go`, `next`, `proceed`, `확인`, `좋아`, `진행`, `넘어가`, `다음 단계`, `ㅇㅋ`, `ㄱㄱ`
+
+### 2. CLI Command
+
+```bash
+jaw orchestrate B    # transition to Build phase
+jaw orchestrate A    # transition to Plan Audit phase
+```
+
+Internally calls:
+```typescript
+// bin/commands/orchestrate.ts
+fetch(`http://localhost:${PORT}/api/orchestrate/state`, {
+    method: 'PUT',
+    body: JSON.stringify({ state: target }),  // "B"
+});
+```
+
+### 3. REST API
+
+```
+PUT /api/orchestrate/state  {state: "B"}
+```
+
+Server handler (`server.ts`):
+```typescript
+app.put('/api/orchestrate/state', (req, res) => {
+    const target = String(req.body?.state || '').toUpperCase();
+    if (!canTransition(current, target)) {
+        return fail(res, 409, `Cannot transition: ${current} → ${target}`);
+    }
+    if (target === 'D') { setState(target); resetState(); }  // D auto-resets to IDLE
+    else { setState(target, target === 'P' ? { originalPrompt: '', plan: null, workerResults: [], origin: 'api' } : undefined); }
+});
+```
+
+### 4. Worker Dispatch (automatic, within A and B)
+
+When agent output contains subtask JSON during active PABCD:
+```typescript
+// pipeline.ts orchestrate()
+const workerTasks = parseSubtasks(result.text);
+if (workerTasks?.length && state !== 'IDLE') {
+    const PABCD_PHASE_MAP = { A: 2, B: 3, C: 4 };
+    for (const wt of workerTasks) {
+        const emp = findEmployee(getEmployees.all(), wt);
+        upsertEmployeeSession.run(emp.id, null, emp.cli);  // fresh session
+        const wResult = await runSingleAgent(wt_profile, emp, ...);
+        // Feed result BACK to main agent with _workerResult flag
+        await orchestrate(wResult.text, { ...meta, _skipClear: true, _workerResult: true });
+    }
+}
+```
+
+### 5. Reset and Continue
+
+```typescript
+// Reset: user says "리셋", "초기화", "reset"
+orchestrateReset()  // → clearAllEmployeeSessions + resetState() + worklog 'reset'
+// CLI: jaw orchestrate reset  |  API: POST /api/orchestrate/reset
+
+// Continue: user says "이어서 해줘", "계속", "continue"
+orchestrateContinue()  // → resume from current state or last incomplete worklog
+// API: POST /api/orchestrate/continue
+```
+
+---
+
+## PABCD Activation
+
+The user says one of the trigger words, matched by `shouldAutoActivatePABCD()`:
+```typescript
+const PABCD_ACTIVATE_PATTERNS = [
+    /^\/?orchestrate$/i, /^\/?pabcd$/i, /^지휘\s*모드$/i,
+    /^오케스트레이션(?:\s*모드)?$/i, /^orchestration(?:\s*mode)?$/i,
+];
+```
+
+This auto-transitions IDLE → P and injects the P state prompt.
+
+## Prefix System
+
+`getPrefix(state, source)` in `state-machine.ts`:
+- **P + user message** → `[PLANNING MODE — User Feedback]` + revision instructions
+- **A + worker result** → `[PLAN AUDIT — Worker Results]` + PASS/FAIL handling
+- **B + worker result** → `[IMPLEMENTATION REVIEW — Worker Results]` + DONE/NEEDS_FIX
+- **B + user message** → *(no prefix — user feedback passed raw)*
 
 ## Critical Rules
 
 1. **ONE phase per turn.** Never do P+A or A+B in the same response.
-2. **⛔ STOP at phase end.** Present your output, then WAIT for user.
-3. **Never skip A.** Even for simple projects, the plan must be audited.
-4. **Workers are automatic.** Output subtask JSON → system spawns worker → results come back to you.
-5. **User is the gatekeeper.** Only advance when user explicitly approves (OK, lgtm, 진행, ㅇㅋ, next).
-
-## State Management
-
-- State is persisted in SQLite (`jaw.db` → `orc_state` table).
-- CLI and server share the same DB.
-- `cli-jaw orchestrate [P|A|B|C|D]` transitions state and outputs phase prompt to stdout.
-- `orchestrateReset()` or user saying "리셋해" returns to IDLE.
-
-## Prefix System
-
-During active PABCD, messages get automatic prefixes:
-- **P state + user message** → `[PLANNING MODE — User Feedback]` prefix
-- **A state + worker result** → `[PLAN AUDIT — Worker Results]` prefix
-- **B state + worker result** → `[IMPLEMENTATION REVIEW — Worker Results]` prefix
-- **B state + user message** → no prefix (user feedback is passed as-is)
-
-## Transition Guards
-
-```
-IDLE → P (only)
-P → A (only)
-A → B (only)
-B → C (only)
-C → D (only)
-D → IDLE (auto)
-```
-
-No skipping. P→D is invalid. IDLE→B is invalid.
+2. **⛔ STOP at phase end.** Present output, then WAIT for user.
+3. **Never skip A.** Every plan must be audited.
+4. **Workers are READ-ONLY.** They verify and report — never create/modify/delete files.
+5. **Boss implements in B.** The main agent writes all code directly.
+6. **User is the gatekeeper.** Only advance on explicit approval.
 
 ## Constraints
 
-- ≤ 500 lines per source file (dev skill hard limit)
+- ≤ 500 lines per source file
 - All prompts in English
-- Worker agents are executors only — they do NOT output subtask JSON
-- State machine code lives in `src/orchestrator/state-machine.ts`
-- Pipeline code lives in `src/orchestrator/pipeline.ts`
+- Worker agents do NOT output subtask JSON (recursion prevention)
+- State persisted in SQLite (`jaw.db` → `orc_state` table)
+- Source: `src/orchestrator/{pipeline,state-machine,distribute,parser,gateway,collect}.ts`
+- CLI command: `bin/commands/orchestrate.ts`

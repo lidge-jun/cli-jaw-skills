@@ -1606,6 +1606,32 @@
             "install": null,
             "version": "1.0.0"
         },
+        "dev-pabcd": {
+            "name": "Dev PABCD",
+            "name_ko": "Dev PABCD",
+            "name_en": "Dev PABCD",
+            "emoji": "🎯",
+            "category": "orchestration",
+            "description": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
+            "desc_ko": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
+            "desc_en": "PABCD orchestration workflow for structured multi-step development with human checkpoints between phases.",
+            "requires": null,
+            "install": null,
+            "version": "2.0.0"
+        },
+        "dev-scaffolding": {
+            "name": "Dev Scaffolding",
+            "name_ko": "Dev Scaffolding",
+            "name_en": "Dev Scaffolding",
+            "emoji": "🏗️",
+            "category": "orchestration",
+            "description": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
+            "desc_ko": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
+            "desc_en": "Scaffold projects following the Lidge Standard: feature-based layout, colocation, barrel exports, devlog structure.",
+            "requires": null,
+            "install": null,
+            "version": "1.0.0"
+        },
         "api-design-reviewer": {
             "name": "API Design Reviewer",
             "name_ko": "API Design Reviewer",
