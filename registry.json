@@ -1696,6 +1696,23 @@
             "requires": null,
             "install": null,
             "version": "1.0.0"
+        },
+        "pdf-vision": {
+            "name": "PDF Vision (하이브리드)",
+            "name_ko": "PDF Vision (하이브리드)",
+            "name_en": "PDF Vision (Hybrid)",
+            "emoji": "📄",
+            "category": "utility",
+            "description": "PDF 하이브리드 추출: 이미지 렌더링(pypdfium2) + 텍스트 추출(pypdf). 시험/표/수식 분석에 최적.",
+            "desc_ko": "PDF 하이브리드 추출: 이미지 렌더링(pypdfium2) + 텍스트 추출(pypdf). 시험/표/수식 분석에 최적.",
+            "desc_en": "Hybrid PDF extraction: image rendering (pypdfium2) + text extraction (pypdf). Optimized for exams, tables, and formulas.",
+            "requires": {
+                "bins": [
+                    "python3"
+                ]
+            },
+            "install": "python3 -m pip install pypdf pypdfium2",
+            "version": "1.0.0"
         }
     }
 }
