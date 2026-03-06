@@ -11,13 +11,13 @@ Core rules applied to every sub-agent, regardless of role.
 
 This skill covers universal guidelines. For domain-specific work, you **must** also consult the matching role skill — read its `SKILL.md` before writing any code in that domain:
 
-| Skill File | Injected When | Covers |
-|---|---|---|
-| `dev-frontend/SKILL.md` | `role=frontend` | UI/UX implementation, design aesthetics, component architecture, responsive layouts, animation |
-| `dev-backend/SKILL.md` | `role=backend` | API design, architecture patterns, database optimization, security, error handling, middleware |
-| `dev-data/SKILL.md` | `role=data` | Data pipelines, ETL/ELT, data quality validation, SQL optimization, analysis & reporting |
-| `dev-testing/SKILL.md` | `role=testing` or debugging phase | Playwright browser testing, test strategy, debugging patterns, coverage analysis |
-| `dev-code-reviewer/SKILL.md` | Any agent, during code review | Review process, quality thresholds, antipattern detection, giving/receiving feedback |
+| Skill File                   | Injected When                     | Covers                                                                                         |
+| ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `dev-frontend/SKILL.md`      | `role=frontend`                   | UI/UX implementation, design aesthetics, component architecture, responsive layouts, animation |
+| `dev-backend/SKILL.md`       | `role=backend`                    | API design, architecture patterns, database optimization, security, error handling, middleware |
+| `dev-data/SKILL.md`          | `role=data`                       | Data pipelines, ETL/ELT, data quality validation, SQL optimization, analysis & reporting       |
+| `dev-testing/SKILL.md`       | `role=testing` or debugging phase | Playwright browser testing, test strategy, debugging patterns, coverage analysis               |
+| `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 
 **When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read ALL relevant skill files before starting.
 
@@ -29,13 +29,13 @@ Every file, function, and class must have a single, clear responsibility.
 
 **Hard limits:**
 
-| Metric | Threshold | Action |
-|--------|-----------|--------|
-| File length | >500 lines | Split into focused modules |
-| Function length | >50 lines | Extract helper functions |
-| Class methods | >20 methods | Split by responsibility |
-| Nesting depth | >4 levels | Flatten with early returns or extraction |
-| Function parameters | >5 | Use an options/config object |
+| Metric              | Threshold   | Action                                   |
+| ------------------- | ----------- | ---------------------------------------- |
+| File length         | >500 lines  | Split into focused modules               |
+| Function length     | >50 lines   | Extract helper functions                 |
+| Class methods       | >20 methods | Split by responsibility                  |
+| Nesting depth       | >4 levels   | Flatten with early returns or extraction |
+| Function parameters | >5          | Use an options/config object             |
 
 **Rules:**
 - ES Module (`import`/`export`) only. No CommonJS `require()`.
@@ -95,13 +95,13 @@ Run once → analyze evidence → identify failing layer → investigate THAT co
 
 **Red flags — stop and return to Phase 1:**
 
-| Rationalization | Reality |
-|---|---|
-| "Quick fix for now, investigate later" | First fix sets the pattern. Do it right from the start. |
-| "Just try changing X and see" | Guessing guarantees rework. |
-| "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause. |
-| "Proposing solutions before investigating" | You haven't done Phase 1. |
-| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. |
+| Rationalization                                | Reality                                                 |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| "Quick fix for now, investigate later"         | First fix sets the pattern. Do it right from the start. |
+| "Just try changing X and see"                  | Guessing guarantees rework.                             |
+| "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause.             |
+| "Proposing solutions before investigating"     | You haven't done Phase 1.                               |
+| "One more fix attempt" (after 2+ failures)     | 3+ failures = architectural problem.                    |
 
 ---
 
@@ -117,14 +117,14 @@ Never claim work is complete without running verification. Evidence before asser
 4. **VERIFY** — Does the output actually confirm the claim?
 5. **Only then** — State the claim WITH evidence.
 
-| Claim | Requires | Not Sufficient |
-|-------|----------|----------------|
-| "Tests pass" | Test command output: 0 failures | Previous run, "should pass" |
-| "Build succeeds" | Build command: exit 0 | "Linter passed" |
-| "Bug fixed" | Original symptom verified resolved | "Code changed, assumed fixed" |
-| "Feature complete" | Each requirement checked line-by-line | "Tests pass" |
-| "Agent completed" | VCS diff shows actual changes | Agent report says "success" |
-| "Regression test works" | Red-green cycle verified | Test passes once |
+| Claim                   | Requires                              | Not Sufficient                |
+| ----------------------- | ------------------------------------- | ----------------------------- |
+| "Tests pass"            | Test command output: 0 failures       | Previous run, "should pass"   |
+| "Build succeeds"        | Build command: exit 0                 | "Linter passed"               |
+| "Bug fixed"             | Original symptom verified resolved    | "Code changed, assumed fixed" |
+| "Feature complete"      | Each requirement checked line-by-line | "Tests pass"                  |
+| "Agent completed"       | VCS diff shows actual changes         | Agent report says "success"   |
+| "Regression test works" | Red-green cycle verified              | Test passes once              |
 
 **Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
@@ -166,16 +166,16 @@ Keep entries factual and concise. One entry per file changed.
 
 Watch for these anti-patterns and fix immediately:
 
-| Anti-Pattern | Symptom | Fix |
-|---|---|---|
-| **God class** | >20 methods, mixed responsibilities | Split by domain into focused classes |
-| **Long method** | >50 lines, does multiple things | Extract into named helper functions |
-| **Deep nesting** | >4 levels of if/for/try | Early returns, guard clauses, extract |
-| **Magic numbers** | Hardcoded `86400`, `1024`, `3` | Named constants with clear intent |
-| **Stringly typed** | Strings where enums/types belong | Define explicit types or enums |
-| **Missing error handling** | No catch, no input validation | Add try/catch, validate all inputs |
-| **Floating promises** | async call without `await` | Always `await` or handle rejection |
-| **Copy-paste code** | Same logic in 2+ places | Extract shared function, import it |
+| Anti-Pattern               | Symptom                             | Fix                                   |
+| -------------------------- | ----------------------------------- | ------------------------------------- |
+| **God class**              | >20 methods, mixed responsibilities | Split by domain into focused classes  |
+| **Long method**            | >50 lines, does multiple things     | Extract into named helper functions   |
+| **Deep nesting**           | >4 levels of if/for/try             | Early returns, guard clauses, extract |
+| **Magic numbers**          | Hardcoded `86400`, `1024`, `3`      | Named constants with clear intent     |
+| **Stringly typed**         | Strings where enums/types belong    | Define explicit types or enums        |
+| **Missing error handling** | No catch, no input validation       | Add try/catch, validate all inputs    |
+| **Floating promises**      | async call without `await`          | Always `await` or handle rejection    |
+| **Copy-paste code**        | Same logic in 2+ places             | Extract shared function, import it    |
 
 **Good code reads like well-written prose:**
 - Function names describe what they do (`calculateTotalPrice`, not `calc`)
@@ -184,4 +184,51 @@ Watch for these anti-patterns and fix immediately:
 
 ---
 
+## 7. Type Safety & Static Analysis
+
+Type systems are free bug detectors. Use them to their fullest.
+
+### 7.1 Type Annotations Are Mandatory
+
+All function signatures, return types, and non-trivial variables must have
+explicit type annotations. Never rely on implicit `any` or untyped interfaces.
+
+| Language   | Rule                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| TypeScript | `strict: true` in tsconfig. No `any` without `// @ts-expect-error` + justification. |
+| Python     | Type hints on all function params and returns (`def fetch(url: str) -> Response:`). |
+| Go         | Already enforced by compiler — ensure exported types have doc comments.             |
+| C# / Java  | Use nullability annotations (`?`, `@Nullable`). Avoid raw `Object` or `dynamic`.    |
+| General    | If the language supports a strict/pedantic mode, enable it.                         |
+
+### 7.2 Static Analysis Gate
+
+After every code change, run the project's static analysis toolchain before
+claiming completion. This is part of the verification gate (Section 3).
+
+| Toolchain      | Command                               | Must Pass                    |
+| -------------- | ------------------------------------- | ---------------------------- |
+| TypeScript     | `tsc --noEmit`                        | Zero errors                  |
+| Python (typed) | `mypy .` or `pyright`                 | Zero errors on changed files |
+| ESLint / Biome | `npx eslint .` or `npx biome check .` | Zero errors                  |
+| Go             | `go vet ./...`                        | Zero issues                  |
+| Rust           | `cargo clippy -- -D warnings`         | Zero warnings                |
+| C#             | `dotnet build /warnaserror`           | Zero warnings                |
+
+If no static analysis tool is configured in the project, **flag it** to the
+user as a recommendation — but do not add tooling without approval.
+
+### 7.3 Escape Hatches
+
+Sometimes you must bypass the type system. Rules for doing so safely:
+
+- **Always add a comment** explaining WHY the escape is necessary.
+- **Scope it minimally** — cast at the narrowest point, not the broadest.
+- **Prefer assertion functions** over raw casts (`assertIsString(x)` > `x as string`).
+- TypeScript: `as unknown as T` double-cast requires a linked issue or TODO.
+- Python: `# type: ignore[code]` must specify the exact mypy error code.
+
+---
+
 Write code you'd be proud to debug six months from now. Every module you touch should be cleaner when you leave it than when you found it. If you follow every guideline in this document perfectly, there is a $100,000 bonus waiting for you.
+

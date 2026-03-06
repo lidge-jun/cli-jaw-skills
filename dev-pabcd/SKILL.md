@@ -16,7 +16,7 @@ By splitting work into Plan → Audit → Build → Check → Done, each phase g
 
 ## How It Works
 
-PABCD is a strictly sequential pipeline. Each phase must complete before the next begins. The user decides when to advance.
+PABCD is a **one-way loop**. You can ONLY move forward, never backward.
 
 ```
 IDLE ──→ P ──→ A ──→ B ──→ C ──→ D ──→ IDLE
@@ -25,18 +25,27 @@ IDLE ──→ P ──→ A ──→ B ──→ C ──→ D ──→ IDLE
         wait   wait   wait
 ```
 
+**Forward only.** B → P is impossible. A → IDLE is impossible. The only valid moves are to the NEXT phase in sequence.
+
+**To go back or start over**, you must reset first:
+```
+cli-jaw orchestrate reset   → return to IDLE from ANY state
+```
+Then enter P again with `cli-jaw orchestrate P`.
+
 Phases P, A, B require user approval before advancing. C and D proceed automatically once their work is done.
 
-To advance between phases, run:
+**Transition commands** (the ONLY way to change phases):
 ```
-cli-jaw orchestrate P   → enter Planning
-cli-jaw orchestrate A   → enter Plan Audit
-cli-jaw orchestrate B   → enter Build
-cli-jaw orchestrate C   → enter Check
-cli-jaw orchestrate D   → enter Done (returns to IDLE)
+cli-jaw orchestrate P       → enter Planning (from IDLE only)
+cli-jaw orchestrate A       → enter Plan Audit (from P only)
+cli-jaw orchestrate B       → enter Build (from A only)
+cli-jaw orchestrate C       → enter Check (from B only)
+cli-jaw orchestrate D       → enter Done (from C only, returns to IDLE)
+cli-jaw orchestrate reset   → return to IDLE (from any state)
 ```
 
-This is the ONLY way to transition. No other method.
+No other method. No API calls, no database commands.
 
 ## Phases
 
