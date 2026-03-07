@@ -1,6 +1,6 @@
 ---
 name: memory
-description: "Persistent long-term memory across sessions. Search, save, and organize knowledge in structured markdown files."
+description: "Persistent long-term memory across sessions. Search, read, and save durable knowledge."
 metadata:
   {
     "openclaw":
@@ -14,116 +14,89 @@ metadata:
 
 # Long-term Memory
 
-Persistent memory system using structured markdown files in `~/.cli-jaw/memory/`.
-
 ## RULES (MANDATORY)
 
-1. **MEMORY.md is auto-injected**: The system prompt already includes MEMORY.md (1500 chars). No need to read it manually.
-2. **Before answering about past work/decisions/preferences**: Run `cli-jaw memory search <keywords>` first.
-3. **After learning user preferences or making important decisions**: Save immediately.
+1. **Search before claiming memory**: Before answering about past work, decisions, preferences, or project facts, run `cli-jaw memory search <keywords>` first.
+2. **Save durable facts immediately**: After learning user preferences, key decisions, or stable project facts, save them right away.
+3. **Use structured destinations**: Prefer files under `structured/` such as `structured/profile.md`, `structured/semantic/...`, or `structured/episodes/...`.
 4. **Never guess**: If memory search returns nothing, say "I don't have a record of that."
-5. **Session memory is periodic**: Auto-flush summaries are injected every Nth cycle (configurable). Don't rely on them being in every response.
-6. **Auto-route saves**: When the user mentions preferences, decisions, people, or project info — save to the correct file automatically without being asked:
-   - Preferences/habits → `preferences.md`
-   - Decisions with reasoning → `decisions.md`
-   - People/teams → `people.md`
-   - Project-specific info → `projects/<name>.md`
-   - Core knowledge updates → `MEMORY.md`
+5. **Keep memory durable**: Save stable facts, not transient TODOs, phase logs, or temporary checklists.
+6. **Search broadly when useful**: When searching memory, consider Korean/English variants, error codes, symbols, and filenames if they help retrieval.
+7. **Use injected memory context carefully**: A task snapshot may already be present in the prompt. Use it, but still search when precision matters.
 
 ## Commands
 
-### Search (grep-based, fast)
+### Search
 
 ```bash
-cli-jaw memory search "keyword"           # Search all memory files
-cli-jaw memory search "user prefers"       # Find preferences
-cli-jaw memory search "2026-02"            # Find by date
+cli-jaw memory search "keyword"
+cli-jaw memory search "user preference"
+cli-jaw memory search "auth login 401"
+cli-jaw memory search "launchd plist service"
 ```
 
 ### Read
 
 ```bash
-cli-jaw memory read MEMORY.md             # Core memory (always read first)
-cli-jaw memory read preferences.md        # User preferences
-cli-jaw memory read decisions.md          # Past decisions
-cli-jaw memory read projects/cli-jaw.md  # Project-specific
-cli-jaw memory read MEMORY.md --lines 1-20  # Partial read
+cli-jaw memory read structured/profile.md
+cli-jaw memory read structured/semantic/cli-jaw.md
+cli-jaw memory read structured/episodes/live/2026-03-07.md
+cli-jaw memory read structured/profile.md --lines 1-30
 ```
 
 ### Save
 
 ```bash
-# Append to existing file
-cli-jaw memory save preferences.md "- Prefers dark mode for all UIs"
-cli-jaw memory save decisions.md "- 2026-02-23: Adopted CDP for browser control"
-cli-jaw memory save projects/cli-jaw.md "## Phase 9 complete: auto-deps"
-
-# Create new topic file
-cli-jaw memory save people.md "## Jun\n- Project owner\n- Prefers Korean UI, English code"
+cli-jaw memory save structured/profile.md "- User prefers Korean UI and English code"
+cli-jaw memory save structured/semantic/cli-jaw.md "- Memory runtime uses task snapshots before response generation"
+cli-jaw memory save structured/episodes/live/2026-03-07.md "## 16:30\n- Decided to remove query-provider setup from memory UX"
 ```
 
 ### List & Init
 
 ```bash
-cli-jaw memory list                       # Show all memory files
-cli-jaw memory init                       # Create default structure
+cli-jaw memory list
+cli-jaw memory init
 ```
 
-## File Organization
+## Storage Layout
 
-| File                 | Purpose                                         | When to update               |
-| -------------------- | ----------------------------------------------- | ---------------------------- |
-| `MEMORY.md`          | Core: top-level summary of everything important | Every session, keep concise  |
-| `preferences.md`     | User preferences, habits, tool choices          | When user states preferences |
-| `decisions.md`       | Key technical/design decisions with dates       | After important choices      |
-| `people.md`          | People, teams, contacts                         | When mentioned               |
-| `projects/<name>.md` | Per-project notes                               | During project work          |
-| `daily/<date>.md`    | Auto-generated session logs                     | Automatic (system writes)    |
+| Path | Purpose |
+| --- | --- |
+| `{{JAW_HOME}}/memory/structured/profile.md` | Stable profile, preferences, long-lived project context |
+| `{{JAW_HOME}}/memory/structured/episodes/` | Time-ordered episodic memory |
+| `{{JAW_HOME}}/memory/structured/semantic/` | Durable facts and extracted knowledge |
+| `{{JAW_HOME}}/memory/structured/procedures/` | Reusable workflows and rules |
+| `{{JAW_HOME}}/memory/structured/sessions/` | Optional session-derived memory |
+| `{{JAW_HOME}}/memory/structured/index.sqlite` | Search index |
 
 ## Workflows
 
 ### New Conversation
 
-1. MEMORY.md is already loaded (system-level injection)
-2. Greet user with awareness of their context
-3. If task relates to known project → `cli-jaw memory read projects/<name>.md`
+1. Use injected memory context if present
+2. Search memory if the task depends on prior decisions or preferences
+3. Read the relevant file when exact wording or details matter
 
 ### User Mentions a Preference
 
-1. Acknowledge: "I'll remember that."
-2. `cli-jaw memory save preferences.md "- <preference>"`
-3. If core enough → also update MEMORY.md
+1. Acknowledge briefly
+2. Save to `structured/profile.md`
+3. If it is project-specific, also save to an appropriate semantic file
 
 ### User Asks "Do you remember...?"
 
-1. `cli-jaw memory search "<keywords>"`
-2. If found → quote the memory with source file
-3. If not found → "I don't have a record of that. Would you like me to save it?"
+1. Run `cli-jaw memory search "<keywords>"`
+2. If found, answer with the remembered fact and cite the source file
+3. If not found, say there is no saved record and offer to save it
 
 ### End of Important Session
 
-1. Summarize key outcomes
-2. Save decisions: `cli-jaw memory save decisions.md "- <date>: <decision>"`
-3. Update MEMORY.md if project status changed
+1. Save the durable decision or fact
+2. Use episodic files for time-bound outcomes
+3. Use semantic/profile files for long-lived knowledge
 
-## Architecture
+## Notes
 
-```
-┌─────────────────────────────────────────────┐
-│ System Prompt                               │
-│  ├── A-1.md (core rules)                    │
-│  ├── A-2.md (custom rules)                  │
-│  ├── MEMORY.md (1500자, 매 메시지)           │
-│  └── Session Memory (10000자, x2 cycle)      │
-└─────────────────────────────────────────────┘
-       ↑ auto                ↑ periodic
-~/.cli-jaw/memory/    ~/.claude/.../memory/
-  (manual save)          (auto flush)
-```
-
-- **MEMORY.md** → 시스템 프롬프트에 **매 메시지** 자동 주입 (1500자)
-- **Session memory** → flush 결과를 `settings.memory.injectEvery` 사이클마다 주입 (기본 2, 10000자)
-- **On-demand** → `cli-jaw memory search/read` 로 추가 로딩 (제한 없음)
-- Search uses grep with context (3 lines before/after matches).
-- Keep MEMORY.md concise (under 1500 chars).
-- Daily logs (`daily/`) are auto-generated by flush. Do not manually edit.
+- A task snapshot may already be present in the prompt
+- Prefer concise, durable entries over verbose logs
