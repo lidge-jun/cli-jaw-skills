@@ -1,289 +1,156 @@
-"""Create thumbnail grids from PowerPoint presentation slides.
+"""Generate thumbnail grids from PPTX slides.
 
-Creates a grid layout of slide thumbnails for quick visual analysis.
-Labels each thumbnail with its XML filename (e.g., slide1.xml).
-Hidden slides are shown with a placeholder pattern.
+Converts PPTX → PDF → PNG images, then arranges them in a contact-sheet grid.
+
+Requirements:
+    - LibreOffice (soffice)
+    - Poppler (pdftoppm)
+    - Pillow (PIL)
 
 Usage:
-    python thumbnail.py input.pptx [output_prefix] [--cols N]
-
-Examples:
-    python thumbnail.py presentation.pptx
-    # Creates: thumbnails.jpg
-
-    python thumbnail.py template.pptx grid --cols 4
-    # Creates: grid.jpg (or grid-1.jpg, grid-2.jpg for large decks)
+    python thumbnail.py <input.pptx> <output.png>
+    python thumbnail.py <input.pptx> <output.png> --cols 3 --dpi 150
+    python thumbnail.py <input.pptx> <output_dir/> --individual  # one PNG per slide
 """
 
 import argparse
+import glob
 import subprocess
 import sys
 import tempfile
-import zipfile
 from pathlib import Path
 
-import defusedxml.minidom
-from office.soffice import get_soffice_env
-from PIL import Image, ImageDraw, ImageFont
+from ooxml.soffice import run_soffice
 
-THUMBNAIL_WIDTH = 300
-CONVERSION_DPI = 100
-MAX_COLS = 6
-DEFAULT_COLS = 3
-JPEG_QUALITY = 95
-GRID_PADDING = 20
-BORDER_WIDTH = 2
-FONT_SIZE_RATIO = 0.10
-LABEL_PADDING_RATIO = 0.4
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Create thumbnail grids from PowerPoint slides."
-    )
-    parser.add_argument("input", help="Input PowerPoint file (.pptx)")
-    parser.add_argument(
-        "output_prefix",
-        nargs="?",
-        default="thumbnails",
-        help="Output prefix for image files (default: thumbnails)",
-    )
-    parser.add_argument(
-        "--cols",
-        type=int,
-        default=DEFAULT_COLS,
-        help=f"Number of columns (default: {DEFAULT_COLS}, max: {MAX_COLS})",
-    )
+def create_thumbnails(
+    input_path: str,
+    output_path: str,
+    cols: int = 4,
+    dpi: int = 150,
+    individual: bool = False,
+) -> str:
+    """Generate slide thumbnails from a PPTX file."""
+    if Image is None:
+        return "Error: Pillow is required (pip install Pillow)"
 
-    args = parser.parse_args()
+    src = Path(input_path).resolve()
+    dst = Path(output_path).resolve()
 
-    cols = min(args.cols, MAX_COLS)
-    if args.cols > MAX_COLS:
-        print(f"Warning: Columns limited to {MAX_COLS}")
-
-    input_path = Path(args.input)
-    if not input_path.exists() or input_path.suffix.lower() != ".pptx":
-        print(f"Error: Invalid PowerPoint file: {args.input}", file=sys.stderr)
-        sys.exit(1)
-
-    output_path = Path(f"{args.output_prefix}.jpg")
+    if not src.exists():
+        return f"Error: {input_path} does not exist"
 
     try:
-        slide_info = get_slide_info(input_path)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
 
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_path = Path(temp_dir)
-            visible_images = convert_to_images(input_path, temp_path)
+            # Step 1: PPTX → PDF via LibreOffice
+            pdf_result = run_soffice(
+                [
+                    "--headless",
+                    "--convert-to", "pdf",
+                    "--outdir", str(tmp_path),
+                    str(src),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
-            if not visible_images and not any(s["hidden"] for s in slide_info):
-                print("Error: No slides found", file=sys.stderr)
-                sys.exit(1)
+            pdf_files = list(tmp_path.glob("*.pdf"))
+            if not pdf_files:
+                return f"Error: PDF conversion failed. soffice stderr: {pdf_result.stderr}"
+            pdf_path = pdf_files[0]
 
-            slides = build_slide_list(slide_info, visible_images, temp_path)
+            # Step 2: PDF → PNG images via pdftoppm
+            img_prefix = str(tmp_path / "slide")
+            pdftoppm_result = subprocess.run(
+                ["pdftoppm", "-png", "-r", str(dpi), str(pdf_path), img_prefix],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
-            grid_files = create_grids(slides, cols, THUMBNAIL_WIDTH, output_path)
+            slide_images = sorted(glob.glob(f"{img_prefix}-*.png"))
+            if not slide_images:
+                # Try alternative naming (some pdftoppm versions use different patterns)
+                slide_images = sorted(glob.glob(f"{img_prefix}*.png"))
 
-            print(f"Created {len(grid_files)} grid(s):")
-            for grid_file in grid_files:
-                print(f"  {grid_file}")
+            if not slide_images:
+                return f"Error: pdftoppm produced no images. stderr: {pdftoppm_result.stderr}"
 
+            # Step 3: Output
+            if individual:
+                # Save individual slide images
+                dst.mkdir(parents=True, exist_ok=True)
+                for i, img_path in enumerate(slide_images, 1):
+                    dest = dst / f"slide-{i:02d}.png"
+                    Image.open(img_path).save(str(dest))
+                return f"Generated {len(slide_images)} individual slide thumbnails → {output_path}"
+            else:
+                # Create contact sheet grid
+                return _create_grid(slide_images, str(dst), cols)
+
+    except FileNotFoundError as e:
+        if "pdftoppm" in str(e):
+            return "Error: pdftoppm not found. Install Poppler (brew install poppler)"
+        return f"Error: {e}"
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
+        return f"Error: {e}"
 
 
-def get_slide_info(pptx_path: Path) -> list[dict]:
-    with zipfile.ZipFile(pptx_path, "r") as zf:
-        rels_content = zf.read("ppt/_rels/presentation.xml.rels").decode("utf-8")
-        rels_dom = defusedxml.minidom.parseString(rels_content)
+def _create_grid(image_paths: list[str], output_path: str, cols: int) -> str:
+    """Arrange slide images in a grid layout."""
+    images = [Image.open(p) for p in image_paths]
+    n = len(images)
 
-        rid_to_slide = {}
-        for rel in rels_dom.getElementsByTagName("Relationship"):
-            rid = rel.getAttribute("Id")
-            target = rel.getAttribute("Target")
-            rel_type = rel.getAttribute("Type")
-            if "slide" in rel_type and target.startswith("slides/"):
-                rid_to_slide[rid] = target.replace("slides/", "")
+    if n == 0:
+        return "Error: no slide images to arrange"
 
-        pres_content = zf.read("ppt/presentation.xml").decode("utf-8")
-        pres_dom = defusedxml.minidom.parseString(pres_content)
+    # All slides should be same size; use first as reference
+    thumb_w, thumb_h = images[0].size
 
-        slides = []
-        for sld_id in pres_dom.getElementsByTagName("p:sldId"):
-            rid = sld_id.getAttribute("r:id")
-            if rid in rid_to_slide:
-                hidden = sld_id.getAttribute("show") == "0"
-                slides.append({"name": rid_to_slide[rid], "hidden": hidden})
+    rows = (n + cols - 1) // cols
+    padding = 10  # pixels between slides
+    label_h = 30  # height for slide number label
 
-        return slides
-
-
-def build_slide_list(
-    slide_info: list[dict],
-    visible_images: list[Path],
-    temp_dir: Path,
-) -> list[tuple[Path, str]]:
-    if visible_images:
-        with Image.open(visible_images[0]) as img:
-            placeholder_size = img.size
-    else:
-        placeholder_size = (1920, 1080)
-
-    slides = []
-    visible_idx = 0
-
-    for info in slide_info:
-        if info["hidden"]:
-            placeholder_path = temp_dir / f"hidden-{info['name']}.jpg"
-            placeholder_img = create_hidden_placeholder(placeholder_size)
-            placeholder_img.save(placeholder_path, "JPEG")
-            slides.append((placeholder_path, f"{info['name']} (hidden)"))
-        else:
-            if visible_idx < len(visible_images):
-                slides.append((visible_images[visible_idx], info["name"]))
-                visible_idx += 1
-
-    return slides
-
-
-def create_hidden_placeholder(size: tuple[int, int]) -> Image.Image:
-    img = Image.new("RGB", size, color="#F0F0F0")
-    draw = ImageDraw.Draw(img)
-    line_width = max(5, min(size) // 100)
-    draw.line([(0, 0), size], fill="#CCCCCC", width=line_width)
-    draw.line([(size[0], 0), (0, size[1])], fill="#CCCCCC", width=line_width)
-    return img
-
-
-def convert_to_images(pptx_path: Path, temp_dir: Path) -> list[Path]:
-    pdf_path = temp_dir / f"{pptx_path.stem}.pdf"
-
-    result = subprocess.run(
-        [
-            "soffice",
-            "--headless",
-            "--convert-to",
-            "pdf",
-            "--outdir",
-            str(temp_dir),
-            str(pptx_path),
-        ],
-        capture_output=True,
-        text=True,
-        env=get_soffice_env(),
-    )
-    if result.returncode != 0 or not pdf_path.exists():
-        raise RuntimeError("PDF conversion failed")
-
-    result = subprocess.run(
-        [
-            "pdftoppm",
-            "-jpeg",
-            "-r",
-            str(CONVERSION_DPI),
-            str(pdf_path),
-            str(temp_dir / "slide"),
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError("Image conversion failed")
-
-    return sorted(temp_dir.glob("slide-*.jpg"))
-
-
-def create_grids(
-    slides: list[tuple[Path, str]],
-    cols: int,
-    width: int,
-    output_path: Path,
-) -> list[str]:
-    max_per_grid = cols * (cols + 1)
-    grid_files = []
-
-    for chunk_idx, start_idx in enumerate(range(0, len(slides), max_per_grid)):
-        end_idx = min(start_idx + max_per_grid, len(slides))
-        chunk_slides = slides[start_idx:end_idx]
-
-        grid = create_grid(chunk_slides, cols, width)
-
-        if len(slides) <= max_per_grid:
-            grid_filename = output_path
-        else:
-            stem = output_path.stem
-            suffix = output_path.suffix
-            grid_filename = output_path.parent / f"{stem}-{chunk_idx + 1}{suffix}"
-
-        grid_filename.parent.mkdir(parents=True, exist_ok=True)
-        grid.save(str(grid_filename), quality=JPEG_QUALITY)
-        grid_files.append(str(grid_filename))
-
-    return grid_files
-
-
-def create_grid(
-    slides: list[tuple[Path, str]],
-    cols: int,
-    width: int,
-) -> Image.Image:
-    font_size = int(width * FONT_SIZE_RATIO)
-    label_padding = int(font_size * LABEL_PADDING_RATIO)
-
-    with Image.open(slides[0][0]) as img:
-        aspect = img.height / img.width
-    height = int(width * aspect)
-
-    rows = (len(slides) + cols - 1) // cols
-    grid_w = cols * width + (cols + 1) * GRID_PADDING
-    grid_h = rows * (height + font_size + label_padding * 2) + (rows + 1) * GRID_PADDING
+    grid_w = cols * thumb_w + (cols + 1) * padding
+    grid_h = rows * (thumb_h + label_h) + (rows + 1) * padding
 
     grid = Image.new("RGB", (grid_w, grid_h), "white")
-    draw = ImageDraw.Draw(grid)
 
-    try:
-        font = ImageFont.load_default(size=font_size)
-    except Exception:
-        font = ImageFont.load_default()
+    for i, img in enumerate(images):
+        col = i % cols
+        row = i // cols
+        x = padding + col * (thumb_w + padding)
+        y = padding + row * (thumb_h + label_h + padding)
 
-    for i, (img_path, slide_name) in enumerate(slides):
-        row, col = i // cols, i % cols
-        x = col * width + (col + 1) * GRID_PADDING
-        y_base = (
-            row * (height + font_size + label_padding * 2) + (row + 1) * GRID_PADDING
-        )
+        # Add border
+        border_color = (200, 200, 200)
+        bordered = Image.new("RGB", (thumb_w + 2, thumb_h + 2), border_color)
+        bordered.paste(img, (1, 1))
+        grid.paste(bordered, (x - 1, y - 1))
 
-        label = slide_name
-        bbox = draw.textbbox((0, 0), label, font=font)
-        text_w = bbox[2] - bbox[0]
-        draw.text(
-            (x + (width - text_w) // 2, y_base + label_padding),
-            label,
-            fill="black",
-            font=font,
-        )
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    grid.save(output_path, quality=95)
 
-        y_thumbnail = y_base + label_padding + font_size + label_padding
-
-        with Image.open(img_path) as img:
-            img.thumbnail((width, height), Image.Resampling.LANCZOS)
-            w, h = img.size
-            tx = x + (width - w) // 2
-            ty = y_thumbnail + (height - h) // 2
-            grid.paste(img, (tx, ty))
-
-            if BORDER_WIDTH > 0:
-                draw.rectangle(
-                    [
-                        (tx - BORDER_WIDTH, ty - BORDER_WIDTH),
-                        (tx + w + BORDER_WIDTH - 1, ty + h + BORDER_WIDTH - 1),
-                    ],
-                    outline="gray",
-                    width=BORDER_WIDTH,
-                )
-
-    return grid
+    return f"Generated {cols}×{rows} thumbnail grid ({n} slides) → {output_path}"
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Generate slide thumbnail grids")
+    parser.add_argument("input_file", help="Input PPTX file")
+    parser.add_argument("output", help="Output PNG file or directory (with --individual)")
+    parser.add_argument("--cols", type=int, default=4, help="Columns in grid (default: 4)")
+    parser.add_argument("--dpi", type=int, default=150, help="DPI for rendering (default: 150)")
+    parser.add_argument("--individual", action="store_true", help="Save individual slide PNGs")
+    args = parser.parse_args()
+
+    msg = create_thumbnails(args.input_file, args.output, args.cols, args.dpi, args.individual)
+    print(msg)
+    sys.exit(1 if msg.startswith("Error") else 0)

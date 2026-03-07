@@ -1,18 +1,22 @@
----
-name: pptx
-description: "Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill."
-license: Proprietary. LICENSE.txt has complete terms
----
-
 # PPTX Skill
+
+Use this skill for any PowerPoint task: create, read, edit, or review PPTX presentations.
+Triggers: "PowerPoint", "PPTX", "presentation", "slides", "deck".
+Covers: programmatic slide creation (PptxGenJS), editing existing PPTX (OOXML workflow), design system, visual QA loop.
+Do NOT use for: Keynote, Google Slides API, PDFs, or image generation.
+
+---
 
 ## Quick Reference
 
-| Task | Guide |
-|------|-------|
-| Read/analyze content | `python -m markitdown presentation.pptx` |
-| Edit or create from template | Read [editing.md](editing.md) |
-| Create from scratch | Read [pptxgenjs.md](pptxgenjs.md) |
+| Task       | Tool                                        |
+| ---------- | ------------------------------------------- |
+| **Create** | `pptxgenjs` (npm) — JavaScript              |
+| **Read**   | `markitdown[pptx]` or `thumbnail.py`        |
+| **Edit**   | Unpack → XML Edit → Pack. See [editing.md](editing.md) |
+| **Review** | soffice → PDF → pdftoppm → image inspection |
+
+For PptxGenJS API reference, see [pptxgenjs.md](pptxgenjs.md).
 
 ---
 
@@ -22,149 +26,201 @@ license: Proprietary. LICENSE.txt has complete terms
 # Text extraction
 python -m markitdown presentation.pptx
 
-# Visual overview
-python scripts/thumbnail.py presentation.pptx
+# Visual overview (thumbnail grid)
+python scripts/thumbnail.py presentation.pptx thumbnails.png
 
-# Raw XML
-python scripts/office/unpack.py presentation.pptx unpacked/
+# Raw XML access
+python scripts/ooxml/unpack.py presentation.pptx unpacked/
+
+# Validate structure
+python scripts/ooxml/validate.py presentation.pptx --json
+# Returns: {"passed": bool, "errors": [...], "warnings": [...], "stats": {...}}
+
+# Auto-repair (if validation fails)
+python scripts/ooxml/repair.py presentation.pptx
+# Returns: {"repaired": int, "details": [...]}
 ```
 
 ---
 
-## Editing Workflow
+## Converting to Images
 
-**Read [editing.md](editing.md) for full details.**
+```bash
+python scripts/ooxml/soffice.py --headless --convert-to pdf output.pptx
+pdftoppm -jpeg -r 150 output.pdf slide
+```
 
-1. Analyze template with `thumbnail.py`
-2. Unpack → manipulate slides → edit content → clean → pack
+Creates `slide-01.jpg`, `slide-02.jpg`, etc.
+
+To re-render specific slides after fixes:
+```bash
+pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
+```
 
 ---
 
-## Creating from Scratch
+## Design System
 
-**Read [pptxgenjs.md](pptxgenjs.md) for full details.**
+### 60-30-10 Color Rule
 
-Use when no template or reference presentation is available.
+Apply this ratio to every presentation:
+- **60%** — Primary (background, large surfaces)
+- **30%** — Secondary (content areas, cards)
+- **10%** — Accent (CTA, key metrics, icons)
 
----
+### Color Palettes (20 options)
 
-## Design Ideas
+Select a palette that matches the content theme. Never settle for default blue.
 
-**Don't create boring slides.** Plain bullets on a white background won't impress anyone. Consider ideas from this list for each slide.
+#### Business & Professional
 
-### Before Starting
+| Theme              | Primary (60%) | Secondary (30%) | Accent (10%) |
+| ------------------ | ------------- | --------------- | ------------ |
+| Midnight Executive | `1E2761`      | `CADCFC`        | `FFFFFF`     |
+| Charcoal Minimal   | `36454F`      | `F2F2F2`        | `212121`     |
+| Navy Corporate     | `0D1B2A`      | `1B3A5C`        | `E0E1DD`     |
+| Slate Professional | `2C3E50`      | `ECF0F1`        | `E74C3C`     |
 
-- **Pick a bold, content-informed color palette**: The palette should feel designed for THIS topic. If swapping your colors into a completely different presentation would still "work," you haven't made specific enough choices.
-- **Dominance over equality**: One color should dominate (60-70% visual weight), with 1-2 supporting tones and one sharp accent. Never give all colors equal weight.
-- **Dark/light contrast**: Dark backgrounds for title + conclusion slides, light for content ("sandwich" structure). Or commit to dark throughout for a premium feel.
-- **Commit to a visual motif**: Pick ONE distinctive element and repeat it — rounded image frames, icons in colored circles, thick single-side borders. Carry it across every slide.
+#### Nature & Wellness
 
-### Color Palettes
+| Theme          | Primary (60%) | Secondary (30%) | Accent (10%) |
+| -------------- | ------------- | --------------- | ------------ |
+| Forest & Moss  | `2C5F2D`      | `97BC62`        | `F5F5F5`     |
+| Sage Calm      | `84B59F`      | `69A297`        | `50808E`     |
+| Ocean Gradient | `065A82`      | `1C7293`        | `21295C`     |
+| Earth Warm     | `5D4037`      | `D7CCC8`        | `FF8F00`     |
 
-Choose colors that match your topic — don't default to generic blue. Use these palettes as inspiration:
+#### Energy & Creative
 
-| Theme | Primary | Secondary | Accent |
-|-------|---------|-----------|--------|
-| **Midnight Executive** | `1E2761` (navy) | `CADCFC` (ice blue) | `FFFFFF` (white) |
-| **Forest & Moss** | `2C5F2D` (forest) | `97BC62` (moss) | `F5F5F5` (cream) |
-| **Coral Energy** | `F96167` (coral) | `F9E795` (gold) | `2F3C7E` (navy) |
-| **Warm Terracotta** | `B85042` (terracotta) | `E7E8D1` (sand) | `A7BEAE` (sage) |
-| **Ocean Gradient** | `065A82` (deep blue) | `1C7293` (teal) | `21295C` (midnight) |
-| **Charcoal Minimal** | `36454F` (charcoal) | `F2F2F2` (off-white) | `212121` (black) |
-| **Teal Trust** | `028090` (teal) | `00A896` (seafoam) | `02C39A` (mint) |
-| **Berry & Cream** | `6D2E46` (berry) | `A26769` (dusty rose) | `ECE2D0` (cream) |
-| **Sage Calm** | `84B59F` (sage) | `69A297` (eucalyptus) | `50808E` (slate) |
-| **Cherry Bold** | `990011` (cherry) | `FCF6F5` (off-white) | `2F3C7E` (navy) |
+| Theme           | Primary (60%) | Secondary (30%) | Accent (10%) |
+| --------------- | ------------- | --------------- | ------------ |
+| Coral Energy    | `F96167`      | `F9E795`        | `2F3C7E`     |
+| Cherry Bold     | `990011`      | `FCF6F5`        | `2F3C7E`     |
+| Berry & Cream   | `6D2E46`      | `A26769`        | `ECE2D0`     |
+| Electric Purple | `5B2C6F`      | `D2B4DE`        | `F39C12`     |
 
-### For Each Slide
+#### Tech & Modern
+
+| Theme       | Primary (60%) | Secondary (30%) | Accent (10%) |
+| ----------- | ------------- | --------------- | ------------ |
+| Teal Trust  | `028090`      | `00A896`        | `02C39A`     |
+| Neon Dark   | `121212`      | `1DB954`        | `FFFFFF`     |
+| Cyber Blue  | `0A192F`      | `64FFDA`        | `CCD6F6`     |
+| Glass Light | `F8F9FA`      | `E9ECEF`        | `495057`     |
+
+#### Warmth & Friendly
+
+| Theme           | Primary (60%) | Secondary (30%) | Accent (10%) |
+| --------------- | ------------- | --------------- | ------------ |
+| Warm Terracotta | `B85042`      | `E7E8D1`        | `A7BEAE`     |
+| Golden Hour     | `F4A261`      | `264653`        | `E76F51`     |
+| Rose Soft       | `FADBD8`      | `F5B7B1`        | `922B21`     |
+| Sand Dune       | `C4A35A`      | `F5F0E1`        | `3E2723`     |
+
+### Font Pairings
+
+| Header       | Body           | Mood                  |
+| ------------ | -------------- | --------------------- |
+| Georgia      | Calibri        | Classic, trustworthy   |
+| Arial Black  | Arial          | Bold, intuitive        |
+| Trebuchet MS | Calibri        | Modern, clean          |
+| Cambria      | Calibri Light  | Academic, polished     |
+| Impact       | Arial          | Impactful              |
+| Palatino     | Garamond       | Elegant, formal        |
+| Consolas     | Calibri        | Tech, code             |
+| Segoe UI     | Segoe UI Light | MS native, contemporary|
+
+### Typography Sizes
+
+| Element            | Size    | Style        |
+| ------------------ | ------- | ------------ |
+| Slide title        | 36-44pt | bold         |
+| Section header     | 20-24pt | bold         |
+| Body text          | 14-16pt | regular      |
+| Caption/source     | 10-12pt | muted color  |
+| Key metric callout | 60-72pt | bold, accent |
+
+### Spacing Principles
+
+- Slide edge margin: minimum **0.5 inches**
+- Content block spacing: **0.3–0.5 inches** (keep consistent)
+- White space is "premium" — don't fill every inch
+
+### Visual Hierarchy
+
+1. **Size** — important things are larger
+2. **Color** — accent only for CTA and key metrics
+3. **Weight** — bold for titles and key points only; body stays regular
+
+### Slide Layout Ideas
 
 **Every slide needs a visual element** — image, chart, icon, or shape. Text-only slides are forgettable.
 
-**Layout options:**
-- Two-column (text left, illustration on right)
+**Layout options for each slide:**
+- Two-column (text left, illustration right)
 - Icon + text rows (icon in colored circle, bold header, description below)
-- 2x2 or 2x3 grid (image on one side, grid of content blocks on other)
-- Half-bleed image (full left or right side) with content overlay
+- 2×2 or 2×3 grid (image on one side, grid of content blocks on other)
+- Half-bleed image (full left/right side) with content overlay
+- Full-bleed background with overlaid text box
+- Section dividers with bold centered text
 
-**Data display:**
+**Data display ideas:**
 - Large stat callouts (big numbers 60-72pt with small labels below)
-- Comparison columns (before/after, pros/cons, side-by-side options)
+- Comparison columns (before/after, pros/cons, side-by-side)
 - Timeline or process flow (numbered steps, arrows)
 
 **Visual polish:**
 - Icons in small colored circles next to section headers
 - Italic accent text for key stats or taglines
-
-### Typography
-
-**Choose an interesting font pairing** — don't default to Arial. Pick a header font with personality and pair it with a clean body font.
-
-| Header Font | Body Font |
-|-------------|-----------|
-| Georgia | Calibri |
-| Arial Black | Arial |
-| Calibri | Calibri Light |
-| Cambria | Calibri |
-| Trebuchet MS | Calibri |
-| Impact | Arial |
-| Palatino | Garamond |
-| Consolas | Calibri |
-
-| Element | Size |
-|---------|------|
-| Slide title | 36-44pt bold |
-| Section header | 20-24pt bold |
-| Body text | 14-16pt |
-| Captions | 10-12pt muted |
-
-### Spacing
-
-- 0.5" minimum margins
-- 0.3-0.5" between content blocks
-- Leave breathing room—don't fill every inch
-
-### Avoid (Common Mistakes)
-
-- **Don't repeat the same layout** — vary columns, cards, and callouts across slides
-- **Don't center body text** — left-align paragraphs and lists; center only titles
-- **Don't skimp on size contrast** — titles need 36pt+ to stand out from 14-16pt body
-- **Don't default to blue** — pick colors that reflect the specific topic
-- **Don't mix spacing randomly** — choose 0.3" or 0.5" gaps and use consistently
-- **Don't style one slide and leave the rest plain** — commit fully or keep it simple throughout
-- **Don't create text-only slides** — add images, icons, charts, or visual elements; avoid plain title + bullets
-- **Don't forget text box padding** — when aligning lines or shapes with text edges, set `margin: 0` on the text box or offset the shape to account for padding
-- **Don't use low-contrast elements** — icons AND text need strong contrast against the background; avoid light text on light backgrounds or dark text on dark backgrounds
-- **NEVER use accent lines under titles** — these are a hallmark of AI-generated slides; use whitespace or background color instead
+- Commit to a visual motif — pick ONE distinctive element and repeat across every slide (rounded frames, thick side borders, etc.)
+- **Dark/light contrast**: Dark backgrounds for title + conclusion, light for content ("sandwich" structure)
 
 ---
 
-## QA (Required)
+## Anti-Patterns
 
-**Assume there are problems. Your job is to find them.**
+| ❌ Don't                        | ✅ Do Instead                            | Why                                   |
+| ------------------------------- | --------------------------------------- | ------------------------------------- |
+| Repeat same layout              | Mix: 2-column, cards, callout, chart    | Monotony kills audience focus         |
+| Center-align body text          | Left-align body, center titles only     | Readability principle                 |
+| Insufficient size contrast      | Title 36pt+, body 14-16pt              | Visual hierarchy is essential         |
+| Stick with default blue         | Choose theme-appropriate palette        | Design intent must show               |
+| Inconsistent spacing            | Standardize at 0.3" or 0.5"            | Creates polished feel                 |
+| Text-only slides                | Add images, charts, icons, shapes       | Slides without visuals are forgotten  |
+| Ignore text box padding         | Set `margin: 0` or offset compensation  | Lines/shapes misalign with text       |
+| Decorative line under title     | Use whitespace or background color      | Hallmark of AI-generated slides       |
+| Low contrast elements           | Light bg → dark text (min 4.5:1 ratio)  | Accessibility and readability         |
+| All content on one slide        | 1 slide = 1 message principle           | Prevent information overload          |
+| Use `#` in color values         | `'4472C4'` (no #)                       | PptxGenJS throws error                |
+| Use 8-digit hex                 | `'4472C4'` (6-digit only)              | Alpha channel not supported           |
+| Reuse options objects           | New object literal each time            | Shared reference causes unintended changes |
+| CJK text box with default width | Use `estimateTextWidthInches()`         | Korean overflows default Latin sizing |
 
-Your first render is almost never correct. Approach QA as a bug hunt, not a confirmation step. If you found zero issues on first inspection, you weren't looking hard enough.
+---
 
-### Content QA
+## QA Verification Loop (MANDATORY)
+
+**First render almost always has issues. QA is bug hunting, not confirmation.**
+
+### Step 1: Content QA
 
 ```bash
+pip install "markitdown[pptx]"
 python -m markitdown output.pptx
+# Check for placeholder remnants
+python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|placeholder|TODO"
 ```
 
-Check for missing content, typos, wrong order.
-
-**When using templates, check for leftover placeholder text:**
-
-```bash
-python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|this.*(page|slide).*layout"
-```
-
-If grep returns results, fix them before declaring success.
-
-### Visual QA
+### Step 2: Visual QA
 
 **⚠️ USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
 
-Convert slides to images (see [Converting to Images](#converting-to-images)), then use this prompt:
+```bash
+soffice --headless --convert-to pdf output.pptx
+pdftoppm -jpeg -r 150 output.pdf slide
+```
+
+**Subagent prompt template for visual inspection:**
 
 ```
 Visually inspect these slides. Assume there are issues — find them.
@@ -190,43 +246,170 @@ Read and analyze these images:
 2. /path/to/slide-02.jpg (Expected: [brief description])
 
 Report ALL issues found, including minor ones.
+
+CJK/Korean text specific checks:
+- Korean text truncated at text box right boundary?
+- Unnatural syllable-level line breaks (kinsoku violations)?
+- Font rendering as Noto Sans KR / intended font (no DroidSans fallback)?
+- Korean-Latin mixed text spacing adequate?
+- Table/chart column headers wide enough for Korean content?
 ```
 
-### Verification Loop
+Visual inspection checklist:
+- [ ] Element overlap (text penetrating shapes)
+- [ ] Text overflow/truncation
+- [ ] Element spacing < 0.3" (too tight)
+- [ ] Slide edge margin < 0.5"
+- [ ] Alignment inconsistency among similar elements
+- [ ] Insufficient contrast (light text on light background)
+- [ ] Text boxes too narrow causing excessive wrapping
+- [ ] Placeholder remnants still visible
 
-1. Generate slides → Convert to images → Inspect
-2. **List issues found** (if none found, look again more critically)
-3. Fix issues
-4. **Re-verify affected slides** — one fix often creates another problem
-5. Repeat until a full pass reveals no new issues
+### Step 3: Fix & Re-verify
 
-**Do not declare success until you've completed at least one fix-and-verify cycle.**
+1. Find issue → fix
+2. **Re-render only the fixed slide**: `pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed`
+3. Re-inspect — one fix often creates another problem
+4. **Never declare completion before at least 1 fix-and-verify cycle**
 
 ---
 
-## Converting to Images
+## CJK / Korean Text Handling
 
-Convert presentations to individual slide images for visual inspection:
+### Text Box Width for CJK
 
-```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.pptx
-pdftoppm -jpeg -r 150 output.pdf slide
+CJK characters are full-width (~2× Latin width). Default PptxGenJS text-box sizing assumes Latin metrics, causing:
+- Text overflow outside box boundaries
+- Excessive wrapping on short strings
+
+**Always calculate width with CJK awareness:**
+
+```javascript
+function estimateTextWidthInches(text, fontSize) {
+  let charUnits = 0;
+  for (const char of text) {
+    const code = char.codePointAt(0);
+    if (
+      (code >= 0x1100 && code <= 0x11FF) ||   // Hangul Jamo
+      (code >= 0x3000 && code <= 0x9FFF) ||   // CJK + symbols
+      (code >= 0xAC00 && code <= 0xD7AF) ||   // Hangul Syllables
+      (code >= 0xF900 && code <= 0xFAFF) ||   // CJK Compat
+      (code >= 0xFF00 && code <= 0xFFEF)      // Fullwidth Forms
+    ) {
+      charUnits += 2;
+    } else {
+      charUnits += 1;
+    }
+  }
+  return charUnits * fontSize * 0.0104 * 0.9;
+}
+
+// Usage
+const title = '한글 프레젠테이션 제목';
+const w = Math.min(estimateTextWidthInches(title, 36) + 0.3, 11);
+slide.addText(title, {
+  x: (13.33 - w) / 2, y: 2.5, w, h: 1.5,
+  fontSize: 36, fontFace: 'Noto Sans KR', bold: true
+});
 ```
 
-This creates `slide-01.jpg`, `slide-02.jpg`, etc.
+### Korean Language Attributes
 
-To re-render specific slides after fixes:
+Set `lang="ko-KR"` to enable kinsoku (line-break rules) and proper spell-checking:
+
+```javascript
+// PptxGenJS v3.12+
+slide.addText('한글 텍스트', {
+  fontFace: 'Noto Sans KR', fontSize: 16, lang: 'ko-KR'
+});
+```
+
+If `lang` is not available, post-process the generated file:
 
 ```bash
-pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
+python scripts/ooxml/unpack.py output.pptx unpacked/
+python -c "from scripts.ooxml.cjk_utils import inject_korean_lang; inject_korean_lang('unpacked/ppt/slides/')"
+python scripts/ooxml/pack.py unpacked/ output_ko.pptx --original output.pptx
+```
+
+### East Asian Font Theme
+
+Set Korean font in theme XML for consistent rendering:
+
+```xml
+<!-- ppt/theme/theme1.xml -->
+<a:fontScheme name="Korean">
+  <a:majorFont>
+    <a:latin typeface="Calibri"/>
+    <a:ea typeface=""/>
+    <a:font script="Hang" typeface="Noto Sans KR"/>
+  </a:majorFont>
+  <a:minorFont>
+    <a:latin typeface="Calibri"/>
+    <a:ea typeface=""/>
+    <a:font script="Hang" typeface="Noto Sans KR"/>
+  </a:minorFont>
+</a:fontScheme>
+```
+
+Recommended fonts:
+
+| Font               | License   | Cross-platform | Best for           |
+| ------------------ | --------- | -------------- | ------------------ |
+| Noto Sans KR       | OFL       | Win/Mac/Linux  | Safest choice      |
+| Pretendard         | OFL       | Win/Mac/Linux  | Modern UI          |
+| Malgun Gothic      | MS bundle | Windows only   | Windows-only decks |
+| NanumGothic        | OFL       | Win/Mac/Linux  | General Korean     |
+
+### CJK QA Checklist
+
+After rendering, check these CJK-specific items:
+- [ ] Korean text not truncated at text box boundaries
+- [ ] Line breaks occur at natural positions (not mid-word)
+- [ ] No kinsoku violations (closing punctuation at line start)
+- [ ] Korean-Latin mixed text has proper spacing
+- [ ] Font renders as intended (no fallback to DroidSans or system default)
+- [ ] Table columns wide enough for Korean content
+- [ ] Slide title with Korean fits on one line (or wraps gracefully)
+
+---
+
+## Accessibility (WCAG 2.1 AA)
+
+| Requirement        | Standard          | Implementation                          |
+| ------------------ | ----------------- | --------------------------------------- |
+| Color contrast     | >= 4.5:1          | Use `cjk_utils.check_contrast()` to verify |
+| Image alt text     | Required on all   | `altText` property on `addImage()`      |
+| Minimum font size  | >= 10pt           | No captions below 10pt                  |
+| Language metadata  | `lang="ko-KR"`   | Screen reader pronunciation support     |
+| Reading order      | Logical flow      | `addText/addImage` call order = screen reader order |
+| Slide titles       | Every slide       | Helps navigation for screen readers     |
+
+```javascript
+// Alt text on images (required)
+slide.addImage({
+  path: 'chart.png', x: 1, y: 1, w: 5, h: 3,
+  altText: 'Bar chart showing Q1-Q4 2025 revenue growth by region'
+});
+
+// Reading order: call order determines screen reader sequence
+// Title → Body → Chart → Caption
+slide.addText('Title', { ... });
+slide.addText('Body content', { ... });
+slide.addImage({ altText: 'Chart description', ... });
+slide.addText('Source: Company Report', { ... });
 ```
 
 ---
 
 ## Dependencies
 
-- `pip install "markitdown[pptx]"` - text extraction
-- `pip install Pillow` - thumbnail grids
-- `npm install -g pptxgenjs` - creating from scratch
-- LibreOffice (`soffice`) - PDF conversion (auto-configured for sandboxed environments via `scripts/office/soffice.py`)
-- Poppler (`pdftoppm`) - PDF to images
+```bash
+npm install pptxgenjs          # Presentation creation
+pip install "markitdown[pptx]"  # Text extraction
+pip install Pillow              # Thumbnail generation
+pip install defusedxml          # Safe XML parsing (validate.py, repair.py)
+# LibreOffice (soffice)         # PDF conversion
+# Poppler (pdftoppm)            # PDF → image
+# scripts/ooxml/cjk_utils.py   # Korean: width calc, lang injection, contrast check
+```

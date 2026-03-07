@@ -845,6 +845,19 @@
             "install": null,
             "version": "1.0.0"
         },
+        "hwp": {
+            "name": "HWP",
+            "name_ko": "한글 (HWP/HWPX)",
+            "name_en": "HWP/HWPX",
+            "emoji": "🇰🇷",
+            "category": "productivity",
+            "description": "한글 문서(.hwp/.hwpx) 생성/읽기/편집/변환. python-hwpx, hwp-hwpx-parser, OWPML XML 편집.",
+            "desc_ko": "한글 문서(.hwp/.hwpx) 생성/읽기/편집/변환. python-hwpx, hwp-hwpx-parser, OWPML XML 편집.",
+            "desc_en": "HWP/HWPX document create/read/edit/convert. python-hwpx, hwp-hwpx-parser, OWPML XML editing.",
+            "requires": null,
+            "install": null,
+            "version": "1.0.0"
+        },
         "doc-coauthoring": {
             "name": "Doc Coauthoring",
             "name_ko": "Doc Coauthoring",
