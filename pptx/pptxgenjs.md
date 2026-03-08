@@ -245,6 +245,45 @@ Popular icon sets in react-icons:
 
 ---
 
+## Design System Tokens
+
+For multi-slide decks, define a color token object before writing any slide code.
+Map tokens to the 60-30-10 rule from [SKILL.md](SKILL.md).
+
+```javascript
+// Dark theme example
+const C = {
+  bg: "0F172A",        // 60% — primary background
+  bgLight: "1E293B",   // 30% — card/section fill
+  accent: "6366F1",    // 10% — CTA, highlights
+  accentLight: "818CF8",
+  green: "10B981",     // semantic: success
+  yellow: "F59E0B",    // semantic: warning
+  red: "EF4444",       // semantic: error
+  white: "FFFFFF",
+  gray: "94A3B8",      // caption text
+  grayLight: "CBD5E1", // body text
+  textDim: "64748B",   // muted text
+};
+
+// Light theme example
+const C = {
+  bg: "F8F9FA",        // 60%
+  bgLight: "FFFFFF",   // 30%
+  accent: "0D9488",    // 10%
+  green: "059669",
+  yellow: "D97706",
+  red: "DC2626",
+  white: "FFFFFF",
+  gray: "6B7280",
+  grayLight: "374151",
+  textDim: "9CA3AF",
+};
+```
+
+For single-slide scripts or quick prototypes, inline hex values are fine.
+Tokens shine when you have 3+ slides and want consistent theming.
+
 ## Slide Backgrounds
 
 ```javascript
@@ -361,6 +400,133 @@ let titleSlide = pres.addSlide({ masterName: "TITLE_SLIDE" });
 titleSlide.addText("My Title", { placeholder: "title" });
 ```
 
+### Master with Static Footer Scaffold
+
+Define neutral footer slots — fill them per-deck.
+
+```javascript
+pres.defineSlideMaster({
+  title: "WITH_FOOTER",
+  background: { color: C.bg },
+  objects: [
+    // Footer bar
+    { rect: { x: 0, y: "92%", w: "100%", h: "8%", fill: { color: C.bgLight } } },
+    // Left slot (brand, team name, or leave empty)
+    { text: { text: "", options: {
+      x: 0.4, y: "93%", w: 3, h: 0.4, fontSize: 9, color: C.textDim
+    } } },
+    // Right slot (date, page number, classification, or leave empty)
+    { text: { text: "", options: {
+      x: 7.6, y: "93%", w: 2, h: 0.4, fontSize: 9, color: C.textDim, align: "right"
+    } } },
+  ],
+});
+```
+
+Override slot text when adding slides:
+```javascript
+const s = pres.addSlide({ masterName: "WITH_FOOTER" });
+// Footer text is baked into master — for dynamic footer, add text per-slide instead.
+```
+
+---
+
+## Composable Patterns
+
+These are **building blocks**, not templates. Do NOT copy a block as-is for a full slide.
+Design your layout first, then pick only the primitives you need.
+
+### Side Accent Bar
+
+Thin vertical color stripe at slide or card edge. Conveys category.
+
+```javascript
+// Slide-level
+slide.addShape(pres.shapes.RECTANGLE, {
+  x: 0, y: 0, w: 0.06, h: "100%", fill: { color: C.accent },
+});
+
+// Card-level (beside a content row)
+slide.addShape(pres.shapes.RECTANGLE, {
+  x: cardX, y: cardY, w: 0.06, h: cardH, fill: { color: itemColor },
+});
+```
+
+### Badge / Tag
+
+Small rounded label for priority, risk level, status, version, etc.
+
+```javascript
+slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+  x: bx, y: by, w: 0.55, h: 0.3,
+  fill: { color: levelColor }, rectRadius: 0.04,
+});
+slide.addText(label, { // "P0", "HIGH", "v2.1"
+  x: bx, y: by, w: 0.55, h: 0.3,
+  fontSize: 8, bold: true, color: "FFFFFF", align: "center", valign: "middle",
+});
+```
+
+> **Contrast**: `fill` 색이 밝으면(노랑, 연두 등) `color`를 `"333333"` 등 어두운 색으로 변경.
+
+### Numbered Circle
+
+For step indicators, workflow nodes, or ranking numbers.
+
+```javascript
+const d = 0.6; // diameter
+slide.addShape(pres.shapes.OVAL, {
+  x: cx, y: cy, w: d, h: d, fill: { color: stepColor },
+});
+slide.addText(String(n), {
+  x: cx, y: cy, w: d, h: d,
+  fontSize: 18, bold: true, color: "FFFFFF", align: "center", valign: "middle",
+});
+```
+
+**Note**: `pres.shapes.OVAL` and `pptx.ShapeType.ellipse` are aliases. Both produce a circle when w === h.
+
+### Data-Driven Repetition
+
+Loop over an array to place consistent rows, cards, or grids.
+Calculate position from index — never eyeball coordinates.
+
+```javascript
+// Vertical list
+items.forEach((item, i) => {
+  const y = startY + i * rowHeight;
+  // ... add shapes/text at (x, y)
+});
+
+// Grid (N columns)
+items.forEach((item, i) => {
+  const col = i % cols;
+  const row = Math.floor(i / cols);
+  const x = startX + col * cellW;
+  const y = startY + row * cellH;
+  // ... add shapes/text at (x, y)
+});
+```
+
+### Title Helper
+
+Reusable function for consistent slide headers across a deck.
+
+```javascript
+function addTitle(slide, title, opts = {}) {
+  slide.addText(title, {
+    x: 0.5, y: 0.3, w: 9, h: 0.6,
+    fontSize: 24, bold: true, color: C.white, // dark-theme example
+    margin: 0, ...opts,
+  });
+}
+```
+
+> Light themes: `color: C.grayLight` 또는 `"333333"`처럼 배경 대비가 충분한 어두운 색으로 교체.
+
+Customize per-deck: add an underline shape, change alignment, etc.
+The point is one function = one look for all titles in that deck.
+
 ---
 
 ## Common Pitfalls
@@ -418,3 +584,6 @@ titleSlide.addText("My Title", { placeholder: "title" });
 - **Layouts**: LAYOUT_16x9 (10"×5.625"), LAYOUT_16x10, LAYOUT_4x3, LAYOUT_WIDE
 - **Alignment**: "left", "center", "right"
 - **Chart data labels**: "outEnd", "inEnd", "center"
+- **Text spacing**: `lineSpacingMultiple: 1.3` for multi-line, `paraSpaceAfter: 6` between bullets
+- **Buffer output**: `pptx.write({ outputType: "nodebuffer" })` — useful for piping to API or disk without writeFile
+- **Shape aliases**: `pres.shapes.OVAL` = `pptx.ShapeType.ellipse` (both valid)

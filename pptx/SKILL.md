@@ -164,6 +164,8 @@ Select a palette that matches the content theme. Never settle for default blue.
 - Full-bleed background with overlaid text box
 - Section dividers with bold centered text
 
+**Building blocks**: See [pptxgenjs.md → Composable Patterns](pptxgenjs.md#composable-patterns) for reusable code primitives (accent bars, badges, data-driven loops, etc.). Combine these to create your own layouts — never copy a layout recipe wholesale.
+
 **Data display ideas:**
 - Large stat callouts (big numbers 60-72pt with small labels below)
 - Comparison columns (before/after, pros/cons, side-by-side)
@@ -195,6 +197,7 @@ Select a palette that matches the content theme. Never settle for default blue.
 | Use 8-digit hex                 | `'4472C4'` (6-digit only)              | Alpha channel not supported           |
 | Reuse options objects           | New object literal each time            | Shared reference causes unintended changes |
 | CJK text box with default width | Use `estimateTextWidthInches()`         | Korean overflows default Latin sizing |
+| Copy layout patterns verbatim   | Use composable primitives, design each deck fresh | Every presentation looks identical     |
 
 ---
 

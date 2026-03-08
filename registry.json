@@ -845,6 +845,19 @@
             "install": null,
             "version": "1.0.0"
         },
+        "html2pptx": {
+            "name": "HTML to PPTX",
+            "name_ko": "HTML→PPTX 변환",
+            "name_en": "HTML to PPTX",
+            "emoji": "🔄",
+            "category": "productivity",
+            "description": "HTML 슬라이드를 네이티브 PowerPoint 요소로 변환. Playwright DOM 파싱 → PptxGenJS.",
+            "desc_ko": "HTML 슬라이드를 네이티브 PowerPoint 요소로 변환. Playwright DOM 파싱 → PptxGenJS.",
+            "desc_en": "Convert HTML slides to native PowerPoint elements. Playwright DOM parsing → PptxGenJS.",
+            "requires": null,
+            "install": "npm install pptxgenjs playwright sharp && npx playwright install chromium",
+            "version": "1.0.0"
+        },
         "hwp": {
             "name": "HWP",
             "name_ko": "한글 (HWP/HWPX)",
