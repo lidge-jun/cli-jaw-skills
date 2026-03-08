@@ -1,42 +1,124 @@
 ---
 name: dev-frontend
-description: "Frontend development guide for orchestrated sub-agents. Production-grade UI/UX implementation with distinctive aesthetics, modular components, and creative design. Injected when role=frontend."
+description: "Production-grade frontend with distinctive aesthetics. Detects stack and applies specialized rules. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when role=frontend."
 license: Complete terms in LICENSE.txt
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+# Dev-Frontend — Production-Grade Frontend Engineering
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+Build distinctive, production-grade interfaces that avoid generic "AI slop" aesthetics.
+This skill has modular references for specialized guidance — read the relevant ones before coding.
 
-## Design Thinking
+## Modular References
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
+| File                                  | When to Read                 | What It Covers                                                                  |
+| ------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| `references/core/aesthetics.md`       | **Always**                   | Design thinking, bold direction, typography, color, motion, spatial composition |
+| `references/core/anti-slop.md`        | **Always**                   | Banned patterns, forbidden fonts/colors/layouts, content quality rules          |
+| `references/core/motion.md`           | When motion/animation needed | CSS animations, Framer Motion, scroll-driven, View Transitions, spring physics  |
+| `references/core/iterative-design.md` | Multi-round design           | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques        |
+| `references/stacks/react.md`          | React projects               | Server Components, hooks, state, TanStack Query, shadcn/ui, performance         |
+| `references/stacks/nextjs.md`         | Next.js projects             | App Router, RSC, image optimization, data fetching, middleware                  |
+| `references/stacks/vanilla.md`        | HTML+CSS+JS (no framework)   | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement      |
+
+Read `aesthetics.md` + `anti-slop.md` first, then the relevant stack file.
+
+---
+
+## 0. Component Identification
+
+When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 거"):
+1. Suggest 2-3 candidate components: `<Name> — <what it looks/works like>`
+2. Recommend one with reasoning for this use case
+3. Confirm, then proceed
+
+If the user already names a specific component, skip this step.
+Reference: [component.gallery/components](https://component.gallery/components/)
+
+---
+
+## 1. Design Thinking
+
+Before coding, commit to a BOLD aesthetic direction:
 - **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+- **Tone**: Pick a strong direction — don't default to "clean and modern." Choose from: brutally minimal, maximalist, retro-futuristic, luxury/refined, editorial/magazine, brutalist/raw, art deco, cyberpunk, organic/biomorphic, etc.
+- **Constraints**: Framework, performance budget, accessibility requirements.
+- **Signature**: What ONE thing will make this unforgettable?
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+**CRITICAL**: Intentionality over intensity. Bold maximalism and refined minimalism both work — the key is committing fully.
 
-Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
-- Production-grade and functional
-- Visually striking and memorable
-- Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+---
 
-## Frontend Aesthetics Guidelines
+## 2. Baseline Configuration
 
-Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+Adjust these dials based on what's being built. Present to user if unclear.
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+| Dial             | Default | Range | Meaning                              |
+| ---------------- | :-----: | :---: | ------------------------------------ |
+| DESIGN_VARIANCE  |    8    | 1-10  | 1=symmetric grids, 10=asymmetric art |
+| MOTION_INTENSITY |    6    | 1-10  | 1=static, 10=cinematic choreography  |
+| VISUAL_DENSITY   |    4    | 1-10  | 1=art gallery airy, 10=cockpit dense |
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+Adapt dynamically based on user requests. Dashboard → density up. Portfolio → variance up. Data tool → motion down.
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+---
 
-Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+## 3. Implementation
+
+Read `references/core/aesthetics.md` for full guidelines. Summary:
+
+- **Typography**: Never Inter/Roboto/Arial. Use Geist, Outfit, Satoshi, Cabinet Grotesk, or characterful alternatives.
+- **Color**: Max 1 accent. No purple-on-white. Use neutral bases (Zinc/Slate) with singular high-contrast accent.
+- **Layout**: Break centered-card patterns. Use asymmetry, overlap, diagonal flow, generous negative space.
+- **Motion**: See `references/core/motion.md`. One well-choreographed page load > 10 scattered effects.
+- **Backgrounds**: Create atmosphere — gradient meshes, noise textures, geometric patterns, layered transparencies.
+
+---
+
+## 4. Anti-Slop Enforcement
+
+Read `references/core/anti-slop.md` for full rules. Critical bans:
+
+- NO Inter/Roboto/Arial/system-ui fonts
+- NO purple gradients on white backgrounds
+- NO centered-everything layouts
+- NO generic card grids (3 equal cards in a row)
+- NO emoji in code or UI
+- NO pure black (#000000) — use off-black
+- NO generic placeholder names (John Doe, Acme Corp)
+- NO AI copywriting clichés ("Elevate", "Seamless", "Next-Gen")
+
+---
+
+## 5. Performance Guardrails
+
+- Animate ONLY `transform` and `opacity` — never `top`, `left`, `width`, `height`
+- Grain/noise filters → fixed pseudo-elements only, never on scrolling containers
+- `will-change` sparingly — remove after animation completes
+- Z-index only for systemic layers (navbar, modal, overlay)
+- Memoize perpetual animations in isolated components
+
+---
+
+## 6. Accessibility Baseline
+
+- Semantic HTML (`<button>`, `<nav>`, `<main>`)
+- Keyboard navigation for all interactive elements
+- WCAG AA minimum (4.5:1 normal text, 3:1 large text)
+- Visible focus indicators (`focus-visible:ring-2`)
+- `prefers-reduced-motion` support
+- Touch targets ≥ 44×44px
+
+---
+
+## 7. Pre-Flight Checklist
+
+Before delivering:
+- [ ] Bold aesthetic direction chosen and committed
+- [ ] No banned anti-slop patterns
+- [ ] Mobile layout collapse guaranteed (`px-4`, `max-w-7xl mx-auto`)
+- [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
+- [ ] Loading, empty, and error states provided
+- [ ] `useEffect` animations have cleanup functions
+- [ ] Interactive components isolated as Client Components (if RSC)
+- [ ] Stack-specific rules followed (see `references/stacks/`)

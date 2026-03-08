@@ -50,6 +50,12 @@ No other method. No API calls, no database commands.
 ## Phases
 
 ### P — Plan
+
+**Step 0 (if ambiguous):** When the request involves unspecified technology or unclear scope, briefly clarify before planning:
+- Present 2-3 options as `<TechName> — <plain explanation>`
+- Recommend one with project-specific reasoning
+- Confirm once, then proceed to plan writing
+
 Read project docs and dev skills first. Write a plan with two parts:
 - **Part 1**: Easy explanation — what will be built, in non-developer terms.
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.

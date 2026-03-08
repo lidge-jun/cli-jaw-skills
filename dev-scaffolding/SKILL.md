@@ -52,26 +52,40 @@ After skeleton, add language-specific files based on detection (§3):
 
 Detect project type from existing files. Priority order:
 
-| File Found | Project Type |
-|-----------|-------------|
-| `tsconfig.json` | TypeScript (Node) |
-| `package.json` (no tsconfig) | JavaScript (Node) |
-| `pyproject.toml` or `requirements.txt` | Python |
-| `go.mod` | Go |
-| `Cargo.toml` | Rust |
-| None of the above | Ask the user |
+| File Found                             | Project Type                  |
+| -------------------------------------- | ----------------------------- |
+| `tsconfig.json`                        | TypeScript (Node)             |
+| `package.json` (no tsconfig)           | JavaScript (Node)             |
+| `pyproject.toml` or `requirements.txt` | Python                        |
+| `go.mod`                               | Go                            |
+| `Cargo.toml`                           | Rust                          |
+| None of the above                      | → Tech Stack Decision (below) |
 
-For new projects where no files exist yet, ask: "What language/framework?"
+**For new projects where no files exist yet**, use the Tech Stack Decision process below — don't just ask "What language?"
+
+## 3.1 Tech Stack Decision (New Projects)
+
+When creating a new project with no existing framework, guide the user through plain-language choices:
+
+1. **Type**: What are they building? (static site, interactive app, full-stack service, CLI tool, data pipeline)
+2. **Scale**: How big? (1-3 pages, multi-page, ongoing content, large app)
+3. **Features**: Login needed? Data storage? Real-time?
+
+Present options as `<Framework> — <what it gives you>`, recommend one with reasoning, let user pick.
+
+**Over-engineering guard**: Match tool complexity to task complexity.
+A portfolio site doesn't need Next.js. A simple API doesn't need microservices.
+But don't make this an absolute rule — if the user has specific plans (SEO, CMS, scaling), heavier tools may be justified.
 
 ## 4. Fullstack Split Rule
 
 Decide project layout based on runtime:
 
-| Scenario | Layout | Example |
-|----------|--------|---------|
-| Single runtime | `src/` modular | Next.js, Node CLI + API, Python monolith |
-| Multiple runtimes | `frontend/` + `backend/` | React + FastAPI, Vue + Go API |
-| Monorepo (3+ apps) | `packages/` or `apps/` | Turborepo, Nx |
+| Scenario           | Layout                   | Example                                  |
+| ------------------ | ------------------------ | ---------------------------------------- |
+| Single runtime     | `src/` modular           | Next.js, Node CLI + API, Python monolith |
+| Multiple runtimes  | `frontend/` + `backend/` | React + FastAPI, Vue + Go API            |
+| Monorepo (3+ apps) | `packages/` or `apps/`   | Turborepo, Nx                            |
 
 Each side gets its own package manifest and entry point. Shared types go in root `shared/` or `packages/shared/`.
 
@@ -79,39 +93,39 @@ Each side gets its own package manifest and entry point. Shared types go in root
 
 When adding a new feature, create a folder under `src/` with these files:
 
-| Language | Folder | Main File | Test File | Barrel |
-|----------|--------|-----------|-----------|--------|
-| JavaScript | `kebab-case/` | `name.tool.js` | `name.test.js` | `index.js` |
-| TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts` |
-| Python | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py` |
-| Go | `kebab-case/` | `name.go` | `name_test.go` | *(package = barrel)* |
-| Rust | `kebab-case/` | `mod.rs` | `name_test.rs` | `mod.rs` |
+| Language   | Folder        | Main File      | Test File      | Barrel               |
+| ---------- | ------------- | -------------- | -------------- | -------------------- |
+| JavaScript | `kebab-case/` | `name.tool.js` | `name.test.js` | `index.js`           |
+| TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts`           |
+| Python     | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py`        |
+| Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = barrel)* |
+| Rust       | `kebab-case/` | `mod.rs`       | `name_test.rs` | `mod.rs`             |
 
 Principle: "flat until you can't" — start flat, sub-folder only when feature exceeds 10 files.
 
 ## 6. Naming Conventions
 
-| Item | Rule | Example |
-|------|------|---------|
-| Folders | kebab-case | `stock-price/`, `user-auth/` |
-| JS/TS files | kebab-case + suffix | `stock-price.tool.ts` |
-| Python files | snake_case + suffix | `stock_price_tool.py` |
-| Go files | snake_case | `stock_price.go` |
-| Rust files | snake_case | `stock_price.rs` |
-| devlog entries | `YYMMDD_title/` | `260303_scaffolding/` |
-| Functions (JS/TS) | camelCase | `getStockPrice()` |
-| Functions (Python) | snake_case | `get_stock_price()` |
-| Functions (Go/Rust) | PascalCase (exported) | `GetStockPrice()` |
+| Item                | Rule                  | Example                      |
+| ------------------- | --------------------- | ---------------------------- |
+| Folders             | kebab-case            | `stock-price/`, `user-auth/` |
+| JS/TS files         | kebab-case + suffix   | `stock-price.tool.ts`        |
+| Python files        | snake_case + suffix   | `stock_price_tool.py`        |
+| Go files            | snake_case            | `stock_price.go`             |
+| Rust files          | snake_case            | `stock_price.rs`             |
+| devlog entries      | `YYMMDD_title/`       | `260303_scaffolding/`        |
+| Functions (JS/TS)   | camelCase             | `getStockPrice()`            |
+| Functions (Python)  | snake_case            | `get_stock_price()`          |
+| Functions (Go/Rust) | PascalCase (exported) | `GetStockPrice()`            |
 
 ## 7. File Suffixes
 
-| Suffix | Role | Languages |
-|--------|------|-----------|
-| `.tool.ts` / `.tool.js` / `_tool.py` | Core business logic | JS/TS/Python |
-| `.test.ts` / `.test.js` / `test_*.py` / `_test.go` | Tests | All |
-| `.schema.ts` / `.schema.js` | Type/schema definitions | JS/TS |
-| `.route.ts` / `.route.js` | API routes | JS/TS |
-| `.template.md` | Templates | All |
+| Suffix                                             | Role                    | Languages    |
+| -------------------------------------------------- | ----------------------- | ------------ |
+| `.tool.ts` / `.tool.js` / `_tool.py`               | Core business logic     | JS/TS/Python |
+| `.test.ts` / `.test.js` / `test_*.py` / `_test.go` | Tests                   | All          |
+| `.schema.ts` / `.schema.js`                        | Type/schema definitions | JS/TS        |
+| `.route.ts` / `.route.js`                          | API routes              | JS/TS        |
+| `.template.md`                                     | Templates               | All          |
 
 ## 8. str_func Rules
 
@@ -124,12 +138,12 @@ Each project must maintain `devlog/str_func/` with:
 
 ## 9. Split Rules
 
-| Condition | Action |
-|-----------|--------|
-| File > 500 lines | Split into focused modules within same folder |
-| Feature > 10 files | Create sub-folders by responsibility |
-| Different runtime needed | Split into `frontend/` + `backend/` |
-| 3+ apps share code | Extract to `shared/` or monorepo `packages/` |
+| Condition                | Action                                        |
+| ------------------------ | --------------------------------------------- |
+| File > 500 lines         | Split into focused modules within same folder |
+| Feature > 10 files       | Create sub-folders by responsibility          |
+| Different runtime needed | Split into `frontend/` + `backend/`           |
+| 3+ apps share code       | Extract to `shared/` or monorepo `packages/`  |
 
 ## 10. Audit
 

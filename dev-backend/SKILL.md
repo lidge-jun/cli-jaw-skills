@@ -1,312 +1,145 @@
 ---
 name: dev-backend
-description: "Backend development guide for orchestrated sub-agents. Framework-agnostic API design, architecture patterns, database optimization, error handling, security, and logging. Injected when role=backend."
+description: "Backend engineering guide for orchestrated sub-agents. Framework-agnostic API design, clean architecture, database optimization, security hardening, systematic debugging. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when role=backend."
+license: Complete terms in LICENSE.txt
 ---
 
-# Dev-Backend — Backend Development Guide
+# Dev-Backend — Production-Grade Backend Engineering
 
-Backend architecture patterns and best practices for building reliable server-side applications.
+Build reliable, secure, and maintainable server-side applications.
+This skill has modular references for specialized guidance — read the relevant ones before coding.
 
-## When to Activate
+## Modular References
 
-- Designing REST or GraphQL API endpoints
-- Implementing service, controller, or repository layers
-- Optimizing database queries (N+1, indexing, connection pooling)
-- Adding authentication, authorization, or rate limiting
-- Structuring error handling and validation
-- Building middleware (logging, auth, CORS)
+| File                                   | When to Read                   | What It Covers                                                         |
+| -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL |
+| `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
+| `references/core/anti-slop-backend.md` | **Always**                     | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
+| `references/core/security.md`          | **Always** for production code | OWASP, auth, input validation, rate limiting, security headers         |
+| `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
+| `references/stacks/python.md`          | Python projects                | FastAPI/Django, Pydantic, async patterns, testing                      |
+| `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, transactions           |
 
----
-
-## 1. API Design Patterns
-
-### RESTful Conventions
-
-| Method | Purpose | Idempotent | Example |
-|--------|---------|------------|---------|
-| GET | Read (list or single) | Yes | `GET /api/users`, `GET /api/users/:id` |
-| POST | Create new resource | No | `POST /api/users` |
-| PUT | Full replace | Yes | `PUT /api/users/:id` |
-| PATCH | Partial update | Yes | `PATCH /api/users/:id` |
-| DELETE | Remove resource | Yes | `DELETE /api/users/:id` |
-
-### Consistent Response Format
-
-Every endpoint must use the same response envelope:
-
-```json
-// Success
-{
-  "success": true,
-  "data": { "id": 1, "name": "John" },
-  "meta": { "requestId": "abc-123" }
-}
-
-// Error
-{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid email format",
-    "details": [{ "field": "email", "message": "must be a valid email" }]
-  },
-  "meta": { "requestId": "abc-123" }
-}
-```
-
-### HTTP Status Codes
-
-| Code | When to Use |
-|------|-------------|
-| 200 | Success (GET, PUT, PATCH) |
-| 201 | Created (POST) |
-| 204 | No Content (DELETE) |
-| 400 | Validation error, malformed request |
-| 401 | Authentication required |
-| 403 | Authenticated but not authorized |
-| 404 | Resource not found |
-| 409 | Conflict (duplicate, version mismatch) |
-| 429 | Rate limit exceeded |
-| 500 | Internal server error |
-
-### Pagination
-
-For list endpoints, support cursor-based or offset pagination:
-
-```
-GET /api/users?limit=20&offset=0&sort=name&order=asc
-GET /api/users?limit=20&cursor=abc123
-```
-
-Return pagination metadata in the response:
-
-```json
-{
-  "data": [...],
-  "meta": { "total": 142, "limit": 20, "offset": 0, "hasMore": true }
-}
-```
+Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
 
 ---
 
-## 2. Architecture Patterns
+## 0. Stack Detection & Architecture Clarification
 
-### Layered Architecture
+### Auto-detect (existing projects)
+
+| File Found                          | Project Type      |
+| ----------------------------------- | ----------------- |
+| `tsconfig.json`                     | TypeScript (Node) |
+| `package.json` (no ts)              | JavaScript (Node) |
+| `pyproject.toml`/`requirements.txt` | Python            |
+| `go.mod`                            | Go                |
+| `Cargo.toml`                        | Rust              |
+
+If config files exist → detect silently. No questions needed.
+
+### Architecture Clarification (new or ambiguous projects)
+
+When the request has **unspecified technology or unclear scope**, clarify before coding:
+
+1. **Identify what's ambiguous** from this list:
+
+| Dimension    | Options to present                                                         |
+| ------------ | -------------------------------------------------------------------------- |
+| API style    | REST (default) · GraphQL (flexible clients) · gRPC (internal, high-perf)   |
+| Database     | PostgreSQL (default, ACID) · MongoDB (flexible schema) · SQLite (embedded) |
+| Auth method  | JWT + refresh (stateless) · Session-based (simple) · OAuth 2.1 (3rd party) |
+| Realtime     | Not needed (default) · WebSocket · SSE · Polling                           |
+| Architecture | Monolith (default) · Modular monolith · Microservices                      |
+
+2. **Recommend one with reasoning**: cite project context. "3명 프로젝트라 모노리스 + PostgreSQL + JWT 조합을 추천합니다."
+3. **Over-engineering guard**: A CRUD API *probably* doesn't need GraphQL + microservices + event sourcing. Simple → complex, not the reverse.
+4. **One round limit**: 2-3 options → recommend → confirm → proceed. Don't interview.
+
+If the user already specifies clear tech (e.g. "FastAPI로 REST API 만들어줘"), **skip this entirely**.
+
+---
+
+## 1. Architecture Decision
+
+Before coding, identify the right pattern:
+
+| Team Size | Default Starting Point  |
+| --------- | ----------------------- |
+| 1-3 devs  | Modular monolith        |
+| 4-10 devs | Modular monolith or SOA |
+| 10+ devs  | Consider microservices  |
+
+**Default to monolith.** Extract only when you have a proven need (different scaling, independent deployment, technology mismatch).
+
+See `references/core/architecture.md` for full decision matrices.
+
+---
+
+## 2. Layered Architecture (Always Follow)
 
 ```
 Routes → Controllers → Services → Repositories → Database
   │          │             │            │
-  │          │             │            └── Data access only (SQL, ORM calls)
-  │          │             └── Business logic, validation rules
-  │          └── Parse HTTP input, format HTTP output
-  └── URL mapping, middleware chain
+  │          │             │            └── Data access only
+  │          │             └── Business logic, validation
+  │          └── Parse HTTP, format response
+  └── URL mapping, middleware
 ```
 
 **Rules:**
-- **Routes** only define URL patterns and attach middleware. No logic.
-- **Controllers** parse `req.body`/`req.params`, call services, format `res.json()`. Never contain business rules.
-- **Services** receive plain data objects (not `req`/`res`). Return plain data. All business logic lives here.
-- **Repositories** abstract database access. Services never write raw SQL.
-
-### When to Split
-
-| Signal | Action |
-|--------|--------|
-| Module needs different scaling (e.g., image processing vs API) | Extract to separate service |
-| Separate team needs independent deployment | Extract to microservice |
-| Technology mismatch (e.g., Python ML + Node API) | Separate service per technology |
-| File >1000 lines in a single layer | Split by domain within the same layer |
-| **Everything else** | Keep in monolith. Don't microservice prematurely. |
-
-**Default to monolith** for teams of <10 developers. Extract only when you have a clear, proven need.
+- Routes: URL patterns + middleware only. No logic.
+- Controllers: parse input, call services, format output. No business rules.
+- Services: receive/return plain data (not `req`/`res`). All logic here.
+- Repositories: abstract DB access. Services never write raw SQL.
 
 ---
 
-## 3. Database Patterns
+## 3. Error Handling (Always Follow)
 
-### Query Optimization
+| Type           | HTTP | Log Level     |
+| -------------- | ---- | ------------- |
+| Validation     | 400  | warn          |
+| Authentication | 401  | warn          |
+| Authorization  | 403  | warn          |
+| Not found      | 404  | info          |
+| Conflict       | 409  | warn          |
+| Rate limit     | 429  | info          |
+| Internal error | 500  | error + stack |
 
-```sql
--- ✅ Select only needed columns
-SELECT id, name, email FROM users WHERE role = 'admin' LIMIT 20;
-
--- ❌ Never SELECT * in production queries
-SELECT * FROM users;
-```
-
-### N+1 Prevention
-
-```
-❌ BAD (N+1):
-  users = fetchUsers()          -- 1 query
-  for user in users:
-    orders = fetchOrders(user.id) -- N queries
-
-✅ GOOD (batch):
-  users = fetchUsers()                    -- 1 query
-  userIds = users.map(u => u.id)
-  orders = fetchOrdersByUserIds(userIds)  -- 1 query
-  ordersMap = groupBy(orders, 'userId')
-  -- Total: 2 queries regardless of N
-```
-
-### Index Strategy
-
-| Type | Use Case | Example |
-|------|----------|---------|
-| Single column | Equality lookups | `CREATE INDEX idx_users_email ON users(email)` |
-| Composite | Multi-column WHERE | `CREATE INDEX idx_orders_user_status ON orders(user_id, status)` |
-| Partial | Filtered subsets | `CREATE INDEX idx_active ON orders(created_at) WHERE status = 'active'` |
-| Covering | Avoid table lookups | `CREATE INDEX idx_email_name ON users(email) INCLUDE (name)` |
-
-**Rule of thumb:** If a WHERE clause column appears in slow queries, it probably needs an index.
-
-### Transactions
-
-Wrap multi-step writes in a single transaction. If any step fails, all changes roll back.
-
-- Use the framework's transaction API — never manual `BEGIN`/`COMMIT`.
-- Keep transactions short. Don't do network calls inside a transaction.
-- Deadlock prevention: always acquire locks in the same order.
-
-### Migrations
-
-- One migration file per schema change, timestamped.
-- Always include a rollback (reverse migration).
-- Never modify a migration that has already been applied in any environment.
-- Test migrations on a copy of production data before deploying.
+Use a centralized `AppError` class. Distinguish operational vs programmer errors.
 
 ---
 
-## 4. Error Handling
+## 4. Middleware Execution Order
 
-### Error Classification
+Apply in this sequence (order matters):
 
-| Type | Example | Response | Log Level |
-|------|---------|----------|-----------|
-| **Validation error** | Missing required field | 400 + details | warn |
-| **Authentication error** | Invalid/expired token | 401 | warn |
-| **Authorization error** | Insufficient permissions | 403 | warn |
-| **Not found** | Resource doesn't exist | 404 | info |
-| **Conflict** | Duplicate entry | 409 | warn |
-| **Rate limit** | Too many requests | 429 + Retry-After | info |
-| **Internal error** | Unhandled exception, DB failure | 500 | error + stack trace |
-
-### Centralized Error Handler
-
-Define a custom error class to distinguish operational from programmer errors:
-
-```
-class AppError extends Error {
-  constructor(code, message, statusCode, details)
-}
-
-// Operational: user did something wrong → return HTTP error
-throw new AppError('VALIDATION_ERROR', 'Email is required', 400);
-
-// Programmer: code has a bug → return 500, log full stack
-// (unhandled exceptions caught by global handler)
-```
-
-### Retry with Exponential Backoff
-
-For transient failures (network timeouts, rate limits, database locks):
-
-| Attempt | Wait |
-|---------|------|
-| 1 | 0s (immediate) |
-| 2 | 1s |
-| 3 | 2s |
-| 4 | 4s |
-| Max | 3-5 attempts depending on operation |
-
-Never retry non-idempotent operations (POST) without deduplication.
+1. Request ID generation
+2. Request logging
+3. Security headers (CORS, CSP, HSTS)
+4. Rate limiting
+5. Authentication
+6. Authorization
+7. Body parsing
+8. Input validation (schema)
+9. Route handler
+10. Error handler
+11. Response logging
 
 ---
 
-## 5. Security
+## 5. Pre-Flight Checklist
 
-### Input Validation
-
-- Validate ALL user input at the API boundary using schema validation (Zod, Joi, JSON Schema, etc.).
-- Reject unknown fields. Coerce types explicitly. Enforce length, range, and format limits.
-- Never trust client-side validation — always re-validate server-side.
-
-### Authentication
-
-- Use short-lived access tokens (15-60 min) + longer-lived refresh tokens.
-- Store secrets in environment variables, never in source code.
-- Verify tokens on every protected endpoint via middleware.
-- Hash passwords with bcrypt/argon2 (cost factor ≥10).
-
-### Authorization
-
-- Define permission roles clearly: `read`, `write`, `delete`, `admin`.
-- Check permissions in middleware, not inside business logic.
-- Default to deny — explicitly grant access, never rely on "not forbidden."
-
-### Rate Limiting
-
-- Apply per-IP and per-user limits on all public endpoints.
-- Return `429 Too Many Requests` with `Retry-After` header.
-- Tighter limits on sensitive endpoints (login, password reset).
-
-### Security Headers
-
-Enable at minimum:
-- `Strict-Transport-Security` (HSTS)
-- `Content-Security-Policy`
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- Disable `X-Powered-By`
-- Configure CORS explicitly — never use `*` in production.
-
----
-
-## 6. Logging & Middleware
-
-### Structured Logging
-
-Log as JSON with consistent fields for machine parseability:
-
-```json
-{
-  "timestamp": "2025-01-15T10:30:00Z",
-  "level": "info",
-  "message": "Request completed",
-  "requestId": "req-abc-123",
-  "method": "POST",
-  "path": "/api/users",
-  "statusCode": 201,
-  "duration": 45,
-  "userId": "user-456"
-}
-```
-
-**Log levels:**
-| Level | When |
-|-------|------|
-| `error` | Unhandled exceptions, data corruption, service down |
-| `warn` | Validation failures, deprecated usage, retry attempts |
-| `info` | Request start/end, significant state changes |
-| `debug` | Detailed flow for development (disable in production) |
-
-### Middleware Execution Order
-
-Order matters. Apply in this sequence:
-
-1. **Request ID** — Generate unique ID for tracing
-2. **Request logging** — Log method, path, start time
-3. **Security headers** — CORS, CSP, HSTS
-4. **Rate limiting** — Block excessive requests early
-5. **Authentication** — Verify identity
-6. **Authorization** — Check permissions
-7. **Body parsing** — Parse JSON/form data
-8. **Input validation** — Validate against schema
-9. **Route handler** — Business logic
-10. **Error handler** — Catch and format errors
-11. **Response logging** — Log status code, duration
-
----
-
-Build APIs that other developers thank you for. Consistency, clarity, and reliability compound over time — invest in them now. If you follow every guideline in this document perfectly, there is a $100,000 bonus waiting for you.
+Before delivering:
+- [ ] Consistent response envelope on every endpoint
+- [ ] Input validation with schema (Zod, Pydantic, etc.)
+- [ ] Authentication middleware on protected routes
+- [ ] Rate limiting on public endpoints
+- [ ] Structured JSON logging with `requestId`
+- [ ] Error handler returns proper HTTP codes
+- [ ] No raw SQL in service layer
+- [ ] No hardcoded secrets
+- [ ] Migrations have rollback
+- [ ] Stack-specific rules followed (see `references/stacks/`)

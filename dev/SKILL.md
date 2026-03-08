@@ -23,6 +23,25 @@ This skill covers universal guidelines. For domain-specific work, you **must** a
 
 ---
 
+## 0. Intent Clarification
+
+When a request has **ambiguous scope or unspecified technology**, clarify before coding.
+If the user already specifies clear tech and scope (e.g. "React로 Drawer 만들어줘"), skip this step entirely.
+
+### How
+1. **Adapt depth to the question**: vague/abstract → explain each option in detail. User seems to know the terms → brief trade-off comparison only.
+2. **Present options as `<TechName> — <plain explanation>`**: include pros/cons relevant to THIS project. ⚠️ Flag options that are complex, expensive, or carry risk (e.g. memory leaks, operational overhead).
+3. **Recommend one with reasoning**: "이 프로젝트는 ~이기 때문에 ~를 추천합니다." Always cite project context.
+4. **Let the user decide**: "이걸로 갈까요?" — if the user picks a risky option, warn once, then respect the choice.
+
+### Over-engineering guard
+Consider whether simpler alternatives exist before suggesting heavy frameworks. A 3-page portfolio *probably* doesn't need Next.js — but if the user has deployment, SEO, or CMS plans, it might. Use judgement, not absolute rules.
+
+### Limit
+One confirmation round: 2-3 options → 1 recommendation → confirm → move on. Don't turn clarification into an interview.
+
+---
+
 ## 1. Modular Development
 
 Every file, function, and class must have a single, clear responsibility.

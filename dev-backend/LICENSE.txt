@@ -3,11 +3,11 @@ MIT License
 Copyright (c) 2026 cli-jaw contributors
 
 Portions derived from:
-- Anthropic Skills (anthropics/skills) — Apache 2.0
-- taste-skill (Leonxlnx/taste-skill) — MIT
-- frontend-design-pro (claudekit/frontend-design-pro-demo)
-- senior-frontend (alirezarezvani/claude-skills)
-- frontend-slides (zarazhangrui/frontend-slides)
+- dev-backend, dev-scaffolding, dev (cli-jaw internal skills)
+- senior-backend (alirezarezvani/claude-skills) — MIT
+- senior-architect (alirezarezvani/claude-skills) — MIT
+- backend-development (mrgoonie/claudekit-skills) — MIT
+- databases (mrgoonie/claudekit-skills) — MIT
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
