@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "title": "cli-jaw Video Pipeline",
+    "preset": "Landscape-1080p",
+    "fps": 30,
+    "totalDurationSec": 15,
+    "theme": {
+      "aesthetic": "minimal tech",
+      "color": {
+        "bg": "#0B1120",
+        "accent": "#22D3EE",
+        "text": "#E2E8F0",
+        "textMuted": "#94A3B8"
+      },
+      "gradient": {
+        "hero": "radial-gradient(ellipse at 30% 50%, rgba(34,211,238,0.15) 0%, transparent 60%), linear-gradient(180deg, #0B1120 0%, #111827 100%)",
+        "slide": "linear-gradient(135deg, #0B1120 0%, #0F172A 40%, #1E293B 100%)"
+      }
+    }
+  },
+  "elements": [
+    {
+      "type": "title",
+      "startSec": 0,
+      "durationSec": 5,
+      "props": {
+        "title": "cli-jaw",
+        "subtitle": "Programmatic Video with Remotion"
+      },
+      "transition": { "type": "fade", "durationSec": 0.5 }
+    },
+    {
+      "type": "content",
+      "startSec": 5,
+      "durationSec": 5,
+      "props": {
+        "header": "What it does",
+        "bulletPoints": [
+          "JSON timeline drives the render",
+          "Theme system for unique aesthetics",
+          "3-tier gate validates output"
+        ]
+      },
+      "transition": { "type": "slide", "direction": "from-right", "durationSec": 0.5 }
+    },
+    {
+      "type": "code",
+      "startSec": 10,
+      "durationSec": 5,
+      "props": {
+        "code": "const frame = useCurrentFrame();\nconst scale = spring({ frame, fps });\n\nreturn <Title style={{\n  transform: `scale(${scale})`\n}} />;",
+        "language": "tsx",
+        "title": "Core Animation"
+      },
+      "transition": { "type": "fade", "durationSec": 0.5 }
+    }
+  ],
+  "audio": []
+}

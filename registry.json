@@ -1739,6 +1739,25 @@
             },
             "install": "python3 -m pip install pypdf pypdfium2",
             "version": "1.0.0"
+        },
+        "video": {
+            "name": "Video Rendering",
+            "name_ko": "영상 렌더링",
+            "name_en": "Video Rendering",
+            "emoji": "🎬",
+            "category": "media",
+            "description": "Remotion 기반 영상 렌더링 (Mode 1: JSON-driven timeline)",
+            "desc_ko": "timeline.json 기반 영상 생성 파이프라인",
+            "desc_en": "JSON-driven video generation pipeline using Remotion",
+            "requires": {
+                "bins": [
+                    "ffmpeg",
+                    "ffprobe",
+                    "pnpm"
+                ]
+            },
+            "install": "node skills_ref/video/scripts/ensure-remotion.mjs",
+            "version": "0.1.0"
         }
     }
 }
