@@ -1,17 +1,22 @@
 import React from "react";
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 import type { Theme } from "../theme";
+import type { AnimationConfig } from "../timeline/schema";
+import { useEntranceAnimation } from "./useAnimation";
 
 type Props = {
   code: string;
   language?: string;
   title?: string;
   designTheme: Theme;
+  animation?: AnimationConfig;
 };
 
-export const CodeSlide: React.FC<Props> = ({ code, language = "typescript", title, designTheme: t }) => {
+export const CodeSlide: React.FC<Props> = ({ code, language = "typescript", title, designTheme: t, animation }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
+
+  const entrance = useEntranceAnimation(animation);
 
   const titleProgress = spring({ frame, fps, config: { damping: 100 } });
   const containerProgress = spring({ frame: Math.max(0, frame - 8), fps, config: { damping: 80, mass: 0.9 } });
@@ -38,7 +43,8 @@ export const CodeSlide: React.FC<Props> = ({ code, language = "typescript", titl
         padding: "0 40px",
         flexDirection: "column",
         justifyContent: "center",
-        opacity: exitFade,
+        opacity: exitFade * entrance.opacity,
+        transform: entrance.transform,
       }}>
         {/* Title */}
         {title && (

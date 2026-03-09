@@ -16,19 +16,46 @@ export interface TimelineMeta {
   description?: string;
   preset: PresetKey;
   fps?: number;
-  totalDurationSec?: number; // optional — auto-computed by computeTiming() if omitted
-  ttsVoice?: string; // provider별: Gemini="Kore", Supertone=voice_id, Supertonic="M1"
-  ttsProvider?: "gemini" | "supertone" | "supertonic"; // 기본 "gemini"
-  ttsSpeed?: number; // 전역 기본 속도 (기본 1.2)
+  totalDurationSec?: number;
+  ttsVoice?: string;
+  ttsProvider?: "gemini" | "supertone" | "supertonic";
+  ttsSpeed?: number;
   theme?: {
     aesthetic?: string;
     font?: { display?: string; body?: string; code?: string };
     color?: { bg?: string; surface?: string; accent?: string; text?: string; textMuted?: string };
     gradient?: { hero?: string; slide?: string; glow?: string };
+    card?: { background?: string; border?: string; shadow?: string; blur?: number; borderRadius?: number };
+  };
+  captions?: {
+    src: string;
+    style?: "bottom-center" | "bottom-left" | "top-center";
+    fontSize?: number;
+    fontFamily?: string;
+    backgroundColor?: string;
+  };
+  audioVisualizer?: {
+    enabled: boolean;
+    style?: "bars" | "waveform";
+    position?: "bottom" | "top";
+    height?: number;
+    color?: string;
   };
 }
 
-export type ElementType = "title" | "content" | "code" | "diagram" | "image";
+export type ElementType =
+  | "title"
+  | "content"
+  | "code"
+  | "diagram"
+  | "image"
+  | "stat"
+  | "quote"
+  | "comparison"
+  | "video"
+  | "gif"
+  | "lottie"
+  | "chart";
 
 export interface TimelineElement {
   id?: string;
@@ -43,24 +70,19 @@ export interface TimelineElement {
 }
 
 export interface VoiceControl {
-  /** Provider별 voice — gemini: "Kore", supertone: voice_id, supertonic: "M1"~"F5" */
   voice?: string;
-  /** Gemini only: 톤/감정 자연어 프롬프트 (system instruction) */
   tonePrompt?: string;
-  /** Supertone only: "neutral"|"happy"|"sad"|"curious"|"shy"|"angry" */
   style?: string;
-  /** Supertone only: pitch shift -3 ~ +3 */
   pitch?: number;
-  /** Supertone only: pitch variance 0.5 ~ 2.0 */
   pitchVariance?: number;
-  /** All providers: 재생 속도 0.5 ~ 2.0 */
   speed?: number;
 }
 
 export interface TransitionConfig {
-  type: "fade" | "slide" | "wipe" | "none";
+  type: "fade" | "slide" | "wipe" | "flip" | "clock-wipe" | "none";
   direction?: "from-left" | "from-right" | "from-top" | "from-bottom";
   durationSec?: number;
+  timing?: "linear" | "spring";
 }
 
 export interface AnimationConfig {
@@ -77,10 +99,77 @@ export interface TimelineAudio {
   durationSec?: number;
   volume?: number;
   elementId?: string;
+  loop?: boolean;
+  fadeInSec?: number;
+  fadeOutSec?: number;
+  trimStartSec?: number;
+}
+
+export interface StatProps {
+  stats: Array<{
+    value: number;
+    prefix?: string;
+    suffix?: string;
+    decimals?: number;
+    label: string;
+    trend?: "up" | "down" | "neutral";
+  }>;
+  title?: string;
+}
+
+export interface QuoteProps {
+  quote: string;
+  author?: string;
+  source?: string;
+}
+
+export interface ComparisonProps {
+  title?: string;
+  left: { label: string; items: string[]; accent?: string };
+  right: { label: string; items: string[]; accent?: string };
+}
+
+export interface ChartProps {
+  chartType: "bar" | "pie" | "line";
+  data: {
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      color?: string;
+    }>;
+  };
+  title?: string;
+  showLegend?: boolean;
+}
+
+export interface TimelineElement {
+  id?: string;
+  type: ElementType;
+  startSec?: number;
+  durationSec: number;
+  props: Record<string, unknown>;
+  transition?: TransitionConfig;
+  animation?: AnimationConfig;
+  narration?: string;
+  voiceControl?: VoiceControl;
+}
+
+export interface VoiceControl {
+  voice?: string;
+  tonePrompt?: string;
+  style?: string;
+  pitch?: number;
+  pitchVariance?: number;
+  speed?: number;
 }
 
 const VALID_PRESETS: PresetKey[] = ["Landscape-720p", "Landscape-1080p", "Portrait-1080p", "Square-1080p"];
-const VALID_ELEMENT_TYPES: ElementType[] = ["title", "content", "code", "diagram", "image"];
+const VALID_ELEMENT_TYPES: ElementType[] = [
+  "title", "content", "code", "diagram", "image",
+  "stat", "quote", "comparison",
+  "video", "gif", "lottie", "chart",
+];
 
 export function validateTimeline(data: unknown): { valid: boolean; errors: string[]; timeline?: Timeline } {
   const errors: string[] = [];

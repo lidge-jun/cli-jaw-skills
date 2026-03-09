@@ -12,19 +12,37 @@ importers:
         specifier: ^1.44.0
         version: 1.44.0
       '@remotion/bundler':
-        specifier: ^4.0.434
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/captions':
+        specifier: 4.0.434
+        version: 4.0.434
       '@remotion/cli':
-        specifier: ^4.0.434
+        specifier: 4.0.434
+        version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/gif':
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/google-fonts':
-        specifier: ^4.0.434
+        specifier: 4.0.434
+        version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/layout-utils':
+        specifier: 4.0.434
+        version: 4.0.434
+      '@remotion/light-leaks':
+        specifier: 4.0.434
+        version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/lottie':
+        specifier: 4.0.434
+        version: 4.0.434(lottie-web@5.13.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/media-utils':
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/renderer':
-        specifier: ^4.0.434
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/transitions':
-        specifier: ^4.0.434
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
@@ -33,8 +51,11 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       remotion:
-        specifier: ^4.0.434
+        specifier: 4.0.434
         version: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/react':
         specifier: ^18.3.0
@@ -326,6 +347,9 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+  '@remotion/captions@4.0.434':
+    resolution: {integrity: sha512-JhSBBqR2eLKsYlSx3CyaoL0ysM5A0tAzvzQG3vHOHdQp3+w0nHblUy3uabCsKLMXTKLYptW048VmtyECG0V9gg==}
+
   '@remotion/cli@4.0.434':
     resolution: {integrity: sha512-yuZYBQ1mXCJJaQHAf60Y1HupCWGqIM3hV+BYrGwx/TiXqv1GVMU4On5yuJSGVKoOc8ZTZkorOB0gNzB8fzC8qg==}
     hasBin: true
@@ -368,11 +392,33 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@remotion/gif@4.0.434':
+    resolution: {integrity: sha512-uCG7kZfmKITT/X9aV9JjFgGV+hv9CBHUmjsYvEPBTDgtfyhC9Aqy5dQ2phDYkUYyQUXoPykbnwGes2M/mONM5w==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   '@remotion/google-fonts@4.0.434':
     resolution: {integrity: sha512-8FI5xPQ7kmdyWckMKRfHJuUbxGHaCSXdEgcqhwbWxRIwmGRuAQbyu2+Q6rh7pFzgl3eyXvqqF4SfE4eA3imXoA==}
 
+  '@remotion/layout-utils@4.0.434':
+    resolution: {integrity: sha512-6G0EjtTZCIT1S+uJAeSQ0hMvLAj+2fZ6puXP+XJzQDQoOiTljxqiKKBzsXzTqmYuPczotvpzo123PyNrtdIn2A==}
+
   '@remotion/licensing@4.0.434':
     resolution: {integrity: sha512-Jp9pHUlQBOX7ZjDuG9OVIEDGU5JiN2eSjvHEDS8zwyIIGUaRwDhZRzvGULEiZpu1IJ6UMDpHqIylJ18Inl1PMg==}
+
+  '@remotion/light-leaks@4.0.434':
+    resolution: {integrity: sha512-c9ydCHpLbUagJemnbKFGbRNKhnU9vxdOH5DrEgwXPOR3/laviQMv05pUEoWBl+2iDF1LcjvWfvmuxgVPoJfj2w==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@remotion/lottie@4.0.434':
+    resolution: {integrity: sha512-TTuE2acIag55B0V6x9EYZ6RL9wF3pKoRe4Y8tNHfRdpEtHRaHBd9DpJ93GK579OxBsnclKNSdH1HzOfjzbb6XA==}
+    peerDependencies:
+      lottie-web: ^5
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   '@remotion/media-parser@4.0.434':
     resolution: {integrity: sha512-+vuVOTd3v9BR2WQE3N4CUsCCUb4z8U1bvvxKrP6NGL9nqudu6IQpueXHNwxc/RzDTaxJ1aH6xOLzB3Iqc6EnIA==}
@@ -983,6 +1029,9 @@ packages:
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
+
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
@@ -1640,6 +1689,8 @@ snapshots:
       - webpack-cli
       - webpack-hot-middleware
 
+  '@remotion/captions@4.0.434': {}
+
   '@remotion/cli@4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@remotion/bundler': 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1686,6 +1737,12 @@ snapshots:
   '@remotion/compositor-win32-x64-msvc@4.0.434':
     optional: true
 
+  '@remotion/gif@4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      remotion: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
   '@remotion/google-fonts@4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       remotion: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1693,7 +1750,23 @@ snapshots:
       - react
       - react-dom
 
+  '@remotion/layout-utils@4.0.434': {}
+
   '@remotion/licensing@4.0.434': {}
+
+  '@remotion/light-leaks@4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      remotion: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      zod: 4.3.6
+
+  '@remotion/lottie@4.0.434(lottie-web@5.13.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      lottie-web: 5.13.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      remotion: 4.0.434(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@remotion/media-parser@4.0.434': {}
 
@@ -2394,6 +2467,8 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
+
+  lottie-web@5.13.0: {}
 
   lru-cache@10.4.3: {}
 

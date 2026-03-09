@@ -8,14 +8,21 @@
   },
   "dependencies": {
     "@google/genai": "^1.44.0",
-    "@remotion/bundler": "^4.0.434",
-    "@remotion/cli": "^4.0.434",
-    "@remotion/google-fonts": "^4.0.434",
-    "@remotion/renderer": "^4.0.434",
-    "@remotion/transitions": "^4.0.434",
+    "@remotion/bundler": "4.0.434",
+    "@remotion/captions": "4.0.434",
+    "@remotion/cli": "4.0.434",
+    "@remotion/gif": "4.0.434",
+    "@remotion/google-fonts": "4.0.434",
+    "@remotion/layout-utils": "4.0.434",
+    "@remotion/light-leaks": "4.0.434",
+    "@remotion/lottie": "4.0.434",
+    "@remotion/media-utils": "4.0.434",
+    "@remotion/renderer": "4.0.434",
+    "@remotion/transitions": "4.0.434",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "remotion": "^4.0.434"
+    "remotion": "4.0.434",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",

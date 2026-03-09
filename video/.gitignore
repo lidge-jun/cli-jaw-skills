@@ -1,0 +1,10 @@
+# Render output — never commit to source
+out/
+timeline.draft.json
+timeline.final.json
+
+# TTS cache
+remotion-project/public/tts/*.m4a
+remotion-project/public/tts/*.mp3
+remotion-project/public/tts/*.wav
+remotion-project/public/tts/manifest.json

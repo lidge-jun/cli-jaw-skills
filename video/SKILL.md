@@ -9,18 +9,18 @@ Do NOT use for: live video editing, video download/conversion (use video-downloa
 
 ## Quick Reference
 
-| Task          | Command                                                                             |
-| ------------- | ----------------------------------------------------------------------------------- |
-| **Render**    | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]`            |
-| **Render+TTS**| `node scripts/pipeline.mjs --timeline timeline.draft.json` (auto-detects narration) |
-| **Skip TTS**  | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts`               |
-| **TTS only**  | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]`            |
-| **TTS single**| `node scripts/tts.mjs --text "Hello" --output out.m4a [--provider gemini]`           |
-| **TTS voices**| `node scripts/tts.mjs --list-voices [--provider supertone]`                          |
-| **Async**     | `node scripts/pipeline.mjs --timeline <path> --async`                               |
-| **Status**    | `node scripts/pipeline.mjs --status out/render-result.json`                         |
-| **Preview**   | `cd remotion-project && pnpm exec remotion studio` (browser UI)                     |
-| **Validate**  | `node scripts/validate-artifact.mjs out/TimelineVideo.mp4 --preset Landscape-1080p` |
+| Task           | Command                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Render**     | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]`                             |
+| **Render+TTS** | `node scripts/pipeline.mjs --timeline timeline.draft.json` (auto-detects narration)                  |
+| **Skip TTS**   | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts`                                |
+| **TTS only**   | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]`                            |
+| **TTS single** | `node scripts/tts.mjs --text "Hello" --output /tmp/tts-out.m4a [--provider gemini]`                  |
+| **TTS voices** | `node scripts/tts.mjs --list-voices [--provider supertone]`                                          |
+| **Async**      | `node scripts/pipeline.mjs --timeline <path> --async`                                                |
+| **Status**     | `node scripts/pipeline.mjs --status /tmp/remotion-render/render-result.json`                         |
+| **Preview**    | `cd remotion-project && pnpm exec remotion studio` (browser UI)                                      |
+| **Validate**   | `node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p` |
 
 ---
 
@@ -44,10 +44,13 @@ Behind feature flag. Do not use.
 ## Pipeline Usage
 
 ```bash
+# ⚠️  Output MUST go outside skills_ref/ — default is /tmp/remotion-render
+# NEVER use --output ./out (pollutes source code)
+
 # Sync (default) — blocks until render complete
 node skills_ref/video/scripts/pipeline.mjs \
   --timeline timeline.json \
-  --output ./out
+  --output /tmp/remotion-render
 
 # With preset override (timeline.meta.preset is the source of truth)
 node skills_ref/video/scripts/pipeline.mjs \
@@ -58,11 +61,11 @@ node skills_ref/video/scripts/pipeline.mjs \
 node skills_ref/video/scripts/pipeline.mjs \
   --timeline timeline.json \
   --async
-# → {"status":"rendering","pid":12345,"logPath":"out/render.log","outputPath":"out/TimelineVideo.mp4"}
+# → {"status":"rendering","pid":12345,"logPath":"/tmp/remotion-render/render.log","outputPath":"/tmp/remotion-render/TimelineVideo.mp4"}
 
 # Check async status
 node skills_ref/video/scripts/pipeline.mjs \
-  --status out/render-result.json
+  --status /tmp/remotion-render/render-result.json
 ```
 
 ### Preset SOT Rule
@@ -184,6 +187,53 @@ If a slide has empty space, add more meaningful content to it — don't increase
 - Prefer fewer, denser slides over many sparse ones
 - Think of each slide as a **poster**: header + body + supporting detail
 
+#### Visual Quality — Video Anti-Slop (CRITICAL)
+
+Video is MORE dynamic than static UI. Every frame is a first impression.
+These rules adapt `dev-frontend/anti-slop.md` for Remotion motion context.
+
+**Banned patterns — instant "AI slop" tells:**
+
+| Banned                                               | Do Instead                                                                   |
+| :--------------------------------------------------- | :--------------------------------------------------------------------------- |
+| Same glow-orb → card → text structure on every slide | Each slide type has its OWN layout rhythm                                    |
+| Everything centered with uniform padding             | TitleSlide = left-aligned, ContentSlide = asymmetric, QuoteSlide = offset    |
+| One accent color flat everywhere                     | Accent as highlight ONLY — not header color + divider + bullets all the same |
+| Font weight only 700/800                             | Use extremes: 200(thin labels) vs 900(black hero). Create tension            |
+| Uniform `borderRadius: 20` on everything             | Outer card 24, inner chip/badge 8, stat card 16. Vary intentionally          |
+| Static background gradient on every slide            | Shift gradient direction per slide type. Move glow orb position              |
+| Bullet points are just text lines                    | Each bullet has a visual anchor: dot, number badge, icon, color bar          |
+| All exits are identical fade-to-zero                 | Mix: scale-down, slide-away, blur-out. Exit is part of the rhythm            |
+
+**Layout diversity per slide type:**
+
+| Slide           | Layout Pattern                                                        | NOT This             |
+| :-------------- | :-------------------------------------------------------------------- | :------------------- |
+| TitleSlide      | Left-aligned, full-bleed background, accent line                      | Centered text blob   |
+| ContentSlide    | Header left + bullets right (split), or header top + dense grid       | Centered stack       |
+| CodeSlide       | Terminal-style frame, mono bg, glow on syntax                         | Card with code text  |
+| StatSlide       | Asymmetric cards, stagger scale-in, big number / small label contrast | Equal centered cards |
+| QuoteSlide      | Large `"` glyph 200px, quote offset right, author small bottom-left   | Centered italic text |
+| ComparisonSlide | True split — left vs right with different accent hues                 | Two identical cards  |
+| ChartSlide      | Chart fills 70%, labels crisp (min 20px), axis lines visible          | Tiny chart in card   |
+
+**Motion principles for video (beyond static UI):**
+
+- **One hero animation per slide** — don't animate everything equally. Pick ONE element that moves big, rest enters quietly
+- **Stagger creates rhythm** — bullets, stat cards, chart bars. `delay = BASE + i * STEP` (6-10 frames between items)
+- **Background is alive** — glow orbs drift slowly, gradient shifts over time. Static bg = dead frame
+- **Exit is choreography** — don't just fade. The exit move of slide N should visually connect to the entrance of slide N+1
+- **Weight extremes create depth** — 200 weight label + 900 weight number = instant premium. 700+800 = mud
+- **Negative space is a feature** — don't fill every pixel. Strategic emptiness makes the content breathe
+
+**Typography for video (different from web):**
+
+- Minimum readable size: **24px** (1080p) / **28px** (portrait). Smaller = unwatchable
+- Heading: **900 weight, tight letter-spacing (-0.03em), line-height 1.1**
+- Body: **400 weight, generous line-height (1.6-1.7)**
+- Labels/captions: **200-300 weight, wide letter-spacing (0.08em), uppercase**
+- Numbers (stat): **`font-variant-numeric: tabular-nums`** for alignment during count-up
+
 #### Shorts (Portrait-1080p)
 
 Portrait has 1920px of vertical space — you MUST fill it.
@@ -201,11 +251,11 @@ Portrait has 1920px of vertical space — you MUST fill it.
 
 ### Provider Overview
 
-| Provider           | ID           | Default Voice | Strengths                                | Env Key             |
-| ------------------ | ------------ | ------------- | ---------------------------------------- | ------------------- |
-| **Gemini** (default) | `gemini`   | `Kore`        | 30 voices, unlimited text, tone via prompt | `GEMINI_API_KEY`    |
-| **Supertone Cloud**  | `supertone`| Andrew        | 6 emotion styles, pitch/speed, Korean-best | `SUPERTONE_API_KEY` |
-| **Supertonic Local** | `supertonic`| `M1`         | 0.22s gen, free, offline (Phase 11B)      | none                |
+| Provider             | ID           | Default Voice | Strengths                                  | Env Key             |
+| -------------------- | ------------ | ------------- | ------------------------------------------ | ------------------- |
+| **Gemini** (default) | `gemini`     | `Kore`        | 30 voices, unlimited text, tone via prompt | `GEMINI_API_KEY`    |
+| **Supertone Cloud**  | `supertone`  | Andrew        | 6 emotion styles, pitch/speed, Korean-best | `SUPERTONE_API_KEY` |
+| **Supertonic Local** | `supertonic` | `M1`          | 0.22s gen, free, offline (Phase 11B)       | none                |
 
 ### Provider Selection
 
@@ -228,11 +278,11 @@ vc.tonePrompt     >  (none)              (gemini only)
 
 ### Speed Strategy (default 1.2x)
 
-| Provider       | Method                    | Notes                   |
-| -------------- | ------------------------- | ----------------------- |
-| **Gemini**     | ffmpeg `atempo` post-proc | No native speed API     |
-| **Supertone**  | API `voice_settings.speed`| Native — sounds natural |
-| **Supertonic** | ffmpeg `atempo` post-proc | PyPI speed needs testing|
+| Provider       | Method                     | Notes                    |
+| -------------- | -------------------------- | ------------------------ |
+| **Gemini**     | ffmpeg `atempo` post-proc  | No native speed API      |
+| **Supertone**  | API `voice_settings.speed` | Native — sounds natural  |
+| **Supertonic** | ffmpeg `atempo` post-proc  | PyPI speed needs testing |
 
 Set `speed: 1.0` to disable acceleration.
 
@@ -281,14 +331,14 @@ Set `speed: 1.0` to disable acceleration.
 
 ### VoiceControl Fields
 
-| Field          | Provider    | Description                                  |
-| -------------- | ----------- | -------------------------------------------- |
-| `voice`        | All         | Override voice (provider-specific ID)        |
-| `tonePrompt`   | Gemini only | Natural language tone instruction            |
-| `style`        | Supertone   | "neutral"\|"happy"\|"sad"\|"curious"\|"shy"\|"angry" |
-| `pitch`        | Supertone   | Pitch shift -3 ~ +3                         |
-| `pitchVariance`| Supertone   | Pitch variance 0.5 ~ 2.0                    |
-| `speed`        | All         | Playback speed 0.5 ~ 2.0                    |
+| Field           | Provider    | Description                                          |
+| --------------- | ----------- | ---------------------------------------------------- |
+| `voice`         | All         | Override voice (provider-specific ID)                |
+| `tonePrompt`    | Gemini only | Natural language tone instruction                    |
+| `style`         | Supertone   | "neutral"\|"happy"\|"sad"\|"curious"\|"shy"\|"angry" |
+| `pitch`         | Supertone   | Pitch shift -3 ~ +3                                  |
+| `pitchVariance` | Supertone   | Pitch variance 0.5 ~ 2.0                             |
+| `speed`         | All         | Playback speed 0.5 ~ 2.0                             |
 
 ### Duration Estimation
 
@@ -305,22 +355,22 @@ Set `speed: 1.0` to disable acceleration.
 
 ### Audio Path Contract
 
-| Context    | Path format        | Example                |
-| ---------- | ------------------ | ---------------------- |
-| Disk       | Full absolute path | `/abs/path/tts/id.m4a` |
-| Timeline   | Relative in public | `tts/id.m4a`           |
-| Renderer   | `staticFile(src)`  | `staticFile("tts/id.m4a")` |
+| Context  | Path format        | Example                    |
+| -------- | ------------------ | -------------------------- |
+| Disk     | Full absolute path | `/abs/path/tts/id.m4a`     |
+| Timeline | Relative in public | `tts/id.m4a`               |
+| Renderer | `staticFile(src)`  | `staticFile("tts/id.m4a")` |
 
 **NEVER** use `public/tts/...` in timeline — `staticFile()` already resolves from `public/`.
 
 ### Pipeline Status Model
 
-| Status          | Meaning                       |
-| --------------- | ----------------------------- |
-| `tts_generating`| TTS batch in progress         |
-| `rendering`     | Remotion render in progress   |
-| `succeeded`     | Render + validation passed    |
-| `failed`        | Error (see `phase` + details) |
+| Status           | Meaning                       |
+| ---------------- | ----------------------------- |
+| `tts_generating` | TTS batch in progress         |
+| `rendering`      | Remotion render in progress   |
+| `succeeded`      | Render + validation passed    |
+| `failed`         | Error (see `phase` + details) |
 
 ---
 
@@ -328,16 +378,87 @@ Set `speed: 1.0` to disable acceleration.
 
 ### Slides
 
-| Component      | Props                                              | Use For         |
-| -------------- | -------------------------------------------------- | --------------- |
-| `TitleSlide`   | `title`, `subtitle`, `designTheme`                 | Opening/closing |
-| `ContentSlide` | `header`, `content`, `bulletPoints`, `designTheme` | Body content    |
-| `CodeSlide`    | `code`, `language`, `title`, `designTheme`         | Code demos      |
-| `DiagramSlide` | `src`, `title`, `caption`, `fit`, `designTheme`    | Images/diagrams |
-| `Caption`      | `text`, `position`, `designTheme?`                 | Timed subtitles |
+| Component         | Props                                                   | Use For              |
+| ----------------- | ------------------------------------------------------- | -------------------- |
+| `TitleSlide`      | `title`, `subtitle`, `animation?`                       | Opening/closing      |
+| `ContentSlide`    | `header`, `content`, `bulletPoints`, `animation?`       | Body content         |
+| `CodeSlide`       | `code`, `language`, `title`, `animation?`               | Code demos           |
+| `DiagramSlide`    | `src`, `title`, `caption`, `fit`, `animation?`          | Images/diagrams      |
+| `StatSlide`       | `title`, `stats[]` (value/suffix/label/trend/decimals)  | KPI / count-up       |
+| `QuoteSlide`      | `quote`, `author?`, `source?`                           | Quotes               |
+| `ComparisonSlide` | `title`, `left{label,items,accent}`, `right{…}`         | Side-by-side compare |
+| `VideoSlide`      | `src`, `title?`, `startFrom?`, `playbackRate?`, `loop?` | Inline video         |
+| `GifSlide`        | `src`, `title?`, `fit?`                                 | Animated GIF         |
+| `LottieSlide`     | `src`, `title?`                                         | Lottie animation     |
+| `ChartSlide`      | `chartType`, `title`, `data{labels,datasets}`           | Bar/pie/line chart   |
+| `Caption`         | `text`, `position`, `designTheme?`                      | Timed subtitles      |
 
 All slide components consume `designTheme: Theme` from the theme system.
 Theme is resolved once in `TimelineRenderer` and passed through `ElementRouter`.
+
+### Surface Card System (Phase 20)
+
+All content slides wrap their inner content in a **glassmorphism surface card**:
+- `backdrop-filter: blur(N px)` — frosted glass
+- Semi-transparent background (`rgba(15,23,42,0.65)` default)
+- Subtle accent border + box shadow
+- Customizable via `meta.theme.card` (`background`, `border`, `shadow`, `blur`, `borderRadius`)
+
+### Animation System (Phase 21)
+
+Each element accepts an optional `animation` config:
+```json
+{ "animation": { "enter": "scale-in", "exit": "fade-out" } }
+```
+Supported enter: `scale-in`, `fade-in`, `slide-up`, `none`
+Supported exit: `scale-out`, `slide-down`, `fade-out`, `none`
+
+Powered by `useEntranceAnimation()` hook — spring-based, auto-calculated from frame/durationInFrames.
+
+### Transition Types (Phase 22)
+
+| Type         | Options                                                   |
+| ------------ | --------------------------------------------------------- |
+| `fade`       | —                                                         |
+| `slide`      | `direction`: from-left, from-right, from-top, from-bottom |
+| `wipe`       | `direction`: from-left, from-right, from-top, from-bottom |
+| `flip`       | `direction`: from-left, from-right                        |
+| `clock-wipe` | —                                                         |
+
+Optional `timing: "spring"` for spring-based transition timing.
+
+### Korean Font Support (Phase 20.5)
+
+NotoSansKR loaded as body font primary. Korean text renders natively without fallback issues.
+Font stack: `NotoSansKR, Outfit, sans-serif` (body), `ChakraPetch, NotoSansKR, sans-serif` (display).
+
+### Data Visualization (Phase 26)
+
+`ChartSlide` supports 3 chart types — all pure SVG, no external library:
+- **bar**: Staggered grow-up animation per bar
+- **pie**: Sweep animation (strokeDashoffset)
+- **line**: Draw-on animation with dots
+
+```json
+{
+  "type": "chart",
+  "props": {
+    "chartType": "bar",
+    "title": "Revenue by Quarter",
+    "data": {
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "datasets": [{ "label": "Revenue", "data": [120, 250, 180, 320] }]
+    }
+  }
+}
+```
+
+### Audio Features (Phase 25)
+
+Timeline `audio[]` entries support:
+- `fadeInSec` / `fadeOutSec` — volume ramp
+- `loop: true` — loop audio
+- `trimStartSec` — skip N seconds from start
 
 ---
 
@@ -366,7 +487,7 @@ All 3 gates must pass for a render to be considered successful.
 
 ```bash
 # Gate 3 standalone validation
-node scripts/validate-artifact.mjs out/TimelineVideo.mp4 --preset Landscape-1080p
+node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p
 # → { "valid": true, "duration": 15.0, "codec": "h264", "width": 1920, "height": 1080 }
 ```
 
@@ -397,11 +518,26 @@ skills_ref/video/
         ├── config.ts                 ← feature flags + timing utils
         ├── presets.ts                ← TS presets
         ├── theme.ts                  ← Theme resolver + defaults
-        ├── components/               ← 5 slide components + barrel
+        ├── fonts.ts                  ← Font loading (Korean + Latin)
+        ├── components/               ← 11 slide components + barrel
+        │   ├── TitleSlide.tsx
+        │   ├── ContentSlide.tsx
+        │   ├── CodeSlide.tsx
+        │   ├── DiagramSlide.tsx
+        │   ├── StatSlide.tsx          ← Phase 23: count-up KPIs
+        │   ├── QuoteSlide.tsx         ← Phase 23: quote display
+        │   ├── ComparisonSlide.tsx    ← Phase 23: side-by-side
+        │   ├── VideoSlide.tsx         ← Phase 24: inline video
+        │   ├── GifSlide.tsx           ← Phase 24: animated gifs
+        │   ├── LottieSlide.tsx        ← Phase 24: Lottie animation
+        │   ├── ChartSlide.tsx         ← Phase 26: bar/pie/line charts
+        │   ├── useAnimation.ts        ← Phase 21: entrance/exit hook
+        │   ├── Caption.tsx
+        │   └── index.ts              ← barrel export
         └── timeline/                 ← JSON→React engine
             ├── schema.ts             ← types + validation + VoiceControl
-            ├── element-router.tsx    ← type→component mapping
-            ├── renderer.tsx          ← JSON→TransitionSeries
+            ├── element-router.tsx    ← type→component mapping (12 types)
+            ├── renderer.tsx          ← JSON→TransitionSeries (5 transitions)
             └── loader.ts             ← JSON file loader
 ```
 
@@ -410,7 +546,16 @@ skills_ref/video/
 ## Dependencies
 
 - **Runtime**: Node.js 20+, pnpm, ffmpeg, ffprobe
-- **Packages**: remotion, @remotion/cli, @remotion/bundler, @remotion/transitions, @remotion/google-fonts, @remotion/renderer, @google/genai
+- **Packages**: Installed globally at `~/.remotion/node_modules/`. Run `setup-remotion.sh` once.
 - **Chromium**: Auto-installed by `remotion browser ensure` (called by `ensure-remotion.mjs`)
 - **Env**: `GEMINI_API_KEY` required for Gemini TTS; `SUPERTONE_API_KEY` for Supertone; none for Supertonic
-- **Bootstrap**: `node scripts/ensure-remotion.mjs` before first render
+- **Bootstrap**: `node scripts/ensure-remotion.mjs` before first render — checks `~/.remotion`
+
+### ⚠️ Output Path Rule
+
+**NEVER write render output into `skills_ref/video/`.** This is source code, not a workspace.
+
+- Default output: `/tmp/remotion-render/`
+- Use `--output /tmp/my-project/` for custom paths
+- Timeline draft/final files → `/tmp/` or project-specific dir
+- `skills_ref/video/out/`, `skills_ref/video/timeline.draft.json` = **WRONG**

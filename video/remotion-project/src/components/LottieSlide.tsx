@@ -1,31 +1,35 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   AbsoluteFill,
-  Img,
   spring,
   useCurrentFrame,
   useVideoConfig,
   interpolate,
+  staticFile,
+  delayRender,
+  continueRender,
 } from "remotion";
+import { Lottie, type LottieAnimationData } from "@remotion/lottie";
 import type { Theme } from "../theme";
 import type { AnimationConfig } from "../timeline/schema";
 import { useEntranceAnimation } from "./useAnimation";
 
-type Props = {
-  src?: string;
-  alt?: string;
+type LottieSlideProps = {
+  src: string;
   title?: string;
   caption?: string;
-  fit?: "cover" | "contain" | "fill";
+  loop?: boolean;
+  playbackRate?: number;
   designTheme: Theme;
   animation?: AnimationConfig;
 };
 
-export const DiagramSlide: React.FC<Props> = ({
+export const LottieSlide: React.FC<LottieSlideProps> = ({
   src,
   title,
   caption,
-  fit = "contain",
+  loop = false,
+  playbackRate = 1,
   designTheme: t,
   animation,
 }) => {
@@ -34,38 +38,38 @@ export const DiagramSlide: React.FC<Props> = ({
 
   const entrance = useEntranceAnimation(animation);
 
+  const [handle] = useState(() => delayRender("Loading Lottie animation"));
+  const [animationData, setAnimationData] =
+    useState<LottieAnimationData | null>(null);
+
+  const isLocal = !src.startsWith("http://") && !src.startsWith("https://");
+  const lottieSrc = isLocal ? staticFile(src) : src;
+
+  useEffect(() => {
+    fetch(lottieSrc)
+      .then((r) => r.json())
+      .then((data: LottieAnimationData) => {
+        setAnimationData(data);
+        continueRender(handle);
+      })
+      .catch((err) => {
+        console.error("Failed to load Lottie:", err);
+        continueRender(handle);
+      });
+  }, [lottieSrc, handle]);
+
   const cardProgress = spring({
     frame: Math.max(0, frame - 4),
     fps,
     config: { damping: 80 },
   });
   const titleProgress = spring({ frame, fps, config: { damping: 100 } });
-  const imageProgress = spring({
-    frame: Math.max(0, frame - 8),
-    fps,
-    config: { damping: 80, mass: 0.9 },
-  });
-  const captionProgress = spring({
-    frame: Math.max(0, frame - 16),
-    fps,
-    config: { damping: 120 },
-  });
 
   const exitFade = interpolate(
     frame,
     [durationInFrames - 10, durationInFrames],
     [1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-
-  // Glow
-  const glowDrift = interpolate(frame, [0, durationInFrames], [0, 10], {
-    extrapolateRight: "clamp",
-  });
-  const glowPulse = interpolate(
-    Math.sin(frame * 0.04),
-    [-1, 1],
-    [0.3, 0.7],
   );
 
   return (
@@ -76,29 +80,12 @@ export const DiagramSlide: React.FC<Props> = ({
         overflow: "hidden",
       }}
     >
-      {/* Background glow */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: `${15 + glowDrift * 0.3}%`,
-          left: `${30 + glowDrift * 0.5}%`,
-          width: 300,
-          height: 300,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${t.color.accent}10 0%, transparent 70%)`,
-          opacity: glowPulse * exitFade,
-          filter: "blur(50px)",
-        }}
-      />
-
-      {/* Surface card */}
       <AbsoluteFill
         style={{
           padding: "40px 48px",
           justifyContent: "center",
           alignItems: "center",
-          opacity: exitFade * entrance.opacity,
-          transform: entrance.transform,
+          opacity: exitFade,
         }}
       >
         <div
@@ -109,63 +96,53 @@ export const DiagramSlide: React.FC<Props> = ({
             boxShadow: t.card.shadow,
             backdropFilter: `blur(${t.card.blur}px)`,
             WebkitBackdropFilter: `blur(${t.card.blur}px)`,
-            padding: "40px 48px",
+            padding: "32px",
             opacity: cardProgress,
             transform: `translateY(${interpolate(cardProgress, [0, 1], [20, 0])}px)`,
+            width: "100%",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            width: "100%",
           }}
         >
           {title && (
             <div
               style={{
-                fontSize: 44,
+                fontSize: 40,
                 fontWeight: 900,
                 color: t.color.text,
                 fontFamily: t.font.display,
-                marginBottom: 30,
+                marginBottom: 20,
                 opacity: titleProgress,
-                transform: `translateY(${interpolate(titleProgress, [0, 1], [30, 0])}px)`,
                 letterSpacing: "-0.02em",
               }}
             >
               {title}
             </div>
           )}
-          {src && (
+          {animationData && (
             <div
               style={{
+                width: "70%",
                 display: "flex",
                 justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                opacity: imageProgress,
-                transform: `scale(${interpolate(imageProgress, [0, 1], [0.9, 1])})`,
               }}
             >
-              <Img
-                src={src}
-                style={{
-                  maxWidth: "90%",
-                  maxHeight: "65%",
-                  objectFit: fit,
-                  borderRadius: 12,
-                }}
+              <Lottie
+                animationData={animationData}
+                loop={loop}
+                playbackRate={playbackRate}
               />
             </div>
           )}
           {caption && (
             <div
               style={{
-                fontSize: 24,
+                fontSize: 22,
                 color: t.color.textMuted,
-                marginTop: 24,
+                marginTop: 16,
                 textAlign: "center",
                 fontStyle: "italic",
-                opacity: captionProgress,
-                transform: `translateY(${interpolate(captionProgress, [0, 1], [15, 0])}px)`,
               }}
             >
               {caption}

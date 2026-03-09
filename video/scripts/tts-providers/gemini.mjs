@@ -33,14 +33,14 @@ export async function generate(text, outputPath, { voice = "Kore", tonePrompt, s
     maxOutputTokens: 8192,
   };
 
-  // tonePrompt → system instruction for tone/emotion control
-  if (tonePrompt) {
-    config.systemInstruction = tonePrompt;
-  }
+  // tonePrompt → prepend as speaking direction (systemInstruction breaks TTS mode)
+  const spokenText = tonePrompt
+    ? `Say the following in a ${tonePrompt}: ${text}`
+    : text;
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text }] }],
+    contents: [{ parts: [{ text: spokenText }] }],
     config,
   });
 
