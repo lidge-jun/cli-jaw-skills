@@ -2,7 +2,7 @@
 import { createRequire } from "module";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { writeFileSync, unlinkSync } from "fs";
+import { writeFileSync, unlinkSync, readFileSync } from "fs";
 import { execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -14,18 +14,30 @@ export const PROVIDER_ID = "gemini";
 export const DEFAULT_VOICE = "Kore";
 export const AUDIO_EXT = ".m4a";
 export const VOICES = [
-  "Kore","Charon","Puck","Zephyr","Fenrir","Leda","Orus","Aoede",
-  "Achernar","Achird","Algenib","Algieba","Alnilam","Autonoe",
-  "Callirrhoe","Despina","Enceladus","Erinome","Gacrux","Iapetus",
-  "Laomedeia","Pulcherrima","Rasalgethi","Sadachbia","Schedar",
-  "Umbriel","Vindemiatrix","Zubenelgenubi",
+  "Kore", "Charon", "Puck", "Zephyr", "Fenrir", "Leda", "Orus", "Aoede",
+  "Achernar", "Achird", "Algenib", "Algieba", "Alnilam", "Autonoe",
+  "Callirrhoe", "Despina", "Enceladus", "Erinome", "Gacrux", "Iapetus",
+  "Laomedeia", "Pulcherrima", "Rasalgethi", "Sadachbia", "Schedar",
+  "Umbriel", "Vindemiatrix", "Zubenelgenubi",
 ];
 
 export async function generate(text, outputPath, { voice = "Kore", tonePrompt, speed = 1.2 } = {}) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY not set");
-
-  const ai = new GoogleGenAI({ apiKey });
+  let ai;
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.GOOGLE_CLOUD_PROJECT) {
+    // Vertex AI path (service account / ADC)
+    const project = process.env.GOOGLE_CLOUD_PROJECT || (() => {
+      try { return JSON.parse(readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, "utf-8")).project_id; }
+      catch { throw new Error("Cannot determine project_id from GOOGLE_APPLICATION_CREDENTIALS"); }
+    })();
+    const location = process.env.GOOGLE_CLOUD_LOCATION || "us-central1";
+    ai = new GoogleGenAI({ vertexai: true, project, location });
+    console.log(`  [TTS] Using Vertex AI (project=${project}, location=${location})`);
+  } else {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI_API_KEY not set and no Vertex AI credentials found");
+    ai = new GoogleGenAI({ apiKey });
+    console.log(`  [TTS] Using Gemini API key`);
+  }
   const config = {
     responseModalities: ["AUDIO"],
     speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
@@ -40,7 +52,7 @@ export async function generate(text, outputPath, { voice = "Kore", tonePrompt, s
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text: spokenText }] }],
+    contents: [{ role: "user", parts: [{ text: spokenText }] }],
     config,
   });
 

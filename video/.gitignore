@@ -9,3 +9,4 @@ remotion-project/public/tts/*.mp3
 remotion-project/public/tts/*.wav
 remotion-project/public/tts/manifest.json
 remotion-project/node_modules
+remotion-project/package-lock.json
