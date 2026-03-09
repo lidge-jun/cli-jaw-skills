@@ -1,12 +1,8 @@
 # Skills Reference
 
-CLI-JAW's skill system — 118 skills across 9 categories.
+CLI-JAW's skill system — 116 skills across 9 categories.
 
-**27 active** (auto-injected into every AI prompt) · **91 reference** (loaded on demand)
-
-> [!CAUTION]
-> **Always push to `main` branch.** npm install clones skills from `main` via `git clone --depth 1`.
-> Pushing to `agent` only means users won't receive the skill until merged to `main`.
+**21 active** (auto-injected into every AI prompt) · **95 reference** (loaded on demand)
 
 ---
 

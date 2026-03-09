@@ -8,26 +8,17 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync } from "no
 import { resolve, dirname, join } from "node:path";
 import { execFileSync, spawnSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { homedir } from "node:os";
 import { validateVideoArtifact } from "./validate-artifact.mjs";
 import { getPreset } from "./presets.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REMOTION_PROJECT = resolve(__dirname, "..", "remotion-project");
-const REMOTION_HOME = join(homedir(), ".remotion");
-const REMOTION_BIN = join(REMOTION_HOME, "node_modules", ".bin", "remotion");
-
-// Env that lets remotion-project source resolve deps from ~/.remotion
-const RENDER_ENV = {
-  ...process.env,
-  NODE_PATH: join(REMOTION_HOME, "node_modules"),
-};
 
 const { values } = parseArgs({
   options: {
     timeline: { type: "string" },
     preset: { type: "string" },
-    output: { type: "string", default: "/tmp/remotion-render" },
+    output: { type: "string", default: "./out" },
     async: { type: "boolean", default: false },
     status: { type: "string" },
     "skip-tts": { type: "boolean", default: false },
@@ -171,7 +162,7 @@ async function run() {
   writeStatus(outputDir, "rendering");
   console.log("Rendering video...");
   const renderArgs = [
-    "render",
+    "exec", "remotion", "render",
     "src/index.ts", compositionId,
     "--props", JSON.stringify({ timeline: effectiveTimeline }),
     "--output", outputPath,
@@ -181,11 +172,10 @@ async function run() {
     // Non-blocking: spawn detached, but monitor exit to write final status
     const logPath = join(outputDir, "render.log");
     const logFd = openSync(logPath, "w");
-    const child = spawn(REMOTION_BIN, renderArgs, {
+    const child = spawn("pnpm", renderArgs, {
       cwd: REMOTION_PROJECT,
       detached: true,
       stdio: ["ignore", logFd, logFd],
-      env: RENDER_ENV,
     });
 
     // Monitor child exit in a detached event handler
@@ -228,10 +218,9 @@ async function run() {
   }
 
   // Blocking (default)
-  const renderResult = spawnSync(REMOTION_BIN, renderArgs, {
+  const renderResult = spawnSync("pnpm", renderArgs, {
     stdio: "inherit",
     cwd: REMOTION_PROJECT,
-    env: RENDER_ENV,
   });
 
   if (renderResult.status !== 0) {

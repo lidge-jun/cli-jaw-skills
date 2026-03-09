@@ -257,6 +257,39 @@ Portrait has 1920px of vertical space — you MUST fill it.
 | **Supertone Cloud**  | `supertone`  | Andrew        | 6 emotion styles, pitch/speed, Korean-best | `SUPERTONE_API_KEY` |
 | **Supertonic Local** | `supertonic` | `M1`          | 0.22s gen, free, offline (Phase 11B)       | none                |
 
+#### Gemini Auth Paths
+
+```
+GOOGLE_APPLICATION_CREDENTIALS or ADC configured?
+├─ Yes → Vertex AI (same model: gemini-2.5-flash-preview-tts)
+│   └─ new GoogleGenAI({ vertexai: true, project, location })
+GEMINI_API_KEY exists?
+├─ Yes → Gemini API (default path)
+│   └─ new GoogleGenAI({ apiKey })
+```
+
+**Client initialization** (`gemini.mjs`):
+```js
+import { GoogleGenAI } from "@google/genai";
+
+// Vertex AI (service account / ADC)
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.GOOGLE_CLOUD_PROJECT) {
+  const ai = new GoogleGenAI({
+    vertexai: true,
+    project: process.env.GOOGLE_CLOUD_PROJECT || "your-project-id",
+    location: process.env.GOOGLE_CLOUD_LOCATION || "us-central1",
+  });
+}
+// Gemini API (API key) — current default
+else {
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+}
+```
+
+> [!WARNING]
+> Model name is identical for both paths: `gemini-2.5-flash-preview-tts`.
+> Vertex AI does NOT use File API — only direct generation calls.
+
 ### Provider Selection
 
 ```
@@ -548,8 +581,9 @@ skills_ref/video/
 - **Runtime**: Node.js 20+, pnpm, ffmpeg, ffprobe
 - **Packages**: Installed globally at `~/.remotion/node_modules/`. Run `setup-remotion.sh` once.
 - **Chromium**: Auto-installed by `remotion browser ensure` (called by `ensure-remotion.mjs`)
-- **Env**: `GEMINI_API_KEY` required for Gemini TTS; `SUPERTONE_API_KEY` for Supertone; none for Supertonic
+- **Env**: `GEMINI_API_KEY` for Gemini TTS (API key path); or `GOOGLE_APPLICATION_CREDENTIALS` / ADC for Vertex AI path; `SUPERTONE_API_KEY` for Supertone; none for Supertonic
 - **Bootstrap**: `node scripts/ensure-remotion.mjs` before first render — checks `~/.remotion`
+- **Vertex AI auth**: `gcloud auth application-default login` or set `GOOGLE_APPLICATION_CREDENTIALS`
 
 ### ⚠️ Output Path Rule
 
