@@ -8,3 +8,4 @@ remotion-project/public/tts/*.m4a
 remotion-project/public/tts/*.mp3
 remotion-project/public/tts/*.wav
 remotion-project/public/tts/manifest.json
+remotion-project/node_modules
