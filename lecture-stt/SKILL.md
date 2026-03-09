@@ -2,7 +2,7 @@
 name: lecture-stt
 description: >
   Transcribe audio lectures into structured markdown notes using LLM-based STT
-  (Gemini Flash-Lite) with contextual prompting. Supports PDF slide guides,
+  (Gemini 3 Flash Preview) with contextual prompting. Supports PDF slide guides,
   domain-aware term hints, and local Whisper fallback.
   Triggers: "강의 전사", "STT", "lecture transcription", "오디오 전사",
   "강의 녹음", "audio to text", "lecture notes", "음성 변환",
@@ -13,28 +13,30 @@ description: >
 
 ## Goal
 
-Convert lecture audio recordings into structured, high-quality markdown notes
+Convert lecture audio recordings into near-verbatim structured markdown
 using LLM-based Speech-to-Text. The skill leverages **contextual prompting**
-(domain hints, PDF slides, format instructions) to produce notes that are
-22x more compressed and 9x faster than raw transcription.
+(PDF slides as structural guide, domain term hints) to produce page-by-page
+transcriptions that preserve the professor's actual spoken words.
 
 ## Key Insight
 
-LLM STT is NOT dictation — it is **speech → structured knowledge conversion**.
-Providing a PDF slide deck as structural guide and domain-specific term hints
-dramatically improves quality, speed, and cost.
+LLM STT with a PDF structural guide produces **speech-only** transcription —
+the PDF identifies which slide is being discussed, while the output captures
+only what the professor actually said. Without proper prompting, models tend
+to copy-paste slide text instead of transcribing speech.
 
 ## Instructions
 
 ### 1. Gather Inputs
 
 Required:
-- **Audio file** — `.m4a`, `.mp3`, `.wav` (up to ~8 hours for Gemini)
+- **Audio file** — `.m4a`, `.mp3`, `.wav` (up to ~8 hours)
 - **Subject title** — e.g. "거시경제학", "헌법", "Data Structures"
 
-Optional (but strongly recommended):
-- **PDF slides** — acts as structural guide → 22x output compression
+Optional (strongly recommended):
+- **PDF slides** — acts as structural guide for page-by-page output
 - **Custom terms** — domain-specific proper nouns, acronyms
+- **Language hint** — tell agent the lecture language (e.g. "English lecture")
 
 ### 2. Select Engine
 
@@ -49,6 +51,10 @@ GEMINI_API_KEY exists?
 │   └─ Yes → OpenAI gpt-4o-transcribe (supports diarization)
 └─ No → mlx-whisper local (Apple Silicon, offline, free)
 ```
+
+> [!IMPORTANT]
+> **Vertex AI requires `location='global'`** for gemini-3.* models.
+> Using `us-central1` returns 404 NOT_FOUND.
 
 ### 3. Build Prompt
 
@@ -159,23 +165,21 @@ Capture ALL spoken content not on slides under nearest page with 💬 marker:
 Transcribe this audio verbatim. Include all speech as-is.
 Sentence-level line breaks. No formatting.
 ```
-Use when: need filler words, exact wording (prefer Whisper for this).
+Use when: need exact wording without page structure (prefer Whisper for this).
 
 ### 4. Domain Auto-Inference
 
 When the user provides only a subject title, infer domain terms automatically:
 
-| Title pattern  | Context                                                  | Auto terms                                 |
-| -------------- | -------------------------------------------------------- | ------------------------------------------ |
-| 경제, 거시경제 | Macroeconomics lecture                                   | GDP, multiplier, MPC, IS-LM, fiscal policy |
-| 물리           | Physics lecture                                          | Newton's laws, energy conservation, E=mc²  |
-| 법학, 헌법     | Law/Constitutional law                                   | 위헌법률심판, 헌법소원, 기본권             |
-| CS, 프로그래밍 | Computer Science                                         | algorithm, Big-O, data structure           |
-| (no match)     | Ask Gemini to infer domain from title (1 preflight call) | —                                          |
+| Title pattern  | Context                       | Auto terms                                 |
+| -------------- | ----------------------------- | ------------------------------------------ |
+| 경제, 거시경제 | Macroeconomics lecture        | GDP, multiplier, MPC, IS-LM, fiscal policy |
+| 물리           | Physics lecture               | Newton's laws, energy conservation, E=mc²  |
+| 법학, 헌법     | Law/Constitutional law        | 위헌법률심판, 헌법소원, 기본권             |
+| CS, 프로그래밍 | Computer Science              | algorithm, Big-O, data structure           |
+| (no match)     | Ask model to infer from title | —                                          |
 
 ### 5. Handle Long Audio
-
-#### Gemini API (API key)
 
 | Duration  | Strategy                                |
 | --------- | --------------------------------------- |
@@ -183,21 +187,13 @@ When the user provides only a subject title, infer domain terms automatically:
 | 2–8 hours | Split into 2–4 chunks with 10s overlap  |
 | 8+ hours  | 30-minute chunks, sequential processing |
 
-#### Vertex AI (service account)
+> [!TIP]
+> Multiple audio files from the same lecture can be sent in a single request.
+> Just add multiple `types.Part.from_bytes()` parts — the model handles them
+> as one continuous lecture.
 
-> [!WARNING]
-> Vertex AI Flash-Lite has `max_output_tokens=8192` limit.
-> Even 48-minute lectures get truncated in a single request.
-
-| Duration  | Strategy                                     |
-| --------- | -------------------------------------------- |
-| < 15 min  | Single request with `max_output_tokens=8192` |
-| 15-60 min | 15-min chunks with 10s overlap               |
-| 1-8 hours | 15-min chunks, sequential processing         |
-
-Use `ffmpeg` for splitting:
+Use `ffmpeg` for splitting when needed:
 ```bash
-# Split into 15-min chunks with 10s overlap
 DUR=900  # 15 minutes
 OVERLAP=10
 for i in $(seq 0 $((DUR - OVERLAP)) $(ffprobe -v error -show_entries format=duration -of csv=p=0 input.m4a | cut -d. -f1)); do
@@ -214,45 +210,43 @@ from google import genai
 from google.genai import types
 import os
 
-# Vertex AI (service account / ADC)
-# IMPORTANT: gemini-3.1-* models require location='global', NOT 'us-central1'
+# Vertex AI (service account / ADC) — MUST use location='global'
 if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or os.environ.get("GOOGLE_CLOUD_PROJECT"):
     client = genai.Client(
         vertexai=True,
         project=os.environ.get("GOOGLE_CLOUD_PROJECT", "your-project-id"),
-        location=os.environ.get("GOOGLE_CLOUD_LOCATION", "global"),
+        location="global",  # REQUIRED for gemini-3-* models
     )
 # Gemini API (API key)
 else:
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 ```
 
-#### Gemini — Small files (< ~50MB): inline bytes
+#### Gemini — Inline bytes (< ~50MB, preferred)
 
 > [!TIP]
 > Inline bytes avoids the Korean filename `UnicodeEncodeError` entirely.
 > Prefer this path when file size allows.
 
 ```python
-# Read audio
 with open("lecture.m4a", "rb") as f:
     audio_bytes = f.read()
 
-# Build contents list
 contents = [
     types.Part.from_bytes(data=audio_bytes, mime_type="audio/mp4"),
-    prompt_text,  # your Level 1–5 prompt string
+    prompt_text,
 ]
 
-# If PDF slides available, add them too
+# Add PDF if available
 if pdf_path:
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
     contents.insert(0, types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"))
 
 response = client.models.generate_content(
-    model="gemini-3-flash-preview",  # recommended; flash-lite may copy slide text
+    model="gemini-3-flash-preview",
     contents=contents,
+    config=types.GenerateContentConfig(max_output_tokens=65536),
 )
 print(response.text)
 ```
@@ -267,17 +261,10 @@ print(response.text)
 > Always use `_safe_upload()` below to copy to ASCII-safe temp paths first.
 
 ```python
-import time
-import shutil
-import tempfile
+import time, shutil, tempfile
 
 def _safe_upload(client, filepath, ascii_name):
-    """Upload file with ASCII-safe temp name to avoid httpx UnicodeEncodeError.
-    
-    The google-genai File API passes the filename in HTTP headers.
-    httpx encodes header values as ASCII, which fails on Korean/CJK filenames.
-    Workaround: copy to a temp file with an ASCII-safe name before uploading.
-    """
+    """Upload file with ASCII-safe temp name to avoid httpx UnicodeEncodeError."""
     tmpdir = tempfile.mkdtemp(prefix="stt_")
     try:
         safe_path = os.path.join(tmpdir, ascii_name)
@@ -286,30 +273,26 @@ def _safe_upload(client, filepath, ascii_name):
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
-# Upload audio via File API (ASCII-safe)
 audio_file = _safe_upload(client, "노시론1.m4a", "lecture.m4a")
 
-# Wait for processing (state is an enum, not a string)
 from google.genai.types import FileState
 while audio_file.state == FileState.PROCESSING:
     time.sleep(2)
     audio_file = client.files.get(name=audio_file.name)
 
-# Upload PDF if available
 contents = [audio_file]
 if pdf_path:
     pdf_file = _safe_upload(client, pdf_path, "slides.pdf")
     contents.insert(0, pdf_file)
-
 contents.append(prompt_text)
 
 response = client.models.generate_content(
-    model="gemini-3-flash-preview",  # recommended; flash-lite may copy slide text
+    model="gemini-3-flash-preview",
     contents=contents,
+    config=types.GenerateContentConfig(max_output_tokens=65536),
 )
 print(response.text)
 
-# Cleanup uploaded files
 client.files.delete(name=audio_file.name)
 if pdf_path:
     client.files.delete(name=pdf_file.name)
@@ -332,15 +315,11 @@ print(result["text"])
 
 ```python
 from openai import OpenAI
-
 client = OpenAI()
-
 with open("lecture.m4a", "rb") as f:
     transcript = client.audio.transcriptions.create(
-        model="gpt-4o-transcribe",
-        file=f,
-        response_format="text",
-        language="ko",
+        model="gpt-4o-transcribe", file=f,
+        response_format="text", language="ko",
     )
 print(transcript)
 ```
@@ -350,12 +329,11 @@ print(transcript)
 ```markdown
 # {Subject} — Lecture Notes
 
-- Model: Gemini 3.1 Flash-Lite
+- Model: gemini-3-flash-preview (Vertex AI, global)
 - Time: {elapsed}s
 - Tokens: {in} → {out}
-- Cost: ~${cost}
 - Source: {audio_file} {+ pdf_file}
-- Mode: {lecture|raw}
+- Mode: STT (Level 4, verbatim, original language)
 
 ---
 
@@ -365,34 +343,23 @@ print(transcript)
 ## Anti-Patterns
 
 > [!CAUTION]
-> **Never ask the model to preserve filler words** ("Mark (uh), (um), (okay)")
-> This switches the LLM into verbatim mode, destroying its structuring ability:
-> - Output explodes 23x (13KB → 297KB)
-> - Speed drops 8x (20s → 161s)
-> - All structure, KaTeX, and slide grouping is lost
-> - Repetition loops occur at the end
->
-> If you need fillers, use a dedicated STT engine (Whisper) instead.
-
-> [!WARNING]
 > **Never send audio without any prompt to an LLM.**
-> Without guidance, the model produces 283KB of unstructured output with
+> Without guidance, the model produces unstructured output with
 > hallucination loops. Always provide at minimum a basic transcription prompt.
 
-## Model Comparison (Benchmarked 2026-03-04)
+> [!WARNING]
+> **Flash-Lite may copy PDF slide text instead of transcribing speech.**
+> Use `gemini-3-flash-preview` for best instruction following.
+> If using Flash-Lite, add extra emphasis on "DO NOT copy slide text".
 
-| Model                     | Speed (44min) | Cost/1000min | Korean quality | Notes               |
-| ------------------------- | ------------- | ------------ | -------------- | ------------------- |
-| **Gemini 3.1 Flash-Lite** | 3.5s/min ⭐    | ~$0.63       | ~10% CER       | Recommended         |
-| mlx-whisper turbo         | 14s/min       | $0 (local)   | ~11% CER       | Offline fallback    |
-| OpenAI transcribe         | —             | $6.00        | —              | Diarization support |
-| Google Chirp V2           | —             | $16.00       | —              | Too expensive       |
+## Model Comparison (Benchmarked 2026-03-09)
 
-## Cost Reference
-
-44-minute lecture, single pass:
-- Gemini 3.1 Flash-Lite: **~$0.03 (₩36)** — 86K input → 4.7K output tokens
-- mlx-whisper: **$0** (local processing, ~4 min on Apple Silicon)
+| Model                      | Speed       | Verbatim Quality    | Notes                                        |
+| -------------------------- | ----------- | ------------------- | -------------------------------------------- |
+| **Gemini 3 Flash Preview** | ~50s/44min  | ⭐ Best              | Recommended. Speech-only, follows rules well |
+| Gemini 3.1 Flash-Lite      | ~30s/44min  | ⚠️ Copies slide text | Faster but ignores "no-copy" instructions    |
+| mlx-whisper turbo          | ~4min local | Good (raw)          | Offline fallback, no page structure          |
+| OpenAI gpt-4o-transcribe   | —           | Good                | Diarization support, expensive               |
 
 ## Constraints
 
@@ -400,13 +367,10 @@ print(transcript)
 - Term hints should be ≤ 20 terms (too many causes confusion)
 - Only include terms that actually appear in the audio (prevents hallucination)
 - Korean + English mixing is fine — Gemini handles multilingual natively
-- Speaker name hints prevent name misrecognition
-- `--supplement` flag adds *[Supplementary: ...]* for unexplained PDF concepts
-- **Korean/non-ASCII filenames**: File API upload fails with `UnicodeEncodeError`.
-  Use `_safe_upload()` helper or inline bytes (`types.Part.from_bytes`) to avoid.
-  For shell commands, prefer `find`/`glob.glob()` over `ls`/`stat` (which may hang on Korean paths).
-- **Vertex AI**: File API (`client.files.upload`) is NOT available.
-  Use inline bytes (< ~50MB) or compress with ffmpeg. `max_output_tokens` capped at 8192.
+- **Language hint**: tell the agent the lecture language explicitly to prevent translation
+- **Korean filenames**: Use `_safe_upload()` or inline bytes to avoid `UnicodeEncodeError`
+- **Vertex AI**: File API is NOT available. Use inline bytes (< ~50MB) or ffmpeg compress
+- **Vertex AI**: Must use `location='global'` for gemini-3-* models
 
 ## Dependencies
 
@@ -422,12 +386,3 @@ brew install ffmpeg         # Audio splitting for long files
 # Vertex AI auth
 gcloud auth application-default login  # or set GOOGLE_APPLICATION_CREDENTIALS
 ```
-
-## Related Research
-
-See `reference/` folder for detailed research documents:
-- `01_traditional_stt.md` — Traditional STT architecture (Whisper, Chirp)
-- `02_llm_stt.md` — LLM-based STT principles and experiments
-- `03_model_comparison.md` — Full benchmark data with pricing
-- `04_contextual_prompt.md` — Prompt engineering patterns and anti-patterns
-- `05_implementation_plan.md` — CLI tool design (`transcribe.py`)
