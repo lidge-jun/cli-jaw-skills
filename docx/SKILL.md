@@ -1,3 +1,8 @@
+---
+name: docx
+description: "Word DOCX create, read, edit, review. Triggers: Word doc, .docx, reports, memos, letters, templates."
+---
+
 # DOCX Skill
 
 Use this skill for any .docx task: create, read, edit, or manipulate Word documents.

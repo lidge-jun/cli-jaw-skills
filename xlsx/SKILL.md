@@ -1,3 +1,8 @@
+---
+name: xlsx
+description: "Excel XLSX create, read, edit, analyze. Triggers: Excel, .xlsx, spreadsheet, financial model, data analysis, pivot, chart."
+---
+
 # XLSX Skill
 
 Use this skill for any spreadsheet task: create, read, edit, analyze, or format .xlsx/.xlsm/.csv/.tsv files.

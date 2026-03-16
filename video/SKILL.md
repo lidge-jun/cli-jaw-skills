@@ -1,3 +1,8 @@
+---
+name: video
+description: "Remotion video create, render, preview. Triggers: video, Remotion, animation, mp4, render video, slides to video."
+---
+
 # Remotion Video Skill
 
 Use this skill for any programmatic video task: create, render, preview, or review videos using Remotion.

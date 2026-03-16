@@ -1,3 +1,8 @@
+---
+name: html2pptx
+description: "Convert HTML slides into native PowerPoint elements. Triggers: HTML to PPTX, convert HTML slides, html2pptx."
+---
+
 # HTML to PPTX Skill
 
 Convert HTML slides into native PowerPoint elements with accurate positioning.

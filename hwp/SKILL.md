@@ -1,3 +1,8 @@
+---
+name: hwp
+description: "HWP/HWPX create, read, edit, review. Triggers: 한글, .hwp, .hwpx, HWP, HWPX, Korean documents."
+---
+
 # HWP Skill
 
 Use this skill for any .hwp / .hwpx task: create, read, edit, or manipulate Hangul Word Processor documents.

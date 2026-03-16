@@ -1,3 +1,8 @@
+---
+name: pptx
+description: "PowerPoint PPTX create, read, edit, review. Triggers: PowerPoint, PPTX, presentation, slides, deck."
+---
+
 # PPTX Skill
 
 Use this skill for any PowerPoint task: create, read, edit, or review PPTX presentations.
