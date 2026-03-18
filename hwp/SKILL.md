@@ -20,11 +20,12 @@ Do NOT use for: DOCX, PDF, spreadsheets, or Google Docs.
 | **Detect format** | `file doc.hwpx` → ZIP = HWPX, "HWP Document" = HWP 5.0 |
 | **Create HWPX** | `python-hwpx` API or `build_hwpx.py` (template-based) |
 | **Read HWPX** | `hwpx_cli.py text input.hwpx` or `text_extract.py` |
-| **Read HWP** | `hwp5proc text input.hwp` (pyhwp) |
+| **Read HWP** | `hwp5proc xml input.hwp` + pipe to python for text extraction |
 | **Edit HWPX** | unpack → pretty-print → Edit → pack (auto strip+minify) |
 | **Search/Replace** | `hwpx_cli.py search` / `hwpx_cli.py replace` / `hwpx_cli.py batch-replace` |
 | **Tables** | `hwpx_cli.py tables` / `hwpx_cli.py fill-table` (path-based) |
-| **Upgrade HWP** | `npx hwpxjs convert:hwp` or `java -jar hwp2hwpx.jar` → then edit HWPX |
+| **Content QA** | `hwpx_cli.py content-check` (must-have/must-not-have keyword scan) |
+| **Upgrade HWP** | `hwp2hwpx` Java sidecar (neolord0/hwp2hwpx) → then edit HWPX |
 | **Validate** | `hwpx_cli.py validate` + `hwpx_cli.py page-guard` |
 | **HWPX → PDF** | `soffice --headless --convert-to pdf` (needs H2Orestart+Java) |
 | **Visual QA** | PDF → `pdftoppm -jpeg -r 150` → subagent inspection |
@@ -47,6 +48,8 @@ python scripts/hwpx_cli.py chunk input.hwpx [--by heading|size|pagebreak] [--jso
 python scripts/hwpx_cli.py search-chunks input.hwpx "pattern" [--json]  # search with chunk context
 python scripts/hwpx_cli.py repair input.hwpx                # dry-run diagnosis (default)
 python scripts/hwpx_cli.py repair input.hwpx --apply        # conservative auto-fix
+python scripts/hwpx_cli.py content-check input.hwpx --must-not-have "[X],TODO,lorem"  # QA
+python scripts/hwpx_cli.py insert-table input.hwpx --json '[["A","B"],["1","2"]]' -o out.hwpx
 python scripts/hwpx_cli.py structure input.hwpx              # document structure tree
 ```
 
@@ -219,17 +222,35 @@ Hancom's official stance: HWP→HWPX conversion may be available depending on li
 
 ```bash
 # 1. Read / inspect
-hwp5proc text input.hwp          # extract text
 hwp5proc xml input.hwp           # XML representation
 hwp5proc ls input.hwp            # list OLE streams
 
-# 2. Upgrade to HWPX (pick one)
-npx hwpxjs convert:hwp input.hwp                    # Node.js
-java -jar hwp2hwpx.jar input.hwp output.hwpx        # Java (neolord0/hwp2hwpx)
+# Quick text extraction from HWP:
+hwp5proc xml input.hwp | python3 -c "
+import sys, xml.etree.ElementTree as ET
+tree = ET.parse(sys.stdin)
+for elem in tree.getroot().iter():
+    if elem.text and elem.text.strip():
+        print(elem.text.strip())
+"
 
-# 3. Edit the resulting HWPX using Section 1 workflow
-# 4. Save as HWPX (canonical). HWP compat output is a separate optional path.
+# 2. Upgrade to HWPX (recommended: hwp2hwpx Java sidecar)
+# Build once (requires JDK 11+ and Maven):
+git clone https://github.com/neolord0/hwp2hwpx /tmp/hwp2hwpx
+cd /tmp/hwp2hwpx && mvn -DskipTests package dependency:copy-dependencies
+
+# Convert:
+java -cp 'target/classes:target/dependency/*' \
+  kr.dogfoot.hwp2hwpx.CliMain input.hwp output.hwpx
+
+# 3. Quick validation (must NOT contain dummy text)
+unzip -p output.hwpx Contents/section0.xml | head
+
+# 4. Edit the resulting HWPX using Section 1 workflow
+# 5. Save as HWPX (canonical)
 ```
+
+> **WARNING**: `@ssabrojs/hwpxjs convert:hwp`는 일부 HWP에서 더미 텍스트("이 문서는 HWP 파일입니다")만 포함된 HWPX를 생성하는 사례가 확인됨 (2026-03-18). 변환 후 반드시 section0.xml 내용을 검증할 것.
 
 > 출처: [HWP→HWPX API license](https://forum.developer.hancom.com/t/hwp-hwpx-api/2980)
 > 출처: [HWPX→HWP API not available](https://forum.developer.hancom.com/t/hwpx-hwp-api/2606)
@@ -367,6 +388,10 @@ Thresholds: text >15%, paragraph >25% → FAIL.
 python scripts/text_extract.py output.hwpx --format markdown
 # Check for placeholder remnants
 python scripts/text_extract.py output.hwpx | grep -iE "xxxx|lorem|placeholder|TODO|견본"
+
+# Keyword-based content check (automated)
+python scripts/hwpx_cli.py content-check output.hwpx \
+  --must-not-have "[X],TODO,lorem,placeholder,견본"
 ```
 
 ### Step 4: Visual QA
@@ -451,6 +476,8 @@ Subagent prompt template: see reference/visual_qa_prompt.md
 7. **python-hwpx set_header_text/set_footer_text 사용 금지** — 사일런트 버그. unpack→XML 직접 편집
 8. **minified XML을 직접 Edit 시도 금지** — 반드시 unpack(pretty-print) 후 편집
 9. **Raw XML로 표 직접 구성 금지** — H2Orestart 크래시 원인. 반드시 `table_builder.py` 또는 python-hwpx API 경유
+10. **raw zipfile로 직접 리팩 금지** — 반드시 `pack.py` 또는 `hwpx_cli.py save` 경유. raw `zipfile.ZipFile`은 linesegarray strip, mimetype STORED, XML minify를 안 함. 실제 사고: 텍스트 변경 후 raw zipfile로 리팩 → 한글에서 글자 중첩/압축 발생
+11. **`hwpxjs convert:hwp` 결과만 믿고 편집 금지** — 일부 HWP에서 더미 텍스트만 포함된 HWPX 생성. 변환 후 반드시 section0.xml 내용 검증
 
 ---
 
@@ -513,16 +540,20 @@ sudo apt install libreoffice default-jre poppler-utils
 # H2Orestart: apt install libreoffice-h2orestart (Debian sid+) or .oxt manual install
 ```
 
-### HWP→HWPX upgrade tools (pick one)
+### HWP→HWPX upgrade tool
 
 ```bash
-# Option A: Node.js
-npm install -g @ssabrojs/hwpxjs    # then: npx hwpxjs convert:hwp input.hwp
+# Recommended: neolord0/hwp2hwpx (Java, most accurate conversion)
+# Build once:
+git clone https://github.com/neolord0/hwp2hwpx /tmp/hwp2hwpx
+cd /tmp/hwp2hwpx && mvn -DskipTests package dependency:copy-dependencies
+# Convert:
+java -cp 'target/classes:target/dependency/*' \
+  kr.dogfoot.hwp2hwpx.CliMain input.hwp output.hwpx
+# Requires: Java 11+ (already installed for H2Orestart) + Maven
 
-# Option B: Java (neolord0/hwp2hwpx) — most accurate conversion
-# Download jar from: https://github.com/neolord0/hwp2hwpx/releases
-# then: java -jar hwp2hwpx.jar input.hwp output.hwpx
-# Requires: Java 11+ (already installed for H2Orestart)
+# NOT recommended: @ssabrojs/hwpxjs convert:hwp
+# Known issue: produces dummy HWPX with "이 문서는 HWP 파일입니다" for some files
 ```
 
 ---

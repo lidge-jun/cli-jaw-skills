@@ -794,6 +794,112 @@ def cmd_repair(args: argparse.Namespace) -> int:
         shutil.rmtree(work, ignore_errors=True)
 
 
+def cmd_content_check(args: argparse.Namespace) -> int:
+    """Check content for required/forbidden keywords."""
+    # 1. Extract all text
+    full_text = ""
+    for sec_name in _section_files(args.input):
+        with zipfile.ZipFile(args.input, "r") as zf:
+            root = etree.fromstring(zf.read(sec_name))
+        for t_node in _get_all_text_nodes(root):
+            if t_node.text:
+                full_text += t_node.text + "\n"
+
+    results: dict = {"status": "PASS", "must_have": [], "must_not_have": []}
+
+    # 2. must-have check
+    if args.must_have:
+        for kw in args.must_have.split(","):
+            kw = kw.strip()
+            if not kw:
+                continue
+            count = full_text.count(kw)
+            entry: dict = {"keyword": kw, "found": count > 0, "count": count}
+            if count > 0:
+                idx = full_text.find(kw)
+                entry["context"] = full_text[max(0, idx - 30):idx + len(kw) + 30].strip()
+            else:
+                results["status"] = "FAIL"
+            results["must_have"].append(entry)
+
+    # 3. must-not-have check
+    if args.must_not_have:
+        for kw in args.must_not_have.split(","):
+            kw = kw.strip()
+            if not kw:
+                continue
+            count = full_text.count(kw)
+            entry = {"keyword": kw, "found": count > 0, "count": count}
+            if count > 0:
+                idx = full_text.find(kw)
+                entry["context"] = full_text[max(0, idx - 30):idx + len(kw) + 30].strip()
+                results["status"] = "FAIL"
+            results["must_not_have"].append(entry)
+
+    # 4. Output
+    if args.json:
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for item in results["must_have"]:
+            mark = "✓" if item["found"] else "✗"
+            print(f"  [MUST-HAVE] {mark} {item['keyword']} ({item['count']}건)")
+        for item in results["must_not_have"]:
+            mark = "✓ clean" if not item["found"] else f"✗ {item['count']}건"
+            print(f"  [MUST-NOT]  {mark} {item['keyword']}")
+            if item["found"] and "context" in item:
+                print(f"              ...{item['context']}...")
+        print(f"\nResult: {results['status']}", file=sys.stderr)
+
+    return 0 if results["status"] == "PASS" else 1
+
+
+def cmd_insert_table(args: argparse.Namespace) -> int:
+    """Insert a table at a specific paragraph position."""
+    import csv as csv_mod
+
+    # 1. Parse data
+    if args.table_json:
+        data = json.loads(args.table_json)
+    else:
+        with open(args.csv, "r", encoding="utf-8") as f:
+            data = list(csv_mod.reader(f))
+
+    # 2. Build table XML via table_builder
+    sys.path.insert(0, str(SCRIPT_DIR))
+    from table_builder import build_table_paragraph_xml
+    tbl_p_xml = build_table_paragraph_xml(data)
+    tbl_p_el = etree.fromstring(tbl_p_xml)
+
+    # 3. Unpack, insert into section0.xml, repack
+    work = _unpack_to_tmpdir(args.input)
+    try:
+        sec_path = Path(work) / "Contents" / "section0.xml"
+        tree = etree.parse(str(sec_path))
+        root = tree.getroot()
+
+        # Find top-level hp:p elements only (not nested in tables)
+        body_tag = root.tag.split("}")[0] + "}" if "}" in root.tag else ""
+        top_paras = [p for p in root if p.tag == f"{body_tag}p" or p.tag.endswith("}p")]
+
+        if args.at_para is not None and args.at_para < len(top_paras):
+            # Insert after the specified paragraph
+            target = top_paras[args.at_para]
+            idx = list(root).index(target)
+            root.insert(idx + 1, tbl_p_el)
+        else:
+            # Append at end
+            root.append(tbl_p_el)
+
+        tree.write(str(sec_path), xml_declaration=True, encoding="utf-8")
+
+        output = args.output or args.input
+        _repack_atomic(work, output)
+        print(f"Table inserted ({len(data)} rows x {len(data[0]) if data else 0} cols). Output: {output}")
+        return 0
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 def cmd_structure(args: argparse.Namespace) -> int:
     """Document structure tree."""
     sys.path.insert(0, str(SCRIPT_DIR))
@@ -903,6 +1009,24 @@ def main() -> int:
     p.add_argument("-o", "--output", help="Output file (implies --apply)")
     p.add_argument("--json", action="store_true", help="JSON output")
 
+    # content-check
+    p = sub.add_parser("content-check", help="Keyword-based content QA")
+    p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("--must-have", help="Comma-separated keywords that MUST exist")
+    p.add_argument("--must-not-have", help="Comma-separated keywords that must NOT exist")
+    p.add_argument("--json", action="store_true", help="JSON output")
+
+    # insert-table
+    p = sub.add_parser("insert-table", help="Insert table at paragraph position")
+    p.add_argument("input", help="Input .hwpx file")
+    tbl_group = p.add_mutually_exclusive_group(required=True)
+    tbl_group.add_argument("--json", metavar="JSON", dest="table_json",
+                           help="JSON 2D array string")
+    tbl_group.add_argument("--csv", metavar="FILE", help="CSV file")
+    p.add_argument("--at-para", type=int,
+                   help="Insert after paragraph N (0-based). Default: end")
+    p.add_argument("-o", "--output", help="Output HWPX (default: overwrite input)")
+
     # structure
     p = sub.add_parser("structure", help="Document structure tree")
     p.add_argument("input", help="Input .hwpx file")
@@ -924,6 +1048,8 @@ def main() -> int:
         "chunk": cmd_chunk,
         "search-chunks": cmd_search_chunks,
         "repair": cmd_repair,
+        "content-check": cmd_content_check,
+        "insert-table": cmd_insert_table,
         "structure": cmd_structure,
     }
 

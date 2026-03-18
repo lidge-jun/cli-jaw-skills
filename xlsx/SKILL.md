@@ -22,6 +22,7 @@ Do NOT use for: Word documents, HTML reports, standalone Python scripts, databas
 | **Edit XML** | Unpack → XML Edit → Pack (OOXML workflow)         |
 | **Recalc**   | `scripts/recalc.py` or soffice headless           |
 | **Review**   | soffice → PDF → visual inspection                |
+| **Search**   | `xlsx_cli.py search input.xlsx "pattern" [--json]` |
 
 ### Unified CLI (`xlsx_cli.py`)
 
@@ -45,6 +46,10 @@ python scripts/xlsx_cli.py recalc input.xlsx output.xlsx --check-errors
 python scripts/xlsx_cli.py text input.xlsx
 python scripts/xlsx_cli.py sheet-overview input.xlsx --json
 python scripts/xlsx_cli.py formula-audit input.xlsx --json
+
+# Search
+python scripts/xlsx_cli.py search input.xlsx "pattern" --json
+python scripts/xlsx_cli.py search input.xlsx "pattern" --sheet "Sheet1"
 ```
 
 ---

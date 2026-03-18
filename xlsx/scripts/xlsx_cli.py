@@ -10,6 +10,7 @@ Subcommands:
     text            Extract cell text from XLSX
     sheet-overview  List sheets with row/column counts
     formula-audit   Scan for formula errors across all sheets
+    search          Search text/values across sheets
 
 Usage:
     python xlsx_cli.py open input.xlsx work/
@@ -223,6 +224,53 @@ def cmd_formula_audit(args: argparse.Namespace) -> int:
     return 1 if errors else 0
 
 
+def cmd_search(args: argparse.Namespace) -> int:
+    """Search text/values across sheets with regex."""
+    import re
+
+    pattern = re.compile(args.pattern)
+    try:
+        wb = _load_workbook_readonly(args.input)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+    results: list[dict] = []
+    try:
+        sheets = [args.sheet] if args.sheet else wb.sheetnames
+        for sheet_name in sheets:
+            if sheet_name not in wb.sheetnames:
+                print(f"Error: Sheet '{sheet_name}' not found.", file=sys.stderr)
+                wb.close()
+                return 1
+            ws = wb[sheet_name]
+            for row in ws.iter_rows():
+                for cell in row:
+                    if cell.value is None:
+                        continue
+                    text = str(cell.value)
+                    if pattern.search(text):
+                        results.append({
+                            "sheet": sheet_name,
+                            "cell": cell.coordinate,
+                            "text": text[:120],
+                        })
+    finally:
+        wb.close()
+
+    if not results:
+        print("No matches found.", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for r in results:
+            print(f"{r['sheet']}:{r['cell']}: {r['text']}")
+    print(f"\n{len(results)} match(es) found.", file=sys.stderr)
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -276,6 +324,13 @@ def main() -> int:
     p.add_argument("input", help="Input .xlsx file")
     p.add_argument("--json", "-j", action="store_true", help="JSON output")
 
+    # search
+    p = sub.add_parser("search", help="Search text/values across sheets")
+    p.add_argument("input", help="Input .xlsx file")
+    p.add_argument("pattern", help="Regex pattern to search")
+    p.add_argument("--sheet", help="Limit search to specific sheet name")
+    p.add_argument("--json", "-j", action="store_true", help="JSON output")
+
     args = parser.parse_args()
 
     commands = {
@@ -287,6 +342,7 @@ def main() -> int:
         "text": cmd_text,
         "sheet-overview": cmd_sheet_overview,
         "formula-audit": cmd_formula_audit,
+        "search": cmd_search,
     }
 
     return commands[args.command](args)

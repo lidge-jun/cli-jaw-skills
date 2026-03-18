@@ -20,6 +20,8 @@ Do NOT use for: Keynote, Google Slides API, PDFs, or image generation.
 | **Read**   | `markitdown[pptx]` or `thumbnail.py`        |
 | **Edit**   | Unpack → XML Edit → Pack. See [editing.md](editing.md) |
 | **Review** | soffice → PDF → pdftoppm → image inspection |
+| **Search** | `pptx_cli.py search input.pptx "pattern" [--json]` |
+| **TOC**    | `pptx_cli.py toc input.pptx [--json]` |
 
 For PptxGenJS API reference, see [pptxgenjs.md](pptxgenjs.md).
 
@@ -50,6 +52,10 @@ python scripts/pptx_cli.py clean work/ --delete
 
 # Export
 python scripts/pptx_cli.py export-pdf input.pptx output.pdf
+
+# Search & Navigation (presentation order)
+python scripts/pptx_cli.py search input.pptx "pattern" --json
+python scripts/pptx_cli.py toc input.pptx --json
 ```
 
 ---

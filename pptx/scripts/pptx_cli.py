@@ -11,6 +11,8 @@ Subcommands:
     add-slide       Add blank or duplicate slide (operates on unpacked dir)
     clean           Find/remove orphaned files (operates on unpacked dir)
     export-pdf      Convert PPTX to PDF via LibreOffice
+    search          Search text across slides (presentation order)
+    toc             Extract slide titles as table of contents
 
 Usage:
     python pptx_cli.py open input.pptx work/
@@ -44,6 +46,10 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 # DrawingML namespace for text elements
 ANS = "http://schemas.openxmlformats.org/drawingml/2006/main"
+# PresentationML namespace
+PNS = "http://schemas.openxmlformats.org/presentationml/2006/main"
+# Relationships namespace
+RNS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 
 
 # ---------------------------------------------------------------------------
@@ -59,12 +65,51 @@ def _unpack_to_tmpdir(pptx_path: str) -> str:
 
 
 def _slide_files(pptx_path: str) -> list[str]:
-    """List slide XML filenames inside PPTX."""
+    """List slide XML filenames inside PPTX (filename sorted, for legacy use)."""
     with zipfile.ZipFile(pptx_path, "r") as zf:
         return sorted(
             n for n in zf.namelist()
             if n.startswith("ppt/slides/slide") and n.endswith(".xml")
         )
+
+
+def _ordered_slide_files(pptx_path: str) -> list[tuple[int, str]]:
+    """Return slides in presentation order as [(display_num, filename), ...].
+
+    Reads ppt/presentation.xml for ordering via sldIdLst,
+    then resolves rId -> filename via ppt/_rels/presentation.xml.rels.
+    Falls back to filename sort if presentation.xml is missing.
+    """
+    from xml.etree import ElementTree as ET
+
+    try:
+        with zipfile.ZipFile(pptx_path, "r") as zf:
+            # 1. Parse rels to build rId -> filename map
+            rels_xml = zf.read("ppt/_rels/presentation.xml.rels")
+            rels_root = ET.fromstring(rels_xml)
+            rid_to_file: dict[str, str] = {}
+            for rel in rels_root:
+                rid = rel.get("Id", "")
+                target = rel.get("Target", "")
+                if target.startswith("slides/"):
+                    rid_to_file[rid] = f"ppt/{target}"
+
+            # 2. Parse presentation.xml for slide order
+            pres_xml = zf.read("ppt/presentation.xml")
+            pres_root = ET.fromstring(pres_xml)
+            ordered: list[tuple[int, str]] = []
+            for i, sld_id in enumerate(pres_root.iter(f"{{{PNS}}}sldId")):
+                rid = sld_id.get(f"{{{RNS}}}id")
+                if rid and rid in rid_to_file:
+                    ordered.append((i + 1, rid_to_file[rid]))
+
+        if ordered:
+            return ordered
+    except (KeyError, ET.ParseError):
+        pass
+
+    # Fallback: filename sort
+    return [(i + 1, n) for i, n in enumerate(_slide_files(pptx_path))]
 
 
 # ---------------------------------------------------------------------------
@@ -248,6 +293,87 @@ def cmd_export_pdf(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_search(args: argparse.Namespace) -> int:
+    """Search text content across slides with regex."""
+    import re
+    from xml.etree import ElementTree as ET
+
+    pattern = re.compile(args.pattern)
+    results: list[dict] = []
+
+    for display_num, slide_name in _ordered_slide_files(args.input):
+        with zipfile.ZipFile(args.input, "r") as zf:
+            root = ET.fromstring(zf.read(slide_name))
+
+        # Collect text per shape (sp) for context
+        for sp in root.iter(f"{{{PNS}}}sp"):
+            texts = []
+            for t in sp.iter(f"{{{ANS}}}t"):
+                if t.text:
+                    texts.append(t.text)
+            full_text = "".join(texts)
+            if pattern.search(full_text):
+                results.append({
+                    "slide": slide_name,
+                    "slide_num": display_num,
+                    "text": full_text[:120],
+                })
+
+    if not results:
+        print("No matches found.", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for r in results:
+            print(f"slide{r['slide_num']}: {r['text']}")
+    print(f"\n{len(results)} match(es) found.", file=sys.stderr)
+    return 0
+
+
+def _get_slide_title(root) -> str:
+    """Extract title text from a slide XML root."""
+    from xml.etree import ElementTree as ET
+
+    # Find shape with title placeholder
+    for sp in root.iter(f"{{{PNS}}}sp"):
+        for ph in sp.iter(f"{{{PNS}}}ph"):
+            ph_type = ph.get("type", "")
+            if ph_type in ("title", "ctrTitle"):
+                texts = []
+                for t in sp.iter(f"{{{ANS}}}t"):
+                    if t.text:
+                        texts.append(t.text)
+                return "".join(texts).strip()
+
+    # Fallback: first non-empty text in slide
+    for t in root.iter(f"{{{ANS}}}t"):
+        if t.text and t.text.strip():
+            return t.text.strip()
+    return "(untitled)"
+
+
+def cmd_toc(args: argparse.Namespace) -> int:
+    """Extract slide titles as table of contents."""
+    from xml.etree import ElementTree as ET
+
+    toc = []
+    for display_num, slide_name in _ordered_slide_files(args.input):
+        with zipfile.ZipFile(args.input, "r") as zf:
+            root = ET.fromstring(zf.read(slide_name))
+
+        title = _get_slide_title(root)
+        toc.append({"slide_num": display_num, "title": title})
+
+    if args.json:
+        print(json.dumps(toc, ensure_ascii=False, indent=2))
+    else:
+        for entry in toc:
+            print(f"slide{entry['slide_num']}: {entry['title']}")
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -311,6 +437,17 @@ def main() -> int:
     p.add_argument("input", help="Input .pptx file")
     p.add_argument("output", help="Output .pdf file")
 
+    # search
+    p = sub.add_parser("search", help="Search text across slides")
+    p.add_argument("input", help="Input .pptx file")
+    p.add_argument("pattern", help="Regex pattern to search")
+    p.add_argument("--json", "-j", action="store_true", help="JSON output")
+
+    # toc
+    p = sub.add_parser("toc", help="Extract slide titles as table of contents")
+    p.add_argument("input", help="Input .pptx file")
+    p.add_argument("--json", "-j", action="store_true", help="JSON output")
+
     args = parser.parse_args()
 
     commands = {
@@ -323,6 +460,8 @@ def main() -> int:
         "add-slide": cmd_add_slide,
         "clean": cmd_clean,
         "export-pdf": cmd_export_pdf,
+        "search": cmd_search,
+        "toc": cmd_toc,
     }
 
     return commands[args.command](args)
