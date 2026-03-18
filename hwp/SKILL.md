@@ -174,7 +174,26 @@ python scripts/build_hwpx.py \
 
 Available templates: `base`, `gonmun` (official letter), `report`, `minutes`, `proposal`
 
-### 3.3 Markdown/JSON → HWPX
+### 3.3 Table Builder (H2Orestart-compatible)
+
+Raw XML tables often crash H2Orestart (LibreOffice HWPX plugin) due to missing undocumented attributes.
+Use `table_builder.py` which generates tables via python-hwpx API at runtime:
+
+```bash
+# From JSON data
+python scripts/table_builder.py --json '[["연도","규모"],["2024","4200"]]' -o table.xml
+
+# From CSV
+python scripts/table_builder.py --csv data.csv -o table.xml
+
+# As library (inject into section0.xml)
+from table_builder import build_table_xml
+tbl_xml = build_table_xml([["연도", "규모"], ["2024", "4200"]])
+```
+
+Golden table templates are also available in `reference/table_templates/` for manual reference.
+
+### 3.4 Markdown/JSON → HWPX
 
 ```bash
 python scripts/create_document.py --input content.md --output doc.hwpx
@@ -431,6 +450,7 @@ Subagent prompt template: see reference/visual_qa_prompt.md
 6. **secPr을 다른 문단으로 이동 금지** — 반드시 첫 문단 첫 run에 유지
 7. **python-hwpx set_header_text/set_footer_text 사용 금지** — 사일런트 버그. unpack→XML 직접 편집
 8. **minified XML을 직접 Edit 시도 금지** — 반드시 unpack(pretty-print) 후 편집
+9. **Raw XML로 표 직접 구성 금지** — H2Orestart 크래시 원인. 반드시 `table_builder.py` 또는 python-hwpx API 경유
 
 ---
 
