@@ -42,6 +42,11 @@ python scripts/hwpx_cli.py tables input.hwpx [--csv]        # list tables / CSV 
 python scripts/hwpx_cli.py fill-table input.hwpx IDX '{"label>dir":"val"}' -o out.hwpx
 python scripts/hwpx_cli.py validate input.hwpx              # structural validation
 python scripts/hwpx_cli.py page-guard -r ref.hwpx -o out.hwpx  # page drift check
+python scripts/hwpx_cli.py toc input.hwpx [--json]          # table of contents from headings
+python scripts/hwpx_cli.py chunk input.hwpx [--by heading|size|pagebreak] [--json]
+python scripts/hwpx_cli.py search-chunks input.hwpx "pattern" [--json]  # search with chunk context
+python scripts/hwpx_cli.py repair input.hwpx                # dry-run diagnosis (default)
+python scripts/hwpx_cli.py repair input.hwpx --apply        # conservative auto-fix
 python scripts/hwpx_cli.py structure input.hwpx              # document structure tree
 ```
 
@@ -411,6 +416,8 @@ Subagent prompt template: see reference/visual_qa_prompt.md
 16. **Match reference page count** — adjust text to fit existing layout
 17. **Atomic save** — pack.py writes to temp file → validates ZIP → atomic rename. Original file is never corrupted on failure
 18. **Fill-table by label path** — use `hwpx_cli.py fill-table` for gov forms: `"이름 > 오른쪽": "value"` finds label cell, navigates relatively
+19. **repair is dry-run by default** — `repair` reports issues without changing files. Use `--apply` or `-o` for actual fixes. Only 3 safe fixes: XML decl, linesegarray, IDRef→0
+20. **Agentic Reading for long docs** — use `toc` → `chunk` → `search-chunks` pipeline to navigate 50+ page documents without loading everything into context
 
 ---
 

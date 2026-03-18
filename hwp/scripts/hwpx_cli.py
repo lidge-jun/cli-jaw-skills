@@ -368,6 +368,392 @@ def cmd_page_guard(args: argparse.Namespace) -> int:
     return 0
 
 
+# ---------------------------------------------------------------------------
+# Agentic Reading + repair_xml (plan3)
+# ---------------------------------------------------------------------------
+
+def _read_header_xml(hwpx_path: str) -> etree._Element:
+    """Read and parse header.xml from HWPX ZIP."""
+    with zipfile.ZipFile(hwpx_path, "r") as zf:
+        return etree.fromstring(zf.read("Contents/header.xml"))
+
+
+def _get_heading_para_ids(header_root: etree._Element) -> dict[str, int]:
+    """Return {paraPr_id: heading_level} for paraPr with explicit OUTLINE heading."""
+    heading_map: dict[str, int] = {}
+    for pp in header_root.findall(".//hh:paraPr", NS):
+        heading = pp.find("hh:heading", NS)
+        if heading is not None and heading.get("type", "NONE") != "NONE":
+            pid = pp.get("id")
+            if pid is not None:
+                heading_map[pid] = int(heading.get("level", "0"))
+    return heading_map
+
+
+def _build_toc(hwpx_path: str) -> list[dict]:
+    """Build table of contents from heading paragraphs."""
+    header_root = _read_header_xml(hwpx_path)
+    heading_ids = _get_heading_para_ids(header_root)
+
+    if not heading_ids:
+        return []
+
+    toc: list[dict] = []
+    for sec_name in _section_files(hwpx_path):
+        with zipfile.ZipFile(hwpx_path, "r") as zf:
+            root = etree.fromstring(zf.read(sec_name))
+
+        all_paras = root.xpath(".//hp:p", namespaces=NS)
+        for i, p in enumerate(all_paras):
+            ppr_id = p.get("paraPrIDRef", "0")
+            if ppr_id in heading_ids:
+                text = _get_text(p).strip()
+                if text:
+                    toc.append({
+                        "level": heading_ids[ppr_id],
+                        "title": text,
+                        "para_index": i,
+                        "section": sec_name,
+                    })
+    return toc
+
+
+def _build_chunks(
+    hwpx_path: str,
+    by: str = "heading",
+    max_chars: int = 4000,
+) -> list[dict]:
+    """Split document into chunks for agentic reading."""
+    header_root = _read_header_xml(hwpx_path)
+    heading_ids = _get_heading_para_ids(header_root)
+
+    # If heading mode requested but no headings exist, fallback to size
+    if by == "heading" and not heading_ids:
+        by = "size"
+
+    chunks: list[dict] = []
+    chunk_id = 0
+
+    for sec_name in _section_files(hwpx_path):
+        with zipfile.ZipFile(hwpx_path, "r") as zf:
+            root = etree.fromstring(zf.read(sec_name))
+
+        all_paras = root.xpath(".//hp:p", namespaces=NS)
+
+        if by == "heading":
+            current: dict = {"id": chunk_id, "title": "(intro)", "start_para": 0,
+                             "paragraphs": [], "char_count": 0}
+
+            for i, p in enumerate(all_paras):
+                ppr_id = p.get("paraPrIDRef", "0")
+                text = _get_text(p)
+
+                if ppr_id in heading_ids and current["paragraphs"]:
+                    current["end_para"] = i - 1
+                    current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                    chunks.append(current)
+                    chunk_id += 1
+                    current = {"id": chunk_id, "title": text.strip(),
+                               "start_para": i, "paragraphs": [], "char_count": 0}
+
+                current["paragraphs"].append(p)
+                current["char_count"] += len(text)
+
+            if current["paragraphs"]:
+                current["end_para"] = len(all_paras) - 1
+                current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                chunks.append(current)
+                chunk_id += 1
+
+        elif by == "pagebreak":
+            current = {"id": chunk_id, "title": f"page-{chunk_id}",
+                        "start_para": 0, "paragraphs": [], "char_count": 0}
+
+            for i, p in enumerate(all_paras):
+                text = _get_text(p)
+                if p.get("pageBreak") == "1" and current["paragraphs"]:
+                    current["end_para"] = i - 1
+                    current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                    chunks.append(current)
+                    chunk_id += 1
+                    current = {"id": chunk_id, "title": f"page-{chunk_id}",
+                                "start_para": i, "paragraphs": [], "char_count": 0}
+
+                current["paragraphs"].append(p)
+                current["char_count"] += len(text)
+
+            if current["paragraphs"]:
+                current["end_para"] = len(all_paras) - 1
+                current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                chunks.append(current)
+                chunk_id += 1
+
+        else:  # size
+            current = {"id": chunk_id, "title": f"chunk-{chunk_id}",
+                        "start_para": 0, "paragraphs": [], "char_count": 0}
+
+            for i, p in enumerate(all_paras):
+                text = _get_text(p)
+                # Don't split inside a table — check if paragraph contains tbl
+                has_table = p.find(".//hp:tbl", NS) is not None
+
+                if current["char_count"] + len(text) > max_chars and current["paragraphs"] and not has_table:
+                    current["end_para"] = i - 1
+                    current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                    chunks.append(current)
+                    chunk_id += 1
+                    current = {"id": chunk_id, "title": f"chunk-{chunk_id}",
+                                "start_para": i, "paragraphs": [], "char_count": 0}
+
+                current["paragraphs"].append(p)
+                current["char_count"] += len(text)
+
+            if current["paragraphs"]:
+                current["end_para"] = len(all_paras) - 1
+                current["preview"] = _get_text(current["paragraphs"][0])[:80]
+                chunks.append(current)
+                chunk_id += 1
+
+    # Strip non-serializable paragraph elements from output
+    for c in chunks:
+        del c["paragraphs"]
+
+    return chunks
+
+
+def cmd_toc(args: argparse.Namespace) -> int:
+    """Extract table of contents from heading paragraphs."""
+    toc = _build_toc(args.input)
+
+    if not toc:
+        print("No headings found. Use `chunk --by size` for documents without heading structure.",
+              file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(toc, ensure_ascii=False, indent=2))
+    else:
+        for entry in toc:
+            indent = "  " * entry["level"]
+            print(f"{indent}{entry['title']} (p{entry['para_index']})")
+    return 0
+
+
+def cmd_chunk(args: argparse.Namespace) -> int:
+    """Split document into chunks for agentic reading."""
+    chunks = _build_chunks(args.input, by=args.by, max_chars=args.max_chars)
+
+    if not chunks:
+        print("No chunks produced.", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(chunks, ensure_ascii=False, indent=2))
+    else:
+        for c in chunks:
+            print(f"[{c['id']}] {c['title']} (p{c['start_para']}-p{c['end_para']}, {c['char_count']} chars)")
+            if c.get("preview"):
+                print(f"     {c['preview'][:60]}...")
+    return 0
+
+
+def cmd_search_chunks(args: argparse.Namespace) -> int:
+    """Search within chunks for contextual results."""
+    chunks_meta = _build_chunks(args.input, by="heading", max_chars=4000)
+    pattern = re.compile(args.pattern)
+
+    # Re-read paragraphs to match against chunks
+    results: list[dict] = []
+    for sec_name in _section_files(args.input):
+        with zipfile.ZipFile(args.input, "r") as zf:
+            root = etree.fromstring(zf.read(sec_name))
+        all_paras = root.xpath(".//hp:p", namespaces=NS)
+
+        for chunk in chunks_meta:
+            start = chunk["start_para"]
+            end = chunk.get("end_para", len(all_paras) - 1)
+            for pi in range(start, min(end + 1, len(all_paras))):
+                text = _get_text(all_paras[pi])
+                if pattern.search(text):
+                    results.append({
+                        "chunk_id": chunk["id"],
+                        "chunk_title": chunk["title"],
+                        "para_index": pi,
+                        "context": text[:120],
+                    })
+
+    if not results:
+        print("No matches found.", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for r in results:
+            print(f"[chunk {r['chunk_id']}] {r['chunk_title']} | p{r['para_index']}: {r['context']}")
+
+    print(f"\n{len(results)} match(es) in {len(set(r['chunk_id'] for r in results))} chunk(s).",
+          file=sys.stderr)
+    return 0
+
+
+def _collect_valid_ids(header_root: etree._Element) -> dict[str, set[str]]:
+    """Collect valid IDs from header.xml for charPr, paraPr, borderFill."""
+    ids: dict[str, set[str]] = {"charPr": set(), "paraPr": set(), "borderFill": set()}
+    for cp in header_root.findall(".//hh:charPr", NS):
+        cid = cp.get("id")
+        if cid:
+            ids["charPr"].add(cid)
+    for pp in header_root.findall(".//hh:paraPr", NS):
+        pid = pp.get("id")
+        if pid:
+            ids["paraPr"].add(pid)
+    for bf in header_root.findall(".//hh:borderFill", NS):
+        bid = bf.get("id")
+        if bid:
+            ids["borderFill"].add(bid)
+    return ids
+
+
+def _fix_xml_declaration(content: str) -> str:
+    """Fix missing or duplicate XML declarations."""
+    lines = content.split("\n")
+    decl_indices = [i for i, l in enumerate(lines) if l.strip().startswith("<?xml")]
+
+    if not decl_indices:
+        # Missing — add standard declaration
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' + content
+    elif len(decl_indices) > 1:
+        # Duplicate — keep first only
+        for idx in reversed(decl_indices[1:]):
+            lines.pop(idx)
+        return "\n".join(lines)
+    return content
+
+
+def _reset_invalid_id_refs(root: etree._Element, valid_ids: dict[str, set[str]]) -> int:
+    """Reset invalid IDRef attributes to 0. Returns count of resets."""
+    resets = 0
+    ref_map = {
+        "charPrIDRef": "charPr",
+        "paraPrIDRef": "paraPr",
+        "borderFillIDRef": "borderFill",
+    }
+
+    for el in root.iter():
+        for attr, id_type in ref_map.items():
+            val = el.get(attr)
+            if val is not None and val != "0" and val not in valid_ids.get(id_type, set()):
+                el.set(attr, "0")
+                resets += 1
+    return resets
+
+
+def cmd_repair(args: argparse.Namespace) -> int:
+    """Diagnose and optionally repair HWPX XML issues.
+
+    Default: dry-run (report only, no file changes).
+    Use --apply or -o to actually fix safe issues.
+    """
+    apply = args.apply or args.output is not None
+
+    work = _unpack_to_tmpdir(args.input)
+    try:
+        repairs: list[str] = []
+        warnings: list[str] = []
+
+        # Read header.xml for ID validation
+        header_path = Path(work) / "Contents" / "header.xml"
+        if header_path.is_file():
+            header_root = etree.parse(str(header_path)).getroot()
+            valid_ids = _collect_valid_ids(header_root)
+        else:
+            header_root = None
+            valid_ids = {}
+
+        # Only check section XMLs for IDRef (header.xml *defines* IDs, not references them)
+        section_xml_names = {"section0.xml", "section1.xml", "section2.xml", "section3.xml"}
+
+        sys.path.insert(0, str(SCRIPT_DIR))
+        from office.pack import strip_linesegarray
+
+        for xml_path in sorted(Path(work).rglob("*.xml")):
+            content = xml_path.read_text(encoding="utf-8")
+            original = content
+            file_repairs: list[str] = []
+            is_section = xml_path.name in section_xml_names
+
+            # Safe auto-fix: XML declaration
+            fixed = _fix_xml_declaration(content)
+            if fixed != content:
+                file_repairs.append("xml-declaration")
+                content = fixed
+
+            # Safe auto-fix: linesegarray strip (section XMLs only)
+            if is_section:
+                stripped = strip_linesegarray(content)
+                if stripped != content:
+                    file_repairs.append("linesegarray-stripped")
+                    content = stripped
+
+            # Try parsing — if fails, report but DON'T auto-fix
+            try:
+                root = etree.fromstring(content.encode("utf-8"))
+                # Safe auto-fix: invalid IDRef → 0 (section XMLs only)
+                if valid_ids and is_section:
+                    n = _reset_invalid_id_refs(root, valid_ids)
+                    if n > 0:
+                        file_repairs.append(f"idref-reset({n})")
+                        content = '<?xml version="1.0" encoding="UTF-8"?>' + etree.tostring(root, encoding="unicode")
+            except etree.XMLSyntaxError as e:
+                warnings.append(f"UNPARSEABLE: {xml_path.name}: {e}")
+
+            if file_repairs:
+                rel = xml_path.relative_to(work)
+                repairs.append(f"{rel}: {', '.join(file_repairs)}")
+                if apply:
+                    xml_path.write_text(content, encoding="utf-8")
+
+        # Output report
+        if repairs:
+            label = "REPAIRED" if apply else "WOULD REPAIR"
+            print(f"{label}:")
+            for r in repairs:
+                print(f"  - {r}")
+        if warnings:
+            print("WARNINGS (manual fix needed):")
+            for w in warnings:
+                print(f"  - {w}")
+        if not repairs and not warnings:
+            print("No issues found.")
+
+        # Actually repack if applying
+        if apply and repairs:
+            output = args.output or args.input
+            # Backup original
+            backup = Path(args.input).with_suffix(".hwpx.bak")
+            if not backup.exists():
+                shutil.copy2(args.input, backup)
+                print(f"Backup: {backup}")
+            _repack_atomic(work, output)
+            print(f"Output: {output}")
+
+            # Run validate
+            sys.path.insert(0, str(SCRIPT_DIR))
+            from validate import validate as validate_hwpx
+            errors = validate_hwpx(output)
+            if errors:
+                print("WARNING: repaired file has validation issues:", file=sys.stderr)
+                for e in errors:
+                    print(f"  - {e}", file=sys.stderr)
+            else:
+                print("Post-repair validation: PASS")
+
+        return 1 if warnings else 0
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 def cmd_structure(args: argparse.Namespace) -> int:
     """Document structure tree."""
     sys.path.insert(0, str(SCRIPT_DIR))
@@ -445,6 +831,33 @@ def main() -> int:
     p.add_argument("--max-text-delta", type=float, default=0.15)
     p.add_argument("--max-para-delta", type=float, default=0.25)
 
+    # toc
+    p = sub.add_parser("toc", help="Extract table of contents from headings")
+    p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("--json", action="store_true", help="JSON output")
+
+    # chunk
+    p = sub.add_parser("chunk", help="Split document into chunks for agentic reading")
+    p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("--by", choices=["heading", "pagebreak", "size"], default="heading",
+                   help="Chunking strategy (default: heading, falls back to size)")
+    p.add_argument("--max-chars", type=int, default=4000,
+                   help="Max chars per chunk for size mode (default: 4000)")
+    p.add_argument("--json", action="store_true", help="JSON output")
+
+    # search-chunks
+    p = sub.add_parser("search-chunks", help="Search within document chunks")
+    p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("pattern", help="Search pattern (regex)")
+    p.add_argument("--json", action="store_true", help="JSON output")
+
+    # repair
+    p = sub.add_parser("repair", help="Diagnose/repair HWPX XML issues (dry-run by default)")
+    p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("--apply", action="store_true",
+                   help="Actually apply safe repairs (default: dry-run report only)")
+    p.add_argument("-o", "--output", help="Output file (implies --apply)")
+
     # structure
     p = sub.add_parser("structure", help="Document structure tree")
     p.add_argument("input", help="Input .hwpx file")
@@ -462,6 +875,10 @@ def main() -> int:
         "fill-table": cmd_fill_table,
         "validate": cmd_validate,
         "page-guard": cmd_page_guard,
+        "toc": cmd_toc,
+        "chunk": cmd_chunk,
+        "search-chunks": cmd_search_chunks,
+        "repair": cmd_repair,
         "structure": cmd_structure,
     }
 
