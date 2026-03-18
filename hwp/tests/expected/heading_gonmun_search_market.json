@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": 0,
+    "chunk_title": "(intro)",
+    "para_index": 2,
+    "context": "시장 규모는 연간 1조원 이상으로 추정된다."
+  },
+  {
+    "chunk_id": 3,
+    "chunk_title": "2. 시장 분석",
+    "para_index": 8,
+    "context": "2. 시장 분석"
+  },
+  {
+    "chunk_id": 3,
+    "chunk_title": "2. 시장 분석",
+    "para_index": 9,
+    "context": "국내 의료 마케팅 시장은 급성장 중이다."
+  },
+  {
+    "chunk_id": 4,
+    "chunk_title": "2.1 시장 규모",
+    "para_index": 10,
+    "context": "2.1 시장 규모"
+  },
+  {
+    "chunk_id": 4,
+    "chunk_title": "2.1 시장 규모",
+    "para_index": 11,
+    "context": "2024년 기준 의료 마케팅 시장 규모는 약 5,000억원이다."
+  }
+]

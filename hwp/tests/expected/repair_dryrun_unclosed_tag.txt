@@ -1,0 +1,2 @@
+WARNINGS (manual fix needed):
+  - UNPARSEABLE: section0.xml: Opening and ending tag mismatch: p line 189 and sec, line 194, column 10 (<string>, line 194)

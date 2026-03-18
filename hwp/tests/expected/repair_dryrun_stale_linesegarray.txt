@@ -1,0 +1,2 @@
+WOULD REPAIR:
+  - Contents/section0.xml: linesegarray-stripped

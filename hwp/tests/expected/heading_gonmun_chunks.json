@@ -1,0 +1,58 @@
+[
+  {
+    "id": 0,
+    "title": "(intro)",
+    "start_para": 0,
+    "char_count": 66,
+    "end_para": 2,
+    "preview": "1. 사업 개요"
+  },
+  {
+    "id": 1,
+    "title": "1.1 배경",
+    "start_para": 3,
+    "char_count": 80,
+    "end_para": 5,
+    "preview": "1.1 배경"
+  },
+  {
+    "id": 2,
+    "title": "1.2 목적",
+    "start_para": 6,
+    "char_count": 52,
+    "end_para": 7,
+    "preview": "1.2 목적"
+  },
+  {
+    "id": 3,
+    "title": "2. 시장 분석",
+    "start_para": 8,
+    "char_count": 30,
+    "end_para": 9,
+    "preview": "2. 시장 분석"
+  },
+  {
+    "id": 4,
+    "title": "2.1 시장 규모",
+    "start_para": 10,
+    "char_count": 63,
+    "end_para": 12,
+    "preview": "2.1 시장 규모"
+  },
+  {
+    "id": 5,
+    "title": "2.2 경쟁 환경",
+    "start_para": 13,
+    "char_count": 33,
+    "end_para": 14,
+    "preview": "2.2 경쟁 환경"
+  },
+  {
+    "id": 6,
+    "title": "3. 기술 개발 계획",
+    "start_para": 15,
+    "char_count": 37,
+    "end_para": 17,
+    "preview": "3. 기술 개발 계획"
+  }
+]

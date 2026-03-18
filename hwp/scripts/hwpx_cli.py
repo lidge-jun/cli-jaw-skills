@@ -730,11 +730,12 @@ def cmd_repair(args: argparse.Namespace) -> int:
         # Actually repack if applying
         if apply and repairs:
             output = args.output or args.input
-            # Backup original
-            backup = Path(args.input).with_suffix(".hwpx.bak")
-            if not backup.exists():
-                shutil.copy2(args.input, backup)
-                print(f"Backup: {backup}")
+            # Backup only when overwriting input (no -o specified)
+            if not args.output:
+                backup = Path(args.input).with_suffix(".hwpx.bak")
+                if not backup.exists():
+                    shutil.copy2(args.input, backup)
+                    print(f"Backup: {backup}")
             _repack_atomic(work, output)
             print(f"Output: {output}")
 
