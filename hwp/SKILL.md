@@ -3,681 +3,510 @@ name: hwp
 description: "HWP/HWPX create, read, edit, review. Triggers: 한글, .hwp, .hwpx, HWP, HWPX, Korean documents."
 ---
 
-# HWP Skill
+# HWP/HWPX Document Skill
 
-Use this skill for any .hwp / .hwpx task: create, read, edit, or manipulate Hangul Word Processor documents.
-Triggers: "한글", ".hwp", ".hwpx", "HWP", "HWPX", Korean documents, 한컴오피스.
-Covers: HWPX creation (python-hwpx), reading both HWP/HWPX, editing via XML workflow, visual QA, CJK/Korean handling.
-Do NOT use for: DOCX, PDFs, spreadsheets, or Google Docs.
+Create, read, edit, and validate Hancom Office HWP 5.0 (binary) and HWPX (ZIP+XML) files.
+HWPX uses **XML-first direct editing**; HWP uses **read + convert strategy**.
+
+Triggers: "한글", ".hwp", ".hwpx", "HWP", "HWPX", Korean documents, 한컴오피스, OWPML.
+Do NOT use for: DOCX, PDF, spreadsheets, or Google Docs.
 
 ---
 
 ## Quick Reference
 
-| Task        | Tool                                                 |
-| ----------- | ---------------------------------------------------- |
-| **Create**  | `python-hwpx` (pip) — Pure Python                    |
-| **Read**    | `hwp-hwpx-parser` or `hwpparser text`                |
-| **Edit**    | Unpack → XML Edit → Pack (HWPX is ZIP+XML)           |
-| **Convert** | `hwpparser convert` (HWP→Text/HTML/ODT/PDF, MD→HWPX) |
-| **Review**  | soffice → PDF → pdftoppm → image inspection          |
+| Task | Tool / Command |
+|------|----------------|
+| **Detect format** | `file doc.hwpx` → ZIP = HWPX, "HWP Document" = HWP 5.0 |
+| **Create HWPX** | `python-hwpx` API or `build_hwpx.py` (template-based) |
+| **Read HWPX** | `text_extract.py` or `python-hwpx` TextExtractor |
+| **Read HWP** | `hwp5proc text input.hwp` (pyhwp) |
+| **Edit HWPX** | unpack → pretty-print → Edit → pack (auto strip+minify) |
+| **Upgrade HWP** | `npx hwpxjs convert:hwp` or `java -jar hwp2hwpx.jar` → then edit HWPX |
+| **Validate** | `validate.py` + `page_guard.py` |
+| **HWPX → PDF** | `soffice --headless --convert-to pdf` (needs H2Orestart+Java) |
+| **Visual QA** | PDF → `pdftoppm -jpeg -r 150` → subagent inspection |
 
 ### Format Overview
 
-| Format | Extension | Structure            | Read | Write | Notes                  |
-| ------ | --------- | -------------------- | ---- | ----- | ---------------------- |
-| HWPX   | `.hwpx`   | ZIP + XML (OWPML)    | ✅    | ✅     | Modern, cross-platform |
-| HWP    | `.hwp`    | OLE2 compound binary | ✅    | ❌     | Legacy v5 format       |
-
-> **HWPX = DOCX equivalent** — same ZIP+XML pattern. Unpack/pack workflows transfer directly from DOCX skill.
-
-### Converting .hwp to .hwpx
-
-Legacy `.hwp` files should be converted via 한컴오피스 or `hwpparser`:
-
-```bash
-hwpparser convert document.hwp output.hwpx
-```
-
-### Converting to Images
-
-```bash
-soffice --headless --convert-to pdf document.hwpx
-pdftoppm -jpeg -r 150 document.pdf page
-```
+| Format | Ext | Structure | Read | Write | Notes |
+|--------|-----|-----------|------|-------|-------|
+| HWPX | `.hwpx` | ZIP + XML (OWPML) | ✅ | ✅ | Korean gov standard, cross-platform |
+| HWP | `.hwp` | OLE2 compound binary | ✅ | ❌ | Legacy v5, read-only |
 
 ---
 
-## Creating Documents: python-hwpx
+## 1. HWPX Editing Workflow (Core)
 
-> [python-hwpx GitHub](https://github.com/airmang/python-hwpx) — MIT License
-> Only dependency: `lxml`
+### ⚠️ Single-Line XML Problem
 
-```bash
-pip install python-hwpx
+Hancom saves HWPX internal XML as **minified single-line** text. grep/diff/Edit tools cannot work on it.
+Always follow this pipeline:
+
+```
+unpack (pretty-print) → Edit → pack (auto strip + minify) → validate → page-guard
 ```
 
-### Basic Structure
+### Step 1: Unpack + Pretty-print
+
+```bash
+python scripts/office/unpack.py input.hwpx work/
+# XML files are extracted with indentation for readable editing
+```
+
+### Step 2: Edit XML directly with Read/Edit tools
+
+Edit the pretty-printed XML. Key constraints:
+- **secPr** (Section Properties): MUST be preserved in the first run of the first paragraph of each section
+- **charPrIDRef, paraPrIDRef, borderFillIDRef**: must match header.xml definitions
+- **Namespace declarations**: preserve all existing ns declarations during edits
+
+### Step 3: Pack (auto linesegarray strip + minify)
+
+```bash
+python scripts/office/pack.py work/ output.hwpx
+# Options: --keep-linesegarray (skip strip), --no-minify (keep pretty-print)
+# XML is minified back + mimetype placed as first ZIP entry (STORED)
+```
+
+linesegarray is a **layout cache** (line positions, widths) that Hancom recalculates on open. If not stripped after text changes, Hancom trusts the stale cache and forces modified text into the old layout — causing text compression and missing line breaks. pack.py strips it automatically.
+
+### Step 4: Validate + Page Guard
+
+```bash
+python scripts/validate.py output.hwpx
+python scripts/page_guard.py --reference input.hwpx --output output.hwpx
+```
+
+Do NOT mark as complete with validate alone. page_guard MUST also pass.
+On page_guard failure: fix cause (excess length / structural change) → rebuild.
+
+---
+
+## 2. Reference-Based Restoration (when user attaches .hwpx)
+
+Default workflow when user provides a reference HWPX:
+
+```bash
+# 1) Analyze reference + extract XML blueprints
+python scripts/analyze_template.py reference.hwpx \
+  --extract-header /tmp/ref_header.xml \
+  --extract-section /tmp/ref_section.xml
+
+# 2) Clone ref_section.xml → modify only text/data as requested
+#    Preserve structure: tables, paragraph count, style IDs
+
+# 3) Build restored document
+python scripts/build_hwpx.py \
+  --header /tmp/ref_header.xml \
+  --section /tmp/new_section0.xml \
+  --output result.hwpx
+
+# 4) Validate
+python scripts/validate.py result.hwpx
+python scripts/page_guard.py --reference reference.hwpx --output result.hwpx
+```
+
+### 99% Restoration Checklist
+
+- [ ] charPrIDRef, paraPrIDRef, borderFillIDRef reference chain identical
+- [ ] Table rowCnt, colCnt, colSpan, rowSpan, cellSz, cellMargin identical
+- [ ] Paragraph order, count, blank-line positions identical
+- [ ] Page size, margins, section properties (secPr) identical
+- [ ] Changes limited to user-requested scope (body text, values only)
+- [ ] Page count identical (page_guard PASS)
+
+---
+
+## 3. Creating New HWPX Documents
+
+### 3.1 python-hwpx API (simple documents)
 
 ```python
 from hwpx import HwpxDocument
 
-# Create new blank document
 doc = HwpxDocument.new()
+doc.add_paragraph("First paragraph.")
 
-# Add paragraphs
-doc.add_paragraph("python-hwpx로 생성한 문단입니다.")
+table = doc.add_table(rows=3, cols=4)
+table.set_cell_text(0, 0, "Name")
+table.set_cell_text(0, 1, "Department")
 
-# Save
 doc.save_to_path("output.hwpx")
 ```
 
-### Opening Existing Documents
+See [python-hwpx GitHub](https://github.com/airmang/python-hwpx) for full API docs.
 
-```python
-# File path
-doc = HwpxDocument.open("보고서.hwpx")
-
-# Context manager (recommended)
-with HwpxDocument.open("보고서.hwpx") as doc:
-    doc.add_paragraph("새 내용 추가")
-    doc.save_to_path("수정본.hwpx")
-
-# From bytes
-import io
-doc = HwpxDocument.open(io.BytesIO(hwpx_bytes))
-```
-
-### Tables
-
-```python
-# Create N×M table
-table = doc.add_table(rows=3, cols=4)
-
-# Set cell text
-table.set_cell_text(0, 0, "이름")
-table.set_cell_text(0, 1, "부서")
-table.set_cell_text(0, 2, "직급")
-table.set_cell_text(0, 3, "연락처")
-
-# Fill data rows
-table.set_cell_text(1, 0, "김철수")
-table.set_cell_text(1, 1, "개발팀")
-
-# Merge cells: (row1, col1) to (row2, col2)
-table.merge_cells(0, 0, 1, 1)
-table.set_cell_text(0, 0, "병합된 셀", logical=True, split_merged=True)
-
-# Get table dimensions
-print(f"Rows: {table.row_count}, Cols: {table.col_count}")
-```
-
-### Text Runs (Formatted Text)
-
-```python
-# Add bold, underline run
-paragraph = doc.paragraphs[0]
-paragraph.add_run("굵은 텍스트", bold=True)
-paragraph.add_run("밑줄 텍스트", underline=True)
-
-# Italic existing run
-run = paragraph.runs[0]
-run.set_italic(True)
-
-# Text color
-run.set_color("#FF0000")
-```
-
-### Memos (Comments)
-
-```python
-# Add memo anchored to paragraph
-paragraph = doc.paragraphs[0]
-doc.add_memo_with_anchor("검토 필요", paragraph=paragraph)
-
-# Find and delete memos
-memos = list(doc.memos)
-for memo in memos:
-    if "삭제대상" in memo.text:
-        doc.remove_memo(memo)
-```
-
-### Sections
-
-```python
-# Add section at end
-new_section = doc.add_section()
-new_section.add_paragraph("두 번째 섹션 내용")
-
-# Insert section at specific position
-doc.add_section(after=0)  # After first section
-
-# Delete section
-doc.remove_section(1)
-```
-
-### Headers & Footers
-
-```python
-# Set header/footer text
-doc.set_header_text("기밀 문서", page_type="BOTH")
-doc.set_footer_text("— 1 —", page_type="BOTH")
-
-# Odd/even pages
-doc.set_header_text("홀수 페이지", page_type="ODD")
-doc.set_footer_text("짝수 페이지", page_type="EVEN")
-
-# Remove header
-doc.remove_header(page_type="BOTH")
-```
-
-### Footnotes & Bookmarks
-
-```python
-# Add footnote
-doc.add_footnote(paragraph, "각주 텍스트")
-
-# Add bookmark
-doc.add_bookmark("bookmark_name", paragraph)
-
-# Add hyperlink
-doc.add_hyperlink("https://example.com", paragraph, "링크 텍스트")
-```
-
-### Page Layout
-
-```python
-# Check page size
-section = doc.sections[0]
-print(f"Width: {section.page_width}, Height: {section.page_height}")
-
-# Switch to landscape
-section.set_landscape()
-
-# Adjust margins
-section.set_margins(top=2000, bottom=2000, left=1500, right=1500)
-
-# Multi-column layout
-section.set_columns(count=2, gap=1000)
-```
-
-### Text Search & Replace
-
-```python
-# Simple text replacement
-doc.replace_text("임시", "확정")
-
-# Style-based replacement (replace only red text)
-doc.replace_text_in_runs(
-    "임시", "확정",
-    text_color="#FF0000",
-)
-
-# Find runs by style
-underlined = doc.find_runs_by_style(underline_type="SINGLE")
-```
-
-### Export
-
-```python
-# Export to different formats
-text = doc.export_text()
-html = doc.export_html()
-md   = doc.export_markdown()
-```
-
-### Schema Validation
+### 3.2 Template-based creation (formatted documents)
 
 ```bash
-# CLI validation
-hwpx-validate document.hwpx
+python scripts/build_hwpx.py \
+  --template gonmun \
+  --section my_section.xml \
+  --title "Document Title" \
+  --output gonmun.hwpx
 ```
 
-```python
-# Programmatic validation
-from hwpx.tools.validator import validate
-result = validate("document.hwpx")
-```
+Available templates: `base`, `gonmun` (official letter), `report`, `minutes`, `proposal`
 
-### Low-Level XML Access
+### 3.3 Markdown/JSON → HWPX
 
-```python
-# Header references
-doc.border_fills    # Border/fill styles
-doc.bullets         # Bullet definitions
-doc.styles          # Style definitions
-doc.track_changes   # Change tracking
-
-# Master pages, history, version
-doc.master_pages
-doc.histories
-doc.version
+```bash
+python scripts/create_document.py --input content.md --output doc.hwpx
 ```
 
 ---
 
-## Reading Documents
+## 4. Text Extraction
 
-### python-hwpx (HWPX only)
-
-```python
-from hwpx import TextExtractor, ObjectFinder
-
-# Text extraction
-for section in TextExtractor("문서.hwpx"):
-    for para in section.paragraphs:
-        print(para.text)
-
-# Object search
-for obj in ObjectFinder("문서.hwpx").find("tbl"):
-    print(obj.tag, obj.attributes)
-```
-
-### hwp-hwpx-parser (HWP + HWPX)
+### HWPX
 
 ```bash
-pip install hwp-hwpx-parser
+python scripts/text_extract.py input.hwpx                    # plain text
+python scripts/text_extract.py input.hwpx --format markdown   # markdown
+python scripts/text_extract.py input.hwpx --include-tables    # include tables
 ```
 
-```python
-from hwp_hwpx_parser import Reader
+### HWP 5.0 (upgrade-first strategy)
 
-# Unified reader for both formats
-with Reader("document.hwp") as r:
-    print(r.text)                    # Plain text
-    print(r.tables)                  # Table list
-    print(r.get_memos())             # Memo list
-
-# Tables as Markdown
-with Reader("document.hwpx") as r:
-    print(r.get_tables_as_markdown())
-
-# Full extraction with notes
-with Reader("document.hwp") as r:
-    result = r.extract_text_with_notes()
-    print(result.text)       # Body (footnotes as [^1], endnotes as [^e1])
-    print(result.footnotes)  # List[NoteData]
-    print(result.endnotes)   # List[NoteData]
-    print(result.memos)      # List[MemoData]
-
-# Image extraction
-with Reader("document.hwp") as r:
-    for img in r.get_images():
-        with open(img.filename, "wb") as f:
-            f.write(img.data)
-```
-
-### hwpparser (CLI + Python API)
+HWP binary cannot be written. The canonical format is HWPX.
+HWP files should be **upgraded to HWPX**, edited there, and saved as HWPX.
+Hancom's official stance: HWP→HWPX conversion may be available depending on license; HWPX→HWP API is not provided.
 
 ```bash
-pip install hwpparser
+# 1. Read / inspect
+hwp5proc text input.hwp          # extract text
+hwp5proc xml input.hwp           # XML representation
+hwp5proc ls input.hwp            # list OLE streams
+
+# 2. Upgrade to HWPX (pick one)
+npx hwpxjs convert:hwp input.hwp                    # Node.js
+java -jar hwp2hwpx.jar input.hwp output.hwpx        # Java (neolord0/hwp2hwpx)
+
+# 3. Edit the resulting HWPX using Section 1 workflow
+# 4. Save as HWPX (canonical). HWP compat output is a separate optional path.
 ```
 
-```bash
-# Text extraction
-hwpparser text document.hwp
-
-# Format conversion
-hwpparser convert document.hwp output.txt
-hwpparser convert document.hwp output.html
-hwpparser convert document.hwp output.pdf
-
-# Markdown → HWPX
-hwpparser convert document.md output.hwpx
-
-# Batch conversion
-hwpparser batch ./hwp_files/ -f text -o ./output/
-```
-
-```python
-import hwpparser
-
-# Read HWP
-doc = hwpparser.read_hwp("document.hwp")
-print(doc.text)   # Plain text
-print(doc.html)   # HTML
-
-# Convert
-hwpparser.convert("input.hwp", "output.pdf")
-hwpparser.markdown_to_hwpx("# 제목\n내용", "output.hwpx")
-
-# RAG chunking
-chunks = hwpparser.hwp_to_chunks("document.hwp", chunk_size=1000)
-
-# LangChain loader
-from hwpparser import HWPLoader
-loader = HWPLoader("document.hwp")
-docs = loader.load()
-```
-
-> ⚠️ `hwpparser` depends on `pyhwp` (AGPL v3). Be aware of copyleft license implications for production services.
+> 출처: [HWP→HWPX API license](https://forum.developer.hancom.com/t/hwp-hwpx-api/2980)
+> 출처: [HWPX→HWP API not available](https://forum.developer.hancom.com/t/hwpx-hwp-api/2606)
 
 ---
 
-## Editing: OWPML Direct Edit Workflow
+## 5. Section0.xml Writing Guide
 
-For modifying existing .hwpx files: Unpack → XML edit → Pack (same 3-step pattern as DOCX).
-
-### HWPX File Structure (OWPML)
-
-```
-unpacked/
-├── META-INF/
-│   └── container.xml         ← OPC container manifest
-├── Contents/
-│   ├── header.xml            ← Document-level settings (fonts, styles, numbering)
-│   ├── content.hpf           ← Content manifest (section list)
-│   ├── section0.xml          ← First section (paragraphs, runs, text)
-│   ├── section1.xml          ← Additional sections
-│   └── BinData/              ← Embedded images and binary resources
-├── Preview/
-│   ├── PrvText.txt           ← Text preview
-│   └── PrvImage.png          ← Thumbnail preview
-└── version.xml               ← Version metadata
-```
-
-### XML Hierarchy
-
-```
-본문 → 구역 <sec> → 문단 <hp:p> → 런 <hp:run> → 텍스트 <hp:t>
-```
-
-| Element        | Namespace                | Purpose                                 |
-| -------------- | ------------------------ | --------------------------------------- |
-| `<sec>`        | `owpml/2024/section`     | Section (page layout unit)              |
-| `<hp:p>`       | `owpml/2024/paragraph`   | Paragraph                               |
-| `<hp:run>`     | `owpml/2024/paragraph`   | Run (text + formatting)                 |
-| `<hp:t>`       | `owpml/2024/paragraph`   | Text node                               |
-| `<secPr>`      | `owpml/2024/section`     | Section properties (page size, margins) |
-| `<head>`       | `owpml/2024/head`        | Header (fonts, styles, numbering)       |
-| `<masterPage>` | `owpml/2024/master-page` | Master page (headers/footers)           |
-
-### Workflow
-
-```bash
-# 1. Unpack (HWPX is just a ZIP)
-python -c "
-import zipfile, os, sys
-with zipfile.ZipFile('document.hwpx', 'r') as z:
-    z.extractall('unpacked/')
-"
-
-# 2. Check text content
-pip install hwp-hwpx-parser
-python -c "
-from hwp_hwpx_parser import Reader
-with Reader('document.hwpx') as r:
-    print(r.text)
-"
-
-# 3. Edit XML (Contents/section0.xml etc. using Edit tool)
-#    Use the Edit tool directly for string replacement. Do not write Python scripts.
-
-# 4. Repack
-python -c "
-import zipfile, os
-with zipfile.ZipFile('output.hwpx', 'w', zipfile.ZIP_DEFLATED) as z:
-    for root, dirs, files in os.walk('unpacked/'):
-        for f in files:
-            filepath = os.path.join(root, f)
-            arcname = os.path.relpath(filepath, 'unpacked/')
-            z.write(filepath, arcname)
-"
-```
-
-### XML Editing Rules
-
-- **Use python-hwpx API first** — direct XML editing only when API doesn't cover your use case
-- **Preserve namespace prefixes** — OWPML uses `hp:`, `hc:`, `ha:` etc.
-- **Maintain manifest** — `content.hpf` must list all sections; update when adding/removing sections
-- **Section ordering** — sections are numbered `section0.xml`, `section1.xml`, etc.
-- **Binary resources** — images go in `Contents/BinData/`, referenced by `<hp:binItem>` in header.xml
-
-### Template Preservation
-
-```python
-# Best approach: use python-hwpx API for placeholder replacement
-with HwpxDocument.open("template.hwpx") as doc:
-    doc.replace_text("{{제목}}", "실제 제목")
-    doc.replace_text("{{날짜}}", "2026-03-08")
-    doc.replace_text("{{내용}}", "본문 텍스트")
-    doc.save_to_path("filled.hwpx")
-```
-
-Rules:
-- Never alter styles, formatting, or structure beyond what was requested
-- Never modify `<charPr>` (character properties) — preserves fonts, colors, sizes
-- Never delete existing numbering definitions or style references
-- When extending tables, verify existing cell merge patterns first
-
----
-
-## Anti-Patterns
-
-| ❌ Don't                         | ✅ Do Instead                                 | Why                                |
-| ------------------------------- | -------------------------------------------- | ---------------------------------- |
-| Edit .hwp binary directly       | Convert to .hwpx first, or use read-only API | HWP is OLE2 compound, not editable |
-| Manual ZIP with wrong structure | Use `python-hwpx` save methods               | Missing manifest breaks file       |
-| Ignore namespace prefixes       | Preserve `hp:`, `hc:`, `ha:` prefixes        | Parser fails on wrong namespaces   |
-| Use pyhwpx (COM automation)     | Use python-hwpx (Pure Python)                | pyhwpx requires Windows + 한/글    |
-| Hardcode section filenames      | Read from `content.hpf` manifest             | Section naming may vary            |
-| Skip validation after editing   | Run `hwpx-validate` or open in 한/글         | Silent corruption is common        |
-| Forget to update content.hpf    | Always sync manifest when adding sections    | Missing sections won't render      |
-
----
-
-## CJK / Korean Text Handling
-
-HWPX is natively Korean — CJK handling is built into the format specification.
-
-### Native Korean Attributes
-
-OWPML includes Korean text handling attributes by default:
+### Basic paragraph
 
 ```xml
-<!-- In section XML: paragraph properties -->
-<hp:paraPr>
-  <hc:autoSpaceEAsianEng>true</hc:autoSpaceEAsianEng>
-  <hc:autoSpaceEAsianNum>true</hc:autoSpaceEAsianNum>
-</hp:paraPr>
+<hp:p paraPrIDRef="0" styleIDRef="0">
+  <hp:run charPrIDRef="0">
+    <hp:secPr><!-- ONLY in first paragraph, first run --></hp:secPr>
+    <hp:t>Body text content.</hp:t>
+  </hp:run>
+</hp:p>
 ```
 
-| Attribute            | Default | Effect                                           |
-| -------------------- | ------- | ------------------------------------------------ |
-| `autoSpaceEAsianEng` | true    | Automatic spacing between Korean and Latin       |
-| `autoSpaceEAsianNum` | true    | Automatic spacing between Korean and digits      |
-| `wordWrap`           | Korean  | Korean syllable-level line breaking enabled      |
-| `kinsoku`            | true    | Prevents forbidden characters at line boundaries |
+- `secPr`: MUST be in the first run of the first paragraph. Defines page size, margins, columns.
+- `paraPrIDRef`: references paraPr ID defined in header.xml
+- `charPrIDRef`: references charPr ID defined in header.xml
 
-### Korean Fonts
+### Blank line
 
-```python
-# python-hwpx: fonts defined in header.xml style references
-# Default Korean fonts in HWPX:
-# - 함초롬바탕 (HCR Batang) — default serif
-# - 함초롬돋움 (HCR Dotum) — default sans
-# - 맑은 고딕 (Malgun Gothic) — Windows
-# - Noto Sans KR — cross-platform
+```xml
+<hp:p paraPrIDRef="0" styleIDRef="0">
+  <hp:run charPrIDRef="0"><hp:t></hp:t></hp:run>
+</hp:p>
 ```
 
-Recommended fonts:
+### Mixed formatting in one paragraph
 
-| Font          | License   | Cross-platform | Best for          |
-| ------------- | --------- | -------------- | ----------------- |
-| Noto Sans KR  | OFL       | Win/Mac/Linux  | Safest choice     |
-| Pretendard    | OFL       | Win/Mac/Linux  | Modern UI         |
-| 함초롬바탕    | Hancom    | Hancom only    | Default HWP serif |
-| 함초롬돋움    | Hancom    | Hancom only    | Default HWP sans  |
-| Malgun Gothic | MS bundle | Windows only   | Windows-only docs |
-| NanumGothic   | OFL       | Win/Mac/Linux  | General Korean    |
+```xml
+<hp:p paraPrIDRef="0" styleIDRef="0">
+  <hp:run charPrIDRef="0"><hp:t>Normal </hp:t></hp:run>
+  <hp:run charPrIDRef="7"><hp:t>Bold Title</hp:t></hp:run>
+  <hp:run charPrIDRef="0"><hp:t> followed by normal text</hp:t></hp:run>
+</hp:p>
+```
 
-### CJK QA Checklist
+### Table
 
-After rendering, check these CJK-specific items:
-- [ ] Korean text not truncated at boundaries
-- [ ] Line breaks at natural positions (syllable boundaries, not mid-character)
-- [ ] No kinsoku violations (closing punctuation at line start)
-- [ ] Korean-Latin mixed text has proper spacing
-- [ ] Font renders as intended (no fallback glyphs)
-- [ ] Table columns wide enough for Korean content
+```xml
+<hp:tbl colCnt="2" rowCnt="2" cellSpacing="0" borderFillIDRef="1">
+  <hp:tr>
+    <hp:tc colAddr="0" rowAddr="0" colSpan="1" rowSpan="1">
+      <hp:cellSz width="29764" height="1000"/>
+      <hp:cellMargin left="510" right="510" top="141" bottom="141"/>
+      <hp:p paraPrIDRef="0" styleIDRef="0">
+        <hp:run charPrIDRef="0"><hp:t>Cell content</hp:t></hp:run>
+      </hp:p>
+    </hp:tc>
+    <hp:tc colAddr="1" rowAddr="0" colSpan="1" rowSpan="1">
+      <!-- ... -->
+    </hp:tc>
+  </hp:tr>
+</hp:tbl>
+```
 
 ---
 
-## QA Verification Loop (MANDATORY)
+## 6. Header.xml Modification Guide
+
+Add new styles by appending definitions to header.xml.
+
+### Adding charPr (character shape)
+
+```xml
+<hh:charPr id="7" height="2200" bold="true">
+  <hh:fontRef hangul="맑은 고딕" latin="맑은 고딕"/>
+</hh:charPr>
+```
+- `id`: next available number (existing max + 1)
+- `height`: point size × 100 (22pt = 2200)
+
+### Adding paraPr (paragraph shape)
+
+```xml
+<hh:paraPr id="20" align="CENTER">
+  <hh:spacing line="160" lineType="PERCENT"/>
+  <hh:margin left="0" right="0" indent="0"/>
+</hh:paraPr>
+```
+
+### Adding borderFill
+
+```xml
+<hh:borderFill id="3">
+  <hh:border>
+    <hh:left type="SOLID" width="0.12mm" color="#000000"/>
+    <hh:right type="SOLID" width="0.12mm" color="#000000"/>
+    <hh:top type="SOLID" width="0.12mm" color="#000000"/>
+    <hh:bottom type="SOLID" width="0.12mm" color="#000000"/>
+  </hh:border>
+</hh:borderFill>
+```
+
+### Template Style ID Summary
+
+| Template | charPr | paraPr | borderFill |
+|----------|--------|--------|------------|
+| base | 0-6 | 0-19 | 1-2 |
+| gonmun | +7-10 (title 22pt, signature 16pt, contact 8pt, table header 10pt) | +20-22 | +3-4 |
+| report | +7-13 (title 20pt, subtitle 14pt, etc.) | +20-27 | +5 |
+| minutes | +7-9 (title 18pt, section 12pt, table header 10pt) | +20-22 | +4 |
+| proposal | +7-11 (title 20pt, subtitle 14pt, etc.) | +20-22 | +5-8 |
+
+Full style ID maps: reference/style_id_maps.md
+
+---
+
+## 7. QA Verification Loop (MANDATORY)
 
 **First render almost always has issues. QA is bug hunting, not confirmation.**
 
-### Step 1: Content QA
+### Step 1: Structural validation
 
 ```bash
-# Check text content via hwp-hwpx-parser
-pip install hwp-hwpx-parser
-python -c "
-from hwp_hwpx_parser import Reader
-with Reader('output.hwpx') as r:
-    print(r.text)
-"
+python scripts/validate.py output.hwpx
+```
+Checks: ZIP validity, required files, mimetype position/compression, XML well-formedness.
 
-# Or via python-hwpx
-python -c "
-from hwpx import HwpxDocument
-doc = HwpxDocument.open('output.hwpx')
-print(doc.export_text())
-"
+### Step 2: Page guard (when reference exists)
 
+```bash
+python scripts/page_guard.py --reference input.hwpx --output output.hwpx
+```
+Checks: paragraph count, page/column breaks, table count/shape, text length.
+Thresholds: text >15%, paragraph >25% → FAIL.
+
+### Step 3: Content QA
+
+```bash
+python scripts/text_extract.py output.hwpx --format markdown
 # Check for placeholder remnants
-python -c "
-from hwp_hwpx_parser import Reader
-with Reader('output.hwpx') as r:
-    text = r.text
-    import re
-    remnants = re.findall(r'{{.*?}}|xxxx|lorem|ipsum|placeholder|TODO', text, re.I)
-    if remnants: print('REMNANTS FOUND:', remnants)
-    else: print('Clean — no placeholders found')
-"
+python scripts/text_extract.py output.hwpx | grep -iE "xxxx|lorem|placeholder|TODO|견본"
 ```
 
-### Step 2: Structural Validation
+### Step 4: Visual QA
+
+**⚠️ USE SUBAGENTS** — you've been staring at the XML and will see what you expect, not what's there. Subagents have fresh eyes.
 
 ```bash
-# Schema validation
-hwpx-validate output.hwpx
-
-# ZIP integrity
-python -c "
-import zipfile
-with zipfile.ZipFile('output.hwpx') as z:
-    result = z.testzip()
-    print('ZIP OK' if result is None else f'CORRUPT: {result}')
-"
-```
-
-### Step 3: Visual QA
-
-```bash
-soffice --headless --convert-to pdf output.hwpx
+# Requires: LibreOffice + H2Orestart + Java (see Section 11)
+export JAVA_HOME="$(brew --prefix openjdk)/libexec/openjdk.jdk/Contents/Home"
+soffice --headless --norestore --convert-to pdf output.hwpx
 pdftoppm -jpeg -r 150 output.pdf page
 ```
 
-**⚠️ USE SUBAGENTS** — even for 2-3 pages. Fresh eyes catch what you'll miss.
+Subagent prompt template: see reference/visual_qa_prompt.md
 
-**Subagent prompt template for visual inspection:**
+### Step 5: Fix & Re-verify
 
-```
-Visually inspect these HWP document pages. Assume there are issues — find them.
-
-Look for:
-- Overlapping elements (text through shapes, lines through words)
-- Text overflow or cut off at edges
-- Table cell content truncated
-- Uneven gaps or inconsistent spacing
-- Insufficient margin from page edges
-- Low-contrast text
-- Leftover placeholder content ({{...}})
-- Korean text rendering issues (fallback fonts, broken syllables)
-
-CJK/Korean specific checks:
-- Korean text truncated at text box right boundary?
-- Unnatural syllable-level line breaks (kinsoku violations)?
-- Font rendering as intended (no DroidSans fallback)?
-- Korean-Latin mixed text spacing adequate?
-- Table/chart column headers wide enough for Korean content?
-
-For each page, list issues or areas of concern, even if minor.
-
-Read and analyze these images:
-1. /path/to/page-01.jpg (Expected: [brief description])
-2. /path/to/page-02.jpg (Expected: [brief description])
-
-Report ALL issues found, including minor ones.
-```
-
-### Step 4: Fix & Re-verify
-
-1. Find issue → fix
-2. Re-render only the fixed page: `pdftoppm -jpeg -r 150 -f N -l N output.pdf page-fixed`
+1. Find issue → fix XML → re-pack
+2. Re-render only changed pages: `pdftoppm -jpeg -r 150 -f N -l N output.pdf page-fixed`
 3. Re-inspect — one fix often creates another problem
 4. **Never declare completion before at least 1 fix-and-verify cycle**
 
+### QA Checklist
+
+- [ ] validate.py PASS
+- [ ] page_guard.py PASS (if reference exists)
+- [ ] No placeholder remnants in text
+- [ ] Visual render matches expected layout
+- [ ] Table content complete (no empty cells that should have data)
+- [ ] Text not compressed/squeezed (linesegarray stripped)
+- [ ] Style consistency (headings, body, table headers)
+- [ ] Page count matches reference
+- [ ] Korean text wrapping correctly
+- [ ] Korean font rendering as intended (no fallback glyphs)
+- [ ] Color contrast >= 4.5:1
+- [ ] Font size >= 9pt
+
 ---
 
-## Accessibility
+## 8. CJK/Korean Text Handling
 
-| Requirement       | Standard          | Implementation                          |
-| ----------------- | ----------------- | --------------------------------------- |
-| Color contrast    | >= 4.5:1          | Check text vs background colors         |
-| Image alt text    | Required on all   | Add `<hp:altText>` on picture objects   |
-| Minimum font size | >= 10pt           | No captions below 10pt                  |
-| Language metadata | `lang="ko-KR"`    | Built-in for HWPX                       |
-| Heading hierarchy | Sequential levels | Use numbered outline level styles       |
-| Reading order     | Logical flow      | Section/paragraph order = reading order |
+- Korean fonts in HWPX: verify `맑은 고딕`, `함초롬돋움`, `함초롬바탕` in header.xml `<hh:fontRef>`
+- CJK display width: fullwidth chars = 2 units (`scripts/ooxml/cjk_utils.py` → `get_display_width()`)
+- Color contrast: WCAG 2.1 AA ratio 4.5:1 (`check_contrast()`)
+- Note: `inject_korean_lang()` and `auto_fit_columns()` in cjk_utils.py are **OOXML-specific** (DOCX/PPTX `<a:rPr>` elements). They do not apply to HWPX XML. For HWPX, set Korean attributes directly in header.xml charPr `<hh:fontRef hangul="..."/>`.
 
 ---
 
-## Dependencies
+## 9. Critical Rules
+
+1. **HWPX is the canonical format** — all edits and saves target HWPX. HWP is an upgrade-source, not a save target
+2. **Preserve secPr** — never delete from first paragraph's first run
+3. **mimetype first** — first ZIP entry, ZIP_STORED, "application/hwp+zip"
+4. **Preserve namespaces** — keep all existing ns declarations during XML edits
+5. **Strip linesegarray** — MUST remove after any text change (Hancom recalculates on open)
+6. **Pretty-print ↔ minify** — pretty-print on unpack, minify on pack
+7. **validate + page-guard mandatory** — both must pass before completion
+8. **Style ID sync** — section XML IDRefs must match header.xml definitions
+9. **Rebuild on page-guard failure** — never submit failed output
+10. **Change only what user requested** — no unauthorized structure changes (tables/paragraphs/secPr)
+11. **HWP upgrade-first** — upgrade HWP→HWPX, edit HWPX, save as HWPX. HWP compat output is optional, separate path
+12. **Watch mixed content** — whitespace inside `<hp:t>` is significant
+13. **Verify XML well-formedness before build** — fix unclosed tags immediately
+14. **Preserve table structure** — no unauthorized rowCnt/colCnt/colSpan/rowSpan changes
+15. **Templates are read-only** — copy before modifying
+16. **Match reference page count** — adjust text to fit existing layout
+
+---
+
+## 10. HWPX → PDF Conversion
+
+Requires LibreOffice + H2Orestart extension + Java Runtime.
 
 ```bash
-# HWPX create/edit (Pure Python, MIT)
-pip install python-hwpx
+# Requires LibreOffice + H2Orestart + Java (see Section 11 for setup)
 
-# HWP/HWPX reading (Pure Python, Apache 2.0)
-pip install hwp-hwpx-parser
+# Convert HWPX to PDF
+soffice --headless --norestore --convert-to pdf input.hwpx --outdir ./
 
-# HWP conversion + CLI (MIT, but AGPL dependency)
-pip install hwpparser
+# Convert to images for visual QA
+pdftoppm -jpeg -r 150 input.pdf page
+```
 
-# PDF conversion & visual QA
-# LibreOffice (soffice)
-# Poppler (pdftoppm)
+If conversion fails with "source file could not be loaded":
+1. Check Java: `java -version` — must be installed
+2. Check H2Orestart: extension must be installed in LibreOffice
+3. Kill stale soffice: `pkill -f soffice` then retry
+4. Use absolute paths for input file
+
+---
+
+## 11. Dependencies & Installation
+
+### Core Python packages
+
+```bash
+pip install hwpx lxml pyhwp olefile defusedxml openpyxl
+```
+
+| Package | Purpose |
+|---------|---------|
+| `hwpx` (python-hwpx) | HWPX read/modify/create |
+| `lxml` | XML parsing (unpack/pack pretty-print) |
+| `pyhwp` | HWP 5.0 read/extract (hwp5proc CLI) |
+| `olefile` | HWP 5.0 OLE container access |
+| `defusedxml` | Safe XML parsing (XXE prevention) |
+| `openpyxl` | CJK column width utilities |
+
+### System dependencies
+
+```bash
+# macOS (Homebrew)
+brew install libreoffice openjdk poppler   # soffice, java, pdftoppm
+
+# Environment variables (add to ~/.zshrc)
+export JAVA_HOME="$(brew --prefix openjdk)/libexec/openjdk.jdk/Contents/Home"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+# H2Orestart extension (HWPX support for LibreOffice PDF conversion)
+# Download: https://github.com/ebandal/H2Orestart/releases
+# Install: unopkg add H2Orestart.oxt
+
+# Linux (apt)
+sudo apt install libreoffice default-jre poppler-utils
+# H2Orestart: apt install libreoffice-h2orestart (Debian sid+) or .oxt manual install
+```
+
+### HWP→HWPX upgrade tools (pick one)
+
+```bash
+# Option A: Node.js
+npm install -g @ssabrojs/hwpxjs    # then: npx hwpxjs convert:hwp input.hwp
+
+# Option B: Java (neolord0/hwp2hwpx) — most accurate conversion
+# Download jar from: https://github.com/neolord0/hwp2hwpx/releases
+# then: java -jar hwp2hwpx.jar input.hwp output.hwpx
+# Requires: Java 11+ (already installed for H2Orestart)
 ```
 
 ---
 
-## Library Tier Guide
+## 12. Cross-Platform Compatibility
 
-### Tier 1 — Primary Tools
+| Feature | macOS | Linux | Windows |
+|---------|-------|-------|---------|
+| **HWPX read/edit** | ✅ python-hwpx | ✅ python-hwpx | ✅ python-hwpx |
+| **HWPX → PDF** | ✅ soffice+H2Orestart+Java | ✅ same | ✅ same |
+| **HWP read** | ✅ pyhwp | ✅ pyhwp | ✅ pyhwp |
+| **HWP → HWPX upgrade** | ✅ hwpxjs / hwp2hwpx | ✅ same | ✅ same |
+| **HWP write (binary)** | ❌ | ❌ | ⚠️ COM only (pyhwpx) |
+| **unpack/pack/validate** | ✅ pure Python | ✅ pure Python | ✅ pure Python |
+| **linesegarray strip** | ✅ pack.py auto | ✅ pack.py auto | ✅ pack.py auto |
 
-| Library         | Use For                       | License        | Lang   |
-| --------------- | ----------------------------- | -------------- | ------ |
-| python-hwpx     | HWPX create/edit/read         | MIT            | Python |
-| hwp-hwpx-parser | HWP+HWPX text extraction      | Apache 2.0     | Python |
-| hwpparser       | CLI conversion + HWPX from MD | MIT (AGPL dep) | Python |
+### Key platform notes
 
-### Tier 2 — Specialized
+- **Core editing pipeline** (unpack→edit→pack) is **pure Python, fully cross-platform**. Zero system deps.
+- **PDF conversion** needs LibreOffice + H2Orestart + Java on all platforms (only system-level dep).
+- **HWP→HWPX upgrade** needs Node.js (hwpxjs) or Java (hwp2hwpx). Java is already required for PDF.
+- **HWP binary write** is Windows-only via COM (pyhwpx). Use upgrade-first strategy instead.
+- **macOS LibreOffice**: may need `pkill -f soffice` before each headless call to avoid stale locks.
 
-| Library | Use For                                   | License    | Lang              |
-| ------- | ----------------------------------------- | ---------- | ----------------- |
-| unhwp   | HWP/HWPX → Markdown (fast)                | MIT        | Rust + Python FFI |
-| hwpers  | HWP reading + SVG rendering + HWP writing | MIT/Apache | Rust              |
-| pyhwp   | Legacy HWP v5 parsing                     | AGPL v3    | Python            |
+---
 
-### Tier 3 — Niche
+## 13. Library Tiers
 
-| Library        | Use For                            | License    | Lang   |
-| -------------- | ---------------------------------- | ---------- | ------ |
-| hwp-extract    | Password-protected HWP extraction  | MIT        | Python |
-| openhwp        | Rust HWP/HWPX + IR conversion      | MIT        | Rust   |
-| hwp-rs         | Low-level Rust HWP parser          | Apache 2.0 | Rust   |
-| pyhwpx         | Lightweight HWPX parser            | MIT        | Python |
-| python_hwp     | ML data extraction from HWP        | MIT        | Python |
-| bob-hwp-parser | HWP JS macro extraction (security) | MIT        | Python |
+| Tier | Library | Format | Capabilities |
+|------|---------|--------|-------------|
+| **1** | python-hwpx | HWPX | R/W/Create — primary tool |
+| **1** | pyhwp | HWP 5.0 | Read-only — most mature binary parser |
+| **2** | hwp-hwpx-parser | HWP+HWPX | Read-only parser |
+| **2** | olefile | HWP 5.0 | Low-level OLE access |
+| **3** | @ssabrojs/hwpxjs | HWPX+HWP conv | Node.js — HWP→HWPX conversion |
+| **3** | hwplib (Java) | HWP 5.0 | Only HWP binary R/W library |
+
+## File Structure
+
+```
+hwp_hwpx/
+├── SKILL.md
+├── reference/          ← hwpx-format.md, style_id_maps.md, visual_qa_prompt.md
+├── scripts/
+│   ├── office/         ← unpack.py (pretty-print), pack.py (strip+minify)
+│   ├── validate.py, page_guard.py, build_hwpx.py, analyze_template.py
+│   ├── text_extract.py, create_document.py
+│   └── ooxml/          ← cjk_utils.py, soffice.py
+└── templates/          ← base, gonmun, report, minutes, proposal
+```
