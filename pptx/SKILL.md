@@ -23,27 +23,58 @@ Do NOT use for: Keynote, Google Slides API, PDFs, or image generation.
 
 For PptxGenJS API reference, see [pptxgenjs.md](pptxgenjs.md).
 
+### Unified CLI (`pptx_cli.py`)
+
+All operations are available through a single entrypoint:
+
+```bash
+# Unpack / Pack
+python scripts/pptx_cli.py open input.pptx work/
+python scripts/pptx_cli.py save work/ output.pptx
+
+# Validation & Repair
+python scripts/pptx_cli.py validate input.pptx --json
+python scripts/pptx_cli.py repair input.pptx              # dry-run (default)
+python scripts/pptx_cli.py repair input.pptx --apply       # actually fix
+
+# Text & Thumbnails
+python scripts/pptx_cli.py text input.pptx
+python scripts/pptx_cli.py thumbnail input.pptx grid.png
+python scripts/pptx_cli.py thumbnail input.pptx out_dir/ --individual
+
+# Slide Operations (unpacked dir)
+python scripts/pptx_cli.py add-slide work/ --blank
+python scripts/pptx_cli.py add-slide work/ --duplicate 3 --position 1
+python scripts/pptx_cli.py clean work/
+python scripts/pptx_cli.py clean work/ --delete
+
+# Export
+python scripts/pptx_cli.py export-pdf input.pptx output.pdf
+```
+
 ---
 
 ## Reading Content
 
 ```bash
-# Text extraction
+# Text extraction (unified CLI)
+python scripts/pptx_cli.py text presentation.pptx
+
+# Text extraction (alternative)
 python -m markitdown presentation.pptx
 
 # Visual overview (thumbnail grid)
-python scripts/thumbnail.py presentation.pptx thumbnails.png
+python scripts/pptx_cli.py thumbnail presentation.pptx thumbnails.png
 
 # Raw XML access
-python scripts/ooxml/unpack.py presentation.pptx unpacked/
+python scripts/pptx_cli.py open presentation.pptx unpacked/
 
 # Validate structure
-python scripts/ooxml/validate.py presentation.pptx --json
+python scripts/pptx_cli.py validate presentation.pptx --json
 # Returns: {"passed": bool, "errors": [...], "warnings": [...], "stats": {...}}
 
 # Auto-repair (if validation fails)
-python scripts/ooxml/repair.py presentation.pptx
-# Returns: {"repaired": int, "details": [...]}
+python scripts/pptx_cli.py repair presentation.pptx
 ```
 
 ---
@@ -210,22 +241,49 @@ Select a palette that matches the content theme. Never settle for default blue.
 
 **First render almost always has issues. QA is bug hunting, not confirmation.**
 
-### Step 1: Content QA
+### Step 1: Machine QA (Automated — run before human review)
+
+These checks can be run by CLI/script without visual inspection:
 
 ```bash
+# 1. Structural validation
+python scripts/pptx_cli.py validate output.pptx --json
+# Must pass: no broken rels, valid XML, content-types consistent
+
+# 2. Content extraction — check for placeholder remnants
+python scripts/pptx_cli.py text output.pptx | grep -iE "xxxx|lorem|ipsum|placeholder|TODO|click to"
+# Zero matches expected
+
+# 3. Slide count sanity check
+python scripts/pptx_cli.py text output.pptx | grep -c "^--- Slide"
+# Must match expected slide count
+
+# 4. Orphan media detection
+python scripts/pptx_cli.py clean work/ 2>&1
+# "No orphaned files" expected
+
+# 5. (Optional) markitdown for richer content diff
 pip install "markitdown[pptx]"
 python -m markitdown output.pptx
-# Check for placeholder remnants
-python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|placeholder|TODO"
 ```
 
-### Step 2: Visual QA
+**Machine QA checklist:**
+- [ ] `validate --json` passes (no errors)
+- [ ] No placeholder text in `text` output
+- [ ] Slide count matches specification
+- [ ] No orphaned media files
+- [ ] No broken relationship targets
+
+### Step 2: Human QA (Visual — always use subagents)
 
 **⚠️ USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
 
 ```bash
-soffice --headless --convert-to pdf output.pptx
+# Render slides to images for inspection
+python scripts/pptx_cli.py export-pdf output.pptx output.pdf
 pdftoppm -jpeg -r 150 output.pdf slide
+# Or use thumbnail grid:
+python scripts/pptx_cli.py thumbnail output.pptx contact_sheet.png
 ```
 
 **Subagent prompt template for visual inspection:**
@@ -233,7 +291,7 @@ pdftoppm -jpeg -r 150 output.pdf slide
 ```
 Visually inspect these slides. Assume there are issues — find them.
 
-Look for:
+Layout & spacing issues:
 - Overlapping elements (text through shapes, lines through words, stacked elements)
 - Text overflow or cut off at edges/box boundaries
 - Decorative lines positioned for single-line text but title wrapped to two lines
@@ -242,18 +300,11 @@ Look for:
 - Uneven gaps (large empty area in one place, cramped in another)
 - Insufficient margin from slide edges (< 0.5")
 - Columns or similar elements not aligned consistently
+
+Visual quality issues:
 - Low-contrast text (e.g., light gray text on cream-colored background)
 - Low-contrast icons (e.g., dark icons on dark backgrounds without a contrasting circle)
 - Text boxes too narrow causing excessive wrapping
-- Leftover placeholder content
-
-For each slide, list issues or areas of concern, even if minor.
-
-Read and analyze these images:
-1. /path/to/slide-01.jpg (Expected: [brief description])
-2. /path/to/slide-02.jpg (Expected: [brief description])
-
-Report ALL issues found, including minor ones.
 
 CJK/Korean text specific checks:
 - Korean text truncated at text box right boundary?
@@ -261,9 +312,14 @@ CJK/Korean text specific checks:
 - Font rendering as Noto Sans KR / intended font (no DroidSans fallback)?
 - Korean-Latin mixed text spacing adequate?
 - Table/chart column headers wide enough for Korean content?
+
+For each slide, list issues or areas of concern, even if minor.
+Read and analyze these images:
+1. /path/to/slide-01.jpg (Expected: [brief description])
+Report ALL issues found, including minor ones.
 ```
 
-Visual inspection checklist:
+**Human QA checklist:**
 - [ ] Element overlap (text penetrating shapes)
 - [ ] Text overflow/truncation
 - [ ] Element spacing < 0.3" (too tight)
@@ -271,14 +327,15 @@ Visual inspection checklist:
 - [ ] Alignment inconsistency among similar elements
 - [ ] Insufficient contrast (light text on light background)
 - [ ] Text boxes too narrow causing excessive wrapping
-- [ ] Placeholder remnants still visible
+- [ ] Visual coherence across slides (consistent motif, color, spacing)
 
 ### Step 3: Fix & Re-verify
 
 1. Find issue → fix
-2. **Re-render only the fixed slide**: `pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed`
-3. Re-inspect — one fix often creates another problem
-4. **Never declare completion before at least 1 fix-and-verify cycle**
+2. **Re-run machine QA** first (fast, catches regressions)
+3. **Re-render only the fixed slide**: `pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed`
+4. Re-inspect visually — one fix often creates another problem
+5. **Never declare completion before at least 1 fix-and-verify cycle**
 
 ---
 
@@ -371,7 +428,12 @@ Recommended fonts:
 
 ### CJK QA Checklist
 
-After rendering, check these CJK-specific items:
+**Machine-verifiable** (run via CLI/script):
+- [ ] `cjk_utils.check_contrast()` passes for all text elements
+- [ ] No CJK font names in document XML that aren't in embedded fonts list
+- [ ] `text` output contains expected Korean content (no encoding corruption)
+
+**Human-verifiable** (visual inspection required):
 - [ ] Korean text not truncated at text box boundaries
 - [ ] Line breaks occur at natural positions (not mid-word)
 - [ ] No kinsoku violations (closing punctuation at line start)

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Sales",
+    "dimensions": "empty",
+    "max_row": 4,
+    "max_column": 2
+  },
+  {
+    "name": "Inventory",
+    "dimensions": "empty",
+    "max_row": 3,
+    "max_column": 3
+  },
+  {
+    "name": "Summary",
+    "dimensions": "empty",
+    "max_row": 2,
+    "max_column": 2
+  }
+]

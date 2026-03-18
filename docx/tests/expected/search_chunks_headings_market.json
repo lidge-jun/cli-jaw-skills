@@ -1,0 +1,26 @@
+[
+  {
+    "chunk_id": 1,
+    "chunk_title": "Methodology",
+    "para_index": 4,
+    "context": "We used a systematic approach to analyze the market data."
+  },
+  {
+    "chunk_id": 2,
+    "chunk_title": "Data Collection",
+    "para_index": 6,
+    "context": "Primary data was collected through surveys and market research."
+  },
+  {
+    "chunk_id": 4,
+    "chunk_title": "Results",
+    "para_index": 10,
+    "context": "The market analysis showed significant growth in Q3 2025."
+  },
+  {
+    "chunk_id": 5,
+    "chunk_title": "Conclusion",
+    "para_index": 13,
+    "context": "Based on our analysis, we recommend expanding into the Asian market."
+  }
+]

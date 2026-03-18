@@ -1,0 +1,14 @@
+{
+  "passed": false,
+  "errors": [
+    "Broken relationship in ppt/slides/_rels/slide1.xml.rels: target '../slideLayouts/slideLayout99.xml' not found",
+    "slide1.xml: layout target '../slideLayouts/slideLayout99.xml' not found"
+  ],
+  "warnings": [],
+  "stats": {
+    "file_type": ".pptx",
+    "xml_files_checked": 6,
+    "relationships_checked": 3,
+    "broken_relationships": 1
+  }
+}

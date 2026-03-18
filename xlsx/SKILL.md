@@ -23,6 +23,30 @@ Do NOT use for: Word documents, HTML reports, standalone Python scripts, databas
 | **Recalc**   | `scripts/recalc.py` or soffice headless           |
 | **Review**   | soffice → PDF → visual inspection                |
 
+### Unified CLI (`xlsx_cli.py`)
+
+All operations are available through a single entrypoint:
+
+```bash
+# Unpack / Pack
+python scripts/xlsx_cli.py open input.xlsx work/
+python scripts/xlsx_cli.py save work/ output.xlsx
+
+# Validation & Repair
+python scripts/xlsx_cli.py validate input.xlsx --json
+python scripts/xlsx_cli.py repair input.xlsx              # dry-run (default)
+python scripts/xlsx_cli.py repair input.xlsx --apply       # actually fix
+
+# Recalculation
+python scripts/xlsx_cli.py recalc input.xlsx output.xlsx
+python scripts/xlsx_cli.py recalc input.xlsx output.xlsx --check-errors
+
+# Exploration
+python scripts/xlsx_cli.py text input.xlsx
+python scripts/xlsx_cli.py sheet-overview input.xlsx --json
+python scripts/xlsx_cli.py formula-audit input.xlsx --json
+```
+
 ---
 
 ## Requirements for All Excel Files

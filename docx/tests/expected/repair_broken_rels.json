@@ -1,0 +1,7 @@
+{
+  "repaired": 2,
+  "details": [
+    "Removed orphan relationship rId1 \u2192 'styles.xml' in word/_rels/document.xml.rels",
+    "Removed orphan relationship rId2 \u2192 'media/missing_image.png' in word/_rels/document.xml.rels"
+  ]
+}

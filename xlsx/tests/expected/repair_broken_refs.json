@@ -1,0 +1,7 @@
+{
+  "repaired": 2,
+  "details": [
+    "Removed orphan relationship rId1 \u2192 '/xl/worksheets/sheet1.xml' in xl/_rels/workbook.xml.rels",
+    "Removed orphan relationship rId99 \u2192 'charts/chart1.xml' in xl/_rels/workbook.xml.rels"
+  ]
+}

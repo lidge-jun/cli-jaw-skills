@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "errors": [],
+  "warnings": [
+    "slide1.xml: no slideLayout relationship found",
+    "slide2.xml: no slideLayout relationship found",
+    "slide3.xml: no slideLayout relationship found"
+  ],
+  "stats": {
+    "file_type": ".pptx",
+    "xml_files_checked": 10,
+    "relationships_checked": 4,
+    "broken_relationships": 0
+  }
+}

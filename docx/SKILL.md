@@ -22,6 +22,33 @@ Do NOT use for PDFs, spreadsheets, or Google Docs.
 | **Review**  | soffice → PDF → pdftoppm → image inspection |
 | **Convert** | `.doc` → `.docx` via soffice                |
 
+### Unified CLI (`docx_cli.py`)
+
+All operations are available through a single entrypoint:
+
+```bash
+# Unpack / Pack
+python scripts/docx_cli.py open input.docx work/
+python scripts/docx_cli.py save work/ output.docx
+
+# Validation & Repair
+python scripts/docx_cli.py validate input.docx --json
+python scripts/docx_cli.py repair input.docx              # dry-run (default)
+python scripts/docx_cli.py repair input.docx --apply       # actually fix
+
+# Text & Search
+python scripts/docx_cli.py text input.docx
+python scripts/docx_cli.py search input.docx "pattern"
+
+# Tracked Changes & Comments
+python scripts/docx_cli.py accept-changes input.docx output.docx
+python scripts/docx_cli.py comment input.docx output.docx --text "Review" --anchor "target text"
+python scripts/docx_cli.py comment input.docx output.docx --json comments.json
+
+# XML Cleanup
+python scripts/docx_cli.py merge-runs unpacked/
+```
+
 ### Converting .doc to .docx
 
 Legacy `.doc` files must be converted before editing:

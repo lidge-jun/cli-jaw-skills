@@ -1,0 +1,17 @@
+{
+  "passed": false,
+  "errors": [
+    "Content_Types Override references missing file: /xl/charts/chart1.xml",
+    "Broken relationship in xl/_rels/workbook.xml.rels: target '/xl/worksheets/sheet1.xml' not found",
+    "Broken relationship in xl/_rels/workbook.xml.rels: target 'charts/chart1.xml' not found",
+    "Sheet 'Data' (rId1) target '/xl/worksheets/sheet1.xml' not found"
+  ],
+  "warnings": [],
+  "stats": {
+    "file_type": ".xlsx",
+    "xml_files_checked": 9,
+    "relationships_checked": 7,
+    "broken_relationships": 2,
+    "sheet_count": 1
+  }
+}

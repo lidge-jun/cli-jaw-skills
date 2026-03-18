@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "errors": [],
+  "warnings": [
+    "4 <w:t> element(s) with leading/trailing/double spaces missing xml:space='preserve'"
+  ],
+  "stats": {
+    "file_type": ".docx",
+    "xml_files_checked": 4,
+    "relationships_checked": 1,
+    "broken_relationships": 0,
+    "whitespace_preserve_missing": 4
+  }
+}

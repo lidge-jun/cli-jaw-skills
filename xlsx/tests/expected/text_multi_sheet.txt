@@ -1,0 +1,12 @@
+--- Sales ---
+Product	Revenue
+Widget A	1500
+Widget B	2300
+Total	
+--- Inventory ---
+Item	Quantity	Location
+Widget A	100	Warehouse 1
+Widget B	50	Warehouse 2
+--- Summary ---
+Report Date	2026-03-18
+Total Revenue	

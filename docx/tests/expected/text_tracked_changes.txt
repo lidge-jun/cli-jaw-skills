@@ -1,0 +1,3 @@
+Normal paragraph text.
+Before change inserted text after insert.
+Before deletion  after delete.

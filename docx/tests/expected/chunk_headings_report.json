@@ -1,0 +1,50 @@
+[
+  {
+    "id": 0,
+    "title": "(intro)",
+    "start_para": 0,
+    "char_count": 139,
+    "end_para": 2,
+    "preview": "Introduction"
+  },
+  {
+    "id": 1,
+    "title": "Methodology",
+    "start_para": 3,
+    "char_count": 68,
+    "end_para": 4,
+    "preview": "Methodology"
+  },
+  {
+    "id": 2,
+    "title": "Data Collection",
+    "start_para": 5,
+    "char_count": 78,
+    "end_para": 6,
+    "preview": "Data Collection"
+  },
+  {
+    "id": 3,
+    "title": "Analysis Framework",
+    "start_para": 7,
+    "char_count": 77,
+    "end_para": 8,
+    "preview": "Analysis Framework"
+  },
+  {
+    "id": 4,
+    "title": "Results",
+    "start_para": 9,
+    "char_count": 129,
+    "end_para": 11,
+    "preview": "Results"
+  },
+  {
+    "id": 5,
+    "title": "Conclusion",
+    "start_para": 12,
+    "char_count": 78,
+    "end_para": 13,
+    "preview": "Conclusion"
+  }
+]

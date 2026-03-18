@@ -1,0 +1,14 @@
+{
+  "passed": false,
+  "errors": [
+    "Broken relationship in word/_rels/document.xml.rels: target 'styles.xml' not found",
+    "Broken relationship in word/_rels/document.xml.rels: target 'media/missing_image.png' not found"
+  ],
+  "warnings": [],
+  "stats": {
+    "file_type": ".docx",
+    "xml_files_checked": 4,
+    "relationships_checked": 3,
+    "broken_relationships": 2
+  }
+}
