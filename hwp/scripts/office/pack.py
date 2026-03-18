@@ -18,6 +18,7 @@ import argparse
 import os
 import re
 import sys
+import tempfile
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
@@ -102,35 +103,57 @@ def pack(
 
     lsa_stripped = 0
 
-    with ZipFile(hwpx_path, "w", ZIP_DEFLATED) as zf:
-        # mimetype MUST be the first entry, stored without compression
-        zf.write(mimetype_file, "mimetype", compress_type=ZIP_STORED)
+    # Atomic write: build ZIP in a temp file, then rename on success
+    out_path = Path(hwpx_path)
+    tmp_fd, tmp_path = tempfile.mkstemp(
+        suffix=".hwpx.tmp", dir=out_path.parent
+    )
+    os.close(tmp_fd)
 
-        for rel_path in all_files:
-            if rel_path == "mimetype":
-                continue  # Already written
+    try:
+        with ZipFile(tmp_path, "w", ZIP_DEFLATED) as zf:
+            # mimetype MUST be the first entry, stored without compression
+            zf.write(mimetype_file, "mimetype", compress_type=ZIP_STORED)
 
-            full_path = root / rel_path
+            for rel_path in all_files:
+                if rel_path == "mimetype":
+                    continue  # Already written
 
-            if rel_path.endswith(".xml"):
-                content = full_path.read_text(encoding="utf-8")
+                full_path = root / rel_path
 
-                if strip_lsa:
-                    before = content.count("linesegarray")
-                    content = strip_linesegarray(content)
-                    after = content.count("linesegarray")
-                    lsa_stripped += (before - after) // 2  # open+close = 2
+                if rel_path.endswith(".xml"):
+                    content = full_path.read_text(encoding="utf-8")
 
-                if minify:
-                    content = minify_xml(content)
+                    if strip_lsa:
+                        before = content.count("linesegarray")
+                        content = strip_linesegarray(content)
+                        after = content.count("linesegarray")
+                        lsa_stripped += (before - after) // 2  # open+close = 2
 
-                zf.writestr(
-                    rel_path,
-                    content.encode("utf-8"),
-                    compress_type=ZIP_DEFLATED,
-                )
-            else:
-                zf.write(full_path, rel_path, compress_type=ZIP_DEFLATED)
+                    if minify:
+                        content = minify_xml(content)
+
+                    zf.writestr(
+                        rel_path,
+                        content.encode("utf-8"),
+                        compress_type=ZIP_DEFLATED,
+                    )
+                else:
+                    zf.write(full_path, rel_path, compress_type=ZIP_DEFLATED)
+
+        # Verify the temp file is a valid ZIP before committing
+        with ZipFile(tmp_path, "r") as verify:
+            if verify.testzip() is not None:
+                raise RuntimeError("ZIP integrity check failed")
+
+        # Atomic rename (same filesystem guaranteed by mkstemp in same dir)
+        os.replace(tmp_path, hwpx_path)
+
+    except Exception:
+        # Clean up temp file on any failure — original file is untouched
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        raise
 
     count = len(all_files)
     print(f"Packed: {input_dir} -> {hwpx_path}")

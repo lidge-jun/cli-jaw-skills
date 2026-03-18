@@ -19,13 +19,31 @@ Do NOT use for: DOCX, PDF, spreadsheets, or Google Docs.
 |------|----------------|
 | **Detect format** | `file doc.hwpx` → ZIP = HWPX, "HWP Document" = HWP 5.0 |
 | **Create HWPX** | `python-hwpx` API or `build_hwpx.py` (template-based) |
-| **Read HWPX** | `text_extract.py` or `python-hwpx` TextExtractor |
+| **Read HWPX** | `hwpx_cli.py text input.hwpx` or `text_extract.py` |
 | **Read HWP** | `hwp5proc text input.hwp` (pyhwp) |
 | **Edit HWPX** | unpack → pretty-print → Edit → pack (auto strip+minify) |
+| **Search/Replace** | `hwpx_cli.py search` / `hwpx_cli.py replace` / `hwpx_cli.py batch-replace` |
+| **Tables** | `hwpx_cli.py tables` / `hwpx_cli.py fill-table` (path-based) |
 | **Upgrade HWP** | `npx hwpxjs convert:hwp` or `java -jar hwp2hwpx.jar` → then edit HWPX |
-| **Validate** | `validate.py` + `page_guard.py` |
+| **Validate** | `hwpx_cli.py validate` + `hwpx_cli.py page-guard` |
 | **HWPX → PDF** | `soffice --headless --convert-to pdf` (needs H2Orestart+Java) |
 | **Visual QA** | PDF → `pdftoppm -jpeg -r 150` → subagent inspection |
+
+### Unified CLI (`hwpx_cli.py`)
+
+```bash
+python scripts/hwpx_cli.py open input.hwpx work/           # unpack + pretty-print
+python scripts/hwpx_cli.py save work/ output.hwpx           # minify + strip + pack (atomic)
+python scripts/hwpx_cli.py text input.hwpx                  # extract text
+python scripts/hwpx_cli.py search input.hwpx "pattern"      # regex search in text
+python scripts/hwpx_cli.py replace input.hwpx "old" "new" -o out.hwpx  # text replace
+python scripts/hwpx_cli.py batch-replace input.hwpx map.json -o out.hwpx  # bulk replace
+python scripts/hwpx_cli.py tables input.hwpx [--csv]        # list tables / CSV export
+python scripts/hwpx_cli.py fill-table input.hwpx IDX '{"label>dir":"val"}' -o out.hwpx
+python scripts/hwpx_cli.py validate input.hwpx              # structural validation
+python scripts/hwpx_cli.py page-guard -r ref.hwpx -o out.hwpx  # page drift check
+python scripts/hwpx_cli.py structure input.hwpx              # document structure tree
+```
 
 ### Format Overview
 
@@ -136,6 +154,8 @@ doc.save_to_path("output.hwpx")
 ```
 
 See [python-hwpx GitHub](https://github.com/airmang/python-hwpx) for full API docs.
+
+**Known bugs**: `set_header_text()` and `set_footer_text()` silently fail (text not saved). Workaround: unpack → manually edit the header/footer XML in section0.xml `<hp:headerFooter>` → pack.
 
 ### 3.2 Template-based creation (formatted documents)
 
@@ -389,6 +409,8 @@ Subagent prompt template: see reference/visual_qa_prompt.md
 14. **Preserve table structure** — no unauthorized rowCnt/colCnt/colSpan/rowSpan changes
 15. **Templates are read-only** — copy before modifying
 16. **Match reference page count** — adjust text to fit existing layout
+17. **Atomic save** — pack.py writes to temp file → validates ZIP → atomic rename. Original file is never corrupted on failure
+18. **Fill-table by label path** — use `hwpx_cli.py fill-table` for gov forms: `"이름 > 오른쪽": "value"` finds label cell, navigates relatively
 
 ---
 
@@ -505,8 +527,9 @@ hwp_hwpx/
 ├── reference/          ← hwpx-format.md, style_id_maps.md, visual_qa_prompt.md
 ├── scripts/
 │   ├── office/         ← unpack.py (pretty-print), pack.py (strip+minify)
+│   ├── hwpx_cli.py           ← unified CLI (open/save/text/search/replace/tables/fill-table/validate)
 │   ├── validate.py, page_guard.py, build_hwpx.py, analyze_template.py
-│   ├── text_extract.py, create_document.py
+│   ├── text_extract.py, create_document.py, hwp_reader.py
 │   └── ooxml/          ← cjk_utils.py, soffice.py
 └── templates/          ← base, gonmun, report, minutes, proposal
 ```
