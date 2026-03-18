@@ -355,7 +355,7 @@ python scripts/text_extract.py output.hwpx | grep -iE "xxxx|lorem|placeholder|TO
 **⚠️ USE SUBAGENTS** — you've been staring at the XML and will see what you expect, not what's there. Subagents have fresh eyes.
 
 ```bash
-# Requires: LibreOffice + H2Orestart + Java (see Section 11)
+# Requires: LibreOffice + H2Orestart + Java (see Section 12)
 export JAVA_HOME="$(brew --prefix openjdk)/libexec/openjdk.jdk/Contents/Home"
 soffice --headless --norestore --convert-to pdf output.hwpx
 pdftoppm -jpeg -r 150 output.pdf page
@@ -421,7 +421,20 @@ Subagent prompt template: see reference/visual_qa_prompt.md
 
 ---
 
-## 10. HWPX → PDF Conversion
+## 10. Anti-Patterns (DO NOT)
+
+1. **header.xml 없이 IDRef 추측 금지** — section XML의 charPrIDRef/paraPrIDRef는 반드시 header.xml에 정의된 ID만 사용
+2. **section0.xml 전체 regex 치환 금지** — `re.sub`로 section 전체를 대상으로 하면 XML 구조 깨짐. unpack → Edit 도구로 정밀 수정
+3. **repair --apply를 fixture에 직접 실행 금지** — 반드시 `-o`로 별도 출력
+4. **page-guard 없이 완료 처리 금지** — validate만으로는 레이아웃 드리프트 못 잡음
+5. **linesegarray를 수동 편집 금지** — 항상 pack.py의 자동 strip에 위임
+6. **secPr을 다른 문단으로 이동 금지** — 반드시 첫 문단 첫 run에 유지
+7. **python-hwpx set_header_text/set_footer_text 사용 금지** — 사일런트 버그. unpack→XML 직접 편집
+8. **minified XML을 직접 Edit 시도 금지** — 반드시 unpack(pretty-print) 후 편집
+
+---
+
+## 11. HWPX → PDF Conversion
 
 Requires LibreOffice + H2Orestart extension + Java Runtime.
 
@@ -443,12 +456,12 @@ If conversion fails with "source file could not be loaded":
 
 ---
 
-## 11. Dependencies & Installation
+## 12. Dependencies & Installation
 
 ### Core Python packages
 
 ```bash
-pip install hwpx lxml pyhwp olefile defusedxml openpyxl
+pip install hwpx lxml pyhwp olefile defusedxml openpyxl Pillow
 ```
 
 | Package | Purpose |
@@ -459,6 +472,7 @@ pip install hwpx lxml pyhwp olefile defusedxml openpyxl
 | `olefile` | HWP 5.0 OLE container access |
 | `defusedxml` | Safe XML parsing (XXE prevention) |
 | `openpyxl` | CJK column width utilities |
+| `Pillow` | Contact sheet QA (page grid image) |
 
 ### System dependencies
 
@@ -493,7 +507,7 @@ npm install -g @ssabrojs/hwpxjs    # then: npx hwpxjs convert:hwp input.hwp
 
 ---
 
-## 12. Cross-Platform Compatibility
+## 13. Cross-Platform Compatibility
 
 | Feature | macOS | Linux | Windows |
 |---------|-------|-------|---------|
@@ -515,7 +529,7 @@ npm install -g @ssabrojs/hwpxjs    # then: npx hwpxjs convert:hwp input.hwp
 
 ---
 
-## 13. Library Tiers
+## 14. Library Tiers
 
 | Tier | Library | Format | Capabilities |
 |------|---------|--------|-------------|

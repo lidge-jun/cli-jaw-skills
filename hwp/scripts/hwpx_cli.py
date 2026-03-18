@@ -136,7 +136,7 @@ def cmd_text(args: argparse.Namespace) -> int:
 def cmd_search(args: argparse.Namespace) -> int:
     """Search text content with regex."""
     pattern = re.compile(args.pattern)
-    found = 0
+    results: list[dict] = []
     for sec_name in _section_files(args.input):
         with zipfile.ZipFile(args.input, "r") as zf:
             root = etree.fromstring(zf.read(sec_name))
@@ -144,12 +144,16 @@ def cmd_search(args: argparse.Namespace) -> int:
         for i, p in enumerate(paragraphs):
             text = _get_text(p)
             if pattern.search(text):
-                print(f"{sec_name}:p{i}: {text[:120]}")
-                found += 1
-    if found == 0:
+                results.append({"section": sec_name, "para_index": i, "text": text[:120]})
+    if not results:
         print("No matches found.", file=sys.stderr)
         return 1
-    print(f"\n{found} match(es) found.", file=sys.stderr)
+    if args.json:
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for r in results:
+            print(f"{r['section']}:p{r['para_index']}: {r['text']}")
+    print(f"\n{len(results)} match(es) found.", file=sys.stderr)
     return 0
 
 
@@ -205,7 +209,8 @@ def cmd_batch_replace(args: argparse.Namespace) -> int:
 
 
 def cmd_tables(args: argparse.Namespace) -> int:
-    """List tables or export as CSV."""
+    """List tables or export as CSV/JSON."""
+    all_tables: list[dict] = []
     for sec_name in _section_files(args.input):
         with zipfile.ZipFile(args.input, "r") as zf:
             root = etree.fromstring(zf.read(sec_name))
@@ -214,16 +219,26 @@ def cmd_tables(args: argparse.Namespace) -> int:
         for idx, tbl in enumerate(tables):
             rows = int(tbl.get("rowCnt", "0"))
             cols = int(tbl.get("colCnt", "0"))
-            print(f"Table {idx}: {rows}×{cols}")
+            cells: list[list[str]] = []
+            for tr in tbl.findall("hp:tr", NS):
+                row_data = []
+                for tc in tr.findall("hp:tc", NS):
+                    row_data.append(_get_text(tc))
+                cells.append(row_data)
+            all_tables.append({"index": idx, "rows": rows, "cols": cols, "cells": cells})
 
-            if args.csv:
-                writer = csv.writer(sys.stdout)
-                for tr in tbl.findall("hp:tr", NS):
-                    row_data = []
-                    for tc in tr.findall("hp:tc", NS):
-                        row_data.append(_get_text(tc))
-                    writer.writerow(row_data)
-                print()
+    if args.json:
+        print(json.dumps(all_tables, ensure_ascii=False, indent=2))
+    elif args.csv:
+        for t in all_tables:
+            print(f"Table {t['index']}: {t['rows']}×{t['cols']}")
+            writer = csv.writer(sys.stdout)
+            for row in t["cells"]:
+                writer.writerow(row)
+            print()
+    else:
+        for t in all_tables:
+            print(f"Table {t['index']}: {t['rows']}×{t['cols']}")
     return 0
 
 
@@ -343,29 +358,42 @@ def cmd_validate(args: argparse.Namespace) -> int:
     sys.path.insert(0, str(SCRIPT_DIR))
     from validate import validate
     errors = validate(args.input)
-    if errors:
+    if args.json:
+        result = {"status": "INVALID" if errors else "VALID", "file": args.input, "errors": errors}
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif errors:
         print(f"INVALID: {args.input}", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
-        return 1
-    print(f"VALID: {args.input}")
-    return 0
+    else:
+        print(f"VALID: {args.input}")
+    return 1 if errors else 0
 
 
 def cmd_page_guard(args: argparse.Namespace) -> int:
     """Page drift detection."""
     sys.path.insert(0, str(SCRIPT_DIR))
     from page_guard import collect_metrics, compare_metrics
+    from dataclasses import asdict
     ref = collect_metrics(Path(args.reference))
     out = collect_metrics(Path(args.output))
     errors = compare_metrics(ref, out, args.max_text_delta, args.max_para_delta)
-    if errors:
+    if args.json:
+        result = {
+            "status": "FAIL" if errors else "PASS",
+            "reference": args.reference,
+            "output": args.output,
+            "errors": errors,
+            "metrics": {"reference": asdict(ref), "output": asdict(out)},
+        }
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif errors:
         print("FAIL: page-guard")
         for e in errors:
             print(f"  - {e}")
-        return 1
-    print("PASS: page-guard")
-    return 0
+    else:
+        print("PASS: page-guard")
+    return 1 if errors else 0
 
 
 # ---------------------------------------------------------------------------
@@ -715,16 +743,27 @@ def cmd_repair(args: argparse.Namespace) -> int:
                     xml_path.write_text(content, encoding="utf-8")
 
         # Output report
-        if repairs:
+        if args.json:
+            report = {
+                "mode": "applied" if apply else "dry-run",
+                "repairs": [{"file": r.split(":")[0].strip(), "actions": r.split(":")[1].strip()} for r in repairs] if repairs else [],
+                "warnings": [{"file": w.split(":")[1].strip() if ":" in w else "", "message": w} for w in warnings] if warnings else [],
+            }
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+        elif repairs:
             label = "REPAIRED" if apply else "WOULD REPAIR"
             print(f"{label}:")
             for r in repairs:
                 print(f"  - {r}")
-        if warnings:
+            if warnings:
+                print("WARNINGS (manual fix needed):")
+                for w in warnings:
+                    print(f"  - {w}")
+        elif warnings:
             print("WARNINGS (manual fix needed):")
             for w in warnings:
                 print(f"  - {w}")
-        if not repairs and not warnings:
+        else:
             print("No issues found.")
 
         # Actually repack if applying
@@ -795,6 +834,7 @@ def main() -> int:
     p = sub.add_parser("search", help="Search text content with regex")
     p.add_argument("input", help="Input .hwpx file")
     p.add_argument("pattern", help="Regex pattern to search")
+    p.add_argument("--json", action="store_true", help="JSON output")
 
     # replace
     p = sub.add_parser("replace", help="Replace text in HWPX")
@@ -810,9 +850,10 @@ def main() -> int:
     p.add_argument("-o", "--output", help="Output file (default: overwrite input)")
 
     # tables
-    p = sub.add_parser("tables", help="List tables or export as CSV")
+    p = sub.add_parser("tables", help="List tables or export as CSV/JSON")
     p.add_argument("input", help="Input .hwpx file")
     p.add_argument("--csv", action="store_true", help="Export table contents as CSV")
+    p.add_argument("--json", action="store_true", help="JSON output")
 
     # fill-table
     p = sub.add_parser("fill-table", help="Fill table cells by label-path")
@@ -824,6 +865,7 @@ def main() -> int:
     # validate
     p = sub.add_parser("validate", help="Structural validation")
     p.add_argument("input", help="Input .hwpx file")
+    p.add_argument("--json", action="store_true", help="JSON output")
 
     # page-guard
     p = sub.add_parser("page-guard", help="Page drift detection against reference")
@@ -831,6 +873,7 @@ def main() -> int:
     p.add_argument("-o", "--output", required=True, help="Output .hwpx file to check")
     p.add_argument("--max-text-delta", type=float, default=0.15)
     p.add_argument("--max-para-delta", type=float, default=0.25)
+    p.add_argument("--json", action="store_true", help="JSON output")
 
     # toc
     p = sub.add_parser("toc", help="Extract table of contents from headings")
@@ -858,6 +901,7 @@ def main() -> int:
     p.add_argument("--apply", action="store_true",
                    help="Actually apply safe repairs (default: dry-run report only)")
     p.add_argument("-o", "--output", help="Output file (implies --apply)")
+    p.add_argument("--json", action="store_true", help="JSON output")
 
     # structure
     p = sub.add_parser("structure", help="Document structure tree")
