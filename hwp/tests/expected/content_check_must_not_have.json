@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "must_have": [],
+  "must_not_have": [
+    {
+      "keyword": "ZZZZNOTEXIST",
+      "found": false,
+      "count": 0
+    }
+  ]
+}

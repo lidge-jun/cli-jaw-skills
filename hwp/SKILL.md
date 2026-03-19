@@ -25,7 +25,7 @@ Do NOT use for: DOCX, PDF, spreadsheets, or Google Docs.
 | **Search/Replace** | `hwpx_cli.py search` / `hwpx_cli.py replace` / `hwpx_cli.py batch-replace` |
 | **Tables** | `hwpx_cli.py tables` / `hwpx_cli.py fill-table` (path-based) |
 | **Content QA** | `hwpx_cli.py content-check` (must-have/must-not-have keyword scan) |
-| **Upgrade HWP** | `hwp2hwpx` Java sidecar (neolord0/hwp2hwpx) → then edit HWPX |
+| **Upgrade HWP** | `hwp_convert.py input.hwp output.hwpx` (hwp2hwpx sidecar, auto-build+verify) |
 | **Validate** | `hwpx_cli.py validate` + `hwpx_cli.py page-guard` |
 | **HWPX → PDF** | `soffice --headless --convert-to pdf` (needs H2Orestart+Java) |
 | **Visual QA** | PDF → `pdftoppm -jpeg -r 150` → subagent inspection |
@@ -234,17 +234,13 @@ for elem in tree.getroot().iter():
         print(elem.text.strip())
 "
 
-# 2. Upgrade to HWPX (recommended: hwp2hwpx Java sidecar)
-# Build once (requires JDK 11+ and Maven):
-git clone https://github.com/neolord0/hwp2hwpx /tmp/hwp2hwpx
-cd /tmp/hwp2hwpx && mvn -DskipTests package dependency:copy-dependencies
+# 2. Upgrade to HWPX (wrapper handles build + verify automatically)
+python scripts/hwp_convert.py input.hwp output.hwpx
 
-# Convert:
-java -cp 'target/classes:target/dependency/*' \
-  kr.dogfoot.hwp2hwpx.CliMain input.hwp output.hwpx
-
-# 3. Quick validation (must NOT contain dummy text)
-unzip -p output.hwpx Contents/section0.xml | head
+# Or manually (requires JDK 11+ and Maven):
+# git clone https://github.com/neolord0/hwp2hwpx /tmp/hwp2hwpx
+# cd /tmp/hwp2hwpx && mvn -DskipTests package dependency:copy-dependencies
+# java -cp 'target/classes:target/dependency/*' kr.dogfoot.hwp2hwpx.CliMain input.hwp output.hwpx
 
 # 4. Edit the resulting HWPX using Section 1 workflow
 # 5. Save as HWPX (canonical)

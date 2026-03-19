@@ -1,0 +1,37 @@
+[
+  {
+    "slide": "ppt/slides/slide1.xml",
+    "slide_num": 1,
+    "text": "Title Slide"
+  },
+  {
+    "slide": "ppt/slides/slide1.xml",
+    "slide_num": 1,
+    "text": "Subtitle text"
+  },
+  {
+    "slide": "ppt/slides/slide2.xml",
+    "slide_num": 2,
+    "text": "Second Slide"
+  },
+  {
+    "slide": "ppt/slides/slide2.xml",
+    "slide_num": 2,
+    "text": "Content paragraph one"
+  },
+  {
+    "slide": "ppt/slides/slide2.xml",
+    "slide_num": 2,
+    "text": "Content paragraph two"
+  },
+  {
+    "slide": "ppt/slides/slide3.xml",
+    "slide_num": 3,
+    "text": "Third Slide"
+  },
+  {
+    "slide": "ppt/slides/slide3.xml",
+    "slide_num": 3,
+    "text": "Final content"
+  }
+]

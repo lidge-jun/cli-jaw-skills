@@ -877,9 +877,8 @@ def cmd_insert_table(args: argparse.Namespace) -> int:
         tree = etree.parse(str(sec_path))
         root = tree.getroot()
 
-        # Find top-level hp:p elements only (not nested in tables)
-        body_tag = root.tag.split("}")[0] + "}" if "}" in root.tag else ""
-        top_paras = [p for p in root if p.tag == f"{body_tag}p" or p.tag.endswith("}p")]
+        # Find top-level hp:p elements only (direct children, not nested in tables)
+        top_paras = root.xpath("hp:p", namespaces=NS)
 
         if args.at_para is not None and args.at_para < len(top_paras):
             # Insert after the specified paragraph

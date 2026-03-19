@@ -1,0 +1,97 @@
+[
+  {
+    "sheet": "Sales",
+    "cell": "A1",
+    "text": "Product"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "B1",
+    "text": "Revenue"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "A2",
+    "text": "Widget A"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "B2",
+    "text": "1500"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "A3",
+    "text": "Widget B"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "B3",
+    "text": "2300"
+  },
+  {
+    "sheet": "Sales",
+    "cell": "A4",
+    "text": "Total"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "A1",
+    "text": "Item"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "B1",
+    "text": "Quantity"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "C1",
+    "text": "Location"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "A2",
+    "text": "Widget A"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "B2",
+    "text": "100"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "C2",
+    "text": "Warehouse 1"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "A3",
+    "text": "Widget B"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "B3",
+    "text": "50"
+  },
+  {
+    "sheet": "Inventory",
+    "cell": "C3",
+    "text": "Warehouse 2"
+  },
+  {
+    "sheet": "Summary",
+    "cell": "A1",
+    "text": "Report Date"
+  },
+  {
+    "sheet": "Summary",
+    "cell": "B1",
+    "text": "2026-03-18"
+  },
+  {
+    "sheet": "Summary",
+    "cell": "A2",
+    "text": "Total Revenue"
+  }
+]

@@ -45,6 +45,10 @@ TEST_CASES: list[tuple[str, list[str], str, str]] = [
     # Text extraction
     ("text", [str(FIXTURES_DIR / "multi_sheet.xlsx")],
      "text_multi_sheet.txt", "text"),
+
+    # Search
+    ("search", [str(FIXTURES_DIR / "multi_sheet.xlsx"), ".", "--json"],
+     "search_multi_sheet.json", "json"),
 ]
 
 

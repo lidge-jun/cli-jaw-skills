@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "must_have": [
+    {
+      "keyword": "시장",
+      "found": true,
+      "count": 5,
+      "context": "AI 기반 마케팅 자동화 솔루션을 개발하는 것이다.\n시장 규모는 연간 1조원 이상으로 추정된다.\n1.1 배경"
+    }
+  ],
+  "must_not_have": []
+}

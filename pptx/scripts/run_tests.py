@@ -39,6 +39,14 @@ TEST_CASES: list[tuple[str, list[str], str, str]] = [
     # Text extraction
     ("text", [str(FIXTURES_DIR / "basic_slides.pptx")],
      "text_basic_slides.txt", "text"),
+
+    # Search
+    ("search", [str(FIXTURES_DIR / "basic_slides.pptx"), ".", "--json"],
+     "search_basic_slides.json", "json"),
+
+    # TOC
+    ("toc", [str(FIXTURES_DIR / "basic_slides.pptx"), "--json"],
+     "toc_basic_slides.json", "json"),
 ]
 
 

@@ -48,6 +48,14 @@ TEST_CASES: list[tuple[str, list[str], str, str]] = [
      "repair_dryrun_stale_linesegarray.txt", "text"),
     ("repair", [str(FIXTURES_DIR / "repair/unclosed_tag.hwpx")],
      "repair_dryrun_unclosed_tag.txt", "text"),
+
+    # Content-check (smoke test using existing fixture)
+    ("content-check", [str(FIXTURES_DIR / "agentic/heading_gonmun.hwpx"),
+     "--must-have", "시장", "--json"],
+     "content_check_must_have.json", "json"),
+    ("content-check", [str(FIXTURES_DIR / "agentic/heading_gonmun.hwpx"),
+     "--must-not-have", "ZZZZNOTEXIST", "--json"],
+     "content_check_must_not_have.json", "json"),
 ]
 
 
