@@ -35,8 +35,9 @@ Uses ref-based snapshots to identify page elements, then click/type by ref ID.
 ## Quick Start
 
 ```bash
-cli-jaw browser start                          # Start Chrome (CDP auto port)
-cli-jaw browser start --headless               # Headless mode (server/CI/WSL)
+cli-jaw browser start --agent                  # Automation session (headless, no visible test window)
+cli-jaw browser start                          # Interactive browser (manual only)
+cli-jaw browser start --headless               # Manual headless mode (server/CI/WSL)
 cli-jaw browser navigate "https://example.com" # Go to URL
 cli-jaw browser snapshot                        # Get page structure with ref IDs
 cli-jaw browser click e3                        # Click ref e3
@@ -56,10 +57,14 @@ cli-jaw browser screenshot                      # Save screenshot
 ### Browser Management
 
 ```bash
-cli-jaw browser start [--port <auto>] [--headless]  # Start Chrome
+cli-jaw browser start [--port <auto>] [--headless] [--agent]  # Start Chrome
 cli-jaw browser stop                 # Stop Chrome
 cli-jaw browser status               # Connection status
 ```
+
+- `--agent` is for automated sessions. It forces a headless browser so agents do not pop a visible test window.
+- Plain `browser start` is for user-requested interactive browsing.
+- For debug/log inspection, prefer the Web UI debug console instead of opening a browser window.
 
 ### Observe
 
@@ -109,7 +114,7 @@ cli-jaw browser evaluate "document.title"        # Execute JS
 ### Web Search
 
 ```bash
-cli-jaw browser start
+cli-jaw browser start --agent
 cli-jaw browser navigate "https://www.google.com"
 cli-jaw browser snapshot --interactive
 # → e3 textbox "Search"
@@ -170,18 +175,20 @@ cliclick t:"text input"
 
 ```bash
 cli-jaw browser start --headless               # CLI flag
+cli-jaw browser start --agent                  # agent automation (forces headless)
 CHROME_HEADLESS=1 cli-jaw browser start         # env var
 ```
 
 - GUI 없는 환경(WSL, SSH, Docker, CI)에서 사용
 - `--headless=new` (Chrome 112+) 사용 — full browser 기능 유지
+- `--agent` 는 GUI 환경에서도 visible test browser를 띄우지 않기 위한 자동화 전용 모드
 
 ## Troubleshooting
 
 | 증상                               | 원인                                | 해결                                              |
 | ---------------------------------- | ----------------------------------- | ------------------------------------------------- |
 | CDP 연결 거부                      | Chrome이 이미 기본 프로필로 실행 중 | 모든 Chrome 종료 후 재시도, 또는 `browser reset`  |
-| Windows에서 테스트 브라우저만 열림 | Chrome 싱글턴이 launch 흡수         | 기존 Chrome 완전 종료 후 `browser start`          |
+| Windows에서 테스트 브라우저만 열림 | Chrome 싱글턴이 launch 흡수         | 자동화는 `browser start --agent`, 수동은 기존 Chrome 완전 종료 후 `browser start` |
 | Headless에서 CDP 안 열림           | `--headless` 미지정                 | `--headless` 플래그 추가                          |
 | 포트 충돌                          | 다른 프로세스가 CDP 포트 점유       | `--port <다른포트>` 지정                          |
 | 서버 재시작 후 연결 안 됨          | 이전 Chrome이 여전히 포트 점유      | `browser start`가 자동 재사용 (readiness 확인 후) |
@@ -196,6 +203,7 @@ CHROME_HEADLESS=1 cli-jaw browser start         # env var
 - If the port is occupied by a non-CDP process, `start` will fail with a clear error.
 - `CHROME_NO_SANDBOX=1` — disable sandbox (Docker/CI).
 - `CHROME_HEADLESS=1` — enable headless mode.
+- `browser start --agent` — agent-only automation session; forces headless to avoid a visible test browser window.
 
 ## Non-DOM Elements
 

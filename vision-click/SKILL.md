@@ -32,7 +32,7 @@ cli-jaw browser vision-click "Menu" --provider codex   # explicit provider
 
 - **Codex CLI** installed and authenticated
 - cli-jaw server running (`cli-jaw serve`)
-- Browser started (`cli-jaw browser start`)
+- Browser started (`cli-jaw browser start --agent` for automation, `cli-jaw browser start` for manual interactive sessions)
 
 ## When to Use
 
@@ -125,4 +125,3 @@ Verified via smoke test (2026-02-24):
 - Cost: ~$0.005-0.01 per call (~18K input tokens)
 - Complex UIs may need confidence check + retry
 - DPR auto-correction included (Phase 2)
-
