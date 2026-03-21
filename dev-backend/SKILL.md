@@ -13,13 +13,15 @@ This skill has modular references for specialized guidance — read the relevant
 
 | File                                   | When to Read                   | What It Covers                                                         |
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
-| `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL |
+| `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
 | `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | **Always**                     | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
-| `references/core/security.md`          | **Always** for production code | OWASP, auth, input validation, rate limiting, security headers         |
+| `references/core/security.md`          | **Always** for production code | Redirect to `dev-security` skill (this file is a delegation pointer)             |
+| `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
+| `references/core/caching.md`           | Performance optimization       | Redis patterns, CDN, connection pooling, cache invalidation            |
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
 | `references/stacks/python.md`          | Python projects                | FastAPI/Django, Pydantic, async patterns, testing                      |
-| `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, transactions           |
+| `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, ORM comparison         |
 
 Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
 
@@ -45,13 +47,13 @@ When the request has **unspecified technology or unclear scope**, clarify before
 
 1. **Identify what's ambiguous** from this list:
 
-| Dimension    | Options to present                                                         |
-| ------------ | -------------------------------------------------------------------------- |
-| API style    | REST (default) · GraphQL (flexible clients) · gRPC (internal, high-perf)   |
-| Database     | PostgreSQL (default, ACID) · MongoDB (flexible schema) · SQLite (embedded) |
-| Auth method  | JWT + refresh (stateless) · Session-based (simple) · OAuth 2.1 (3rd party) |
-| Realtime     | Not needed (default) · WebSocket · SSE · Polling                           |
-| Architecture | Monolith (default) · Modular monolith · Microservices                      |
+| Dimension    | Options to present                                                                  |
+| ------------ | ----------------------------------------------------------------------------------- |
+| API style    | REST (default) · GraphQL (BFF/mobile) · gRPC (internal microservices) · tRPC (TS monorepo) |
+| Database     | PostgreSQL (default, ACID) · MongoDB (flexible schema) · SQLite (embedded)          |
+| Auth method  | JWT + refresh (stateless) · Session-based (simple) · OAuth 2.1 (3rd party)          |
+| Realtime     | Not needed (default) · WebSocket · SSE · Polling                                    |
+| Architecture | Monolith (default) · Modular monolith · Microservices                               |
 
 2. **Recommend one with reasoning**: cite project context. "3명 프로젝트라 모노리스 + PostgreSQL + JWT 조합을 추천합니다."
 3. **Over-engineering guard**: A CRUD API *probably* doesn't need GraphQL + microservices + event sourcing. Simple → complex, not the reverse.
@@ -74,6 +76,25 @@ Before coding, identify the right pattern:
 **Default to monolith.** Extract only when you have a proven need (different scaling, independent deployment, technology mismatch).
 
 See `references/core/architecture.md` for full decision matrices.
+
+### API Protocol Decision
+
+| Protocol | Choose When | Avoid When |
+|----------|-------------|------------|
+| **REST** | Public/partner APIs, simple CRUD, caching matters | Clients need flexible data shapes |
+| **GraphQL** | Mobile/BFF, multiple resources per request, bandwidth-constrained | Simple CRUD, server-to-server, file uploads |
+| **gRPC** | Internal microservices, high-perf binary, bidirectional streaming | Browser clients (without gRPC-Web), public APIs |
+| **tRPC** | TypeScript monorepo, internal tools, rapid prototyping | Polyglot environments, public APIs |
+
+**Hybrid pattern (industry consensus):**
+```
+Public/Partner → REST (OpenAPI 3.1)
+Mobile/Web BFF → GraphQL (Apollo Federation)
+Internal services → gRPC (Protobuf contracts)
+TS internal tools → tRPC (zero-codegen type safety)
+```
+
+See `references/core/api-design.md` for protocol-specific patterns.
 
 ---
 
@@ -110,6 +131,60 @@ Routes → Controllers → Services → Repositories → Database
 
 Use a centralized `AppError` class. Distinguish operational vs programmer errors.
 
+### Error Taxonomy (AppError Hierarchy)
+
+```typescript
+abstract class AppError extends Error {
+  abstract readonly statusCode: number
+  abstract readonly code: string
+  abstract readonly isOperational: boolean
+}
+
+class ValidationError extends AppError {
+  readonly statusCode = 400
+  readonly code = "VALIDATION_ERROR"
+  readonly isOperational = true
+}
+
+class NotFoundError extends AppError {
+  readonly statusCode = 404
+  readonly code = "NOT_FOUND"
+  readonly isOperational = true
+}
+
+class InternalError extends AppError {
+  readonly statusCode = 500
+  readonly code = "INTERNAL_ERROR"
+  readonly isOperational = false // programmer error — alert + investigate
+}
+```
+
+### Result Pattern (Preferred for TypeScript)
+
+Use value-based error handling instead of thrown exceptions for business logic:
+
+```typescript
+import { ok, err, Result } from "neverthrow"
+
+function parseUserId(input: string): Result<number, ValidationError> {
+  const id = parseInt(input, 10)
+  if (isNaN(id)) return err(new ValidationError("Invalid user ID"))
+  return ok(id)
+}
+
+// Caller MUST handle both paths — compiler enforces it
+const result = parseUserId(req.params.id)
+  .andThen(id => findUser(id))
+  .mapErr(e => toApiError(e))
+```
+
+| Library | When to Use |
+|---------|-------------|
+| **neverthrow** | Default choice — simple Rust-like `Result<T, E>` |
+| **Effect** | Complex domains needing full effect system |
+
+**Rule:** Use `Result` for business logic. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
+
 ---
 
 ## 4. Middleware Execution Order
@@ -130,16 +205,134 @@ Apply in this sequence (order matters):
 
 ---
 
-## 5. Pre-Flight Checklist
+## 5. API Response Contract
+
+Every endpoint must return a **stable envelope** that frontend clients can rely on:
+
+```typescript
+// Success envelope
+{ "success": true, "data": { ... }, "meta": { "requestId": "req_abc123", "pagination": { "page": 1, "pageSize": 20, "total": 142 } } }
+
+// Error envelope
+{ "success": false, "error": { "code": "VALIDATION_ERROR", "message": "Email is required", "details": [{ "field": "email", "rule": "required" }] }, "meta": { "requestId": "req_abc123" } }
+```
+
+**Rules:**
+- `success` boolean at top level — never infer from HTTP status alone
+- `error.code` is machine-readable (UPPER_SNAKE), `error.message` is human-readable
+- `meta.requestId` on every response — enables cross-service tracing
+- Pagination uses cursor-based (`after`/`before`) for large datasets, offset-based (`page`/`pageSize`) for admin UIs
+- Nullability: explicitly return `null` for absent optional fields, never omit the key
+- Timestamps: ISO 8601 UTC (`2024-01-15T09:30:00Z`), never Unix epoch in JSON
+- Money: integer cents + currency code, never floating point
+
+See `references/core/api-design.md` for protocol-specific patterns (REST, GraphQL, gRPC, tRPC).
+
+---
+
+## 6. Caching Strategy
+
+**The cardinal rule:** cache only after correctness is proven. Never cache before you have tested the uncached path.
+
+### Cache Key Design
+
+```
+{service}:{resource}:{identifier}:{version}
+user-service:profile:u_12345:v2
+```
+
+- Include version in keys to avoid stale data after schema changes
+- Use consistent hashing for cache keys — no random components
+- Namespace by service to prevent key collisions in shared Redis
+
+### TTL Selection
+
+| Data Type | TTL | Rationale |
+|-----------|-----|-----------|
+| User session | 15-60 min | Security boundary |
+| User profile | 5-15 min | Balance freshness vs load |
+| Public config/feature flags | 1-5 min | Low write frequency |
+| Computed aggregations | 10-60 min | Expensive to recompute |
+| Static assets (CDN) | 1 year + cache-busting hash | Immutable content |
+
+### Invalidation Triggers
+
+| Event | Action |
+|-------|--------|
+| Data mutation (write/update/delete) | Invalidate related cache keys immediately |
+| Schema/version change | Bump version in cache key prefix |
+| Deployment | Warm critical caches during rollout |
+| User logout/password change | Purge all session and profile caches for that user |
+
+### Patterns
+
+| Pattern | When |
+|---------|------|
+| **Cache-aside** (default) | App reads cache → miss → read DB → write cache |
+| **Write-through** | App writes DB + cache atomically — strong consistency |
+| **Write-behind** | App writes cache → async DB write — high throughput, risk of loss |
+| **Read-through** | Cache library handles DB fetch on miss — simpler app code |
+
+**Anti-patterns:**
+- ❌ Caching error responses (propagates failures)
+- ❌ Caching without TTL (stale data forever)
+- ❌ Cache stampede on expiry (use jitter or locking)
+- ❌ Caching PII without encryption and access controls
+
+See `references/core/caching.md` for Redis patterns, CDN configuration, and connection pooling.
+
+---
+
+## 7. Observability (OpenTelemetry)
+
+Use OpenTelemetry for the three pillars of observability:
+
+| Signal | Purpose | Backends |
+|--------|---------|----------|
+| **Traces** | Request flow across services | Jaeger, Tempo, Zipkin |
+| **Metrics** | Quantitative measurements | Prometheus, Grafana |
+| **Logs** | Event records with context | Loki, ELK, Uptrace |
+
+**Structured Logging Rules:**
+1. JSON format only in production — never free-text
+2. Every log includes `traceId`, `spanId`, `requestId`
+3. Log levels: `error` (needs action) · `warn` (degraded) · `info` (business events) · `debug` (dev only)
+4. **Never log PII, secrets, or full request bodies**
+5. Use OTel semantic conventions for field names
+
+```typescript
+import { trace, context } from '@opentelemetry/api';
+
+// Extract trace context from the active span (auto-injected by OTel middleware)
+const span = trace.getSpan(context.active());
+const traceId = span?.spanContext().traceId ?? 'no-trace';
+const spanId = span?.spanContext().spanId ?? 'no-span';
+
+logger.error("Payment failed", {
+  "error.type": "card_declined",
+  "payment.id": paymentId,
+  "user.id": userId,
+  "trace.id": traceId,
+  "span.id": spanId,
+})
+```
+
+See `references/core/observability.md` for auto-instrumentation setup, custom spans, and alerting.
+
+---
+
+## 8. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Consistent response envelope on every endpoint
 - [ ] Input validation with schema (Zod, Pydantic, etc.)
 - [ ] Authentication middleware on protected routes
 - [ ] Rate limiting on public endpoints
-- [ ] Structured JSON logging with `requestId`
-- [ ] Error handler returns proper HTTP codes
+- [ ] Structured JSON logging with `requestId` and `traceId`
+- [ ] Error handler returns proper HTTP codes via `AppError` hierarchy
 - [ ] No raw SQL in service layer
 - [ ] No hardcoded secrets
 - [ ] Migrations have rollback
+- [ ] Observability: traces and structured logs wired (see `references/core/observability.md`)
+- [ ] Security review: delegate to `dev-security/SKILL.md` for production readiness
 - [ ] Stack-specific rules followed (see `references/stacks/`)

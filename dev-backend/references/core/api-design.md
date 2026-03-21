@@ -72,7 +72,7 @@ GET /api/users?limit=20&cursor=abc123
 Response:
 ```json
 {
-  "data": [...],
+  "data": [],
   "meta": { "total": 142, "limit": 20, "offset": 0, "hasMore": true }
 }
 ```
@@ -132,3 +132,97 @@ For transient failures (network timeouts, rate limits, DB locks):
 | Max     | 3-5 attempts |
 
 **Never retry non-idempotent operations (POST) without deduplication.**
+
+---
+
+## GraphQL Patterns
+
+When using GraphQL (BFF/mobile clients):
+
+- **Schema-first development**: Define schema → generate types → implement resolvers
+- **Apollo Federation v2** for distributed schema ownership across teams
+- **DataLoader** is mandatory for N+1 prevention — batch and deduplicate per-request
+- **Depth limiting** + **query complexity analysis** to prevent abuse
+- **Persisted queries** for production: whitelist allowed queries, reduce attack surface
+
+```graphql
+type Query {
+  user(id: ID!): User
+  users(first: Int = 20, after: String): UserConnection!  # cursor pagination
+}
+
+type User {
+  id: ID!
+  name: String!
+  orders(first: Int = 10): OrderConnection!  # DataLoader required here
+}
+```
+
+**Security:** Always limit query depth (≤7), field count, and complexity score. Never expose introspection in production.
+
+---
+
+## gRPC Patterns
+
+When using gRPC (internal microservices):
+
+- **Protobuf contracts**: Define `.proto` files as the single source of truth
+- **buf.build** for linting, breaking change detection, and code generation
+- **Unary RPC** for request-response, **server streaming** for data feeds, **bidirectional** for real-time
+- **Deadlines**: Always set per-call deadlines (not timeouts) — propagated across service chain
+- **Error codes**: Use standard gRPC status codes, not HTTP status codes
+
+```protobuf
+service UserService {
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc ListUsers(ListUsersRequest) returns (stream User);  // server streaming
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+```
+
+---
+
+## tRPC Patterns
+
+When using tRPC (TypeScript monorepo internal tools):
+
+- **Zero-codegen type safety** — procedure types flow from server to client automatically
+- Best for: admin dashboards, internal tools, rapid prototyping within TS monorepos
+- **Not suitable for**: public APIs, polyglot environments, mobile apps (non-TS clients)
+
+```typescript
+// Server — define procedures
+const appRouter = router({
+  user: router({
+    get: publicProcedure
+      .input(z.object({ id: z.string() }))
+      .query(({ input }) => userService.findById(input.id)),
+    create: protectedProcedure
+      .input(createUserSchema)
+      .mutation(({ input }) => userService.create(input)),
+  }),
+})
+
+// Client — fully typed, zero codegen
+const user = await trpc.user.get.query({ id: "123" })
+//    ^? User — type inferred from server
+```
+
+---
+
+## API Protocol Decision Matrix
+
+| Factor | REST | GraphQL | gRPC | tRPC |
+|--------|:----:|:-------:|:----:|:----:|
+| Public API | ✅ | ⚠️ | ❌ | ❌ |
+| Mobile BFF | ⚠️ | ✅ | ❌ | ❌ |
+| Internal services | ⚠️ | ❌ | ✅ | ⚠️ |
+| TS monorepo | ⚠️ | ⚠️ | ❌ | ✅ |
+| HTTP caching | ✅ | ❌ | ❌ | ❌ |
+| Type safety (codegen-free) | ❌ | ❌ | ❌ | ✅ |
+| Streaming | ❌ | ⚠️ | ✅ | ❌ |
+| Browser native | ✅ | ✅ | ❌ | ✅ |
+| Polyglot | ✅ | ✅ | ✅ | ❌ |

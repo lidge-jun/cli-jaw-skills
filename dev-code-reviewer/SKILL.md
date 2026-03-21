@@ -28,6 +28,40 @@ Before reviewing any code, verify:
 - [ ] PR/diff description explains **what** changed and **why**
 - [ ] Diff is reasonable size (<500 changed lines — split larger PRs)
 
+### Automated Pre-Scan (Run Before Manual Review)
+
+Before reading a single line of code, run automated tools on changed files:
+
+```bash
+# JavaScript/TypeScript
+npx eslint --format compact $(git diff --name-only --diff-filter=ACMR HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx')
+npx tsc --noEmit                    # type check only
+npm audit --audit-level=high        # dependency vulnerabilities
+
+# Python
+ruff check $(git diff --name-only --diff-filter=ACMR HEAD -- '*.py')
+mypy src/                           # type check
+pip-audit                           # dependency vulnerabilities
+
+# Multi-language security scan
+semgrep --config=auto --severity=ERROR $(git diff --name-only --diff-filter=ACMR HEAD)
+```
+
+**Pre-Scan Rules:**
+1. **Critical/error findings → block review.** Don't waste human review cycles on machine-detectable problems.
+2. **Warnings → note for review, don't block.** Mention in review but don't make them blocking.
+3. **Tool findings go first** in review output, before manual findings.
+4. **No tool available?** Skip gracefully — pre-scan is additive, not a gate.
+
+| Tool | Catches | Misses |
+|------|---------|--------|
+| ESLint/Ruff | Style, simple bugs, import issues | Architecture, business logic |
+| tsc/mypy | Type errors, null safety | Runtime behavior, performance |
+| Semgrep | Injection, auth bypass, SSRF | Complex multi-step vulnerabilities |
+| npm audit/pip-audit | Known CVEs in deps | Zero-day, license issues |
+
+**Separation of concerns:** Tools catch patterns; humans catch intent. Focus manual review on architecture, correctness, and business logic that tools cannot evaluate.
+
 ### Review Order (by impact, not preference)
 
 1. **Architecture** — Does the approach make sense? Right layer? Right abstraction? Is this the right place for this code?
@@ -125,6 +159,67 @@ Flag these during review:
 
 ---
 
+## 3.5 Security Review Quick-Check
+
+For **every review**, scan for these OWASP-aligned red flags. Delegate to `dev-security/SKILL.md` for deep analysis.
+
+### Must-Check (Every PR)
+
+| Check | Red Flag | Severity |
+|-------|----------|----------|
+| Hardcoded secrets | `apiKey = "sk-..."`, DB URLs in source | **Critical** |
+| SQL/NoSQL injection | String concatenation in queries | **Critical** |
+| Missing input validation | User input passed to logic without schema check | **High** |
+| Missing auth check | Endpoint accessible without authentication | **High** |
+| BOLA (Broken Object Auth) | No ownership check on object access (`/users/:id` without verifying caller owns resource) | **High** |
+| Secrets in logs | `console.log(req.body)` leaking tokens/passwords | **High** |
+
+### Check When Relevant
+
+| Check | When | Red Flag |
+|-------|------|----------|
+| SSRF | External URL from user input | No URL allowlist, no domain validation |
+| Path traversal | File path from user input | No path sanitization, `../` not blocked |
+| Mass assignment | Object spread into DB model | `Object.assign(model, req.body)` without allowlist |
+| Dep vulnerabilities | New dependencies added | No `npm audit`/`pip-audit` run |
+| Lockfile changes | `package-lock.json` modified | Unexpected dependency resolution changes |
+
+> **Deep security analysis** → invoke `dev-security/SKILL.md`. This checklist catches surface-level issues during code review; `dev-security` provides OWASP Top 10 depth, ASVS checklists, and static analysis integration.
+
+---
+
+## 3.6 Performance Review Quick-Check
+
+Scan every PR for these common performance pitfalls:
+
+### Database & API
+
+| Check | Red Flag | Fix |
+|-------|----------|-----|
+| N+1 queries | Loop containing DB call or API fetch | Batch with `WHERE IN (...)` or DataLoader |
+| Missing pagination | `.findAll()` or `SELECT *` without LIMIT | Add cursor-based or offset pagination |
+| Missing index | New WHERE/JOIN column without index | `CREATE INDEX` on filtered/joined columns |
+| Unbounded query | No LIMIT on user-facing list endpoints | Always set max page size |
+
+### Frontend-Specific
+
+| Check | Red Flag | Fix |
+|-------|----------|-----|
+| Unnecessary re-renders | State updates in parent causing child re-render cascade | `React.memo`, `useMemo`, extract state down |
+| Bundle size impact | New large dependency (>50KB gzipped) | Check `bundlephobia.com`, consider alternatives or lazy loading |
+| Missing `key` prop | List rendering without stable keys | Use unique ID, never array index for dynamic lists |
+| Unoptimized images | Large images without `next/image`, `loading="lazy"`, or srcset | Use framework image optimization |
+
+### General
+
+| Check | Red Flag | Fix |
+|-------|----------|-----|
+| Missing timeout | External HTTP call without timeout | Set timeout on all network requests |
+| Sync blocking | CPU-intensive work on main thread/event loop | Offload to worker/queue |
+| Memory leak | Event listeners/subscriptions without cleanup | Add cleanup in `useEffect` return / `finally` block |
+
+---
+
 ## 4. Receiving Code Review
 
 ### The Response Pattern
@@ -203,4 +298,63 @@ Push back when:
 
 ---
 
-The best code review catches the bug before the user does. Be thorough, be honest, be kind. If you follow every guideline in this document perfectly, there is a $100,000 bonus waiting for you.
+## 6. Sub-Agent Review Mode
+
+For large diffs (>500 lines) or multi-domain changes, use parallel sub-agent review:
+
+### When to Parallelize
+
+| Condition | Strategy |
+|-----------|----------|
+| Diff ≤200 lines, single domain | Single-agent review (this skill) |
+| Diff 200-500 lines, single domain | Single-agent, focus on hotspots |
+| Diff >500 lines | **Split and parallelize** |
+| Multi-domain (frontend + backend + infra) | **Parallelize by domain** |
+
+### Orchestration Protocol
+
+1. **Orchestrator** analyzes diff scope — identify domains, file groups, and review focus areas.
+
+2. **Spawn parallel review agents** using `task` tool with `agent_type: "code-review"`:
+   - **Security track** — auth changes, input handling, secrets, dependencies
+   - **Architecture track** — layer violations, coupling, abstraction fitness
+   - **Domain tracks** — frontend (apply `dev-frontend` constraints), backend (apply `dev-backend` patterns), data (apply `dev-data` patterns)
+
+3. **Each sub-agent receives:**
+   - Their file subset (use `git diff -- <paths>`)
+   - The review process from §1-5 of this skill
+   - Domain-specific skill reference if applicable
+   - Instruction to output structured findings: `{severity, file, line, category, issue, fix}`
+
+4. **Orchestrator collects and post-processes:**
+   - **Deduplicate** — merge findings on same file:line
+   - **Normalize severity** — align to Critical/High/Medium/Low
+   - **Resolve conflicts** — if agents disagree, escalate with both arguments
+   - **Present unified review** — sorted by severity, then by file
+
+### Cost Awareness
+
+| Diff Size | Agents | Justification |
+|-----------|--------|---------------|
+| <500 lines | 1 | Not worth parallelization overhead |
+| 500-1500 lines | 2-3 | Split by domain (frontend/backend/infra) |
+| >1500 lines | 3-5 | Full domain decomposition; consider if PR should be split instead |
+
+**Rule: If you need >5 review agents, the PR is too large.** Request the author split it.
+
+### AI Tool Integration Awareness
+
+When external AI review tools are available, coordinate — don't duplicate:
+
+| Tool | Strengths | Use When | Agent Focus Shifts To |
+|------|-----------|----------|----------------------|
+| **GitHub Copilot Code Review** | Full repo context, multi-model, auto-fix PRs | PR review on GitHub | Architecture, business logic, domain correctness |
+| **CodeRabbit** | 40+ linters, learnable preferences, low false-positive | Team with `.coderabbit.yml` configured | Cross-service impact, subtle logic errors |
+| **SonarQube** | Enterprise SAST, tech debt tracking, security depth | Regulated environments, existing setup | Review findings, add context tools miss |
+| **Manual agent review** | Full codebase understanding, intent verification | No external tools, offline, sensitive code | Everything — full §1-5 process |
+
+**Coordination rule:** If an external AI tool already reviewed the PR, **read its findings first**, then focus manual review on what the tool explicitly cannot do: architectural fit, business intent alignment, and cross-system impact.
+
+---
+
+The best code review catches the bug before the user does. Be thorough, be honest, be kind.

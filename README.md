@@ -1,8 +1,8 @@
 # Skills Reference
 
-CLI-JAW's skill system — 116 skills across 9 categories.
+CLI-JAW's skill system — 118 skills across 9 categories.
 
-**21 active** (auto-injected into every AI prompt) · **95 reference** (loaded on demand)
+**23 active** (auto-injected into every AI prompt) · **95 reference** (loaded on demand)
 
 ---
 
@@ -144,24 +144,26 @@ jaw skill list
 | `jaw skill reset`        | **Soft reset** — restores registered skills to bundled defaults, preserves custom/unregistered skills |
 | `jaw skill reset --hard` | **Hard reset** — deletes everything, re-copies from bundle, re-activates defaults                     |
 
-After reset, auto-active skills = `CODEX_ACTIVE` ∪ `OPENCLAW_ACTIVE` ∪ `category:orchestration` = **21 skills**.
+After reset, auto-active skills = `CODEX_ACTIVE` ∪ `OPENCLAW_ACTIVE` ∪ `category:orchestration` = **23 skills**.
 
 ---
 
 ## Categories
 
-### orchestration (8) — *auto-active*
+### orchestration (10) — *auto-active*
 
 | Skill               |     | Description                                                                     | Version |
 | ------------------- | --- | ------------------------------------------------------------------------------- | ------- |
 | `dev`               | 🔧   | Common development guide. Modular dev, self-reference patterns, changelog.      | 1.1.0   |
-| `dev-backend`       | ⚙️   | Backend role guide. Express.js patterns, SQLite, error handling, security.      | 1.0.0   |
-| `dev-code-reviewer` | 🔍   | Code review guide. Quality thresholds, antipatterns, giving/receiving feedback. | 1.0.0   |
-| `dev-data`          | 📊   | Data role guide. ETL pipelines, CSV/JSON processing, SQL queries.               | 1.0.0   |
+| `dev-backend`       | ⚙️   | Backend role guide. API design, architecture patterns, database optimization.   | 1.1.0   |
+| `dev-code-reviewer` | 🔍   | Code review guide. Pre-scan, quality thresholds, security/perf quick-checks.    | 1.1.0   |
+| `dev-data`          | 📊   | Data role guide. ETL pipelines, dbt, data quality, streaming decisions.          | 1.1.0   |
+| `dev-debugging`     | 🐛   | Systematic debugging. Root cause analysis, boundary instrumentation, postmortem. | 1.0.0   |
 | `dev-frontend`      | 🎨   | Frontend role guide. Unique UI/UX, component design, aesthetic standards.       | 1.0.0   |
 | `dev-pabcd`         | 🎯   | PABCD orchestration workflow with human checkpoints between phases.             | 2.0.0   |
 | `dev-scaffolding`   | 🏗️   | Project scaffolding following the Lidge Standard.                               | 1.0.0   |
-| `dev-testing`       | 🧪   | Debugging phase. Playwright web app testing, recon-action pattern.              | 1.1.0   |
+| `dev-security`      | 🛡️   | Security hardening. OWASP Top 10, auth, validation, secrets, supply chain.      | 1.0.0   |
+| `dev-testing`       | 🧪   | Testing guide. Strategy selection, backend/API harnesses, Playwright, CI gates. | 1.1.0   |
 
 ### automation (3) — `browser`, `vision-click` are auto-active
 

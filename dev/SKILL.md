@@ -14,9 +14,11 @@ This skill covers universal guidelines. For domain-specific work, you **must** a
 | Skill File                   | Injected When                     | Covers                                                                                         |
 | ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `dev-frontend/SKILL.md`      | `role=frontend`                   | UI/UX implementation, design aesthetics, component architecture, responsive layouts, animation |
-| `dev-backend/SKILL.md`       | `role=backend`                    | API design, architecture patterns, database optimization, security, error handling, middleware |
+| `dev-backend/SKILL.md`       | `role=backend`                    | API design, architecture patterns, database optimization, error handling, middleware            |
 | `dev-data/SKILL.md`          | `role=data`                       | Data pipelines, ETL/ELT, data quality validation, SQL optimization, analysis & reporting       |
-| `dev-testing/SKILL.md`       | `role=testing` or debugging phase | Playwright browser testing, test strategy, debugging patterns, coverage analysis               |
+| `dev-security/SKILL.md`      | Security-sensitive code, `role=security` | OWASP Top 10, auth hardening, input validation, secrets management, supply chain security |
+| `dev-testing/SKILL.md`       | `role=testing` or testing phase   | Test strategy, Playwright browser testing, coverage analysis, contract testing                 |
+| `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 
 **When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read ALL relevant skill files before starting.
@@ -57,8 +59,8 @@ Every file, function, and class must have a single, clear responsibility.
 | Function parameters | >5          | Use an options/config object             |
 
 **Rules:**
-- ES Module (`import`/`export`) only. No CommonJS `require()`.
-- One default export per file when the file has a primary purpose.
+- ES Module (`import`/`export`) only in JS/TS projects. No CommonJS `require()`.
+- One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
 - Follow existing naming conventions in the project. Check sibling files before creating new ones.
 - New files must match the directory structure and naming patterns already in use.
 
@@ -66,53 +68,13 @@ Every file, function, and class must have a single, clear responsibility.
 
 ## 2. Systematic Debugging
 
-Random fixes waste time and create new bugs. Follow this process for ANY technical issue — test failures, unexpected behavior, build errors, performance problems.
-
 **The Iron Law:** NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.
 
-### Phase 1: Root Cause Investigation
+For full debugging methodology — boundary instrumentation, pattern analysis, hypothesis testing, and postmortem — see `dev-debugging/SKILL.md`.
 
-**Before attempting any fix:**
+This section retains only the **emergency stop triggers** that every agent must internalize:
 
-1. **Read the full error message and stack trace.** Don't skip past them — they often contain the exact answer.
-2. **Reproduce consistently.** What are the exact steps? Does it happen every time? If not, gather more data instead of guessing.
-3. **Check recent changes.** `git diff`, recent commits, new dependencies, config changes, environment differences.
-4. **Trace data flow.** Where does the bad value originate? Trace backward through the call stack until you find the source. Fix at the source, not the symptom.
-
-**Multi-component systems** (CI → build → signing, API → service → database): add diagnostic instrumentation at each component boundary BEFORE proposing fixes.
-
-```
-For EACH component boundary:
-  - Log what data enters the component
-  - Log what data exits the component
-  - Verify environment/config propagation
-Run once → analyze evidence → identify failing layer → investigate THAT component
-```
-
-### Phase 2: Pattern Analysis
-
-1. Find working code in the same codebase that does something similar.
-2. Compare against reference implementations — read them COMPLETELY, don't skim.
-3. List every difference between working and broken — however small.
-4. Don't assume "that can't matter."
-
-### Phase 3: Hypothesis Testing
-
-1. Form ONE clear hypothesis: "X is the root cause because Y." Write it down.
-2. Make the SMALLEST possible change to test it.
-3. One variable at a time. Never fix multiple things at once.
-4. Didn't work? Form a NEW hypothesis. Don't pile fixes on top.
-5. Don't pretend to know. Say "I don't understand X" and research further.
-
-### Phase 4: Implementation
-
-1. Write a failing test that reproduces the bug.
-2. Implement a single fix addressing the root cause.
-3. Verify: test passes, no regressions, output is clean.
-
-**If 3+ fix attempts fail:** STOP. Each fix revealing a new problem in a different place is a sign of **architectural issues**, not simple bugs. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with your human partner before attempting more fixes.
-
-**Red flags — stop and return to Phase 1:**
+**Red flags — stop and return to root cause investigation:**
 
 | Rationalization                                | Reality                                                 |
 | ---------------------------------------------- | ------------------------------------------------------- |
@@ -121,6 +83,8 @@ Run once → analyze evidence → identify failing layer → investigate THAT co
 | "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause.             |
 | "Proposing solutions before investigating"     | You haven't done Phase 1.                               |
 | "One more fix attempt" (after 2+ failures)     | 3+ failures = architectural problem.                    |
+
+**If 3+ fix attempts fail:** STOP. Each fix revealing a new problem in a different place is a sign of **architectural issues**, not simple bugs. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with your human partner before attempting more fixes.
 
 ---
 
@@ -176,14 +140,14 @@ Keep entries factual and concise. One entry per file changed.
 - **Never delete existing exports** — other modules may depend on them. Deprecate first if needed.
 - **Verify imports exist** before adding new `import` statements. Check the target file is real.
 - **No hardcoded configuration** — use config files or environment variables. Magic strings and numbers belong in constants.
-- **Error handling is mandatory** — `try/catch` for all async operations. No silent failures. At minimum, log the error with context (`console.error('[module]', error.message)`).
+- **Error handling is mandatory** — all async failures must be handled explicitly. No silent failures. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In all other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
 - **No destructive operations without confirmation** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
 
 ---
 
 ## 6. Code Quality Signals
 
-Watch for these anti-patterns and fix immediately:
+Watch for these anti-patterns and fix immediately. For the full detection catalog and review-specific guidance, see `dev-code-reviewer/SKILL.md` §3.
 
 | Anti-Pattern               | Symptom                             | Fix                                   |
 | -------------------------- | ----------------------------------- | ------------------------------------- |
@@ -249,5 +213,21 @@ Sometimes you must bypass the type system. Rules for doing so safely:
 
 ---
 
-Write code you'd be proud to debug six months from now. Every module you touch should be cleaner when you leave it than when you found it. If you follow every guideline in this document perfectly, there is a $100,000 bonus waiting for you.
+## 8. Token Budget Awareness
 
+When multiple skills are injected simultaneously (e.g., `dev` + `dev-backend` + `dev-security`), token consumption grows quickly. Follow these rules to stay efficient:
+
+**Tiered reference loading:**
+1. **Always read**: SKILL.md files for injected skills (these are the orchestrators)
+2. **Read on demand**: Reference files (`references/`) — only load when the task touches that specific topic
+3. **Never preload all references** — a backend task about caching doesn't need `streaming.md`
+
+**Example:** For "Add Redis caching to user endpoint":
+- Read: `dev/SKILL.md` + `dev-backend/SKILL.md` + `dev-backend/references/core/caching.md`
+- Skip: `api-design.md`, `architecture.md`, `observability.md`, `database.md` (unless the task touches those areas)
+
+**Cost awareness for sub-agents:** Each sub-agent receives its own copy of injected skills. Minimize skills injected per sub-agent — give only what's needed for that specific sub-task.
+
+---
+
+Write code you'd be proud to debug six months from now. Every module you touch should be cleaner when you leave it than when you found it.
