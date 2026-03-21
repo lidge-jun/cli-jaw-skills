@@ -27,17 +27,17 @@ Security-focused code review for PRs, commits, and diffs.
 
 ---
 
-## Rationalizations (Do Not Skip)
+## Rationalizations to Resist
 
 | Rationalization | Why It's Wrong | Required Action |
 |-----------------|----------------|-----------------|
-| "Small PR, quick review" | Heartbleed was 2 lines | Classify by RISK, not size |
+| "Small PR, quick review" | Heartbleed was 2 lines | Classify by risk, not size |
 | "I know this codebase" | Familiarity breeds blind spots | Build explicit baseline context |
-| "Git history takes too long" | History reveals regressions | Never skip Phase 1 |
-| "Blast radius is obvious" | You'll miss transitive callers | Calculate quantitatively |
-| "No tests = not my problem" | Missing tests = elevated risk rating | Flag in report, elevate severity |
-| "Just a refactor, no security impact" | Refactors break invariants | Analyze as HIGH until proven LOW |
-| "I'll explain verbally" | No artifact = findings lost | Always write report |
+| "Git history takes too long" | History reveals regressions | Complete Phase 1 |
+| "Blast radius is obvious" | Transitive callers get missed | Calculate quantitatively |
+| "No tests = not my problem" | Missing tests = elevated risk | Flag in report, elevate severity |
+| "Just a refactor" | Refactors break invariants | Analyze as HIGH until proven LOW |
+| "I'll explain verbally" | No artifact = findings lost | Write the report |
 
 ---
 
@@ -186,26 +186,6 @@ These patterns require adversarial analysis even in quick triage.
 
 ---
 
-## Tips for Best Results
-
-**Do:**
-- Start with git blame for removed code
-- Calculate blast radius early to prioritize
-- Generate concrete attack scenarios
-- Reference specific line numbers and commits
-- Be honest about coverage limitations
-- Always generate the output file
-
-**Don't:**
-- Skip git history analysis
-- Make generic findings without evidence
-- Claim full analysis when time-limited
-- Forget to check test coverage
-- Miss high blast radius changes
-- Output report only to chat (file required)
-
----
-
 ## Supporting Documentation
 
 - **[methodology.md](methodology.md)** - Detailed phase-by-phase workflow (Phases 0-4)
@@ -213,8 +193,4 @@ These patterns require adversarial analysis even in quick triage.
 - **[reporting.md](reporting.md)** - Report structure and formatting (Phase 6)
 - **[patterns.md](patterns.md)** - Common vulnerability patterns reference
 
----
 
-**For first-time users:** Start with [methodology.md](methodology.md) to understand the complete workflow.
-
-**For experienced users:** Use this page's Quick Reference and Decision Tree to navigate directly to needed content.

@@ -1,106 +1,54 @@
 ---
 name: deep-research
-description: "Execute autonomous multi-step research using Google Gemini Deep Research Agent. Use for: market analysis, competitive landscaping, literature reviews, technical research, due diligence. Takes 2-10 minutes but produces detailed, cited reports. Costs $2-5 per task."
+description: Run autonomous multi-step research via Google Gemini Deep Research Agent. Produces cited reports from web sources.
 license: Apache-2.0
 metadata:
   author: sanjay3290
   version: "1.0"
 ---
 
-# Gemini Deep Research Skill
+# Gemini Deep Research
 
-Run autonomous research tasks that plan, search, read, and synthesize information into comprehensive reports.
+Autonomous research agent that plans searches, reads sources, and synthesizes cited reports.
+
+## When to Use
+
+- Questions requiring synthesis across many sources (market analysis, literature reviews, competitive landscape)
+- Due diligence or technical research where breadth matters more than speed
+- NOT for quick factual lookups (use `search` skill instead)
+
+Trade-off: higher cost and latency in exchange for comprehensive, cited coverage.
 
 ## Requirements
 
-- Python 3.8+
-- httpx: `pip install -r requirements.txt`
-- GEMINI_API_KEY environment variable
+- Python 3.8+, httpx (`pip install -r requirements.txt`)
+- `GEMINI_API_KEY` environment variable
 
-## Setup
+## CLI Reference
 
-1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/)
-2. Set the environment variable:
-   ```bash
-   export GEMINI_API_KEY=your-api-key-here
-   ```
-   Or create a `.env` file in the skill directory.
-
-## Usage
-
-### Start a research task
 ```bash
-python3 scripts/research.py --query "Research the history of Kubernetes"
+python3 scripts/research.py --query "..." [options]
 ```
 
-### With structured output format
-```bash
-python3 scripts/research.py --query "Compare Python web frameworks" \
-  --format "1. Executive Summary\n2. Comparison Table\n3. Recommendations"
-```
+| Flag | Effect |
+|------|--------|
+| `--query "..."` | Research question (required for new tasks) |
+| `--format "..."` | Output structure template |
+| `--stream` | Stream progress in real-time |
+| `--no-wait` | Start task and return immediately |
+| `--status <id>` | Check status of a running task |
+| `--wait <id>` | Block until task completes |
+| `--continue <id>` | Follow-up on previous research |
+| `--list` | List recent research tasks |
+| `--json` | Output as structured JSON |
+| `--raw` | Output raw API response |
 
-### Stream progress in real-time
-```bash
-python3 scripts/research.py --query "Analyze EV battery market" --stream
-```
+## Cost and Latency
 
-### Start without waiting
-```bash
-python3 scripts/research.py --query "Research topic" --no-wait
-```
-
-### Check status of running research
-```bash
-python3 scripts/research.py --status <interaction_id>
-```
-
-### Wait for completion
-```bash
-python3 scripts/research.py --wait <interaction_id>
-```
-
-### Continue from previous research
-```bash
-python3 scripts/research.py --query "Elaborate on point 2" --continue <interaction_id>
-```
-
-### List recent research
-```bash
-python3 scripts/research.py --list
-```
-
-## Output Formats
-
-- **Default**: Human-readable markdown report
-- **JSON** (`--json`): Structured data for programmatic use
-- **Raw** (`--raw`): Unprocessed API response
-
-## Cost & Time
-
-| Metric | Value |
-|--------|-------|
-| Time | 2-10 minutes per task |
-| Cost | $2-5 per task (varies by complexity) |
-| Token usage | ~250k-900k input, ~60k-80k output |
-
-## Best Use Cases
-
-- Market analysis and competitive landscaping
-- Technical literature reviews
-- Due diligence research
-- Historical research and timelines
-- Comparative analysis (frameworks, products, technologies)
-
-## Workflow
-
-1. User requests research → Run `--query "..."`
-2. Inform user of estimated time (2-10 minutes)
-3. Monitor with `--stream` or poll with `--status`
-4. Return formatted results
-5. Use `--continue` for follow-up questions
+Costs and times vary by query complexity and source count. Expect minutes, not seconds. Check actual token usage in the output metadata for accurate billing.
 
 ## Exit Codes
 
 - **0**: Success
-- **1**: Error (API error, config issue, timeout)
-- **130**: Cancelled by user (Ctrl+C)
+- **1**: Error (API, config, or timeout)
+- **130**: Cancelled (Ctrl+C)

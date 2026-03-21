@@ -7,19 +7,11 @@ description: Use when completing tasks, implementing major features, or before m
 
 Dispatch superpowers:code-reviewer subagent to catch issues before they cascade.
 
-**Core principle:** Review early, review often.
-
 ## When to Request Review
 
-**Mandatory:**
-- After each task in subagent-driven development
-- After completing major feature
-- Before merge to main
+**Required:** after each subagent-driven task, after major features, before merge to main.
 
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+**Recommended:** when stuck, before refactoring, after complex bug fixes.
 
 ## How to Request
 
@@ -89,17 +81,10 @@ You: [Fix progress indicators]
 - Review before merge
 - Review when stuck
 
-## Red Flags
+## Review Discipline
 
-**Never:**
-- Skip review because "it's simple"
-- Ignore Critical issues
-- Proceed with unfixed Important issues
-- Argue with valid technical feedback
-
-**If reviewer wrong:**
-- Push back with technical reasoning
-- Show code/tests that prove it works
-- Request clarification
+- Review even "simple" changes — complexity hides in small diffs
+- Fix all Critical and Important issues before proceeding
+- Push back on incorrect feedback with technical reasoning and evidence
 
 See template at: requesting-code-review/code-reviewer.md

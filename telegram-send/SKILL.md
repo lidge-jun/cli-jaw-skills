@@ -87,10 +87,9 @@ curl -sS -X POST http://localhost:3457/api/telegram/send \
   -d '{"type":"text","text":"ping"}'
 ```
 
-## Safety Note
+## Safety
 
-- Do not print token values in logs or chat output.
-- Keep token in shell variables only.
+- Keep tokens in shell variables only — printing them leaks credentials to logs and chat history.
 
 Expected success shape:
 

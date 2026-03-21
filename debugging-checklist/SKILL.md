@@ -5,9 +5,6 @@ description: Provide a systematic debugging checklist. Use when a junior develop
 
 # Debugging Checklist
 
-## Purpose
-Provide a systematic debugging checklist.
-
 ## Inputs to request
 - Repro steps and frequency.
 - Environment details and recent changes.

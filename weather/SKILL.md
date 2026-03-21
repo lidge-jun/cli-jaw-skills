@@ -9,29 +9,11 @@ metadata: { "openclaw": { "emoji": "🌤️", "requires": { "bins": ["curl"] } }
 
 Get current weather conditions and forecasts.
 
-## When to Use
+## Scope
 
-✅ **USE this skill when:**
+Current conditions and forecasts for any city, region, or airport code. For historical data, climate analysis, severe alerts, or aviation/marine weather, use specialized services instead.
 
-- "What's the weather?"
-- "Will it rain today/tomorrow?"
-- "Temperature in [city]"
-- "Weather forecast for the week"
-- Travel planning weather checks
-
-## When NOT to Use
-
-❌ **DON'T use this skill when:**
-
-- Historical weather data → use weather archives/APIs
-- Climate analysis or trends → use specialized data sources
-- Hyper-local microclimate data → use local sensors
-- Severe weather alerts → check official NWS sources
-- Aviation/marine weather → use specialized services (METAR, etc.)
-
-## Location
-
-Always include a city, region, or airport code in weather queries.
+Always include a location in queries.
 
 ## Commands
 
@@ -84,29 +66,8 @@ curl "wttr.in/London.png"
 - `%p` — Precipitation
 - `%l` — Location
 
-## Quick Responses
-
-**"What's the weather?"**
-
-```bash
-curl -s "wttr.in/London?format=%l:+%c+%t+(feels+like+%f),+%w+wind,+%h+humidity"
-```
-
-**"Will it rain?"**
-
-```bash
-curl -s "wttr.in/London?format=%l:+%c+%p"
-```
-
-**"Weekend forecast"**
-
-```bash
-curl "wttr.in/London?format=v2"
-```
-
 ## Notes
 
 - No API key needed (uses wttr.in)
-- Rate limited; don't spam requests
-- Works for most global cities
-- Supports airport codes: `curl wttr.in/ORD`
+- Rate limited — avoid rapid repeated requests
+- Works for most global cities and airport codes (`curl wttr.in/ORD`)

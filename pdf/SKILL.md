@@ -6,20 +6,11 @@ description: "Use when tasks involve reading, creating, editing, or reviewing PD
 
 # PDF Skill
 
-## When to use
-- Read or review PDF content where layout and visuals matter.
-- Create PDFs programmatically with reliable formatting.
-- Edit existing PDFs with natural-language instructions (nano-pdf).
-- Convert documents (DOCX, HTML) to PDF.
-- Validate final rendering before delivery.
-
 ## Workflow
-1. Prefer visual review: render PDF pages to PNGs and inspect them.
-   - Use `pdftoppm` if available.
-   - If unavailable, install Poppler or ask the user to review the output locally.
-2. Use `reportlab` to generate PDFs when creating new documents.
-3. Use `pdfplumber` (or `pypdf`) for text extraction and quick checks; do not rely on it for layout fidelity.
-4. After each meaningful update, re-render pages and verify alignment, spacing, and legibility.
+1. Render PDF pages to PNGs for visual review (prefer `pdftoppm`; fall back to asking the user if Poppler is unavailable).
+2. Use `reportlab` to generate new PDFs.
+3. Use `pdfplumber` or `pypdf` for text extraction; these are unreliable for layout fidelity.
+4. After each meaningful update, re-render and verify alignment, spacing, and legibility.
 
 ## Temp and output conventions
 - Use `tmp/pdfs/` for intermediate files; delete when done.
@@ -46,10 +37,7 @@ brew install poppler
 sudo apt-get install -y poppler-utils
 ```
 
-If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.
-
-## Environment
-No required environment variables.
+If installation is blocked, tell the user which dependency is missing and how to install it.
 
 ## Rendering command
 ```
@@ -57,13 +45,13 @@ pdftoppm -png $INPUT_PDF $OUTPUT_PREFIX
 ```
 
 ## Quality expectations
-- Maintain polished visual design: consistent typography, spacing, margins, and section hierarchy.
-- Avoid rendering issues: clipped text, overlapping elements, broken tables, black squares, or unreadable glyphs.
-- Charts, tables, and images must be sharp, aligned, and clearly labeled.
-- Use ASCII hyphens only. Avoid U+2011 (non-breaking hyphen) and other Unicode dashes.
-- Citations and references must be human-readable; never leave tool tokens or placeholder strings.
+- Consistent typography, spacing, margins, and section hierarchy.
+- No rendering defects: clipped text, overlapping elements, broken tables, black squares, or unreadable glyphs.
+- Charts, tables, and images: sharp, aligned, and clearly labeled.
+- Use ASCII hyphens only — Unicode dashes (e.g. U+2011) cause rendering issues in some viewers.
+- Citations and references: human-readable, no tool tokens or placeholders.
 
 ## Final checks
-- Do not deliver until the latest PNG inspection shows zero visual or formatting defects.
-- Confirm headers/footers, page numbering, and section transitions look polished.
-- Keep intermediate files organized or remove them after final approval.
+- Verify the latest PNG render shows zero visual defects before delivery.
+- Confirm headers/footers, page numbering, and section transitions.
+- Clean up or organize intermediate files after approval.

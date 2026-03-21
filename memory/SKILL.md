@@ -14,15 +14,15 @@ metadata:
 
 # Long-term Memory
 
-## RULES (MANDATORY)
+## Rules
 
-1. **Search before claiming memory**: Before answering about past work, decisions, preferences, or project facts, run `cli-jaw memory search <keywords>` first.
-2. **Save durable facts immediately**: After learning user preferences, key decisions, or stable project facts, save them right away.
-3. **Use structured destinations**: Prefer files under `structured/` such as `structured/profile.md`, `structured/semantic/...`, or `structured/episodes/...`.
-4. **Never guess**: If memory search returns nothing, say "I don't have a record of that."
-5. **Keep memory durable**: Save stable facts, not transient TODOs, phase logs, or temporary checklists.
-6. **Search broadly when useful**: When searching memory, consider Korean/English variants, error codes, symbols, and filenames if they help retrieval.
-7. **Use injected memory context carefully**: A task snapshot may already be present in the prompt. Use it, but still search when precision matters.
+1. **Search before answering** about past work, decisions, or preferences — run `cli-jaw memory search <keywords>` first.
+2. **Save durable facts immediately** — user preferences, key decisions, stable project facts.
+3. **Use structured destinations** — prefer `structured/profile.md`, `structured/semantic/...`, or `structured/episodes/...`.
+4. **Admit gaps** — if search returns nothing, say "I don't have a record of that."
+5. **Save stable facts only** — not transient TODOs, phase logs, or temporary checklists.
+6. **Search broadly** — consider Korean/English variants, error codes, symbols, and filenames.
+7. **Use injected context** — a task snapshot may be in the prompt; still search when precision matters.
 
 ## Commands
 
@@ -98,5 +98,4 @@ cli-jaw memory init
 
 ## Notes
 
-- A task snapshot may already be present in the prompt
 - Prefer concise, durable entries over verbose logs

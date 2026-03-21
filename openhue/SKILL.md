@@ -26,25 +26,9 @@ metadata:
 
 Use `openhue` to control Philips Hue lights and scenes via a Hue Bridge.
 
-## When to Use
+## Scope
 
-✅ **USE this skill when:**
-
-- "Turn on/off the lights"
-- "Dim the living room lights"
-- "Set a scene" or "movie mode"
-- Controlling specific Hue rooms or zones
-- Adjusting brightness, color, or color temperature
-
-## When NOT to Use
-
-❌ **DON'T use this skill when:**
-
-- Non-Hue smart devices (other brands) → not supported
-- HomeKit scenes or Shortcuts → use Apple's ecosystem
-- TV or entertainment system control
-- Thermostat or HVAC
-- Smart plugs (unless Hue smart plugs)
+Controls Philips Hue lights, rooms, and scenes via a Hue Bridge on the local network. Not for non-Hue devices, HomeKit, or other smart home categories.
 
 ## Common Commands
 

@@ -24,9 +24,7 @@ metadata:
 
 # Video Frames (ffmpeg)
 
-Extract a single frame from a video, or create quick thumbnails for inspection.
-
-## Quick start
+## Usage
 
 First frame:
 
@@ -42,5 +40,5 @@ At a timestamp:
 
 ## Notes
 
-- Prefer `--time` for “what is happening around here?”.
-- Use a `.jpg` for quick share; use `.png` for crisp UI frames.
+- Use `--time` to inspect a specific moment.
+- Use `.jpg` for quick sharing, `.png` for pixel-accurate UI frames.

@@ -7,11 +7,9 @@ description: Analyzes web performance using Chrome DevTools MCP. Measures Core W
 
 Audit web page performance using Chrome DevTools MCP tools. This skill focuses on Core Web Vitals, network optimization, and high-level accessibility gaps.
 
-## FIRST: Verify MCP Tools Available
+## Prerequisites
 
-**Run this before starting.** Try calling `navigate_page` or `performance_start_trace`. If unavailable, STOP—the chrome-devtools MCP server isn't configured.
-
-Ask the user to add this to their MCP config:
+Verify the chrome-devtools MCP server is configured. Test by calling `navigate_page` or `performance_start_trace`. If unavailable, add to MCP config:
 
 ```json
 "chrome-devtools": {
@@ -22,12 +20,11 @@ Ask the user to add this to their MCP config:
 
 ## Key Guidelines
 
-- **Be assertive**: Verify claims by checking network requests, DOM, or codebase—then state findings definitively.
+- **Be assertive**: Verify claims by checking network requests, DOM, or codebase — then state findings definitively.
 - **Verify before recommending**: Confirm something is unused before suggesting removal.
-- **Quantify impact**: Use estimated savings from insights. Don't prioritize changes with 0ms impact.
-- **Skip non-issues**: If render-blocking resources have 0ms estimated impact, note but don't recommend action.
+- **Quantify impact**: Use estimated savings from insights. Skip changes with 0ms impact.
 - **Be specific**: Say "compress hero.png (450KB) to WebP" not "optimize images".
-- **Prioritize ruthlessly**: A site with 200ms LCP and 0 CLS is already excellent—say so.
+- **Prioritize ruthlessly**: A site with 200ms LCP and 0 CLS is already excellent — say so.
 
 ## Quick Reference
 

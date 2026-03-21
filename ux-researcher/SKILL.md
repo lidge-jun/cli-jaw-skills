@@ -5,8 +5,6 @@ description: "UX research toolkit: data-driven persona generation, customer jour
 
 # UX Researcher
 
-Generate personas from data, create journey maps, plan usability tests, and synthesize research into actionable design recommendations.
-
 ---
 
 ## 1. Persona Generation

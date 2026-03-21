@@ -5,9 +5,6 @@ description: Guide installation of project dependencies and toolchains. Use when
 
 # Dependency Install Helper
 
-## Purpose
-Guide installation of project dependencies and toolchains.
-
 ## Inputs to request
 - OS and shell environment.
 - Required runtime versions.

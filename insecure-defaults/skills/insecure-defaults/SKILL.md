@@ -15,69 +15,49 @@ Finds **fail-open** vulnerabilities where apps run insecurely with missing confi
 - **Fail-open (CRITICAL):** `SECRET = env.get('KEY') or 'default'` → App runs with weak secret
 - **Fail-secure (SAFE):** `SECRET = env['KEY']` → App crashes if missing
 
-## When to Use
+## Scope
 
-- **Security audits** of production applications (auth, crypto, API security)
-- **Configuration review** of deployment files, IaC templates, Docker configs
-- **Code review** of environment variable handling and secrets management
-- **Pre-deployment checks** for hardcoded credentials or weak defaults
+Audit production-reachable code for auth, crypto, API security, deployment configs, secrets management, and environment variable handling.
 
-## When NOT to Use
+Skip test fixtures (`test/`, `spec/`, `__tests__/`), example/template files, dev-only tools, documentation examples, build-time config replaced during deploy, and fail-secure patterns (crash-on-missing).
 
-Do not use this skill for:
-- **Test fixtures** explicitly scoped to test environments (files in `test/`, `spec/`, `__tests__/`)
-- **Example/template files** (`.example`, `.template`, `.sample` suffixes)
-- **Development-only tools** (local Docker Compose for dev, debug scripts)
-- **Documentation examples** in README.md or docs/ directories
-- **Build-time configuration** that gets replaced during deployment
-- **Crash-on-missing behavior** where app won't start without proper config (fail-secure)
+When in doubt: trace the code path — does the app run with the default, or crash?
 
-When in doubt: trace the code path to determine if the app runs with the default or crashes.
+## Common Rationalizations (reject these)
 
-## Rationalizations to Reject
-
-- **"It's just a development default"** → If it reaches production code, it's a finding
-- **"The production config overrides it"** → Verify prod config exists; code-level vulnerability remains if not
-- **"This would never run without proper config"** → Prove it with code trace; many apps fail silently
-- **"It's behind authentication"** → Defense in depth; compromised session still exploits weak defaults
-- **"We'll fix it before release"** → Document now; "later" rarely comes
+- "Just a dev default" → if it reaches production code, it's a finding
+- "Prod config overrides it" → verify prod config exists; code-level vulnerability remains otherwise
+- "Would never run without config" → prove it with code trace; many apps fail silently
+- "It's behind auth" → defense in depth; compromised session still exploits weak defaults
+- "We'll fix before release" → document now; "later" rarely comes
 
 ## Workflow
 
-Follow this workflow for every potential finding:
+### 1. Search: discover and scan
 
-### 1. SEARCH: Perform Project Discovery and Find Insecure Defaults
+Determine language, framework, and project conventions. Identify secret storage, usage patterns, third-party integrations, and crypto config.
 
-Determine language, framework, and project conventions. Use this information to further discover things like secret storage locations, secret usage patterns, credentialed third-party integrations, cryptography, and any other relevant configuration. Further use information to analyze insecure default configurations.
-
-**Example**
-Search for patterns in `**/config/`, `**/auth/`, `**/database/`, and env files:
+Search `**/config/`, `**/auth/`, `**/database/`, and env files for:
 - **Fallback secrets:** `getenv.*\) or ['"]`, `process\.env\.[A-Z_]+ \|\| ['"]`, `ENV\.fetch.*default:`
 - **Hardcoded credentials:** `password.*=.*['"][^'"]{8,}['"]`, `api[_-]?key.*=.*['"][^'"]+['"]`
 - **Weak defaults:** `DEBUG.*=.*true`, `AUTH.*=.*false`, `CORS.*=.*\*`
 - **Crypto algorithms:** `MD5|SHA1|DES|RC4|ECB` in security contexts
 
-Tailor search approach based on discovery results.
+Tailor search to discovery results. Focus on production-reachable code.
 
-Focus on production-reachable code, not test fixtures or example files.
+### 2. Verify: trace actual behavior
 
-### 2. VERIFY: Actual Behavior
-For each match, trace the code path to understand runtime behavior.
+For each match, trace the code path:
+- When is this executed? (startup vs. runtime)
+- What happens if the config variable is missing?
+- Is there validation enforcing secure config?
 
-**Questions to answer:**
-- When is this code executed? (Startup vs. runtime)
-- What happens if a configuration variable is missing?
-- Is there validation that enforces secure configuration?
+### 3. Confirm: production impact
 
-### 3. CONFIRM: Production Impact
-Determine if this issue reaches production:
+- Config provided in prod → lower severity (still a code-level vulnerability)
+- Config missing or uses default → critical
 
-If production config provides the variable → Lower severity (but still a code-level vulnerability)
-If production config missing or uses default → CRITICAL
-
-### 4. REPORT: with Evidence
-
-**Example report:**
+### 4. Report: with evidence
 ```
 Finding: Hardcoded JWT Secret Fallback
 Location: src/auth/jwt.ts:15

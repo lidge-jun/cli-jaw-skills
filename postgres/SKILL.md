@@ -95,16 +95,11 @@ Match user intent to database `description`:
 
 If unclear, run `--list` and ask user which database.
 
-## Safety Features
+## Safety
 
-- **Read-only session**: Connection uses PostgreSQL `readonly=True` mode (primary protection)
-- **Query validation**: Only SELECT, SHOW, EXPLAIN, WITH queries allowed
-- **Single statement**: Multiple statements per query rejected
-- **SSL support**: Configurable SSL mode for encrypted connections
-- **Query timeout**: 30-second statement timeout enforced
-- **Memory protection**: Max 10,000 rows per query to prevent OOM
-- **Column width cap**: 100 char max per column for readable output
-- **Credential sanitization**: Error messages don't leak passwords
+- Read-only mode (`readonly=True`) + query validation (SELECT/SHOW/EXPLAIN/WITH only)
+- Single statement per query, 30s timeout, 10K row limit
+- SSL configurable, credentials sanitized in error output
 
 ## Troubleshooting
 
@@ -115,11 +110,6 @@ If unclear, run `--list` and ask user which database.
 | Connection timeout | Verify host/port, check firewall/VPN |
 | SSL error | Try `"sslmode": "disable"` for local databases |
 | Permission warning | Run `chmod 600 connections.json` |
-
-## Exit Codes
-
-- **0**: Success
-- **1**: Error (config missing, auth failed, invalid query, database error)
 
 ## Workflow
 

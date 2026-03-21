@@ -29,22 +29,14 @@ Use `remindctl` to manage Apple Reminders directly from the terminal.
 
 ## When to Use
 
-✅ **USE this skill when:**
+- User mentions "reminder" or "Reminders app", personal to-dos with due dates, or wants tasks synced to iOS.
 
-- User explicitly mentions "reminder" or "Reminders app"
-- Creating personal to-dos with due dates that sync to iOS
-- Managing Apple Reminders lists
-- User wants tasks to appear in their iPhone/iPad Reminders app
+## Use Something Else For
 
-## When NOT to Use
-
-❌ **DON'T use this skill when:**
-
-- Scheduling Clawdbot tasks or alerts → use `cron` tool with systemEvent instead
-- Calendar events or appointments → use Apple Calendar
-- Project/work task management → use Notion, GitHub Issues, or task queue
-- One-time notifications → use `cron` tool for timed alerts
-- User says "remind me" but means a Clawdbot alert → clarify first
+- Clawdbot tasks/alerts → `cron` tool with systemEvent
+- Calendar events → Apple Calendar
+- Project task management → Notion, GitHub Issues
+- "Remind me" that means a bot alert → clarify intent first
 
 ## Setup
 
@@ -108,11 +100,4 @@ Accepted by `--due` and date filters:
 - `YYYY-MM-DD HH:mm`
 - ISO 8601 (`2026-01-04T12:34:56Z`)
 
-## Example: Clarifying User Intent
 
-User: "Remind me to check on the deploy in 2 hours"
-
-**Ask:** "Do you want this in Apple Reminders (syncs to your phone) or as a Clawdbot alert (I'll message you here)?"
-
-- Apple Reminders → use this skill
-- Clawdbot alert → use `cron` tool with systemEvent

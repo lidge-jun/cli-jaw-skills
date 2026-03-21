@@ -5,9 +5,6 @@ description: Explain a configuration file and its key options. Use when a junior
 
 # Config File Explainer
 
-## Purpose
-Explain a configuration file and its key options.
-
 ## Inputs to request
 - The config file content and file path.
 - Target environment or runtime.

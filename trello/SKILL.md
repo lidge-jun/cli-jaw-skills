@@ -77,19 +77,6 @@ curl -s -X PUT "https://api.trello.com/1/cards/{cardId}?key=$TRELLO_API_KEY&toke
 
 ## Notes
 
-- Board/List/Card IDs can be found in the Trello URL or via the list commands
-- The API key and token provide full access to your Trello account - keep them secret!
-- Rate limits: 300 requests per 10 seconds per API key; 100 requests per 10 seconds per token; `/1/members` endpoints are limited to 100 requests per 900 seconds
-
-## Examples
-
-```bash
-# Get all boards
-curl -s "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN&fields=name,id" | jq
-
-# Find a specific board by name
-curl -s "https://api.trello.com/1/members/me/boards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | select(.name | contains("Work"))'
-
-# Get all cards on a board
-curl -s "https://api.trello.com/1/boards/{boardId}/cards?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN" | jq '.[] | {name, list: .idList}'
-```
+- Find Board/List/Card IDs in the Trello URL or via the list commands above
+- Keep API key and token secret — they grant full account access
+- Rate limits: 300 req/10s per API key; 100 req/10s per token; `/1/members`: 100 req/900s

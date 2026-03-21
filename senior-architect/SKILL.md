@@ -7,11 +7,7 @@ description: "System architecture design, ADRs, dependency analysis, architectur
 
 Architecture design guidance: pattern selection, decision documentation, dependency analysis, and system evolution strategies.
 
----
-
 ## Architecture Decision Records (ADRs)
-
-Document every significant architecture decision:
 
 ```markdown
 # ADR-001: [Decision Title]
@@ -48,20 +44,6 @@ What did we decide and why?
 | Audit trail required | Event Sourcing |
 | Third-party integrations | Hexagonal (Ports & Adapters) |
 
-### Monolith vs Microservices
-
-**Choose Monolith when:**
-- Team < 10 engineers
-- Domain boundaries unclear
-- Low operational maturity
-- Speed to market critical
-
-**Choose Microservices when:**
-- Independent deployment needed
-- Teams own separate bounded contexts
-- Different scaling requirements per service
-- Polyglot technology requirements
-
 ### Pattern Overview
 
 | Pattern | Key Idea | Trade-off |
@@ -71,8 +53,6 @@ What did we decide and why?
 | CQRS | Separate read/write models | Complexity increase, eventual consistency |
 | Event Sourcing | Store events, not state | Full audit trail, replay capability; harder queries |
 | Hexagonal | Ports & adapters separate core from infra | Testable, swappable; more indirection |
-
----
 
 ## Dependency Analysis
 
@@ -91,8 +71,6 @@ What did we decide and why?
 3. Introduce an event bus or mediator
 4. Split into separate modules
 
----
-
 ## Database Selection
 
 | Type | Best For |
@@ -102,8 +80,6 @@ What did we decide and why?
 | Redis | Caching, sessions, real-time features |
 | DynamoDB | Serverless, auto-scaling, AWS-native |
 | TimescaleDB | Time-series with SQL |
-
----
 
 ## Tech Stack Decision
 
@@ -116,8 +92,6 @@ What did we decide and why?
 | Rapid prototype? | Next.js API routes |
 | Real-time needed? | WebSocket layer (Socket.io, ws) |
 
----
-
 ## System Design Workflow
 
 1. **Clarify requirements:** Functional + non-functional (latency, throughput, availability)
@@ -127,13 +101,11 @@ What did we decide and why?
 5. **Design for failure:** Retries, circuit breakers, fallbacks, graceful degradation
 6. **Plan evolution:** How does this scale 10×? What do we change?
 
----
-
 ## Review Checklist
 
-- [ ] Architecture Decision Record exists for key choices
-- [ ] No circular dependencies between modules
-- [ ] Clear separation: transport → business logic → data access
-- [ ] Failure modes identified and handled
-- [ ] Scaling strategy documented
-- [ ] Data consistency model chosen (strong vs eventual)
+- ADR exists for key choices
+- No circular dependencies between modules
+- Clear separation: transport → business logic → data access
+- Failure modes identified and handled
+- Scaling strategy documented
+- Consistency model chosen (strong vs eventual)

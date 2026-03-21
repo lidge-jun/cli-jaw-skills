@@ -47,24 +47,21 @@ Then execute the full pipeline: **build database → create data extensions → 
 - Finding complex vulnerabilities that require interprocedural taint tracking or AST/CFG analysis
 - Performing comprehensive security audits with multiple query packs
 
-## When NOT to Use
+## When to Use Something Else
 
-- **Writing custom queries** - Use a dedicated query development skill
-- **CI/CD integration** - Use GitHub Actions documentation directly
-- **Quick pattern searches** - Use Semgrep or grep for speed
-- **No build capability** for compiled languages - Consider Semgrep instead
-- **Single-file or lightweight analysis** - Semgrep is faster for simple pattern matching
+- Custom QL queries → dedicated query development skill
+- CI/CD integration → GitHub Actions docs
+- Quick pattern searches or single-file analysis → Semgrep or grep
+- Compiled languages without build capability → Semgrep
 
-## Rationalizations to Reject
+## Common Pitfalls
 
-These shortcuts lead to missed findings. Do not accept them:
-
-- **"security-extended is enough"** - It is the baseline. Always check if Trail of Bits packs and Community Packs are available for the language. They catch categories `security-extended` misses entirely.
-- **"The database built, so it's good"** - A database that builds does not mean it extracted well. Always run Step 4 (quality assessment) and check file counts against expected source files. A cached build produces zero useful extraction.
-- **"Data extensions aren't needed for standard frameworks"** - Even Django/Spring apps have custom wrappers around ORM calls, request parsing, or shell execution that CodeQL does not model. Skipping the extensions workflow means missing vulnerabilities in project-specific code.
-- **"build-mode=none is fine for compiled languages"** - It produces severely incomplete analysis. No interprocedural data flow through compiled code is traced. Only use as an absolute last resort and clearly flag the limitation.
-- **"No findings means the code is secure"** - Zero findings can indicate poor database quality, missing models, or wrong query packs. Investigate before reporting clean results.
-- **"I'll just run the default suite"** - The default suite varies by how CodeQL is invoked. Always explicitly specify the suite (e.g., `security-extended`) so results are reproducible.
+- Always check Trail of Bits + Community Packs beyond `security-extended` — they catch categories it misses.
+- A successful database build does not guarantee good extraction. Verify file counts against expected source files (cached builds extract nothing).
+- Even standard frameworks (Django/Spring) have custom wrappers CodeQL doesn't model — run the data extensions workflow.
+- `build-mode=none` for compiled languages produces severely incomplete analysis (no interprocedural data flow). Use as last resort and flag the limitation.
+- Zero findings may indicate poor database quality, missing models, or wrong packs. Investigate before reporting clean.
+- Always specify the suite explicitly (e.g., `security-extended`) for reproducibility.
 
 ---
 
@@ -105,15 +102,4 @@ fi
 
 ### Decision Prompt
 
-If unclear, ask user:
-
-```
-I can help with CodeQL analysis. What would you like to do?
-
-1. **Full scan (Recommended)** - Build database, create extensions, then run analysis
-2. **Build database** - Create a new CodeQL database from this codebase
-3. **Create data extensions** - Generate custom source/sink models for project APIs
-4. **Run analysis** - Run security queries on existing database
-
-[If database exists: "I found an existing database at <DB_NAME>"]
-```
+If unclear, ask user which workflow: full scan (recommended), build database, create extensions, or run analysis.

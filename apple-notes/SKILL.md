@@ -41,37 +41,28 @@ View Notes
 
 Create Notes
 
-- Add a new note: `memo notes -a`
-  - Opens an interactive editor to compose the note.
+- Add a new note: `memo notes -a` (opens interactive editor)
 - Quick add with title: `memo notes -a "Note Title"`
 
 Edit Notes
 
-- Edit existing note: `memo notes -e`
-  - Interactive selection of note to edit.
+- Edit existing note: `memo notes -e` (interactive selection)
 
 Delete Notes
 
-- Delete a note: `memo notes -d`
-  - Interactive selection of note to delete.
+- Delete a note: `memo notes -d` (interactive selection)
 
 Move Notes
 
-- Move note to folder: `memo notes -m`
-  - Interactive selection of note and destination folder.
+- Move note to folder: `memo notes -m` (interactive selection)
 
 Export Notes
 
 - Export to HTML/Markdown: `memo notes -ex`
-  - Exports selected note; uses Mistune for markdown processing.
 
 Limitations
 
+- macOS-only; requires Apple Notes.app to be accessible.
 - Cannot edit notes containing images or attachments.
-- Interactive prompts may require terminal access.
-
-Notes
-
-- macOS-only.
-- Requires Apple Notes.app to be accessible.
+- Interactive prompts require terminal access.
 - For automation, grant permissions in System Settings > Privacy & Security > Automation.

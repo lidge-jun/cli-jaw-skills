@@ -5,9 +5,6 @@ description: Guide quick orientation of an unfamiliar codebase with module mappi
 
 # Codebase Orientation
 
-## Purpose
-Guide quick orientation of an unfamiliar codebase with module mapping, entry points, and local run steps.
-
 ## Inputs to request
 - Repo URL or local path and target area of interest.
 - Runtime versions, package manager, and OS.
@@ -17,7 +14,7 @@ Guide quick orientation of an unfamiliar codebase with module mapping, entry poi
 1. Locate entry points, build scripts, and main runtime paths.
 2. Map key folders, ownership, and common naming conventions.
 3. Identify how to run, test, and debug locally with minimal setup.
-4. Call out one or two safe starter tasks for learning.
+4. Suggest one or two low-risk starter tasks.
 
 ## Output
 - High-level module map with file paths.

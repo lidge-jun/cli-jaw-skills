@@ -5,9 +5,6 @@ description: Summarize noisy logs into likely causes and next steps. Use when a 
 
 # Log Summarizer
 
-## Purpose
-Summarize noisy logs into likely causes and next steps.
-
 ## Inputs to request
 - Log snippet and time range.
 - Service or component name.

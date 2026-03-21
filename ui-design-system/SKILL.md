@@ -5,8 +5,6 @@ description: "Design token generation, color palettes, typography scales, compon
 
 # UI Design System
 
-Generate design tokens, create color palettes, build component systems, and prepare developer handoff documentation.
-
 ---
 
 ## 1. Design Token Generation

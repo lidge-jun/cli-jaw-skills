@@ -17,8 +17,6 @@ export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 export ATLAS_CLI="$CODEX_HOME/skills/atlas/scripts/atlas_cli.py"
 ```
 
-User-scoped skills install under `$CODEX_HOME/skills` (default: `~/.codex/skills`).
-
 Then run:
 
 ```bash
@@ -30,7 +28,7 @@ The CLI requires the Atlas app bundle in `/Applications` or `~/Applications`:
 
 - `ChatGPT Atlas`
 
-If AppleScript fails with a permissions error, grant Automation permission in System Settings > Privacy & Security > Automation, allowing your terminal to control ChatGPT Atlas.
+If AppleScript fails with a permissions error, grant Automation permission: System Settings → Privacy & Security → Automation → allow your terminal to control ChatGPT Atlas.
 
 ## Tabs Workflow
 
@@ -87,9 +85,9 @@ History for today (local time):
 uv run --python 3.12 python "$ATLAS_CLI" history --today --limit 200 --json
 ```
 
-The history command copies the SQLite database to a temporary location to avoid lock errors.
+The history command copies the SQLite database to a temp location to avoid lock conflicts.
 
-If history looks stale or empty, ask the user which Atlas install they are using, then check both Atlas data roots and inspect the one with the most recent `History` file:
+If history looks stale or empty, check both Atlas data roots and use the one with the most recent `History` file:
 
 - `~/Library/Application Support/com.openai.atlas/browser-data/host/`
 - `~/Library/Application Support/com.openai.atlas.beta/browser-data/host/`

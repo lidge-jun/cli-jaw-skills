@@ -55,4 +55,4 @@ Notes
 - Resolutions: `1K` (default), `2K`, `4K`.
 - Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.png`.
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
-- Do not read the image back; report the saved path only.
+- Report the saved path only — reading the image back is unnecessary and wastes tokens.

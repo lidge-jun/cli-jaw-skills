@@ -3,10 +3,9 @@ name: "sora"
 description: "Use when the user asks to generate, remix, poll, list, download, or delete Sora videos via OpenAI\u2019s video API using the bundled CLI (`scripts/sora.py`), including requests like \u201cgenerate AI video,\u201d \u201cSora,\u201d \u201cvideo remix,\u201d \u201cdownload video/thumbnail/spritesheet,\u201d and batch video generation; requires `OPENAI_API_KEY` and Sora API access."
 ---
 
-
 # Sora Video Generation Skill
 
-Creates or manages short video clips for the current project (product demos, marketing spots, cinematic shots, UI mocks). Defaults to `sora-2` and a structured prompt augmentation workflow, and prefers the bundled CLI for deterministic runs. Note: `$sora` is a skill tag in prompts, not a shell command.
+Defaults to `sora-2` via the OpenAI Video API. Prefers the bundled CLI (`scripts/sora.py`) for deterministic runs. Note: `$sora` is a skill tag in prompts, not a shell command.
 
 ## When to use
 - Generate a new video clip from a prompt
@@ -51,7 +50,7 @@ If the key is missing, give the user these steps:
 - If uv cache permissions fail, set `UV_CACHE_DIR=/tmp/uv-cache`.
 - Input reference images must be jpg/png/webp and should match target size.
 - Download URLs expire after about 1 hour; copy assets to your own storage.
-- Prefer the bundled CLI and **never modify** `scripts/sora.py` unless the user asks.
+- Prefer the bundled CLI; treat `scripts/sora.py` as read-only unless the user asks for changes.
 - Sora can generate audio; if a user requests voiceover/audio, specify it explicitly in the `Audio:` and `Dialogue:` lines and keep it short.
 
 ## API limitations
@@ -64,7 +63,7 @@ If the key is missing, give the user these steps:
 - Rate limits apply by usage tier (do not list specific limits).
 - Content restrictions are enforced by the API (see Guardrails below).
 
-## Guardrails (must enforce)
+## Content Guardrails
 - Only content suitable for audiences under 18.
 - No copyrighted characters or copyrighted music.
 - No real people (including public figures).

@@ -5,19 +5,15 @@ description: Generate Terraform HCL code following HashiCorp's official style co
 
 # Terraform Style Guide
 
-Generate and maintain Terraform code following HashiCorp's official style conventions and best practices.
+Ref: [HashiCorp Terraform Style Guide](https://developer.hashicorp.com/terraform/language/style)
 
-**Reference:** [HashiCorp Terraform Style Guide](https://developer.hashicorp.com/terraform/language/style)
+## Code Generation Order
 
-## Code Generation Strategy
-
-When generating Terraform code:
-
-1. Start with provider configuration and version constraints
-2. Create data sources before dependent resources
-3. Build resources in dependency order
-4. Add outputs for key resource attributes
-5. Use variables for all configurable values
+1. Provider configuration and version constraints
+2. Data sources before dependent resources
+3. Resources in dependency order
+4. Outputs for key resource attributes
+5. Variables for all configurable values
 
 ## File Organization
 
@@ -30,80 +26,11 @@ When generating Terraform code:
 | `outputs.tf` | Output value declarations (alphabetical) |
 | `locals.tf` | Local value declarations |
 
-### Example Structure
-
-```hcl
-# terraform.tf
-terraform {
-  required_version = ">= 1.7"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-# variables.tf
-variable "environment" {
-  description = "Target deployment environment"
-  type        = string
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be dev, staging, or prod."
-  }
-}
-
-# locals.tf
-locals {
-  common_tags = {
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-  }
-}
-
-# main.tf
-resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
-  enable_dns_hostnames = true
-
-  tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-vpc"
-  })
-}
-
-# outputs.tf
-output "vpc_id" {
-  description = "ID of the created VPC"
-  value       = aws_vpc.main.id
-}
-```
-
 ## Code Formatting
 
-### Indentation and Alignment
-
-- Use **two spaces** per nesting level (no tabs)
+- Two spaces per nesting level (no tabs)
 - Align equals signs for consecutive arguments
-
-```hcl
-resource "aws_instance" "web" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = "t2.micro"
-  subnet_id     = "subnet-12345678"
-
-  tags = {
-    Name        = "web-server"
-    Environment = "production"
-  }
-}
-```
-
-### Block Organization
-
-Arguments precede blocks, with meta-arguments first:
+- Arguments precede blocks; meta-arguments first
 
 ```hcl
 resource "aws_instance" "example" {
@@ -128,19 +55,16 @@ resource "aws_instance" "example" {
 
 ## Naming Conventions
 
-- Use **lowercase with underscores** for all names
-- Use **descriptive nouns** excluding the resource type
-- Be specific and meaningful
-- Resource names must be singular, not plural
-- Default to `main` for resources where a specific descriptive name is redundant or unavailable, provided only one instance exists
+- Lowercase with underscores for all names
+- Descriptive nouns excluding the resource type
+- Singular resource names
+- Use `main` when only one instance exists and a specific name adds no clarity
 
 ```hcl
-# Bad
+# ✗
 resource "aws_instance" "webAPI-aws-instance" {}
-resource "aws_instance" "web_apis" {}
-variable "name" {}
 
-# Good
+# ✓
 resource "aws_instance" "web_api" {}
 resource "aws_vpc" "main" {}
 variable "application_name" {}
@@ -148,7 +72,7 @@ variable "application_name" {}
 
 ## Variables
 
-Every variable must include `type` and `description`:
+Every variable requires `type` and `description`:
 
 ```hcl
 variable "instance_type" {
@@ -171,7 +95,7 @@ variable "database_password" {
 
 ## Outputs
 
-Every output must include `description`:
+Every output requires `description`. Mark sensitive values:
 
 ```hcl
 output "instance_id" {
@@ -188,28 +112,16 @@ output "database_password" {
 
 ## Dynamic Resource Creation
 
-### Prefer for_each over count
+Prefer `for_each` over `count` — stable references by name instead of index:
 
 ```hcl
-# Bad - count for multiple resources
 resource "aws_instance" "web" {
-  count = var.instance_count
-  tags  = { Name = "web-${count.index}" }
-}
-
-# Good - for_each with named instances
-variable "instance_names" {
-  type    = set(string)
-  default = ["web-1", "web-2", "web-3"]
-}
-
-resource "aws_instance" "web" {
-  for_each = var.instance_names
+  for_each = toset(["web-1", "web-2", "web-3"])
   tags     = { Name = each.key }
 }
 ```
 
-### count for Conditional Creation
+Use `count` only for conditional creation:
 
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "cpu" {
@@ -220,16 +132,14 @@ resource "aws_cloudwatch_metric_alarm" "cpu" {
 }
 ```
 
-## Security Best Practices
-
-When generating code, apply security hardening:
+## Security
 
 - Enable encryption at rest by default
 - Configure private networking where applicable
-- Apply principle of least privilege for security groups
+- Apply least-privilege for security groups
 - Enable logging and monitoring
-- Never hardcode credentials or secrets
 - Mark sensitive outputs with `sensitive = true`
+- Never hardcode credentials
 
 ### Example: Secure S3 Bucket
 
@@ -268,27 +178,6 @@ resource "aws_s3_bucket_public_access_block" "data" {
 }
 ```
 
-## Version Pinning
-
-```hcl
-terraform {
-  required_version = ">= 1.7"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"  # Allow minor updates
-    }
-  }
-}
-```
-
-**Version constraint operators:**
-- `= 1.0.0` - Exact version
-- `>= 1.0.0` - Greater than or equal
-- `~> 1.0` - Allow rightmost component to increment
-- `>= 1.0, < 2.0` - Version range
-
 ## Provider Configuration
 
 ```hcl
@@ -309,45 +198,3 @@ provider "aws" {
   region = "us-east-1"
 }
 ```
-
-## Version Control
-
-**Never commit:**
-- `terraform.tfstate`, `terraform.tfstate.backup`
-- `.terraform/` directory
-- `*.tfplan`
-- `.tfvars` files with sensitive data
-
-**Always commit:**
-- All `.tf` configuration files
-- `.terraform.lock.hcl` (dependency lock file)
-
-## Validation Tools
-
-Run before committing:
-
-```bash
-terraform fmt -recursive
-terraform validate
-```
-
-Additional tools:
-- `tflint` - Linting and best practices
-- `checkov` / `tfsec` - Security scanning
-
-## Code Review Checklist
-
-- [ ] Code formatted with `terraform fmt`
-- [ ] Configuration validated with `terraform validate`
-- [ ] Files organized according to standard structure
-- [ ] All variables have type and description
-- [ ] All outputs have descriptions
-- [ ] Resource names use descriptive nouns with underscores
-- [ ] Version constraints pinned explicitly
-- [ ] Sensitive values marked with `sensitive = true`
-- [ ] No hardcoded credentials or secrets
-- [ ] Security best practices applied
-
----
-
-*Based on: [HashiCorp Terraform Style Guide](https://developer.hashicorp.com/terraform/language/style)*

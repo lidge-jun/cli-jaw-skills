@@ -59,6 +59,6 @@ spotify_player commands (fallback)
 
 Notes
 
-- Config folder: `~/.config/spotify-player` (e.g., `app.toml`).
-- For Spotify Connect integration, set a user `client_id` in config.
-- TUI shortcuts are available via `?` in the app.
+- Config: `~/.config/spotify-player` (e.g. `app.toml`).
+- For Spotify Connect, set a user `client_id` in config.
+- TUI shortcuts: press `?` in the app.

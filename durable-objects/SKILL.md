@@ -5,11 +5,9 @@ description: Create and review Cloudflare Durable Objects. Use when building sta
 
 # Durable Objects
 
-Build stateful, coordinated applications on Cloudflare's edge using Durable Objects.
-
 ## Retrieval-First Development
 
-**Prefer retrieval from official docs over pre-training for Durable Objects tasks.**
+Prefer retrieval from official docs over pre-training for Durable Objects tasks.
 
 | Resource | URL |
 |----------|-----|
@@ -49,9 +47,9 @@ Search: `blockConcurrencyWhile`, `idFromName`, `getByName`, `setAlarm`, `sql.exe
 | Persistent connections | WebSockets, real-time notifications |
 | Scheduled work per entity | Subscription renewals, game timeouts |
 
-### Do NOT Use For
+### Prefer Alternatives For
 
-- Stateless request handling (use plain Workers)
+- Stateless request handling → use plain Workers
 - Maximum global distribution needs
 - High fan-out independent requests
 
@@ -109,7 +107,7 @@ export default {
 };
 ```
 
-## Critical Rules
+## Core Rules
 
 1. **Model around coordination atoms** - One DO per chat room/game/user, not one global DO
 2. **Use `getByName()` for deterministic routing** - Same input = same DO instance
@@ -119,7 +117,7 @@ export default {
 6. **Persist first, cache second** - Always write to storage before updating in-memory state
 7. **One alarm per DO** - `setAlarm()` replaces any existing alarm
 
-## Anti-Patterns (NEVER)
+## Anti-Patterns
 
 - Single global DO handling all requests (bottleneck)
 - Using `blockConcurrencyWhile()` on every request (kills throughput)

@@ -11,23 +11,12 @@ Control tmux sessions by sending keystrokes and reading output. Essential for ma
 
 ## When to Use
 
-✅ **USE this skill when:**
-
 - Monitoring Claude/Codex sessions in tmux
 - Sending input to interactive terminal applications
-- Scraping output from long-running processes in tmux
+- Scraping output from long-running processes
 - Navigating tmux panes/windows programmatically
-- Checking on background work in existing sessions
 
-## When NOT to Use
-
-❌ **DON'T use this skill when:**
-
-- Running one-off shell commands → use `exec` tool directly
-- Starting new background processes → use `exec` with `background:true`
-- Non-interactive scripts → use `exec` tool
-- The process isn't in tmux
-- You need to create a new tmux session → use `exec` with `tmux new-session`
+For one-off commands, non-interactive scripts, or starting new processes, use `exec` directly.
 
 ## Example Sessions
 

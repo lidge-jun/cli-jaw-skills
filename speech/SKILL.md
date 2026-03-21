@@ -8,17 +8,9 @@ description: "Use when the user asks for text-to-speech narration or voiceover, 
 
 Generate spoken audio for the current project (narration, product demo voiceover, IVR prompts, accessibility reads). Defaults to `gpt-4o-mini-tts-2025-12-15` and built-in voices, and prefers the bundled CLI for deterministic, reproducible runs.
 
-## When to use
-- Generate a single spoken clip from text
-- Generate a batch of prompts (many lines, many files)
-
-## Decision tree (single vs batch)
-- If the user provides multiple lines/prompts or wants many outputs -> **batch**
-- Else -> **single**
-
 ## Workflow
-1. Decide intent: single vs batch (see decision tree above).
-2. Collect inputs up front: exact text (verbatim), desired voice, delivery style, format, and any constraints.
+1. Decide intent: single clip or batch (multiple lines/prompts → batch).
+2. Collect inputs: exact text (verbatim), voice, delivery style, format, constraints.
 3. If batch: write a temporary JSONL under tmp/ (one job per line), run once, then delete the JSONL.
 4. Augment instructions into a short labeled spec without rewriting the input text.
 5. Run the bundled CLI (`scripts/text_to_speech.py`) with sensible defaults (see references/cli.md).
@@ -44,15 +36,8 @@ python3 -m pip install openai
 ```
 
 ## Environment
-- `OPENAI_API_KEY` must be set for live API calls.
-
-If the key is missing, give the user these steps:
-1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
-2. Set `OPENAI_API_KEY` as an environment variable in their system.
-3. Offer to guide them through setting the environment variable for their OS/shell if needed.
-- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
-
-If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.
+- `OPENAI_API_KEY` required for live API calls.
+- If missing, direct user to https://platform.openai.com/api-keys — have them set it as env var locally (never paste in chat).
 
 ## Defaults & rules
 - Use `gpt-4o-mini-tts-2025-12-15` unless the user requests another model.
@@ -68,13 +53,9 @@ If installation isn't possible in this environment, tell the user which dependen
 - Never modify `scripts/text_to_speech.py`. If something is missing, ask the user before doing anything else.
 
 ## Instruction augmentation
-Reformat user direction into a short, labeled spec. Only make implicit details explicit; do not invent new requirements.
+Reformat user direction into a short labeled spec. Make implicit details explicit; keep invented additions to zero.
 
-Quick clarification (augmentation vs invention):
-- If the user says "narration for a demo", you may add implied delivery constraints (clear, steady pacing, friendly tone).
-- Do not introduce a new persona, accent, or emotional style the user did not request.
-
-Template (include only relevant lines):
+Template (include relevant lines only):
 ```
 Voice Affect: <overall character and texture of the voice>
 Tone: <attitude, formality, warmth>
@@ -86,10 +67,8 @@ Emphasis: <key words or phrases to stress>
 Delivery: <cadence or rhythm notes>
 ```
 
-Augmentation rules:
-- Keep it short; add only details the user already implied or provided elsewhere.
-- Do not rewrite the input text.
-- If any critical detail is missing and blocks success, ask a question; otherwise proceed.
+- Keep it short — only details the user implied. Preserve input text verbatim.
+- Ask only if a missing detail would block success.
 
 ## Examples
 
@@ -109,14 +88,11 @@ Emphasis: Stress "demo" and "show".
 {"input":"For sales, press 1. For support, press 2.","voice":"marin","instructions":"Tone: Clear and neutral. Pacing: Slow.","response_format":"wav"}
 ```
 
-## Instructioning best practices (short list)
-- Structure directions as: affect -> tone -> pacing -> emotion -> pronunciation/pauses -> emphasis.
-- Keep 4 to 8 short lines; avoid conflicting guidance.
-- For names/acronyms, add pronunciation hints (e.g., "enunciate A-I") or supply a phonetic spelling in the text.
-- For edits/iterations, repeat invariants (e.g., "keep pacing steady") to reduce drift.
-- Iterate with single-change follow-ups.
-
-More principles: `references/prompting.md`. Copy/paste specs: `references/sample-prompts.md`.
+## Instruction tips
+- Structure: affect → tone → pacing → emotion → pronunciation/pauses → emphasis.
+- 4–8 short lines; avoid conflicting guidance.
+- Add pronunciation hints for names/acronyms. Repeat invariants across iterations to reduce drift.
+- More: `references/prompting.md`. Copy/paste specs: `references/sample-prompts.md`.
 
 ## Guidance by use case
 Use these modules when the request is for a specific delivery style. They provide targeted defaults and templates.
@@ -131,14 +107,4 @@ Use these modules when the request is for a specific delivery style. They provid
 - Instruction patterns + examples: `references/voice-directions.md`
 - If network approvals / sandbox settings are getting in the way: `references/codex-network.md`
 
-## Reference map
-- **`references/cli.md`**: how to run speech generation/batches via `scripts/text_to_speech.py` (commands, flags, recipes).
-- **`references/audio-api.md`**: API parameters, limits, voice list.
-- **`references/voice-directions.md`**: instruction patterns and examples.
-- **`references/prompting.md`**: instruction best practices (structure, constraints, iteration patterns).
-- **`references/sample-prompts.md`**: copy/paste instruction recipes (examples only; no extra theory).
-- **`references/narration.md`**: templates + defaults for narration and explainers.
-- **`references/voiceover.md`**: templates + defaults for product demo voiceovers.
-- **`references/ivr.md`**: templates + defaults for IVR/phone prompts.
-- **`references/accessibility.md`**: templates + defaults for accessibility reads.
-- **`references/codex-network.md`**: environment/sandbox/network-approval troubleshooting.
+

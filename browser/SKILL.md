@@ -62,9 +62,8 @@ cli-jaw browser stop                 # Stop Chrome
 cli-jaw browser status               # Connection status
 ```
 
-- `--agent` is for automated sessions. It forces a headless browser so agents do not pop a visible test window.
+- `--agent` enables automated sessions — forces headless to avoid popping a visible browser window.
 - Plain `browser start` is for user-requested interactive browsing.
-- For debug/log inspection, prefer the Web UI debug console instead of opening a browser window.
 
 ### Observe
 
@@ -175,13 +174,11 @@ cliclick t:"text input"
 
 ```bash
 cli-jaw browser start --headless               # CLI flag
-cli-jaw browser start --agent                  # agent automation (forces headless)
-CHROME_HEADLESS=1 cli-jaw browser start         # env var
+cli-jaw browser start --agent                  # Agent automation (forces headless)
+CHROME_HEADLESS=1 cli-jaw browser start         # Env var
 ```
 
-- GUI 없는 환경(WSL, SSH, Docker, CI)에서 사용
-- `--headless=new` (Chrome 112+) 사용 — full browser 기능 유지
-- `--agent` 는 GUI 환경에서도 visible test browser를 띄우지 않기 위한 자동화 전용 모드
+Use for GUI-less environments (WSL, SSH, Docker, CI). `--headless=new` (Chrome 112+) preserves full browser functionality.
 
 ## Troubleshooting
 
@@ -195,15 +192,13 @@ CHROME_HEADLESS=1 cli-jaw browser start         # env var
 
 ## Notes
 
-- Ref IDs **reset on navigation**. Always re-run `snapshot` after `navigate`.
-- Use `--interactive` to show only clickable/typeable elements (shorter list).
-- Screenshots are saved to `~/.cli-jaw/screenshots/`.
+- Ref IDs reset on navigation — re-run `snapshot` after `navigate`.
+- `--interactive` shows only clickable/typeable elements (shorter output).
+- Screenshots save to `~/.cli-jaw/screenshots/`.
 - Default CDP port is auto-derived from server port (server_port + 5783).
-- If CDP is already responding on the auto-derived port, `start` reuses the existing instance without spawning a new Chrome.
-- If the port is occupied by a non-CDP process, `start` will fail with a clear error.
+- If CDP already responds on the auto-derived port, `start` reuses the existing instance.
 - `CHROME_NO_SANDBOX=1` — disable sandbox (Docker/CI).
 - `CHROME_HEADLESS=1` — enable headless mode.
-- `browser start --agent` — agent-only automation session; forces headless to avoid a visible test browser window.
 
 ## Non-DOM Elements
 

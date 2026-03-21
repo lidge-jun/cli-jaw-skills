@@ -3,10 +3,9 @@ name: "imagegen"
 description: "Use when the user asks to generate or edit images via the OpenAI Image API (for example: generate image, edit/inpaint/mask, background removal or replacement, transparent background, product shots, concept art, covers, or batch variants); run the bundled CLI (`scripts/image_gen.py`) and require `OPENAI_API_KEY` for live calls."
 ---
 
-
 # Image Generation Skill
 
-Generates or edits images for the current project (e.g., website assets, game assets, UI mockups, product mockups, wireframes, logo design, photorealistic images, infographics). Defaults to `gpt-image-1.5` and the OpenAI Image API, and prefers the bundled CLI for deterministic, reproducible runs.
+Defaults to `gpt-image-1.5` via the OpenAI Image API. Prefers the bundled CLI (`scripts/image_gen.py`) for deterministic runs.
 
 ## When to use
 - Generate a new image (concept art, product shot, cover, website hero)
@@ -63,8 +62,8 @@ If installation isn't possible in this environment, tell the user which dependen
 - Use the OpenAI Python SDK (`openai` package) for all API calls; do not use raw HTTP.
 - If the user requests edits, use `client.images.edit(...)` and include input images (and mask if provided).
 - Prefer the bundled CLI (`scripts/image_gen.py`) over writing new one-off scripts.
-- Never modify `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
-- If the result isn’t clearly relevant or doesn’t satisfy constraints, iterate with small targeted prompt changes; only ask a question if a missing detail blocks success.
+- Treat `scripts/image_gen.py` as read-only. If something is missing, ask the user first.
+- If the result doesn’t satisfy constraints, iterate with small targeted prompt changes; ask only when a missing detail blocks success.
 
 ## Prompt augmentation
 Reformat user prompts into a structured, production-oriented spec. Only make implicit details explicit; do not invent new requirements.
@@ -92,9 +91,7 @@ Edit:
 - compositing — multi-image insert/merge with matched lighting/perspective.
 - sketch-to-render — drawing/line art to photoreal render.
 
-Quick clarification (augmentation vs invention):
-- If the user says “a hero image for a landing page”, you may add *layout/composition constraints* that are implied by that use (e.g., “generous negative space on the right for headline text”).
-- Do not introduce new creative elements the user didn’t ask for (e.g., adding a mascot, changing the subject, inventing brand names/logos).
+Augmentation vs invention: add layout/composition constraints implied by the use case (e.g., “negative space for headline text”). Keep the user’s creative intent — no new subjects, mascots, or brand names.
 
 Template (include only relevant lines):
 ```

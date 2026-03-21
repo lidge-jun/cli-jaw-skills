@@ -75,10 +75,10 @@ Examples: modify a todo (needs auth token)
 - Complete/cancel (soft-delete-ish): `things update --id <UUID> --auth-token <TOKEN> --completed` / `--canceled`
 - Safe preview: `things --dry-run update --id <UUID> --auth-token <TOKEN> --completed`
 
-Delete a todo?
+Delete
 
-- Not supported by `things3-cli` right now (no “delete/move-to-trash” write command; `things trash` is read-only listing).
-- Options: use Things UI to delete/trash, or mark as `--completed` / `--canceled` via `things update`.
+- The `things3-cli` has no delete/trash command; `things trash` is read-only listing.
+- Alternatives: use Things UI, or mark `--completed` / `--canceled` via `things update`.
 
 Notes
 

@@ -7,53 +7,24 @@ metadata:
 
 # Research & Documentation
 
-Pull relevant Notion pages, synthesize findings, and publish clear briefs or reports (with citations and links to sources).
+Pull Notion pages, synthesize findings, and publish cited briefs or reports.
 
-## Quick start
-1) Find sources with `Notion:notion-search` using targeted queries; confirm scope with the user.
-2) Fetch pages via `Notion:notion-fetch`; note key sections and capture citations (`reference/citations.md`).
-3) Choose output format (brief, summary, comparison, comprehensive report) using `reference/format-selection-guide.md`.
-4) Draft in Notion with `Notion:notion-create-pages` using the matching template (quick, summary, comparison, comprehensive).
-5) Link sources and add a references/citations section; update as new info arrives with `Notion:notion-update-page`.
+Why this skill? Notion knowledge is scattered across pages. Without systematic search + citation, research outputs miss context or make unsourced claims.
 
-## Workflow
-### 0) If any MCP call fails because Notion MCP is not connected, pause and set it up:
-1. Add the Notion MCP:
-   - `codex mcp add notion --url https://mcp.notion.com/mcp`
-2. Enable remote MCP client:
-   - Set `[features].rmcp_client = true` in `config.toml` **or** run `codex --enable rmcp_client`
-3. Log in with OAuth:
-   - `codex mcp login notion`
+## Notion MCP setup (only if MCP calls fail)
+1. `codex mcp add notion --url https://mcp.notion.com/mcp`
+2. Set `[features].rmcp_client = true` in `config.toml`
+3. `codex mcp login notion` — then restart Codex.
 
-After successful login, the user will have to restart codex. You should finish your answer and tell them so when they try again they can continue with Step 1.
+## Rules
 
-### 1) Gather sources
-- Search first (`Notion:notion-search`); refine queries, and ask the user to confirm if multiple results appear.
-- Fetch relevant pages (`Notion:notion-fetch`), skim for facts, metrics, claims, constraints, and dates.
-- Track each source URL/ID for later citation; prefer direct quotes for critical facts.
-
-### 2) Select the format
-- Quick readout → quick brief.
-- Single-topic dive → research summary.
-- Option tradeoffs → comparison.
-- Deep dive / exec-ready → comprehensive report.
-- See `reference/format-selection-guide.md` for when to pick each.
-
-### 3) Synthesize
-- Outline before writing; group findings by themes/questions.
-- Note evidence with source IDs; flag gaps or contradictions.
-- Keep user goal in view (decision, summary, plan, recommendation).
-
-### 4) Create the doc
-- Pick the matching template in `reference/` (brief, summary, comparison, comprehensive) and adapt it.
-- Create the page with `Notion:notion-create-pages`; include title, summary, key findings, supporting evidence, and recommendations/next steps when relevant.
-- Add citations inline and a references section; link back to source pages.
-
-### 5) Finalize & handoff
-- Add highlights, risks, and open questions.
-- If the user needs follow-ups, create tasks or a checklist in the page; link any task database entries if applicable.
-- Share a short changelog or status using `Notion:notion-update-page` when updating.
-
-## References and examples
-- `reference/` — search tactics, format selection, templates, and citation rules (e.g., `advanced-search.md`, `format-selection-guide.md`, `research-summary-template.md`, `comparison-template.md`, `citations.md`).
-- `examples/` — end-to-end walkthroughs (e.g., `competitor-analysis.md`, `technical-investigation.md`, `market-research.md`, `trip-planning.md`).
+1. **Search broadly, then narrow**: use `Notion:notion-search` with multiple query variations. Ask the user to confirm scope when results are ambiguous.
+2. **Track every source**: record each fetched page's URL/ID. Use direct quotes for critical facts. Why: unsourced claims in research docs erode trust.
+3. **Choose format by purpose**:
+   - Quick readout → brief (1 page, key points only)
+   - Single-topic dive → summary (findings + evidence)
+   - Option tradeoffs → comparison (structured pros/cons/criteria table)
+   - Deep dive / exec-ready → comprehensive report (full sections + recommendations)
+4. **Outline before writing**: group findings by themes or questions. Flag gaps and contradictions explicitly.
+5. **Create in Notion** via `Notion:notion-create-pages`. Every doc must include: title, summary, key findings, supporting evidence, inline citations, and a references section linking source pages.
+6. **Finalize**: add highlights, risks, open questions. Create follow-up tasks if needed. Use `Notion:notion-update-page` for updates.

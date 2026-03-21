@@ -5,8 +5,6 @@ description: Execute Hugging Face Hub operations using the `hf` CLI. Use when th
 
 # Hugging Face CLI
 
-The `hf` CLI provides direct terminal access to the Hugging Face Hub for downloading, uploading, and managing repositories, cache, and compute resources.
-
 ## Quick Command Reference
 
 | Task | Command |
@@ -165,12 +163,6 @@ hf repo tag create my-username/my-model v1.0
 ```bash
 hf upload my-username/my-space . . --repo-type space \
   --exclude="logs/*" --delete="*" --commit-message="Sync"
-```
-
-### Check Cache Usage
-```bash
-hf cache ls                      # See all cached repos and sizes
-hf cache rm model/gpt2           # Remove a repo from cache
 ```
 
 ## Key Options

@@ -69,37 +69,7 @@ The script also outputs JSON to stdout for programmatic use.
 
 ## Framework Detection
 
-The script auto-detects frameworks from `package.json`. Supported frameworks include:
-
-- **React**: Next.js, Gatsby, Create React App, Remix, React Router
-- **Vue**: Nuxt, Vitepress, Vuepress, Gridsome
-- **Svelte**: SvelteKit, Svelte, Sapper
-- **Other Frontend**: Astro, Solid Start, Angular, Ember, Preact, Docusaurus
-- **Backend**: Express, Hono, Fastify, NestJS, Elysia, h3, Nitro
-- **Build Tools**: Vite, Parcel
-- **And more**: Blitz, Hydrogen, RedwoodJS, Storybook, Sanity, etc.
-
-For static HTML projects (no `package.json`), framework is set to `null`.
-
-## Static HTML Projects
-
-For projects without a `package.json`:
-- If there's a single `.html` file not named `index.html`, it gets renamed automatically
-- This ensures the page is served at the root URL (`/`)
-
-## Present Results to User
-
-Always show both URLs:
-
-```
-✓ Deployment successful!
-
-Preview URL: https://skill-deploy-abc123.vercel.app
-Claim URL:   https://vercel.com/claim-deployment?code=...
-
-View your site at the Preview URL.
-To transfer this deployment to your Vercel account, visit the Claim URL.
-```
+The script auto-detects frameworks from `package.json` (Next.js, Vite, Remix, Nuxt, SvelteKit, Astro, Express, Hono, and many more). For static HTML projects (no `package.json`), framework is set to `null` and a lone `.html` file is renamed to `index.html` automatically.
 
 ## Troubleshooting
 

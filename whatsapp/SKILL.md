@@ -5,9 +5,7 @@ description: "Build WhatsApp automations with Kapso workflows: configure WhatsAp
 
 # Automate WhatsApp
 
-## When to use
-
-Use this skill to build and run WhatsApp automations: workflow CRUD, graph edits, triggers, executions, function management, app integrations, and D1 database operations.
+Build and run WhatsApp automations: workflow CRUD, graph edits, triggers, executions, function management, app integrations, and D1 database operations.
 
 ## Setup
 
@@ -15,7 +13,7 @@ Env vars:
 - `KAPSO_API_BASE_URL` (host only, no `/platform/v1`)
 - `KAPSO_API_KEY`
 
-## How to
+## Core Workflows
 
 ### Edit a workflow graph
 
@@ -27,7 +25,7 @@ Env vars:
 
 For small edits, use `edit-graph.js` with `--old-file` and `--new-file` instead.
 
-If you get a lock_version conflict: re-fetch, re-apply changes, retry with new lock_version.
+On lock_version conflict: re-fetch, re-apply changes, retry with new lock_version.
 
 ### Manage triggers
 
@@ -66,40 +64,38 @@ For inbound_message triggers, first run `node scripts/list-whatsapp-phone-number
 2. Query: `node scripts/query-rows.js --table <name> --filters <json>`
 3. Create/update/delete with row scripts
 
-## Graph rules
+## Graph Rules
 
 - Exactly one start node with `id` = `start`
-- Never change existing node IDs
+- Preserve existing node IDs
 - Use `{node_type}_{timestamp_ms}` for new node IDs
 - Non-decide nodes have 0 or 1 outgoing `next` edge
 - Decide edge labels must match `conditions[].label`
-- Edge keys are `source`/`target`/`label` (not `from`/`to`)
+- Edge keys: `source`/`target`/`label` (not `from`/`to`)
 
-For full schema details, see `references/graph-contract.md`.
+Full schema: `references/graph-contract.md`
 
-## Function rules
+## Function Rules
 
 ```js
 async function handler(request, env) {
-  // Parse input
   const body = await request.json();
   // Use env.KV and env.DB as needed
   return new Response(JSON.stringify({ result: "ok" }));
 }
 ```
 
-- Do NOT use `export`, `export default`, or arrow functions
+- Use `function` declaration (no `export`, `export default`, or arrow functions)
 - Return a `Response` object
 
-## Execution context
+## Execution Context
 
-Always use this structure:
-- `vars` - user-defined variables
-- `system` - system variables
-- `context` - channel data
-- `metadata` - request metadata
+- `vars` — user-defined variables
+- `system` — system variables
+- `context` — channel data
+- `metadata` — request metadata
 
-## Scripts
+## Scripts Reference
 
 ### Workflows
 
@@ -152,7 +148,7 @@ Always use this structure:
 | `invoke-function.js` | Invoke function with payload |
 | `list-function-invocations.js` | List function invocations |
 
-### App integrations
+### App Integrations
 
 | Script | Purpose |
 |--------|---------|
@@ -186,40 +182,34 @@ Always use this structure:
 |--------|---------|
 | `openapi-explore.mjs` | Explore OpenAPI (search/op/schema/where) |
 
-Install deps (once):
 ```bash
-npm i
-```
-
-Examples:
-```bash
+npm i  # install deps (once)
 node scripts/openapi-explore.mjs --spec workflows search "variables"
 node scripts/openapi-explore.mjs --spec workflows op getWorkflowVariables
-node scripts/openapi-explore.mjs --spec platform op queryDatabaseRows
 ```
 
 ## Notes
 
 - Prefer file paths over inline JSON (`--definition-file`, `--code-file`)
-- `action_id` is the same as `key` from `search-actions`
+- `action_id` = `key` from `search-actions`
 - `--account-id` uses `pipedream_account_id` from `list-accounts`
-- Variable CRUD (`variables-set.js`, `variables-delete.js`) is blocked - Platform API doesn't support it
+- Variable CRUD (`variables-set.js`, `variables-delete.js`) is blocked — Platform API doesn't support it
 - Raw SQL execution is not supported via Platform API
 
 ## References
 
-Read before editing:
-- [references/graph-contract.md](references/graph-contract.md) - Graph schema, computed vs editable fields, lock_version
-- [references/node-types.md](references/node-types.md) - Node types and config shapes
-- [references/workflow-overview.md](references/workflow-overview.md) - Execution flow and states
+Read before editing graphs:
+- [graph-contract.md](references/graph-contract.md) — schema, computed vs editable fields, lock_version
+- [node-types.md](references/node-types.md) — node types and config shapes
+- [workflow-overview.md](references/workflow-overview.md) — execution flow and states
 
 Other references:
-- [references/execution-context.md](references/execution-context.md) - Context structure and variable substitution
-- [references/triggers.md](references/triggers.md) - Trigger types and setup
-- [references/app-integrations.md](references/app-integrations.md) - App integration and variable_definitions
-- [references/functions-reference.md](references/functions-reference.md) - Function management
-- [references/functions-payloads.md](references/functions-payloads.md) - Payload shapes for functions
-- [references/databases-reference.md](references/databases-reference.md) - Database operations
+- [execution-context.md](references/execution-context.md) — context structure and variable substitution
+- [triggers.md](references/triggers.md) — trigger types and setup
+- [app-integrations.md](references/app-integrations.md) — app integration and variable_definitions
+- [functions-reference.md](references/functions-reference.md) — function management
+- [functions-payloads.md](references/functions-payloads.md) — payload shapes
+- [databases-reference.md](references/databases-reference.md) — database operations
 
 ## Assets
 
@@ -235,10 +225,10 @@ Other references:
 | `function-decide-route-interactive-buttons.json` | Function for button routing |
 | `agent-app-integration-example.json` | Agent node with app integrations |
 
-## Related skills
+## Related Skills
 
-- `integrate-whatsapp` - Onboarding, webhooks, messaging, templates, flows
-- `observe-whatsapp` - Debugging, logs, health checks
+- `integrate-whatsapp` — onboarding, webhooks, messaging, templates, flows
+- `observe-whatsapp` — debugging, logs, health checks
 
 <!-- FILEMAP:BEGIN -->
 ```text
@@ -252,4 +242,3 @@ Other references:
 |scripts/lib/workflows:{args.js,kapso-api.js,result.js}
 ```
 <!-- FILEMAP:END -->
-

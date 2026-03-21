@@ -25,21 +25,12 @@ Transcribe audio using OpenAI, with optional speaker diarization when requested.
 - Use `output/transcribe/<job-id>/` for evaluation runs.
 - Use `--out-dir` for multiple files to avoid overwriting.
 
-## Dependencies (install if missing)
-Prefer `uv` for dependency management.
+## Dependencies
 
+```bash
+uv pip install openai        # preferred
+python3 -m pip install openai # fallback
 ```
-uv pip install openai
-```
-If `uv` is unavailable:
-```
-python3 -m pip install openai
-```
-
-## Environment
-- `OPENAI_API_KEY` must be set for live API calls.
-- If the key is missing, instruct the user to create one in the OpenAI platform UI and export it in their shell.
-- Never ask the user to paste the full key in chat.
 
 ## Skill path (set once)
 

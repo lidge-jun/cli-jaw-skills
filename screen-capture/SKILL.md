@@ -23,8 +23,6 @@ metadata:
 
 # Screen Capture (macOS)
 
-Capture screenshots, screen regions, and webcam photos using macOS built-in tools.
-
 ## Quick Start
 
 ```bash
@@ -112,24 +110,6 @@ screencapture -t tiff ~/screenshot.tiff              # TIFF
 
 ## Common Workflows
 
-### Capture and Analyze
-
-```bash
-# Take screenshot, then have AI analyze it
-screencapture -x /tmp/screen.png
-# → Pass /tmp/screen.png to image analysis tool or attach to message
-```
-
-### Monitor Screen Changes
-
-```bash
-# Periodic screenshots for monitoring
-for i in $(seq 1 10); do
-    screencapture -x ~/monitor_$i.png
-    sleep 60
-done
-```
-
 ### Capture Specific App State
 
 ```bash
@@ -156,7 +136,5 @@ screencapture -x ~/finder.png
 
 ## Notes
 
-- `screencapture` is macOS-only (pre-installed).
 - Screen Recording permission may be required (System Settings > Privacy > Screen Recording).
-- Use `-x` flag to suppress the camera shutter sound.
-- For browser-specific screenshots, prefer `cli-jaw browser screenshot` which captures the page content directly via CDP.
+- For browser-specific screenshots, prefer `cli-jaw browser screenshot` (captures via CDP).

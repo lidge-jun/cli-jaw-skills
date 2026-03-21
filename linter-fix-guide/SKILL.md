@@ -5,9 +5,6 @@ description: Explain lint errors and propose fixes. Use when a junior developer 
 
 # Linter Fix Guide
 
-## Purpose
-Explain lint errors and propose fixes.
-
 ## Inputs to request
 - Lint rule name and full message.
 - Relevant code snippet and file path.

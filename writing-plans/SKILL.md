@@ -5,17 +5,13 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 # Writing Plans
 
-## Overview
+## Goal
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write bite-sized, zero-context implementation plans. Assume the reader is a skilled developer with no knowledge of this codebase or problem domain.
 
-Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
-
-**Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
-
-**Context:** This should be run in a dedicated worktree (created by brainstorming skill).
-
-**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
+- Run in a dedicated worktree (created by brainstorming skill)
+- Save to `docs/plans/YYYY-MM-DD-<feature-name>.md`
+- Principles: DRY, YAGNI, TDD, frequent commits
 
 ## Bite-Sized Task Granularity
 
@@ -28,12 +24,10 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 ## Plan Document Header
 
-**Every plan MUST start with this header:**
-
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **For Claude:** Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -87,30 +81,20 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
-## Remember
-- Exact file paths always
-- Complete code in plan (not "add validation")
+## Checklist
+- Exact file paths in every step
+- Complete code (not "add validation")
 - Exact commands with expected output
 - Reference relevant skills with @ syntax
-- DRY, YAGNI, TDD, frequent commits
 
 ## Execution Handoff
 
 After saving the plan, offer execution choice:
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+**"Plan saved to `docs/plans/<filename>.md`. Two execution options:**
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
+**1. Subagent-Driven (this session)** — fresh subagent per task, review between tasks. Uses superpowers:subagent-driven-development.
 
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
+**2. Parallel Session (separate)** — new session in worktree with superpowers:executing-plans, batch execution with checkpoints.
 
 **Which approach?"**
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Stay in this session
-- Fresh subagent per task + code review
-
-**If Parallel Session chosen:**
-- Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans

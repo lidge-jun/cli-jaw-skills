@@ -29,18 +29,9 @@ pip install networkx
 5. Query the outputs with `scripts/query_ownership.py` for bounded JSON slices.
 6. Persist and visualize (see `references/neo4j-import.md`).
 
-By default, the co-change graph ignores common “glue” files (lockfiles, `.github/*`, editor config) so clusters reflect actual code movement instead of shared infra edits. Override with `--cochange-exclude` or `--no-default-cochange-excludes`. Dependabot commits are excluded by default; override with `--no-default-author-excludes` or add patterns via `--author-exclude-regex`.
+By default, the co-change graph ignores common glue files (lockfiles, `.github/*`, editor config) so clusters reflect actual code movement. Override with `--cochange-exclude` or `--no-default-cochange-excludes`. Dependabot commits are excluded by default; override with `--no-default-author-excludes` or add patterns via `--author-exclude-regex`.
 
-If you want to exclude Linux build glue like `Kbuild` from co-change clustering, pass:
-
-```bash
-python skills/skills/security-ownership-map/scripts/run_ownership_map.py \
-  --repo /path/to/linux \
-  --out ownership-map-out \
-  --cochange-exclude "**/Kbuild"
-```
-
-## Quick start
+## Quick Start
 
 Run from the repo root:
 
@@ -103,7 +94,7 @@ Use it with `--sensitive-config path/to/sensitive.csv`.
 
 `people.csv` includes timezone detection based on author commit offsets: `primary_tz_offset`, `primary_tz_minutes`, and `timezone_offsets`.
 
-## LLM query helper
+## Query Helper
 
 Use `scripts/query_ownership.py` to return small, JSON-bounded slices without loading the full graph into context.
 

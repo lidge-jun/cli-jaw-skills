@@ -5,16 +5,15 @@ description: "Repository-grounded threat modeling that enumerates trust boundari
 
 # Threat Model Source Code Repo
 
-Deliver an actionable AppSec-grade threat model that is specific to the repository or a project path, not a generic checklist. Anchor every architectural claim to evidence in the repo and keep assumptions explicit. Prioritizing realistic attacker goals and concrete impacts over generic checklists.
+Deliver an actionable, repo-specific threat model. Anchor every architectural claim to evidence in the repo, keep assumptions explicit, and prioritize realistic attacker goals over generic checklists.
 
 ## Quick start
 
-1) Collect (or infer) inputs:
-- Repo root path and any in-scope paths.
-- Intended usage, deployment model, internet exposure, and auth expectations (if known).
-- Any existing repository summary or architecture spec.
-- Use prompts in `references/prompt-template.md` to generate a repository summary.
-- Follow the required output contract in `references/prompt-template.md`. Use it verbatim when possible.
+1) Collect or infer inputs:
+- Repo root path and in-scope paths
+- Usage, deployment model, internet exposure, auth expectations (if known)
+- Existing repo summary or architecture spec
+- Use `references/prompt-template.md` for repo summary prompts and the required output contract
 
 ## Workflow
 
@@ -31,15 +30,14 @@ Deliver an actionable AppSec-grade threat model that is specific to the reposito
 - Identify entry points (endpoints, upload surfaces, parsers/decoders, job triggers, admin tooling, logging/error sinks).
 
 ### 3) Calibrate assets and attacker capabilities
-- List the assets that drive risk (credentials, PII, integrity-critical state, availability-critical components, build artifacts).
-- Describe realistic attacker capabilities based on exposure and intended usage.
-- Explicitly note non-capabilities to avoid inflated severity.
-
+- List risk-driving assets (credentials, PII, integrity-critical state, availability-critical components, build artifacts)
+- Describe realistic attacker capabilities based on exposure and usage
+- Note non-capabilities explicitly to avoid inflated severity
 
 ### 4) Enumerate threats as abuse paths
-- Prefer attacker goals that map to assets and boundaries (exfiltration, privilege escalation, integrity compromise, denial of service).
-- Classify each threat and tie it to impacted assets.
-- Keep the number of threats small but high quality.
+- Map attacker goals to assets and boundaries (exfiltration, privilege escalation, integrity compromise, DoS)
+- Classify each threat and tie it to impacted assets
+- Prefer fewer, higher-quality threats over exhaustive lists
 
 ### 5) Prioritize with explicit likelihood and impact reasoning
 - Use qualitative likelihood and impact (low/medium/high) with short justifications.
@@ -58,14 +56,12 @@ Deliver an actionable AppSec-grade threat model that is specific to the reposito
 - Prefer specific implementation hints over generic advice (e.g., "enforce schema at gateway for upload payloads" vs "validate inputs").
 - Base recommendations on validated user context; if assumptions remain unresolved, mark recommendations as conditional.
 
-### 8) Run a quality check before finalizing
-- Confirm all discovered entrypoints are covered.
-- Confirm each trust boundary is represented in threats.
-- Confirm runtime vs CI/dev separation.
-- Confirm user clarifications (or explicit non-responses) are reflected.
-- Confirm assumptions and open questions are explicit.
-- Confirm that the format of the report matches closely the required output format defined in prompt template: `references/prompt-template.md`
-- Write the final Markdown to a file named `<repo-or-dir-name>-threat-model.md` (use the basename of the repo root, or the in-scope directory if you were asked to model a subpath).
+### 8) Quality check before finalizing
+- Verify all entrypoints, trust boundaries, and runtime vs CI/dev separation are covered
+- Verify user clarifications (or explicit non-responses) are reflected
+- Verify assumptions and open questions are explicit
+- Match the output format from `references/prompt-template.md`
+- Write to `<repo-or-dir-name>-threat-model.md`
 
 
 ## Risk prioritization guidance (illustrative, not exhaustive)

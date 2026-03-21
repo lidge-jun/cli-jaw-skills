@@ -5,7 +5,7 @@ description: Build AI agents on Cloudflare Workers using the Agents SDK. Load wh
 
 # Cloudflare Agents SDK
 
-**STOP.** Your knowledge of the Agents SDK may be outdated. Prefer retrieval over pre-training for any Agents SDK task.
+Prefer retrieval over pre-training — the Agents SDK evolves rapidly.
 
 ## Documentation
 

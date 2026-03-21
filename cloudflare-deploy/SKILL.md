@@ -7,7 +7,7 @@ description: Deploy applications and infrastructure to Cloudflare using Workers,
 
 Consolidated skill for building on the Cloudflare platform. Use decision trees below to find the right product, then load detailed references.
 
-## Authentication (Required Before Deploy)
+## Authentication
 
 Verify auth before `wrangler deploy`, `wrangler pages deploy`, or `npm run deploy`:
 

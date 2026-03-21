@@ -13,17 +13,10 @@ description: >
 
 ## Goal
 
-Convert lecture audio recordings into near-verbatim structured markdown
-using LLM-based Speech-to-Text. The skill leverages **contextual prompting**
-(PDF slides as structural guide, domain term hints) to produce page-by-page
-transcriptions that preserve the professor's actual spoken words.
-
-## Key Insight
-
-LLM STT with a PDF structural guide produces **speech-only** transcription —
-the PDF identifies which slide is being discussed, while the output captures
-only what the professor actually said. Without proper prompting, models tend
-to copy-paste slide text instead of transcribing speech.
+Convert lecture audio into near-verbatim structured markdown using LLM-based STT.
+Leverages **contextual prompting** — PDF slides identify which slide is being discussed,
+while output captures only what the professor actually said. Without proper prompting,
+models tend to copy-paste slide text instead of transcribing speech.
 
 ## Instructions
 
@@ -34,37 +27,33 @@ Required:
 - **Subject title** — e.g. "거시경제학", "헌법", "Data Structures"
 
 Optional (strongly recommended):
-- **PDF slides** — acts as structural guide for page-by-page output
-- **Custom terms** — domain-specific proper nouns, acronyms
-- **Language hint** — tell agent the lecture language (e.g. "English lecture")
+- **PDF slides** — structural guide for page-by-page output
+- **Custom terms** — domain-specific proper nouns, acronyms (≤ 20 terms to avoid confusion)
+- **Language hint** — explicit lecture language prevents translation errors
 
 ### 2. Select Engine
 
 ```
 GOOGLE_APPLICATION_CREDENTIALS or ADC configured?
-├─ Yes → Vertex AI + Gemini 3 Flash Preview (recommended ⭐, location='global')
-│   └─ Best instruction following for verbatim STT
+├─ Yes → Vertex AI + Gemini 3 Flash Preview (recommended, location='global')
 GEMINI_API_KEY exists?
-├─ Yes → Gemini API + Gemini 3 Flash Preview (recommended ⭐)
+├─ Yes → Gemini API + Gemini 3 Flash Preview (recommended)
 │   └─ Fallback: Gemini 3.1 Flash-Lite (faster but may copy slide text)
 ├─ No, OPENAI_API_KEY exists?
 │   └─ Yes → OpenAI gpt-4o-transcribe (supports diarization)
 └─ No → mlx-whisper local (Apple Silicon, offline, free)
 ```
 
-> [!IMPORTANT]
-> **Vertex AI requires `location='global'`** for gemini-3.* models.
-> Using `us-central1` returns 404 NOT_FOUND.
+> Vertex AI requires `location='global'` for gemini-3.* models. Using `us-central1` returns 404.
 
 ### 3. Build Prompt
 
-Choose the appropriate prompt level based on available inputs:
+Choose prompt level based on available inputs:
 
 #### Level 1 — Basic (no context)
 ```
 Transcribe this audio in its original language. Output transcription only.
 ```
-Use when: domain unknown, quick-and-dirty transcription needed.
 
 #### Level 2 — Domain Hints
 ```
@@ -73,7 +62,6 @@ Transcribe this audio in its original language. Output transcription only.
 Context: {domain description}
 Key Terms: {comma-separated terms}
 ```
-Use when: you know the subject but have no PDF.
 
 #### Level 3 — Domain + Format
 ```
@@ -86,75 +74,57 @@ Speaker: {speaker info, if known}
 Output format:
 - Sentence-level line breaks
 - Numbers in Arabic numerals (e.g., 12,000)
-- Preserve the original language of the lecture throughout
+- Preserve the original language throughout
 - Transcription text only
 ```
-Use when: you want consistent formatting.
 
-#### Level 4 — Lecture Mode with PDF (best quality) ← DEFAULT
+#### Level 4 — Lecture Mode with PDF (default, best quality)
 ```
 You are a speech-to-text transcription assistant. You are given a PDF slide
 deck and an audio recording of a {subject} university lecture.
 
-## FUNDAMENTAL RULE #1: ORIGINAL LANGUAGE ONLY
-**NEVER translate.** If the professor speaks English, output MUST be in English.
+## Rule 1: Original Language Only
+Never translate. If the professor speaks English, output in English.
 If Korean, output in Korean. If mixed, preserve the mix exactly as spoken.
-This is NON-NEGOTIABLE. Translating the lecture into another language is a
-CRITICAL FAILURE.
 
-## FUNDAMENTAL RULE #2: VERBATIM STT — SPEECH ONLY
-This is **STT (Speech-to-Text)**, NOT summarization, NOT note-taking.
-Your job is to write down what the professor ACTUALLY SAID, word by word,
-preserving their exact phrasing, sentence structure, and speaking style.
+## Rule 2: Verbatim STT — Speech Only
+This is STT, not summarization or note-taking.
+Write down what the professor actually said, word by word,
+preserving their exact phrasing and speaking style.
 
-**CRITICAL: Do NOT copy-paste text from the PDF slides into the output.**
-The PDF is ONLY for identifying which page/slide the professor is discussing.
-The OUTPUT must contain ONLY the professor's spoken words.
-If the professor reads a slide out loud, transcribe their spoken version
-(which may differ from the slide text).
+The PDF is only for identifying which slide is being discussed.
+Output only the professor's spoken words.
+If the professor reads a slide aloud, transcribe their spoken version
+(which may differ from slide text).
 
-DO NOT:
-- Copy or reproduce text/bullet points from the PDF slides
-- Translate ANY part of the lecture into another language
-- Compress, summarize, or condense the professor's words
-- Convert spoken sentences into bullet points
-- Skip ANY spoken content — every sentence matters
-- Paraphrase or "clean up" the professor's words
-- Shorten or truncate long explanations
-
-DO:
-- Write EXACTLY what the professor said, sentence by sentence
-- Keep their natural speaking style (colloquial, formal, rambling — all of it)
 - Include filler words, false starts, self-corrections
-- Include EVERY tangent, joke, anecdote, aside, example, and digression
-- Produce VERY LONG output — more text is always better than less
-- A 10-minute audio should produce at least 2000+ words of transcription
+- Include every tangent, joke, anecdote, aside, and digression
+- Keep natural speaking style (colloquial, formal, rambling — all of it)
+- A 10-minute audio should produce 2000+ words
+- More text is always better than less
 
-## Page-by-Page Structure (MANDATORY)
-- Structure output by PDF page: `## p.{N} — {slide title or topic}`
-- Go through EVERY page of the PDF in order
-- If the professor skipped a page: `*[No lecture content — slide only]*`
-- If the professor talked about a page extensively, write EVERYTHING
-- Content spoken BEFORE first slide → `## p.0 — Pre-lecture`
-- Content spoken AFTER last slide → `## Closing`
+## Page-by-Page Structure
+- Structure by PDF page: `## p.{N} — {slide title or topic}`
+- Go through every page in order
+- Skipped pages: `*[No lecture content — slide only]*`
+- Content before first slide → `## p.0 — Pre-lecture`
+- Content after last slide → `## Closing`
 
 ## Beyond the PDF
-Capture ALL spoken content not on slides under nearest page with 💬 marker:
+Capture all off-slide content under nearest page with 💬 marker:
 - Verbal explanations, intuitions, reasoning
-- Real-world examples, case studies, anecdotes
-- Tangential context, history, motivation
+- Real-world examples, anecdotes, case studies
 - Exam tips, common mistakes, warnings
-- Q&A with students (both question and answer)
+- Q&A with students
 - Administrative announcements
 
 ## Output Format
 - `---` dividers between page sections
-- `## p.{N} — {title}` for EVERY page
-- `> ` blockquote for professor's extended examples
+- `## p.{N} — {title}` for every page
+- `> ` blockquote for extended examples
 - 💬 for beyond-PDF verbal content
 - Math in KaTeX: $Y = C + I + G$
 - One sentence per line
-- Output MUST be LONG — brevity is failure
 
 ## Key Terms
 {auto-inferred + user-supplied terms}
@@ -165,34 +135,32 @@ Capture ALL spoken content not on slides under nearest page with 💬 marker:
 Transcribe this audio verbatim. Include all speech as-is.
 Sentence-level line breaks. No formatting.
 ```
-Use when: need exact wording without page structure (prefer Whisper for this).
+Use when exact wording is needed without page structure (prefer Whisper for this).
 
 ### 4. Domain Auto-Inference
 
-When the user provides only a subject title, infer domain terms automatically:
+When the user provides only a subject title, infer domain terms:
 
-| Title pattern  | Context                       | Auto terms                                 |
-| -------------- | ----------------------------- | ------------------------------------------ |
-| 경제, 거시경제 | Macroeconomics lecture        | GDP, multiplier, MPC, IS-LM, fiscal policy |
-| 물리           | Physics lecture               | Newton's laws, energy conservation, E=mc²  |
-| 법학, 헌법     | Law/Constitutional law        | 위헌법률심판, 헌법소원, 기본권             |
-| CS, 프로그래밍 | Computer Science              | algorithm, Big-O, data structure           |
-| (no match)     | Ask model to infer from title | —                                          |
+| Title pattern  | Context                | Auto terms                                 |
+| -------------- | ---------------------- | ------------------------------------------ |
+| 경제, 거시경제 | Macroeconomics         | GDP, multiplier, MPC, IS-LM, fiscal policy |
+| 물리           | Physics                | Newton's laws, energy conservation, E=mc²  |
+| 법학, 헌법     | Constitutional law     | 위헌법률심판, 헌법소원, 기본권             |
+| CS, 프로그래밍 | Computer Science       | algorithm, Big-O, data structure           |
+| (no match)     | Ask model to infer     | —                                          |
 
 ### 5. Handle Long Audio
 
 | Duration  | Strategy                                |
 | --------- | --------------------------------------- |
-| < 2 hours | Single request (safe)                   |
+| < 2 hours | Single request                          |
 | 2–8 hours | Split into 2–4 chunks with 10s overlap  |
 | 8+ hours  | 30-minute chunks, sequential processing |
 
-> [!TIP]
-> Multiple audio files from the same lecture can be sent in a single request.
-> Just add multiple `types.Part.from_bytes()` parts — the model handles them
-> as one continuous lecture.
+Multiple audio files from the same lecture can be sent in a single request —
+add multiple `types.Part.from_bytes()` parts.
 
-Use `ffmpeg` for splitting when needed:
+Split with `ffmpeg` when needed:
 ```bash
 DUR=900  # 15 minutes
 OVERLAP=10
@@ -210,12 +178,12 @@ from google import genai
 from google.genai import types
 import os
 
-# Vertex AI (service account / ADC) — MUST use location='global'
+# Vertex AI (service account / ADC) — location='global' required for gemini-3-*
 if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or os.environ.get("GOOGLE_CLOUD_PROJECT"):
     client = genai.Client(
         vertexai=True,
         project=os.environ.get("GOOGLE_CLOUD_PROJECT", "your-project-id"),
-        location="global",  # REQUIRED for gemini-3-* models
+        location="global",
     )
 # Gemini API (API key)
 else:
@@ -224,9 +192,7 @@ else:
 
 #### Gemini — Inline bytes (< ~50MB, preferred)
 
-> [!TIP]
-> Inline bytes avoids the Korean filename `UnicodeEncodeError` entirely.
-> Prefer this path when file size allows.
+Inline bytes avoids the Korean filename `UnicodeEncodeError` entirely.
 
 ```python
 with open("lecture.m4a", "rb") as f:
@@ -237,7 +203,6 @@ contents = [
     prompt_text,
 ]
 
-# Add PDF if available
 if pdf_path:
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
@@ -253,18 +218,14 @@ print(response.text)
 
 #### Gemini API — Large files (> 50MB): File API upload
 
-> [!WARNING]
-> **File API is only available with API key auth, NOT Vertex AI.**
-> For Vertex AI with large files, compress with ffmpeg first or use GCS URIs.
->
-> **Korean/non-ASCII filenames cause `UnicodeEncodeError`** in `httpx`.
-> Always use `_safe_upload()` below to copy to ASCII-safe temp paths first.
+File API is only available with API key auth, not Vertex AI.
+Korean/non-ASCII filenames cause `UnicodeEncodeError` in `httpx` — use `_safe_upload()`:
 
 ```python
 import time, shutil, tempfile
 
 def _safe_upload(client, filepath, ascii_name):
-    """Upload file with ASCII-safe temp name to avoid httpx UnicodeEncodeError."""
+    """Upload with ASCII-safe temp name to avoid httpx UnicodeEncodeError."""
     tmpdir = tempfile.mkdtemp(prefix="stt_")
     try:
         safe_path = os.path.join(tmpdir, ascii_name)
@@ -342,35 +303,26 @@ print(transcript)
 
 ## Anti-Patterns
 
-> [!CAUTION]
-> **Never send audio without any prompt to an LLM.**
-> Without guidance, the model produces unstructured output with
-> hallucination loops. Always provide at minimum a basic transcription prompt.
-
-> [!WARNING]
-> **Flash-Lite may copy PDF slide text instead of transcribing speech.**
-> Use `gemini-3-flash-preview` for best instruction following.
-> If using Flash-Lite, add extra emphasis on "DO NOT copy slide text".
+- **Never send audio without a prompt** — without guidance, models produce unstructured output with hallucination loops. Always provide at minimum a basic transcription prompt.
+- **Flash-Lite may copy slide text** — use `gemini-3-flash-preview` for best instruction following. With Flash-Lite, add extra emphasis on speech-only transcription.
 
 ## Model Comparison (Benchmarked 2026-03-09)
 
-| Model                      | Speed       | Verbatim Quality    | Notes                                        |
-| -------------------------- | ----------- | ------------------- | -------------------------------------------- |
-| **Gemini 3 Flash Preview** | ~50s/44min  | ⭐ Best              | Recommended. Speech-only, follows rules well |
-| Gemini 3.1 Flash-Lite      | ~30s/44min  | ⚠️ Copies slide text | Faster but ignores "no-copy" instructions    |
-| mlx-whisper turbo          | ~4min local | Good (raw)          | Offline fallback, no page structure          |
-| OpenAI gpt-4o-transcribe   | —           | Good                | Diarization support, expensive               |
+| Model                      | Speed       | Verbatim Quality | Notes                                   |
+| -------------------------- | ----------- | ---------------- | --------------------------------------- |
+| **Gemini 3 Flash Preview** | ~50s/44min  | ⭐ Best           | Recommended. Speech-only, follows rules |
+| Gemini 3.1 Flash-Lite      | ~30s/44min  | ⚠️ Copies slides  | Faster but ignores speech-only rules    |
+| mlx-whisper turbo          | ~4min local | Good (raw)       | Offline fallback, no page structure     |
+| OpenAI gpt-4o-transcribe   | —           | Good             | Diarization support, expensive          |
 
 ## Constraints
 
 - PDF slides dramatically improve quality — always include when available
-- Term hints should be ≤ 20 terms (too many causes confusion)
 - Only include terms that actually appear in the audio (prevents hallucination)
-- Korean + English mixing is fine — Gemini handles multilingual natively
-- **Language hint**: tell the agent the lecture language explicitly to prevent translation
-- **Korean filenames**: Use `_safe_upload()` or inline bytes to avoid `UnicodeEncodeError`
-- **Vertex AI**: File API is NOT available. Use inline bytes (< ~50MB) or ffmpeg compress
-- **Vertex AI**: Must use `location='global'` for gemini-3-* models
+- Korean + English mixing handled natively by Gemini
+- Korean filenames: use `_safe_upload()` or inline bytes to avoid `UnicodeEncodeError`
+- Vertex AI: File API unavailable — use inline bytes (< ~50MB) or ffmpeg compression
+- Vertex AI: `location='global'` required for gemini-3-* models
 
 ## Dependencies
 

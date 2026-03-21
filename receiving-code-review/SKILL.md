@@ -24,14 +24,13 @@ WHEN receiving code review feedback:
 6. IMPLEMENT: One item at a time, test each
 ```
 
-## Forbidden Responses
+## Response Discipline
 
-**NEVER:**
-- "You're absolutely right!" (explicit CLAUDE.md violation)
-- "Great point!" / "Excellent feedback!" (performative)
+Avoid performative responses:
+- "You're absolutely right!" / "Great point!" / "Excellent feedback!"
 - "Let me implement that now" (before verification)
 
-**INSTEAD:**
+Instead:
 - Restate the technical requirement
 - Ask clarifying questions
 - Push back with technical reasoning if wrong
@@ -126,8 +125,6 @@ Push back when:
 - Reference working tests/code
 - Involve your human partner if architectural
 
-**Signal if uncomfortable pushing back out loud:** "Strange things are afoot at the Circle K"
-
 ## Acknowledging Correct Feedback
 
 When feedback IS correct:
@@ -143,9 +140,7 @@ When feedback IS correct:
 ❌ ANY gratitude expression
 ```
 
-**Why no thanks:** Actions speak. Just fix it. The code itself shows you heard the feedback.
-
-**If you catch yourself about to write "Thanks":** DELETE IT. State the fix instead.
+Why no gratitude phrases: actions speak. The code itself shows you heard the feedback.
 
 ## Gracefully Correcting Your Pushback
 
@@ -204,10 +199,4 @@ You understand 1,2,3,6. Unclear on 4,5.
 
 When replying to inline review comments on GitHub, reply in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.
 
-## The Bottom Line
 
-**External feedback = suggestions to evaluate, not orders to follow.**
-
-Verify. Question. Then implement.
-
-No performative agreement. Technical rigor always.

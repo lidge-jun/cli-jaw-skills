@@ -5,7 +5,7 @@ description: Provides guidance for property-based testing across multiple langua
 
 # Property-Based Testing Guide
 
-Use this skill proactively during development when you encounter patterns where PBT provides stronger coverage than example-based tests.
+Apply proactively when PBT provides stronger coverage than example-based tests.
 
 ## When to Invoke (Automatic Detection)
 
@@ -30,15 +30,6 @@ Use this skill proactively during development when you encounter patterns where 
 | Normalization | Idempotence | MEDIUM |
 | Builder/factory | Output invariants | LOW |
 | Smart contract | State invariants | HIGH |
-
-## When NOT to Use
-
-Do NOT use this skill for:
-- Simple CRUD operations without transformation logic
-- One-off scripts or throwaway code
-- Code with side effects that cannot be isolated (network calls, database writes)
-- Tests where specific example cases are sufficient and edge cases are well-understood
-- Integration or end-to-end testing (PBT is best for unit/component testing)
 
 ## Property Catalog (Quick Reference)
 
@@ -95,29 +86,12 @@ When you detect a high-value pattern while writing tests, **offer PBT as an opti
 
 **If user declines**, write good example-based tests without further prompting.
 
-## When NOT to Use PBT
+## Boundaries
 
-- Simple CRUD without complex validation
-- UI/presentation logic
-- Integration tests requiring complex external setup
-- Prototyping where requirements are fluid
-- User explicitly requests example-based tests only
+Skip PBT for: simple CRUD, UI logic, integration tests needing complex setup, fluid prototypes, or when user requests example-based tests only. Limit suggestions to top 5–10 candidates; respect user decisions.
 
-## Red Flags
+## Common Misconceptions
 
-- Recommending trivial getters/setters
-- Missing paired operations (encode without decode)
-- Ignoring type hints (well-typed = easier to test)
-- Overwhelming user with candidates (limit to top 5-10)
-- Being pushy after user declines
-
-## Rationalizations to Reject
-
-Do not accept these shortcuts:
-
-- **"Example tests are good enough"** - If serialization/parsing/normalization is involved, PBT finds edge cases examples miss
-- **"The function is simple"** - Simple functions with complex input domains (strings, floats, nested structures) benefit most from PBT
-- **"We don't have time"** - PBT tests are often shorter than comprehensive example suites
-- **"It's too hard to write generators"** - Most PBT libraries have excellent built-in strategies; custom generators are rarely needed
-- **"The test failed, so it's a bug"** - Failures require validation; see [interpreting-failures.md]({baseDir}/references/interpreting-failures.md)
-- **"No crash means it works"** - "No exception" is the weakest property; always push for stronger guarantees
+- "Example tests are enough" → PBT finds edge cases in serialization/parsing/normalization that examples miss.
+- "The function is simple" → Simple functions with complex input domains (strings, floats) benefit most.
+- "No crash means it works" → "No exception" is the weakest property; push for roundtrip/idempotence.

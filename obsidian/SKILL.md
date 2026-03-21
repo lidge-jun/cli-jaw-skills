@@ -48,8 +48,8 @@ Fast “what vault is active / where are the notes?”
 
 Notes
 
-- Multiple vaults common (iCloud vs `~/Documents`, work/personal, etc.). Don’t guess; read config.
-- Avoid writing hardcoded vault paths into scripts; prefer reading the config or using `print-default`.
+- Multiple vaults are common (iCloud vs `~/Documents`, work/personal). Read config rather than guessing.
+- Read config or use `print-default` instead of hardcoded vault paths — vaults move between machines.
 
 ## obsidian-cli quick start
 

@@ -5,9 +5,6 @@ description: Recommend basic data structures for a task. Use when a junior devel
 
 # Data Structure Chooser
 
-## Purpose
-Recommend basic data structures for a task.
-
 ## Inputs to request
 - Core operations and their frequency.
 - Ordering and uniqueness requirements.

@@ -160,11 +160,7 @@ gh issue list --repo owner/repo --state open --json number,title,labels,createdA
 
 ---
 
-## Merged Workflows
-
-> The following workflows were consolidated from gh-issues, gh-address-comments, gh-fix-ci, and yeet.
-
-### PR Comment Handling (from gh-address-comments)
+### PR Comment Handling
 
 Address review/issue comments on the open PR for the current branch:
 
@@ -174,7 +170,7 @@ Address review/issue comments on the open PR for the current branch:
 4. Address each comment, commit fixes
 5. Push and re-request review
 
-### Fix Failing CI (from gh-fix-ci)
+### Fix Failing CI
 
 Debug and fix failing GitHub Actions checks:
 
@@ -184,7 +180,7 @@ Debug and fix failing GitHub Actions checks:
 4. Draft fix plan → get approval → implement
 5. Push fix and verify CI passes
 
-### Auto-Fix Issues (from gh-issues)
+### Auto-Fix Issues
 
 Fetch issues, implement fixes, and open PRs:
 
@@ -193,7 +189,7 @@ Fetch issues, implement fixes, and open PRs:
 3. Monitor PR reviews and address comments
 4. Uses GitHub REST API with `$GH_TOKEN` for automation
 
-### Yeet: Stage → Commit → Push → PR (from yeet)
+### Yeet: Stage → Commit → Push → PR
 
 One-shot flow to ship changes:
 

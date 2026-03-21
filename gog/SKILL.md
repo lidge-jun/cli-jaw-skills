@@ -60,28 +60,15 @@ Common commands
 
 Calendar Colors
 
-- Use `gog calendar colors` to see all available event colors (IDs 1-11)
-- Add colors to events with `--event-color <id>` flag
-- Event color IDs (from `gog calendar colors` output):
-  - 1: #a4bdfc
-  - 2: #7ae7bf
-  - 3: #dbadff
-  - 4: #ff887c
-  - 5: #fbd75b
-  - 6: #ffb878
-  - 7: #46d6db
-  - 8: #e1e1e1
-  - 9: #5484ed
-  - 10: #51b749
-  - 11: #dc2127
+- Run `gog calendar colors` to see all event color IDs (1-11)
+- Add to events with `--event-color <id>` flag
 
 Email Formatting
 
 - Prefer plain text. Use `--body-file` for multi-paragraph messages (or `--body-file -` for stdin).
 - Same `--body-file` pattern works for drafts and replies.
 - `--body` does not unescape `\n`. If you need inline newlines, use a heredoc or `$'Line 1\n\nLine 2'`.
-- Use `--body-html` only when you need rich formatting.
-- HTML tags: `<p>` for paragraphs, `<br>` for line breaks, `<strong>` for bold, `<em>` for italic, `<a href="url">` for links, `<ul>`/`<li>` for lists.
+- Use `--body-html` only when rich formatting is needed (supports `<p>`, `<br>`, `<strong>`, `<em>`, `<a>`, `<ul>`/`<li>`).
 - Example (plain text via stdin):
 
   ```bash
@@ -97,13 +84,6 @@ Email Formatting
   Best regards,
   Your Name
   EOF
-  ```
-
-- Example (HTML list):
-  ```bash
-  gog gmail send --to recipient@example.com \
-    --subject "Meeting Follow-up" \
-    --body-html "<p>Hi Name,</p><p>Thanks for meeting today. Here are the next steps:</p><ul><li>Item one</li><li>Item two</li></ul><p>Best regards,<br>Your Name</p>"
   ```
 
 Notes

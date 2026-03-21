@@ -6,7 +6,7 @@ description: "Use when the user asks how to build with OpenAI products or APIs a
 
 # OpenAI Docs
 
-Provide authoritative, current guidance from OpenAI developer docs using the developers.openai.com MCP server. Always prioritize the developer docs MCP tools over web.run for OpenAI-related questions. Only if the MCP server is installed and returns no meaningful results should you fall back to web search.
+Provide authoritative, current guidance from OpenAI developer docs using the developers.openai.com MCP server. Prioritize MCP doc tools over web search for OpenAI-related questions. Fall back to web search only when MCP returns no meaningful results.
 
 ## Quick start
 
@@ -26,13 +26,10 @@ Provide authoritative, current guidance from OpenAI developer docs using the dev
 
 ## If MCP server is missing
 
-If MCP tools fail or no OpenAI docs resources are available:
-
-1. Run the install command yourself: `codex mcp add openaiDeveloperDocs --url https://developers.openai.com/mcp`
-2. If it fails due to permissions/sandboxing, immediately retry the same command with escalated permissions and include a 1-sentence justification for approval. Do not ask the user to run it yet.
-3. Only if the escalated attempt fails, ask the user to run the install command.
-4. Ask the user to restart Codex.
-5. Re-run the doc search/fetch after restart.
+1. Run: `codex mcp add openaiDeveloperDocs --url https://developers.openai.com/mcp`
+2. If it fails due to permissions, retry with escalated permissions (include a 1-sentence justification).
+3. Only if the escalated attempt also fails, ask the user to run the install command.
+4. Ask the user to restart Codex, then re-run the doc search.
 
 ## Workflow
 
@@ -44,13 +41,11 @@ If MCP tools fail or no OpenAI docs resources are available:
 
 ## Quality rules
 
-- Treat OpenAI docs as the source of truth; avoid speculation.
-- Keep quotes short and within policy limits; prefer paraphrase with citations.
-- If multiple pages differ, call out the difference and cite both.
-- If docs do not cover the user’s need, say so and offer next steps.
+- Treat OpenAI docs as source of truth; flag when docs are silent on a topic.
+- Prefer paraphrase with citations; keep direct quotes short.
+- When pages disagree, cite both and note the difference.
 
 ## Tooling notes
 
-- Always use MCP doc tools before any web search for OpenAI-related questions.
-- If the MCP server is installed but returns no meaningful results, then use web search as a fallback.
+- Use MCP doc tools before web search for OpenAI questions.
 - When falling back to web search, restrict to official OpenAI domains (developers.openai.com, platform.openai.com) and cite sources.

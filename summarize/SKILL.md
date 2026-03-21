@@ -24,16 +24,7 @@ metadata:
 
 # Summarize
 
-Fast CLI to summarize URLs, local files, and YouTube links.
-
-## When to use (trigger phrases)
-
-Use this skill immediately when the user asks any of:
-
-- “use summarize.sh”
-- “what’s this link/video about?”
-- “summarize this URL/article”
-- “transcribe this YouTube/video” (best-effort transcript extraction; no `yt-dlp` needed)
+Summarize URLs, local files, and YouTube links via `summarize` CLI.
 
 ## Quick start
 

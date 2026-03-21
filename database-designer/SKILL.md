@@ -5,8 +5,6 @@ description: "Database schema design, normalization (1NF–BCNF), index optimiza
 
 # Database Designer
 
-Expert-level database design covering schema analysis, index optimization, migrations, and architecture decisions.
-
 ---
 
 ## Normalization
@@ -17,10 +15,10 @@ Expert-level database design covering schema analysis, index optimization, migra
 - No duplicate rows
 
 ```sql
--- BAD: multiple values in one column
+-- ✗ multiple values in one column
 CREATE TABLE contacts (id INT PRIMARY KEY, phones VARCHAR(200)); -- "123, 456"
 
--- GOOD: separate table
+-- ✓ separate table
 CREATE TABLE contact_phones (
     id INT PRIMARY KEY,
     contact_id INT REFERENCES contacts(id),

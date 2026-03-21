@@ -173,7 +173,7 @@ say -o /tmp/out.aiff "Hello world"         # Save to file (English OK)
 say -v '?' | grep en_                      # List English voices
 ```
 
-> ⚠️ Do NOT use `say -o` with Korean/CJK text — it hangs indefinitely on macOS.
+> ⚠️ macOS `say -o` hangs indefinitely for Korean/CJK text. Use edge-tts for non-ASCII file output.
 
 ## Troubleshooting
 
@@ -188,15 +188,9 @@ say -v '?' | grep en_                      # List English voices
 ## Complete Workflow Example
 
 ```bash
-# 1. Generate voice
+# 1. Generate → 2. Convert → 3. Send → 4. Cleanup
 python3 /tmp/tts_gen.py
-
-# 2. Convert for Telegram
 ffmpeg -y -i /tmp/voice.mp3 -c:a libopus /tmp/voice.ogg
-
-# 3. Send to Telegram
 python3 /tmp/tg_voice.py
-
-# 4. Cleanup
 rm /tmp/tts_gen.py /tmp/tg_voice.py /tmp/voice.mp3 /tmp/voice.ogg
 ```

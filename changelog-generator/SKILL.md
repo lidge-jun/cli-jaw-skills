@@ -1,104 +1,67 @@
 ---
 name: changelog-generator
-description: Automatically creates user-facing changelogs from git commits by analyzing commit history, categorizing changes, and transforming technical commits into clear, customer-friendly release notes. Turns hours of manual changelog writing into minutes of automated generation.
+description: Generate user-facing changelogs from git commits. Categorizes changes, filters internal noise, and formats for customers.
 ---
 
 # Changelog Generator
 
-This skill transforms technical git commits into polished, user-friendly changelogs that your customers and users will actually understand and appreciate.
+Generate user-facing changelogs from git commit history.
 
-## When to Use This Skill
+## Goal
 
-- Preparing release notes for a new version
-- Creating weekly or monthly product update summaries
-- Documenting changes for customers
-- Writing changelog entries for app store submissions
-- Generating update notifications
-- Creating internal release documentation
-- Maintaining a public changelog/product updates page
+Read git log for a given range, categorize commits, and produce a markdown changelog suitable for end users.
 
-## What This Skill Does
+## Instructions
 
-1. **Scans Git History**: Analyzes commits from a specific time period or between versions
-2. **Categorizes Changes**: Groups commits into logical categories (features, improvements, bug fixes, breaking changes, security)
-3. **Translates Technical → User-Friendly**: Converts developer commits into customer language
-4. **Formats Professionally**: Creates clean, structured changelog entries
-5. **Filters Noise**: Excludes internal commits (refactoring, tests, etc.)
-6. **Follows Best Practices**: Applies changelog guidelines and your brand voice
+1. Determine the commit range (tag-to-tag, date range, or since-last-release)
+2. Run `git log --oneline --no-merges` for the range
+3. Categorize each commit and format output
 
-## How to Use
+## Categories
 
-### Basic Usage
+| Section | Commit types to include |
+|---------|------------------------|
+| New Features | `feat:`, new user-visible capabilities |
+| Improvements | `perf:`, `refactor:` with user-visible effect, UX changes |
+| Fixes | `fix:`, resolved bugs |
+| Breaking Changes | commits with `BREAKING CHANGE` in body or `!` in type |
+| Security | `security:`, dependency patches for CVEs |
 
-From your project repository:
+## Exclusions
 
-```
-Create a changelog from commits since last release
-```
+Do NOT include in the changelog:
 
-```
-Generate changelog for all commits from the past week
-```
+- `chore:`, `ci:`, `build:` commits (internal tooling)
+- Merge commits
+- Commits touching only tests, docs, or CI config with no user-facing effect
+- `[agent]` prefixed commits unless they contain a `feat:` or `fix:`
 
-```
-Create release notes for version 2.5.0
-```
+## Format
 
-### With Specific Date Range
-
-```
-Create a changelog for all commits between March 1 and March 15
-```
-
-### With Custom Guidelines
-
-```
-Create a changelog for commits since v2.4.0, using my changelog 
-guidelines from CHANGELOG_STYLE.md
-```
-
-## Example
-
-**User**: "Create a changelog for commits from the past 7 days"
-
-**Output**:
 ```markdown
-# Updates - Week of March 10, 2024
+# Changelog — {version or date range}
 
-## ✨ New Features
+## New Features
+- **{Feature name}**: {1-sentence user-facing description}
 
-- **Team Workspaces**: Create separate workspaces for different 
-  projects. Invite team members and keep everything organized.
+## Improvements
+- **{Area}**: {What changed for the user}
 
-- **Keyboard Shortcuts**: Press ? to see all available shortcuts. 
-  Navigate faster without touching your mouse.
+## Fixes
+- {What was broken and is now fixed}
 
-## 🔧 Improvements
-
-- **Faster Sync**: Files now sync 2x faster across devices
-- **Better Search**: Search now includes file contents, not just titles
-
-## 🐛 Fixes
-
-- Fixed issue where large images wouldn't upload
-- Resolved timezone confusion in scheduled posts
-- Corrected notification badge count
+## Breaking Changes
+- **{What changed}**: {Migration action required}
 ```
 
-**Inspired by:** Manik Aggarwal's use case from Lenny's Newsletter
+- Use bold for the item label, plain text for description
+- One bullet per commit (collapse related commits into one bullet)
+- Omit empty sections
 
-## Tips
+## Verification
 
-- Run from your git repository root
-- Specify date ranges for focused changelogs
-- Use your CHANGELOG_STYLE.md for consistent formatting
-- Review and adjust the generated changelog before publishing
-- Save output directly to CHANGELOG.md
+Before finalizing:
 
-## Related Use Cases
-
-- Creating GitHub release notes
-- Writing app store update descriptions
-- Generating email updates for users
-- Creating social media announcement posts
-
+1. Confirm every included commit maps to a real `git log` entry
+2. Confirm no internal-only commits leaked through
+3. If a `CHANGELOG_STYLE.md` exists in the repo, apply its conventions on top of these defaults

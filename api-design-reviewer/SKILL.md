@@ -5,7 +5,7 @@ description: "REST API design review and best practices. Naming conventions, HTT
 
 # API Design Reviewer
 
-Comprehensive API design analysis focusing on REST conventions, consistency, and industry standards.
+Comprehensive API design analysis for REST conventions, consistency, and industry standards.
 
 ---
 
@@ -20,7 +20,7 @@ Comprehensive API design analysis focusing on REST conventions, consistency, and
 /api/v1/orders/123/line-items     /api/v1/orders/123/lineItems
 ```
 
-**Rules:** Plural nouns for collections. Kebab-case for multi-word resources. CamelCase for JSON fields. No verbs in URLs (use HTTP methods).
+**Rules:** Plural nouns for collections. Kebab-case for multi-word resources. CamelCase for JSON fields. Use HTTP methods instead of verbs in URLs.
 
 ### HTTP Methods
 
@@ -183,7 +183,7 @@ Idempotency-Key: 123e4567-e89b-12d3-a456-426614174000
 |---|---|
 | Verb-based URLs (`/getUsers`) | Use nouns + HTTP methods |
 | Inconsistent response shapes | Standardize envelope format |
-| Deep nesting (`/a/1/b/2/c/3/d`) | Max 2 levels, use query params |
+| Deep nesting (`/a/1/b/2/c/3/d`) | Limit to 2 levels; use query params |
 | Ignoring status codes | Use specific codes per error type |
 | Missing pagination | Always paginate lists |
 | No versioning | Plan for API evolution from day one |

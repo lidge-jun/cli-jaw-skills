@@ -7,17 +7,13 @@ metadata:
 
 # Linear
 
-## Overview
-
-This skill provides a structured workflow for managing issues, projects & team workflows in Linear. It ensures consistent integration with the Linear MCP server, which offers natural-language project management for issues, projects, documentation, and team collaboration.
+Manage issues, projects, and team workflows via the Linear MCP server.
 
 ## Prerequisites
-- Linear MCP server must be connected and accessible via OAuth
-- Confirm access to the relevant Linear workspace, teams, and projects
+- Linear MCP server connected via OAuth
+- Access to the relevant workspace, teams, and projects
 
-## Required Workflow
-
-**Follow these steps in order. Do not skip steps.**
+## Workflow
 
 ### Step 0: Set up Linear MCP (if not already configured)
 
@@ -72,16 +68,14 @@ Documentation & Collaboration: `list_documents`, `get_document`, `search_documen
 - Smart Labeling: Analyze unlabeled issues, suggest/apply labels, and create missing label categories.
 - Sprint Retrospectives: Generate a report for the last completed cycle, note completed vs. pushed work, and open discussion issues for patterns.
 
-## Tips for Maximum Productivity
+## Tips
 
-- Batch operations for related changes; consider smart templates for recurring issue structures.
-- Use natural queries when possible ("Show me what John is working on this week").
-- Leverage context: reference prior issues in new requests.
-- Break large updates into smaller batches to avoid rate limits; cache or reuse filters when listing frequently.
+- Batch related changes to reduce API calls
+- Break large updates into smaller batches to stay within rate limits
+- Reference prior issues for context in new requests
 
 ## Troubleshooting
 
-- Authentication: Clear browser cookies, re-run OAuth, verify workspace permissions, ensure API access is enabled.
-- Tool Calling Errors: Confirm the model supports multiple tool calls, provide all required fields, and split complex requests.
-- Missing Data: Refresh token, verify workspace access, check for archived projects, and confirm correct team selection.
-- Performance: Remember Linear API rate limits; batch bulk operations, use specific filters, or cache frequent queries.
+- **Auth**: Clear browser cookies → re-run OAuth → verify workspace permissions
+- **Missing data**: Refresh token → check for archived projects → confirm team selection
+- **Rate limits**: Batch bulk operations, use specific filters, cache frequent queries

@@ -30,18 +30,11 @@ cli-jaw browser vision-click "Menu" --provider codex   # explicit provider
 
 ## Prerequisites
 
-- **Codex CLI** installed and authenticated
-- cli-jaw server running (`cli-jaw serve`)
-- Browser started (`cli-jaw browser start --agent` for automation, `cli-jaw browser start` for manual interactive sessions)
+- Codex CLI installed + authenticated, cli-jaw server running (`cli-jaw serve`), browser started
 
 ## When to Use
 
-Use when `cli-jaw browser snapshot` returns **NO ref** for target:
-- Canvas elements, iframes, Shadow DOM
-- Dynamically rendered content (WebGL, SVG)
-- Elements behind overlays or custom web components
-
-> **Always try `snapshot` first.** Only fall back to vision-click if no ref exists.
+Fallback when `cli-jaw browser snapshot` returns no ref for target (canvas, iframes, Shadow DOM, WebGL, SVG, overlays). Always try `snapshot` first.
 
 ## Manual Workflow (Phase 1)
 
@@ -108,15 +101,6 @@ for (const line of lines) {
     }
 }
 ```
-
-## Accuracy
-
-Verified via smoke test (2026-02-24):
-
-| Target                  | Actual     | Codex Result | Error |
-| ----------------------- | ---------- | ------------ | ----- |
-| LOGIN button (800×600)  | (400, 275) | (400, 276)   | ±1px  |
-| SIGNUP button (800×600) | (400, 345) | (400, 345)   | ±0px  |
 
 ## Limitations
 

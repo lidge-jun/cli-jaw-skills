@@ -11,8 +11,6 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 **Core principle:** Systematic directory selection + safety verification = reliable isolation.
 
-**Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
-
 ## Directory Selection Process
 
 Follow this priority order:
@@ -52,7 +50,7 @@ Which would you prefer?
 
 ### For Project-Local Directories (.worktrees or worktrees)
 
-**MUST verify directory is ignored before creating worktree:**
+Verify the directory is ignored before creating a worktree:
 
 ```bash
 # Check if directory is ignored (respects local, global, and system gitignore)
@@ -66,7 +64,7 @@ Per Jesse's rule "Fix broken things immediately":
 2. Commit the change
 3. Proceed with worktree creation
 
-**Why critical:** Prevents accidentally committing worktree contents to repository.
+Why: prevents accidentally committing worktree contents to the repository.
 
 ### For Global Directory (~/.config/superpowers/worktrees)
 
@@ -174,37 +172,6 @@ Ready to implement <feature-name>
 
 - **Problem:** Breaks on projects using different tools
 - **Fix:** Auto-detect from project files (package.json, etc.)
-
-## Example Workflow
-
-```
-You: I'm using the using-git-worktrees skill to set up an isolated workspace.
-
-[Check .worktrees/ - exists]
-[Verify ignored - git check-ignore confirms .worktrees/ is ignored]
-[Create worktree: git worktree add .worktrees/auth -b feature/auth]
-[Run npm install]
-[Run npm test - 47 passing]
-
-Worktree ready at /Users/jesse/myproject/.worktrees/auth
-Tests passing (47 tests, 0 failures)
-Ready to implement auth feature
-```
-
-## Red Flags
-
-**Never:**
-- Create worktree without verifying it's ignored (project-local)
-- Skip baseline test verification
-- Proceed with failing tests without asking
-- Assume directory location when ambiguous
-- Skip CLAUDE.md check
-
-**Always:**
-- Follow directory priority: existing > CLAUDE.md > ask
-- Verify directory is ignored for project-local
-- Auto-detect and run project setup
-- Verify clean test baseline
 
 ## Integration
 

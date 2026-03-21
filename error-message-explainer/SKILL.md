@@ -5,9 +5,6 @@ description: Explain compiler/runtime errors in plain language. Use when a junio
 
 # Error Message Explainer
 
-## Purpose
-Explain compiler/runtime errors in plain language.
-
 ## Inputs to request
 - Full error text and stack trace.
 - Code snippet around the failing line.

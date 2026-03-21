@@ -6,23 +6,12 @@ description: "Use when the user asks to create, scaffold, or edit Jupyter notebo
 
 # Jupyter Notebook Skill
 
-Create clean, reproducible Jupyter notebooks for two primary modes:
+Create clean, reproducible Jupyter notebooks. Use the bundled templates and helper script for consistent structure and fewer JSON mistakes.
 
-- Experiments and exploratory analysis
-- Tutorials and teaching-oriented walkthroughs
-
-Prefer the bundled templates and the helper script for consistent structure and fewer JSON mistakes.
-
-## When to use
-- Create a new `.ipynb` notebook from scratch.
-- Convert rough notes or scripts into a structured notebook.
-- Refactor an existing notebook to be more reproducible and skimmable.
-- Build experiments or tutorials that will be read or re-run by other people.
-
-## Decision tree
-- If the request is exploratory, analytical, or hypothesis-driven, choose `experiment`.
-- If the request is instructional, step-by-step, or audience-specific, choose `tutorial`.
-- If editing an existing notebook, treat it as a refactor: preserve intent and improve structure.
+## Kind selection
+- Exploratory, analytical, or hypothesis-driven → `experiment`
+- Instructional, step-by-step, or audience-specific → `tutorial`
+- Editing existing notebook → refactor (preserve intent, improve structure)
 
 ## Skill path (set once)
 
@@ -86,19 +75,9 @@ Script path:
 - Write final artifacts under `output/jupyter-notebook/` when working in this repo.
 - Use stable, descriptive filenames (for example, `ablation-temperature.ipynb`).
 
-## Dependencies (install only when needed)
-Prefer `uv` for dependency management.
+## Dependencies
 
-Optional Python packages for local notebook execution:
-
-```bash
-uv pip install jupyterlab ipykernel
-```
-
-The bundled scaffold script uses only the Python standard library and does not require extra dependencies.
-
-## Environment
-No required environment variables.
+The scaffold script uses only stdlib. For local execution: `uv pip install jupyterlab ipykernel`.
 
 ## Reference map
 - `references/experiment-patterns.md`: experiment structure and heuristics.
