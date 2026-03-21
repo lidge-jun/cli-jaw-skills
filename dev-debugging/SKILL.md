@@ -6,10 +6,10 @@ description: "Systematic debugging methodology for all orchestrated sub-agents. 
 # Dev-Debugging — Systematic Root Cause Analysis
 
 This skill is the **thinking process** for fixing bugs. It enforces a structured
-4-phase methodology that MUST be followed for every technical issue — test failures,
-runtime errors, build failures, performance regressions, integration bugs.
+4-phase methodology for every technical issue — test failures, runtime errors,
+build failures, performance regressions, integration bugs.
 
-**Boundary**: This skill teaches HOW TO THINK about bugs. For test harness,
+**Boundary**: This skill covers how to reason about bugs. For test harness,
 reproduction frameworks, and verification tooling, see `dev-testing`. For
 domain-specific context (API errors, hydration issues, query performance),
 consult `dev-backend` or `dev-frontend`.
@@ -22,15 +22,10 @@ dev §2        = summary pointer to this skill (the overview)
 
 ---
 
-## The Iron Law
+## Core Principle
 
-```
-┌─────────────────────────────────────────────────────┐
-│  NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.   │
-│  If you haven't completed Phase 1, you CANNOT       │
-│  propose fixes. No exceptions.                      │
-└─────────────────────────────────────────────────────┘
-```
+Complete root cause investigation before proposing any fix.
+If Phase 1 is not done, keep investigating.
 
 ---
 
@@ -38,7 +33,7 @@ dev §2        = summary pointer to this skill (the overview)
 
 - Test failures, runtime errors, build failures, performance regressions
 - Integration issues (API, database, third-party), CI pipeline failures
-- **Especially**: when under time pressure or when "just one quick fix" seems obvious
+- **Especially**: when under time pressure or when "just one quick fix" seems obvious — that's when methodology matters most
 
 ---
 
@@ -46,7 +41,7 @@ dev §2        = summary pointer to this skill (the overview)
 
 ### Phase 1: Root Cause Investigation
 
-**BEFORE attempting ANY fix:**
+**Complete these before attempting any fix:**
 
 1. **Read the full error** — stack trace, line numbers, error code, surrounding
    context. Do not skim. The answer is often in the error message itself.
@@ -57,7 +52,7 @@ dev §2        = summary pointer to this skill (the overview)
 
 3. **Check recent changes** — run `git log --oneline -10` and `git diff`. Check
    new dependencies, config changes, environment variables. Bugs correlate with
-   recent changes ~80% of the time.
+   recent changes most of the time.
 
 4. **Trace data flow** — where does the bad value originate? Trace backward from
    the failure point through the call stack until you find the source. Fix at the
@@ -75,7 +70,7 @@ For EACH component boundary:
 Run once → analyze evidence → identify failing layer → investigate THAT layer
 ```
 
-Do NOT proceed to Phase 2 until all 5 steps above are done.
+Complete all 5 steps before proceeding to Phase 2.
 
 ### Phase 2: Pattern Analysis
 
@@ -83,8 +78,8 @@ Do NOT proceed to Phase 2 until all 5 steps above are done.
    worked before, use `git bisect` to find the breaking commit (see
    `references/tool-guides.md`).
 
-2. **Compare systematically** — list EVERY difference between working and broken
-   code. No matter how small. Don't assume "that can't matter."
+2. **Compare systematically** — list every difference between working and broken
+   code. No matter how small. Resist assuming "that can't matter."
 
 3. **Read reference docs completely** — official documentation for the library,
    API, or framework involved. Don't skim — read the full relevant section.
@@ -99,20 +94,20 @@ Do NOT proceed to Phase 2 until all 5 steps above are done.
    understand it yet.
 
 2. **Design a test to disprove** — falsification is stronger than confirmation.
-   What would you expect to see if your hypothesis is WRONG?
+   What would you expect to see if your hypothesis is wrong?
 
 3. **Test one variable** — smallest possible change, one variable at a time.
    Never fix multiple things at once.
 
-4. **If it didn't work** → form a NEW hypothesis. Do NOT pile fixes on top.
-   Revert the failed change and start from clean state.
+4. **If it fails** → form a new hypothesis. Revert the failed change and
+   start from clean state. Stacking fixes obscures the root cause.
 
 5. **Admit ignorance** — "I don't understand X" is a valid finding. Research
-   further rather than guessing. Say it out loud.
+   further rather than guessing. Record the open question explicitly.
 
 ### Phase 4: Implementation
 
-1. **Write a failing test first** — the test reproduces the bug. It MUST fail
+1. **Write a failing test first** — the test reproduces the bug. It should fail
    before the fix. Use `dev-testing` for TDD patterns and test harness setup.
 
 2. **Make the minimal fix** — address the root cause, not symptoms. One logical
@@ -130,13 +125,13 @@ Do NOT proceed to Phase 2 until all 5 steps above are done.
 
 ---
 
-## Red Flags — STOP and Return to Phase 1
+## Red Flags — Return to Phase 1
 
-If you catch yourself doing or thinking any of these, STOP immediately.
-You have skipped root cause investigation.
+If you catch yourself doing any of these, pause — root cause investigation
+was likely skipped.
 
-| 🚩 Red Flag | Why It's Wrong |
-|-------------|----------------|
+| Red Flag | Why It Fails |
+|----------|-------------|
 | "Quick fix for now, investigate later" | First fix sets the pattern. Tech debt compounds. You won't investigate later. |
 | "Just try changing X and see" | Guessing guarantees rework. You'll be back here within the hour. |
 | "Add multiple changes, run tests" | Can't isolate cause if multiple variables changed. Revert, change ONE thing. |
@@ -146,31 +141,30 @@ You have skipped root cause investigation.
 | "It works on my machine" | Reproduce in the SAME environment as the failure. Local success proves nothing. |
 | "Let me add a try/catch around it" | Suppressing errors is not fixing them. Find WHY it throws. |
 
-**The 3-Strike Rule**: If 3 consecutive fix attempts fail, STOP completely.
+**The 3-Strike Rule**: If 3 consecutive fix attempts fail, pause entirely.
 Each fix revealing a new problem in a different place is a sign of
 **architectural issues**, not simple bugs. Discuss with the user before
 attempting more fixes.
 
 ---
 
-## Anti-Slop Debugging
+## Slop Debugging Patterns
 
-Slop debugging is spray-and-pray: guess, patch, pray, repeat. Every row below
-is a concrete behavior to catch and correct.
+Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 
-| ❌ Banned Pattern | ✅ Required Pattern |
-|-------------------|---------------------|
+| Instead of… | Use… |
+|-------------|------|
 | Proposing fixes before investigation | Complete Phase 1 checklist first |
 | "Might be X" without evidence | "Evidence shows X because [log/trace/diff]" |
 | Multiple simultaneous changes | One change at a time, revert between attempts |
-| Ignoring error messages or skimming stack traces | Read every line of stack trace, note line numbers |
+| Skimming stack traces | Read every line of stack trace, note line numbers |
 | Silent `catch` blocks that suppress errors | Log with context (`[module] error.message`), re-throw or handle |
-| Deleting or modifying failing tests to pass | Fix the code, not the test. A failing test is evidence. |
+| Modifying failing tests to pass | Fix the code, not the test — a failing test is evidence |
 | Claiming "fixed" without running verification | Run full test suite, show green output, verify the original symptom |
-| Copy-pasting a Stack Overflow fix without understanding | Understand WHY the fix works, then adapt to your codebase |
+| Copy-pasting a fix without understanding | Understand why the fix works, then adapt to your codebase |
 | Wrapping `try/catch` around the crash site | Fix at the source — trace upstream to where the bad data originates |
 | Guessing at types, nulls, or undefined values | Add diagnostic logging, inspect actual runtime values |
-| "It works now" after changing something unrelated | Correlation ≠ causation. Revert the change and test again. |
+| "It works now" after changing something unrelated | Correlation ≠ causation — revert the change and test again |
 
 ---
 
@@ -317,7 +311,7 @@ Phase 4: Add proper isolation:
 Don't just say "I'm stuck." Provide: **symptom** (exact error), **reproduction
 steps**, **evidence gathered** (logs, traces, bisect results), **hypotheses
 tested** (what you tried, why it failed), **remaining hypotheses** (untested),
-and your **recommendation** for next steps.
+and a **recommendation** for next steps.
 
 ---
 
@@ -358,7 +352,7 @@ action item that prevents the same class of bug from recurring.
 
 ## Compact Summary
 
-When context is limited, preserve: (1) Iron Law — no fixes without root cause,
+When context is limited, preserve: (1) Core principle — no fixes without root cause,
 (2) 4 Phases — investigate → analyze → hypothesize → implement,
 (3) 3-Strike Rule — 3 failures = escalate, (4) one variable at a time,
 (5) evidence over intuition, (6) failing test first.

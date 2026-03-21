@@ -28,7 +28,7 @@ Five rules that apply to every data task:
 | **Schema-first** | Define expected columns, types, and constraints BEFORE writing transformation logic. |
 | **Defensive parsing** | External data will have nulls, wrong types, extra columns, missing columns, and encoding issues. Assume all of these. |
 | **Idempotent operations** | Running the same pipeline twice on the same input must produce the same output. Use upsert patterns, not blind inserts. |
-| **Fail fast, fail loud** | Invalid data must raise errors immediately. Silent failures produce wrong results downstream that are 10x harder to debug. |
+| **Fail fast, fail loud** | Raise errors on invalid data immediately — silent failures produce wrong downstream results that are harder to debug. |
 
 ---
 
@@ -80,7 +80,7 @@ Raw / Staging        →    Transformation      →    Marts / Output
 ```
 
 **Rules:**
-- **Staging is sacrosanct.** Never modify raw data. Copy first, transform in a separate step.
+- **Keep staging immutable.** Copy first, transform in a separate step — this enables replay and debugging.
 - **One transformation per step.** Don't combine cleaning + joining + aggregating in one function. Chain separate steps.
 - **Incremental processing.** Process only new/changed records when possible. Full reloads only when schema changes.
 
@@ -123,7 +123,7 @@ models:
 
 | Scenario | Pattern |
 |----------|---------|
-| **Invalid records** | Write to dead-letter table/file for manual review. Never drop silently. |
+| **Invalid records** | Write to dead-letter table/file for manual review. Preserve every record for debugging. |
 | **Source unavailable** | Retry with exponential backoff (1s, 2s, 4s). Alert after 3 failures. |
 | **Schema mismatch** | Halt pipeline. Log expected vs. actual schema. Don't attempt partial loads. |
 | **Duplicate records** | Use upsert (INSERT ON CONFLICT UPDATE) or deduplicate with window functions. |
@@ -179,7 +179,7 @@ if not results.success:
     raise DataQualityError(f"Validation failed: {results.statistics}")
 ```
 
-**Rule:** Never skip validation because "the data looks fine." Silent quality failures produce wrong downstream results that are 10x harder to debug.
+**Rule:** Run validation on every pipeline step — skipping "because the data looks fine" leads to silent downstream corruption.
 
 ### Data Contracts
 
@@ -361,7 +361,7 @@ Before building any pipeline that touches PII:
 - [ ] Set data retention TTL — don't keep PII longer than needed
 - [ ] Support right-to-erasure (GDPR Article 17): cascading delete across all pipeline stages
 - [ ] Log all PII access for audit trail
-- [ ] Never log raw PII values — mask in structured logging
+- [ ] Mask raw PII values before logs and traces — use structured logging with redaction
 
 ### GDPR/CCPA Quick Reference
 
@@ -384,14 +384,12 @@ Data engineering does not exist in isolation. Cross-reference these skills when 
 |-----------|-----------------|--------------|
 | `dev-backend` | Exposing data via API, response envelope shape, pagination | §5 API Response Contract, §2 Layered Architecture |
 | `dev-security` | PII handling, data classification, access controls, audit logging | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
-| `dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend Patterns, §3 Contract Testing |
-| `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §8 Backend Contract Alignment |
+| `dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend & API Testing, §3 Contract Testing |
+| `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §8 Backend Contract & Security Alignment |
 
 **Integration patterns:**
-- Data APIs serving frontend dashboards must use the standard response envelope (`dev-backend` §4.5)
+- Data APIs serving frontend dashboards must use the standard response envelope (`dev-backend` §5)
 - PII pipelines must classify columns and apply masking per `dev-security` guidance before this skill's §7 rules
 - Data contract changes (§4 Data Contracts) must notify downstream consumers including frontend teams
 
 ---
-
-Clean data enables good decisions. Your pipeline is only as trustworthy as your weakest validation check — make every check count.

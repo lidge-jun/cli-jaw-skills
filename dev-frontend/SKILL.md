@@ -40,13 +40,13 @@ Reference: [component.gallery/components](https://component.gallery/components/)
 
 ## 1. Design Thinking
 
-Before coding, commit to a BOLD aesthetic direction:
+Before coding, commit to a bold aesthetic direction:
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Tone**: Pick a strong direction — don't default to "clean and modern." Choose from: brutally minimal, maximalist, retro-futuristic, luxury/refined, editorial/magazine, brutalist/raw, art deco, cyberpunk, organic/biomorphic, etc.
 - **Constraints**: Framework, performance budget, accessibility requirements.
 - **Signature**: What ONE thing will make this unforgettable?
 
-**CRITICAL**: Intentionality over intensity. Bold maximalism and refined minimalism both work — the key is committing fully.
+Intentionality over intensity. Bold maximalism and refined minimalism both work — commit fully to the chosen direction.
 
 ---
 
@@ -68,8 +68,8 @@ Adapt dynamically based on user requests. Dashboard → density up. Portfolio �
 
 Read `references/core/aesthetics.md` for full guidelines. Summary:
 
-- **Typography**: Never Inter/Roboto/Arial. Use Geist, Outfit, Satoshi, Cabinet Grotesk, or characterful alternatives.
-- **Color**: Max 1 accent. No purple-on-white. Use neutral bases (Zinc/Slate) with singular high-contrast accent.
+- **Typography**: Use Geist, Outfit, Satoshi, Cabinet Grotesk, or other characterful typefaces — avoid Inter/Roboto/Arial.
+- **Color**: Max 1 accent. Use neutral bases (Zinc/Slate) with singular high-contrast accent — avoid purple-on-white.
 - **Layout**: Break centered-card patterns. Use asymmetry, overlap, diagonal flow, generous negative space.
 - **Motion**: See `references/core/motion.md`. One well-choreographed page load > 10 scattered effects.
 - **Backgrounds**: Create atmosphere — gradient meshes, noise textures, geometric patterns, layered transparencies.
@@ -78,23 +78,23 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
 
 ## 4. Anti-Slop Enforcement
 
-Read `references/core/anti-slop.md` for full rules. Critical bans:
+Read `references/core/anti-slop.md` for full rules. Key standards:
 
-- NO Inter/Roboto/Arial/system-ui fonts
-- NO purple gradients on white backgrounds
-- NO centered-everything layouts
-- NO generic card grids (3 equal cards in a row)
-- NO emoji in code or UI
-- NO pure black (#000000) — use off-black
-- NO generic placeholder names (John Doe, Acme Corp)
-- NO AI copywriting clichés ("Elevate", "Seamless", "Next-Gen")
+- Use characterful fonts (Geist, Outfit, Satoshi, Cabinet Grotesk) — Inter/Roboto/Arial/system-ui are banned
+- Use neutral or intentional color palettes — purple gradients on white are a slop signal
+- Use asymmetric or purposeful layouts — centered-everything reads as template
+- Vary card sizes, spans, and groupings — equal 3-card grids read as generic
+- Use icons or descriptive text instead of emoji in code and UI
+- Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
+- Use realistic, specific names and brands in placeholder content
+- Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
 
 ---
 
 ## 5. Performance Guardrails
 
-- Animate ONLY `transform` and `opacity` — never `top`, `left`, `width`, `height`
-- Grain/noise filters → fixed pseudo-elements only, never on scrolling containers
+- Animate `transform` and `opacity` only — layout properties (`top`, `left`, `width`, `height`) cause jank
+- Grain/noise filters → fixed pseudo-elements only, keep off scrolling containers
 - `will-change` sparingly — remove after animation completes
 - Z-index only for systemic layers (navbar, modal, overlay)
 - Memoize perpetual animations in isolated components
@@ -116,7 +116,7 @@ Read `references/core/anti-slop.md` for full rules. Critical bans:
 
 Before delivering:
 - [ ] Bold aesthetic direction chosen and committed
-- [ ] No banned anti-slop patterns
+- [ ] Anti-slop patterns enforced (§4)
 - [ ] Mobile layout collapse guaranteed (`px-4`, `max-w-7xl mx-auto`)
 - [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
 - [ ] Loading, empty, and error states provided

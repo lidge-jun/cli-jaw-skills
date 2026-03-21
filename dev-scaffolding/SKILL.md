@@ -5,7 +5,7 @@ description: "Scaffold new projects or add feature modules following the Lidge S
 
 # Dev Scaffolding
 
-Rules for generating and auditing project structures. Read these rules and create files directly — no generator scripts needed. Only the audit script exists for mechanical verification.
+Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§10) for verification.
 
 ## 1. The Lidge Standard
 
@@ -61,7 +61,7 @@ Detect project type from existing files. Priority order:
 | `Cargo.toml`                           | Rust                          |
 | None of the above                      | → Tech Stack Decision (below) |
 
-**For new projects where no files exist yet**, use the Tech Stack Decision process below — don't just ask "What language?"
+For greenfield projects, use the Tech Stack Decision process (§3.1) instead of asking "What language?"
 
 ## 3.1 Tech Stack Decision (New Projects)
 
@@ -73,9 +73,7 @@ When creating a new project with no existing framework, guide the user through p
 
 Present options as `<Framework> — <what it gives you>`, recommend one with reasoning, let user pick.
 
-**Over-engineering guard**: Match tool complexity to task complexity.
-A portfolio site doesn't need Next.js. A simple API doesn't need microservices.
-But don't make this an absolute rule — if the user has specific plans (SEO, CMS, scaling), heavier tools may be justified.
+Match tool complexity to task complexity. Escalate tooling only when justified by user requirements (SEO, CMS, scaling).
 
 ## 4. Fullstack Split Rule
 
@@ -115,7 +113,8 @@ Principle: "flat until you can't" — start flat, sub-folder only when feature e
 | devlog entries      | `YYMMDD_title/`       | `260303_scaffolding/`        |
 | Functions (JS/TS)   | camelCase             | `getStockPrice()`            |
 | Functions (Python)  | snake_case            | `get_stock_price()`          |
-| Functions (Go/Rust) | PascalCase (exported) | `GetStockPrice()`            |
+| Functions (Go)      | PascalCase (exported) | `GetStockPrice()`            |
+| Functions (Rust)    | snake_case            | `get_stock_price()`          |
 
 ## 7. File Suffixes
 

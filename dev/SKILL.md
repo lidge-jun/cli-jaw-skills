@@ -9,7 +9,7 @@ Core rules applied to every sub-agent, regardless of role.
 
 ## Companion Skills
 
-This skill covers universal guidelines. For domain-specific work, you **must** also consult the matching role skill — read its `SKILL.md` before writing any code in that domain:
+This skill covers universal guidelines. For domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
 
 | Skill File                   | Injected When                     | Covers                                                                                         |
 | ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -21,7 +21,7 @@ This skill covers universal guidelines. For domain-specific work, you **must** a
 | `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 
-**When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read ALL relevant skill files before starting.
+**When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read each relevant skill file before starting.
 
 ---
 
@@ -46,7 +46,7 @@ One confirmation round: 2-3 options → 1 recommendation → confirm → move on
 
 ## 1. Modular Development
 
-Every file, function, and class must have a single, clear responsibility.
+Give every file, function, and class a single, clear responsibility.
 
 **Hard limits:**
 
@@ -59,7 +59,7 @@ Every file, function, and class must have a single, clear responsibility.
 | Function parameters | >5          | Use an options/config object             |
 
 **Rules:**
-- ES Module (`import`/`export`) only in JS/TS projects. No CommonJS `require()`.
+- Use ES Module (`import`/`export`) in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
 - One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
 - Follow existing naming conventions in the project. Check sibling files before creating new ones.
 - New files must match the directory structure and naming patterns already in use.
@@ -68,11 +68,11 @@ Every file, function, and class must have a single, clear responsibility.
 
 ## 2. Systematic Debugging
 
-**The Iron Law:** NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.
+Investigate the root cause before applying any fix — guessing leads to compounding rework.
 
 For full debugging methodology — boundary instrumentation, pattern analysis, hypothesis testing, and postmortem — see `dev-debugging/SKILL.md`.
 
-This section retains only the **emergency stop triggers** that every agent must internalize:
+This section covers the **emergency stop triggers** every agent should recognize:
 
 **Red flags — stop and return to root cause investigation:**
 
@@ -84,21 +84,21 @@ This section retains only the **emergency stop triggers** that every agent must 
 | "Proposing solutions before investigating"     | You haven't done Phase 1.                               |
 | "One more fix attempt" (after 2+ failures)     | 3+ failures = architectural problem.                    |
 
-**If 3+ fix attempts fail:** STOP. Each fix revealing a new problem in a different place is a sign of **architectural issues**, not simple bugs. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with your human partner before attempting more fixes.
+**If 3+ fix attempts fail:** pause and reassess. Each fix revealing a new problem elsewhere signals an **architectural issue**, not a simple bug. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with the user before attempting more fixes.
 
 ---
 
 ## 3. Verification Before Completion
 
-Never claim work is complete without running verification. Evidence before assertions, always.
+Verify every completion claim with evidence. Run the relevant command fresh, read full output, and confirm the claim matches.
 
-**The gate (mandatory before ANY completion claim):**
+**Verification gate (before any completion claim):**
 
-1. **IDENTIFY** — What command proves this claim?
-2. **RUN** — Execute the full command (fresh, not cached).
-3. **READ** — Full output. Check exit code. Count failures.
-4. **VERIFY** — Does the output actually confirm the claim?
-5. **Only then** — State the claim WITH evidence.
+1. **Identify** — What command proves this claim?
+2. **Run** — Execute fresh (not cached).
+3. **Read** — Full output. Check exit code. Count failures.
+4. **Confirm** — Does the output actually support the claim?
+5. **Report** — State the claim with evidence attached.
 
 | Claim                   | Requires                              | Not Sufficient                |
 | ----------------------- | ------------------------------------- | ----------------------------- |
@@ -111,7 +111,7 @@ Never claim work is complete without running verification. Evidence before asser
 
 **Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
-**Red flags — you're about to lie:**
+**Red flags — unverified claims creeping in:**
 - Using words like "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Done!")
 - Relying on partial verification or a previous run
@@ -137,11 +137,11 @@ Keep entries factual and concise. One entry per file changed.
 
 ## 5. Safety Rules
 
-- **Never delete existing exports** — other modules may depend on them. Deprecate first if needed.
-- **Verify imports exist** before adding new `import` statements. Check the target file is real.
-- **No hardcoded configuration** — use config files or environment variables. Magic strings and numbers belong in constants.
-- **Error handling is mandatory** — all async failures must be handled explicitly. No silent failures. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In all other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
-- **No destructive operations without confirmation** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
+- **Preserve existing exports** — other modules may depend on them. Deprecate first if removal is needed.
+- **Verify imports exist** before adding `import` statements. Confirm the target file and export are real.
+- **Externalize configuration** — use config files or environment variables. Place magic strings and numbers in named constants.
+- **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
+- **Confirm before destructive operations** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
 
 ---
 
@@ -160,25 +160,17 @@ Watch for these anti-patterns and fix immediately. For the full detection catalo
 | **Floating promises**      | async call without `await`          | Always `await` or handle rejection    |
 | **Copy-paste code**        | Same logic in 2+ places             | Extract shared function, import it    |
 
-**Good code reads like well-written prose:**
-- Function names describe what they do (`calculateTotalPrice`, not `calc`)
-- Variable names reveal intent (`remainingRetries`, not `r`)
-- Comments explain WHY, not WHAT (the code shows what)
-
 ---
 
 ## 7. Type Safety & Static Analysis
 
-Type systems are free bug detectors. Use them to their fullest.
+### 7.1 Type Annotations
 
-### 7.1 Type Annotations Are Mandatory
-
-All function signatures, return types, and non-trivial variables must have
-explicit type annotations. Never rely on implicit `any` or untyped interfaces.
+Add explicit type annotations to all function signatures, return types, and non-trivial variables.
 
 | Language   | Rule                                                                                |
 | ---------- | ----------------------------------------------------------------------------------- |
-| TypeScript | `strict: true` in tsconfig. No `any` without `// @ts-expect-error` + justification. |
+| TypeScript | `strict: true` in tsconfig. Avoid implicit `any`; explicit `any` requires a line comment with justification. |
 | Python     | Type hints on all function params and returns (`def fetch(url: str) -> Response:`). |
 | Go         | Already enforced by compiler — ensure exported types have doc comments.             |
 | C# / Java  | Use nullability annotations (`?`, `@Nullable`). Avoid raw `Object` or `dynamic`.    |
@@ -186,8 +178,7 @@ explicit type annotations. Never rely on implicit `any` or untyped interfaces.
 
 ### 7.2 Static Analysis Gate
 
-After every code change, run the project's static analysis toolchain before
-claiming completion. This is part of the verification gate (Section 3).
+After every code change, run the project's static analysis toolchain as part of the verification gate (Section 3).
 
 | Toolchain      | Command                               | Must Pass                    |
 | -------------- | ------------------------------------- | ---------------------------- |
@@ -198,14 +189,14 @@ claiming completion. This is part of the verification gate (Section 3).
 | Rust           | `cargo clippy -- -D warnings`         | Zero warnings                |
 | C#             | `dotnet build /warnaserror`           | Zero warnings                |
 
-If no static analysis tool is configured in the project, **flag it** to the
-user as a recommendation — but do not add tooling without approval.
+If no static analysis tool is configured in the project, recommend one to the
+user — but do not add tooling without approval.
 
 ### 7.3 Escape Hatches
 
-Sometimes you must bypass the type system. Rules for doing so safely:
+When bypassing the type system is unavoidable:
 
-- **Always add a comment** explaining WHY the escape is necessary.
+- **Add a comment** explaining why the escape is needed.
 - **Scope it minimally** — cast at the narrowest point, not the broadest.
 - **Prefer assertion functions** over raw casts (`assertIsString(x)` > `x as string`).
 - TypeScript: `as unknown as T` double-cast requires a linked issue or TODO.
@@ -229,5 +220,3 @@ When multiple skills are injected simultaneously (e.g., `dev` + `dev-backend` + 
 **Cost awareness for sub-agents:** Each sub-agent receives its own copy of injected skills. Minimize skills injected per sub-agent — give only what's needed for that specific sub-task.
 
 ---
-
-Write code you'd be proud to debug six months from now. Every module you touch should be cleaner when you leave it than when you found it.

@@ -39,7 +39,7 @@ Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack fil
 | `go.mod`                            | Go                |
 | `Cargo.toml`                        | Rust              |
 
-If config files exist → detect silently. No questions needed.
+If config files exist → detect silently and proceed.
 
 ### Architecture Clarification (new or ambiguous projects)
 
@@ -55,9 +55,9 @@ When the request has **unspecified technology or unclear scope**, clarify before
 | Realtime     | Not needed (default) · WebSocket · SSE · Polling                                    |
 | Architecture | Monolith (default) · Modular monolith · Microservices                               |
 
-2. **Recommend one with reasoning**: cite project context. "3명 프로젝트라 모노리스 + PostgreSQL + JWT 조합을 추천합니다."
+2. **Recommend one with reasoning**: cite project context. e.g., "Small team → monolith + PostgreSQL + JWT is the simplest starting point."
 3. **Over-engineering guard**: A CRUD API *probably* doesn't need GraphQL + microservices + event sourcing. Simple → complex, not the reverse.
-4. **One round limit**: 2-3 options → recommend → confirm → proceed. Don't interview.
+4. **One round limit**: 2-3 options → recommend → confirm → proceed.
 
 If the user already specifies clear tech (e.g. "FastAPI로 REST API 만들어줘"), **skip this entirely**.
 
@@ -113,7 +113,7 @@ Routes → Controllers → Services → Repositories → Database
 - Routes: URL patterns + middleware only. No logic.
 - Controllers: parse input, call services, format output. No business rules.
 - Services: receive/return plain data (not `req`/`res`). All logic here.
-- Repositories: abstract DB access. Services never write raw SQL.
+- Repositories: abstract DB access. Services access data through repositories only.
 
 ---
 
@@ -273,11 +273,11 @@ user-service:profile:u_12345:v2
 | **Write-behind** | App writes cache → async DB write — high throughput, risk of loss |
 | **Read-through** | Cache library handles DB fetch on miss — simpler app code |
 
-**Anti-patterns:**
-- ❌ Caching error responses (propagates failures)
-- ❌ Caching without TTL (stale data forever)
-- ❌ Cache stampede on expiry (use jitter or locking)
-- ❌ Caching PII without encryption and access controls
+**Cache safety rules:**
+- Set a TTL on every cache entry — prevents stale data
+- Add jitter or locking on expiry — prevents cache stampede
+- Encrypt cached PII with access controls
+- Exclude error responses from cache — prevents failure propagation
 
 See `references/core/caching.md` for Redis patterns, CDN configuration, and connection pooling.
 

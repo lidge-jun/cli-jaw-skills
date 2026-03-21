@@ -31,7 +31,7 @@ Use this skill together with the domain skill, not instead of it:
 
 ## Threat Model First
 
-Do not start implementation until these three questions are answered:
+Answer these three questions before implementation:
 1. What are we protecting?
    - Accounts, sessions, payment state, internal admin actions, uploaded files, secrets, PII, audit logs.
 2. From whom?
@@ -47,7 +47,7 @@ Security-sensitive changes must name the trust boundary before coding:
 - CI runner ↔ production artifact
 
 If the change touches auth, payment, file upload, logging, or PII, write the must-pass checks before coding.
-This skill owns the security policy.
+This skill owns security policy.
 Domain skills own architecture and implementation details.
 
 ## Modular References
@@ -60,16 +60,15 @@ Domain skills own architecture and implementation details.
 | `references/asvs-checklist.md` | Before deploy or release | ASVS 5.0 Level 1 and Level 2 pre-deploy checklist for V1-V9 |
 | `references/agentic-ai-security.md` | When building tool-using agents or prompt-driven flows | OWASP ASI01-ASI10 mapped to agent rules and safe operating patterns |
 
-Read only the references that match the task.
-Do not load the full OWASP reference for a small CSS change.
-Do load it for auth, data access, secrets, file uploads, webhooks, or incident response.
+Read only the references relevant to the current task.
+A small CSS change needs no OWASP reference.
+Auth, data access, secrets, file uploads, webhooks, or incident response changes do.
 
 ## 1. Input Validation
 
-Input validation is non-negotiable.
+Input validation is the first line of defense.
 Validate at the first trusted boundary, reject unknown fields, enforce limits, and escape or sanitize on output for the target context.
-Client-side validation improves UX only.
-It is never a security boundary.
+Client-side validation improves UX only — it is never a security boundary.
 
 **Required rules**
 - Validate shape, type, format, enum membership, length, and numeric range.
@@ -104,16 +103,16 @@ For injection cases, rich text, serialization pitfalls, and output encoding edge
 ## 2. Authentication Checklist
 
 Use this checklist for login, session, token, password reset, magic link, OAuth, and admin access:
-- [ ] Passwords hashed with `argon2id` or `bcrypt`; never MD5, SHA1, or raw SHA256.
+- [ ] Passwords hashed with `argon2id` or `bcrypt`; use MD5, SHA1, or raw SHA256 only for non-security hashing.
 - [ ] Access tokens expire in 15-60 minutes.
 - [ ] Refresh tokens rotate on use and support family invalidation after reuse detection.
-- [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; never `localStorage` for session tokens.
-- [ ] OAuth uses Authorization Code + PKCE; never implicit flow.
+- [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; keep session tokens out of `localStorage`.
+- [ ] OAuth uses Authorization Code + PKCE; avoid implicit flow (deprecated, token-in-URL exposure).
 - [ ] Sensitive actions such as email change, MFA reset, payout change, and password change require step-up auth.
 - [ ] Failed logins are rate-limited and delayed progressively.
 - [ ] Session invalidation runs after password reset, password change, and privilege change.
 - [ ] Password reset tokens are one-time, short-lived, and stored hashed server-side.
-- [ ] Auth errors are generic and do not reveal whether the email exists.
+- [ ] Auth errors are generic — avoid revealing whether a specific email exists.
 
 See `references/owasp-top10.md` A07 for implementation patterns.
 See `references/asvs-checklist.md` V2 and V3 before deploy.
@@ -130,7 +129,7 @@ Security failures happen when a route checks only the first.
 - Perform ownership checks on every resource read and write.
 - Scope queries by tenant and actor, not only by route.
 - Re-check authorization on bulk actions, background jobs, exports, and webhooks.
-- Do not expose internal flags, role names, or hidden fields in response serializers.
+- Keep internal flags, role names, and hidden fields out of response serializers.
 
 See `references/owasp-top10.md` A01 for code pairs.
 See `dev-backend/SKILL.md` §4 for middleware execution order.
@@ -192,8 +191,8 @@ app.use(helmet({
 **Frontend touchpoints that must stay aligned**
 - CSP compliance: no inline scripts, no unsafe event handlers, no surprise third-party script injection.
 - CORS: explicit origin allowlist and correct credential mode for cookie-based auth.
-- XSS: avoid `dangerouslySetInnerHTML` unless sanitized with a maintained sanitizer and defended by CSP.
-- Token storage: prefer cookies over browser storage for session tokens.
+- Avoid `dangerouslySetInnerHTML` unless sanitized with a maintained sanitizer and defended by CSP.
+- Prefer cookies over browser storage for session tokens.
 
 See `references/owasp-top10.md` A02 and A05.
 See `dev-frontend/SKILL.md` §§5-7 for performance and accessibility guardrails that still apply after security changes.
@@ -242,7 +241,7 @@ For review gating, combine this with `dev-code-reviewer/SKILL.md` §§1-2.
 
 ## 8. Pre-Flight Security Checklist
 
-Do not claim a security-sensitive change is done until every applicable item passes.
+A security-sensitive change is complete only when every applicable item passes.
 
 - [ ] Threat model names assets, attacker, trust boundary, and blast radius.
 - [ ] All user input is validated at the first trusted boundary with unknown fields rejected.
@@ -266,14 +265,13 @@ Do not claim a security-sensitive change is done until every applicable item pas
 
 **File Uploads**
 - [ ] Enforce file type, file size, storage path isolation, malware scanning policy, and download authorization.
-- [ ] Never trust the client-provided filename or MIME type alone.
+- [ ] Validate server-side — the client-provided filename and MIME type are untrusted input.
 
 **Payments**
 - [ ] Idempotency, webhook signature verification, reconciliation, and failure-state handling are tested.
-- [ ] Payment provider secrets never enter logs, analytics, or client bundles.
+- [ ] Payment provider secrets stay out of logs, analytics, and client bundles.
 
-If any item remains unknown, do not downgrade it to a suggestion.
-Stop, investigate, and resolve the gap.
+If any item remains unknown, stop, investigate, and resolve the gap before proceeding.
 
 ## 9. Security Ownership Matrix
 

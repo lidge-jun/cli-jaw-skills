@@ -4,12 +4,8 @@ description: "Testing guide for orchestrated sub-agents. Covers strategy selecti
 license: Complete terms in LICENSE.txt
 ---
 # Testing & QA
-This skill covers **test strategy**, **backend & API testing**, **contract testing**, **Playwright browser testing**, **CI pipeline integration**, **TDD enforcement**, **security testing**, and **coverage / quality gates**.
-**Balance target**: ~40% Frontend/E2E (Playwright), ~40% Backend/API, ~20% Cross-cutting (CI, Security, TDD, Coverage).
-**Ownership boundary**:
-- `dev-testing` owns the **test harness**: fixtures, factories, mock policy, API runners, containerized integration tests, Playwright execution, CI jobs, coverage gates, and contract verification.
-- **→ Delegated**: root-cause analysis, failure narrowing, bisecting, instrumentation strategy, and debugging playbooks are owned by `dev-debugging`.
-- This skill answers: **what test to write, how to run it, and what gate must pass before completion**.
+Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage).
+**Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
 ---
 ## 1. Test Strategy
 ### 1.1 Models
@@ -18,13 +14,7 @@ This skill covers **test strategy**, **backend & API testing**, **contract testi
 | Test Pyramid | monoliths, libraries | speed, isolation |
 | **Testing Trophy** | modern web apps, REST backends | confidence-to-cost |
 | Test Honeycomb | microservices, async systems | boundary verification |
-```text
-Architecture → Strategy Selector
-Monolith / library            → Pyramid
-Modern web app / REST API     → Trophy
-Microservices / event-driven  → Honeycomb
-Unsure / full-stack product   → Trophy
-```
+
 ### 1.2 Recommended Trophy Distribution
 | Layer | Default Share | Typical Tools |
 |-------|---------------|---------------|
@@ -164,52 +154,14 @@ Contract tests protect the **frontend↔backend boundary**. They sit between API
 | schema-first contract | OpenAPI-led backends | OpenAPI validators, Schemathesis |
 | type-level contract | TS monorepos | shared types / codegen |
 | full-stack smoke | final user confidence | Playwright |
-### 3.3 Consumer Contract — TypeScript (Full Verification Loop)
-```typescript
-import { PactV3, MatchersV3 } from '@pact-foundation/pact';
-import { resolve } from 'path';
+### 3.3 Consumer Contract — TypeScript (PactV3)
+PactV3 workflow:
+1. Define interaction: provider state + request + expected response (use `MatchersV3` for flexible matching)
+2. Execute test against Pact mock server
+3. Assert consumer expectations
+4. Pact file auto-writes to `pacts/` → publish to broker → provider verifies
 
-const provider = new PactV3({
-  consumer: 'web-frontend',
-  provider: 'api-backend',
-  dir: resolve(__dirname, '..', 'pacts'),
-});
-
-describe('User Profile Contract', () => {
-  it('accepts the user profile contract', async () => {
-    // 1. Define the expected interaction
-    provider
-      .given('user profile exists')
-      .uponReceiving('a request for user profile')
-      .withRequest({ method: 'GET', path: '/api/me' })
-      .willRespondWith({
-        status: 200,
-        body: {
-          success: true,
-          data: {
-            id: MatchersV3.string('u_1'),
-            email: MatchersV3.email('alice@example.com'),
-          },
-          meta: MatchersV3.like({ requestId: 'req_123' }),
-        },
-      });
-
-    // 2. Execute the test against the Pact mock server
-    await provider.executeTest(async (mockServer) => {
-      const response = await fetch(`${mockServer.url}/api/me`);
-      const body = await response.json();
-
-      // 3. Assert the consumer's expectations
-      expect(response.status).toBe(200);
-      expect(body.success).toBe(true);
-      expect(body.data.id).toBeDefined();
-      expect(body.data.email).toContain('@');
-      expect(body.meta.requestId).toBeDefined();
-    });
-    // 4. Pact file is auto-written to `pacts/` dir → publish to broker → provider verifies
-  });
-});
-```
+See `references/backend-testing.md` for full PactV3 example.
 ### 3.4 Schema Verification — Python
 ```python
 import schemathesis
@@ -229,7 +181,7 @@ def test_openapi_contract(case):
 Use Playwright after API and contract tests are already trustworthy. Browser tests should validate rendered flows, accessibility-critical interactions, and real integration seams that lower layers cannot prove alone.
 **Helper Scripts Available**:
 - `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)
-**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is abslutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.
+Run scripts with `--help` first — treat as black boxes to avoid context window pollution.
 ## Decision Tree: Choosing Your Approach
 ```
 User task → Static HTML? → Read file → find selectors → write Playwright script
@@ -248,10 +200,7 @@ python scripts/with_server.py \
   -- python your_automation.py
 ```
 ## Reconnaissance-Then-Action Pattern
-1. Wait for `networkidle` → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
-
-❌ **Don't** inspect DOM before `networkidle` on dynamic apps
-✅ **Do** `page.wait_for_load_state('networkidle')` before inspection
+1. `page.wait_for_load_state('networkidle')` → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
 
 ## Best Practices
 - **Use bundled scripts as black boxes** — run `--help` first, invoke directly.
@@ -280,55 +229,16 @@ quality (lint / typecheck)
 → security scan
 → coverage aggregation + artifacts
 ```
-### 5.2 GitHub Actions Template
-```yaml
-name: test
-on:
-  push:
-  pull_request:
-concurrency:
-  group: test-${{ github.ref }}
-  cancel-in-progress: true
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npm run lint
-      - run: npx tsc --noEmit
-  backend-tests:
-    needs: quality
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: { node-version: [20, 22], shard: [1, 2] }
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: ${{ matrix.node-version }}, cache: npm }
-      - run: npm ci
-      - run: npx vitest run --coverage --shard=${{ matrix.shard }}/2
-  contract-tests:
-    needs: backend-tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm ci
-      - run: npm run test:contract
-  e2e:
-    needs: contract-tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --shard=1/1
-```
+### 5.2 Pipeline Template
+Structure CI jobs in dependency chain: `quality → backend-tests → contract-tests → e2e`
+
+Key configuration:
+- `concurrency.cancel-in-progress: true` — avoid wasted runs
+- `strategy.fail-fast: false` — for matrix builds
+- Shard large suites: `--shard=${{ matrix.shard }}/N`
+- Install Playwright deps: `npx playwright install --with-deps chromium`
+
+See `references/ci-pipeline.md` for full GitHub Actions and GitLab CI templates.
 ### 5.3 Matrix & Parallelization
 | Dimension | When to Use |
 |-----------|-------------|

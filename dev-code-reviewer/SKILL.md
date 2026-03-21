@@ -356,5 +356,3 @@ When external AI review tools are available, coordinate — don't duplicate:
 **Coordination rule:** If an external AI tool already reviewed the PR, **read its findings first**, then focus manual review on what the tool explicitly cannot do: architectural fit, business intent alignment, and cross-system impact.
 
 ---
-
-The best code review catches the bug before the user does. Be thorough, be honest, be kind.
