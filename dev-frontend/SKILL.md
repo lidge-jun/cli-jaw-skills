@@ -112,7 +112,153 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 
 ---
 
-## 7. Pre-Flight Checklist
+## 7. Custom Hook Patterns
+
+Extract reusable logic into custom hooks:
+
+### useDebounce — Delay value updates
+
+```typescript
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debounced
+}
+
+// Usage: const debouncedQuery = useDebounce(searchQuery, 300)
+```
+
+### useToggle — Boolean state with flip
+
+```typescript
+function useToggle(initial = false): [boolean, () => void] {
+  const [value, setValue] = useState(initial)
+  const toggle = useCallback(() => setValue(v => !v), [])
+  return [value, toggle]
+}
+```
+
+### Hook Design Rules
+- Name with `use` prefix — React enforces this
+- Return `[value, actions]` tuple or `{ data, loading, error }` object
+- Handle cleanup in `useEffect` return — prevent memory leaks
+- Keep hooks focused — one concern per hook
+
+---
+
+## 8. React Performance Optimization
+
+### Memoization Decision Tree
+
+| Situation | Tool | Example |
+|-----------|------|---------|
+| Expensive computation from props/state | `useMemo` | Sorting/filtering large arrays |
+| Callback passed to memoized child | `useCallback` | Event handlers for `React.memo` children |
+| Pure component with stable props | `React.memo` | List items, cards |
+| Frequent re-renders from context | Split contexts | Separate read-only from write contexts |
+
+Skip memoization for cheap computations or components that render fast already — premature optimization adds complexity.
+
+### Code Splitting
+
+```typescript
+const HeavyChart = lazy(() => import('./HeavyChart'))
+
+// Wrap with Suspense + meaningful fallback
+<Suspense fallback={<ChartSkeleton />}>
+  <HeavyChart data={data} />
+</Suspense>
+```
+
+Split at route boundaries and heavy components (charts, editors, 3D). Keep above-the-fold content in the main bundle.
+
+---
+
+## 9. Form Handling
+
+### Controlled Form with Validation (Zod + Schema)
+
+```typescript
+const schema = z.object({
+  name: z.string().min(1, "Required").max(200),
+  email: z.string().email("Invalid email"),
+})
+
+function CreateForm() {
+  const [data, setData] = useState({ name: '', email: '' })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = schema.safeParse(data)
+    if (!result.success) {
+      setErrors(Object.fromEntries(
+        result.error.issues.map(i => [i.path[0], i.message])
+      ))
+      return
+    }
+    setErrors({})
+    submitToApi(result.data)
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={data.name}
+        onChange={e => setData(p => ({ ...p, name: e.target.value }))} />
+      {errors.name && <span role="alert">{errors.name}</span>}
+      {/* ... */}
+    </form>
+  )
+}
+```
+
+For complex forms (multi-step, dynamic fields), use `react-hook-form` + Zod resolver.
+
+---
+
+## 10. Accessibility Quick-Wins
+
+Beyond the baseline (§6), add these interaction patterns:
+
+### Focus Management (Modal)
+
+```typescript
+function Modal({ isOpen, onClose, children }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const previousFocus = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocus.current = document.activeElement as HTMLElement
+      modalRef.current?.focus()
+    } else {
+      previousFocus.current?.focus()
+    }
+  }, [isOpen])
+
+  if (!isOpen) return null
+  return (
+    <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1}
+      onKeyDown={e => e.key === 'Escape' && onClose()}>
+      {children}
+    </div>
+  )
+}
+```
+
+### Keyboard Navigation Checklist
+- Arrow keys navigate lists and menus
+- Enter/Space activate buttons and links
+- Escape closes modals, dropdowns, popovers
+- Tab order follows visual flow
+- `aria-expanded`, `aria-haspopup`, `aria-activedescendant` on composite widgets
+
+---
+
+## 11. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Bold aesthetic direction chosen and committed
@@ -121,16 +267,20 @@ Before delivering:
 - [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
 - [ ] Loading, empty, and error states provided
 - [ ] `useEffect` animations have cleanup functions
+- [ ] Custom hooks tested independently (§7)
+- [ ] Memoization applied only where measured impact (§8)
+- [ ] Forms validate with schema and show field-level errors (§9)
+- [ ] Focus management on modals and popovers (§10)
 - [ ] Interactive components isolated as Client Components (if RSC)
 - [ ] Stack-specific rules followed (see `references/stacks/`)
 
 ---
 
-## 8. Backend Contract & Security Alignment
+## 12. Backend Contract & Security Alignment
 
 Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
 
-### 8.1 Contract Ownership
+### 12.1 Contract Ownership
 
 | Responsibility | Owner |
 |---------------|-------|
@@ -144,7 +294,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 2. If changed, update or add a contract test first (see `dev-testing` §3.5)
 3. Align frontend mocks/fixtures with backend golden examples
 
-### 8.2 Security Responsibilities
+### 12.2 Security Responsibilities
 
 | Control | Policy Owner | Implementation Owner |
 |---------|-------------|---------------------|
@@ -154,7 +304,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 | Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
 | Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
 
-### 8.3 Testing Integration
+### 12.3 Testing Integration
 
 - Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
 - Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5

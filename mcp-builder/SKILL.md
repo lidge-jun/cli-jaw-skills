@@ -67,7 +67,21 @@ For each tool:
 
 **Annotations**: Set `readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint` as appropriate.
 
+### 2.4 Define Resources and Prompts
+
+**Resources**: Read-only data the model can fetch (file contents, API responses, config values). Register with `registerResource()` or `resource()` depending on SDK version. Handlers receive a `uri` argument.
+
+**Prompts**: Reusable parameterised prompt templates the client can surface. Register with `registerPrompt()` or equivalent. Useful for complex multi-step workflows the model can invoke by name.
+
+The SDK API for registration methods (`tool()` vs `registerTool()`, etc.) has changed across versions. Verify against the current SDK README or Context7 before using.
+
 ## Phase 3: Review and Test
+
+**Best practices**:
+- **Schema first**: define input schemas for every tool; document parameters and return shape
+- **Idempotency**: prefer idempotent tools so retries are safe
+- **Rate and cost**: for tools that call external APIs, document rate limits and cost in the tool description
+- **Versioning**: pin SDK version in package.json; check release notes when upgrading
 
 **Code quality**: no duplicated code, consistent error handling, full type coverage, clear tool descriptions.
 
@@ -104,3 +118,11 @@ Each question should be: independent, read-only, complex (multiple tool calls), 
   </qa_pair>
 </evaluation>
 ```
+
+## Official SDKs
+
+| Language | Package | Notes |
+|----------|---------|-------|
+| TypeScript | `@modelcontextprotocol/sdk` (npm) | Use Context7 for current patterns |
+| Go | `modelcontextprotocol/go-sdk` (GitHub) | Official Go SDK |
+| C# | Official C# SDK for .NET | .NET ecosystem |

@@ -87,7 +87,7 @@ Flag these during review:
 | Issue | Threshold | Severity |
 |-------|-----------|----------|
 | Long function | >50 lines | Medium |
-| Large file | >500 lines | Medium |
+| Large file | >500 lines (target 200-400) | Medium |
 | God class | >20 methods | High |
 | Too many parameters | >5 | Medium |
 | Deep nesting | >4 levels | Medium |
@@ -98,6 +98,15 @@ Flag these during review:
 | Debug statements | console.log, debugger left in | Low |
 | TODO/FIXME | unresolved in production code | Low |
 | TypeScript `any` | bypassing type safety | Medium |
+
+### File Size Guidance
+
+| Range | Interpretation |
+|-------|---------------|
+| 200-400 lines | Healthy — easy to navigate and review |
+| 400-500 lines | Acceptable — consider splitting if complexity is high |
+| 500-800 lines | Review trigger — actively plan extraction |
+| >800 lines | Split required — too large for effective review or AI context |
 
 ### Review Verdict
 
@@ -130,6 +139,8 @@ Flag these during review:
 | Stringly typed | `status === 'actve'` (typo = silent bug) | Define enum or union type |
 | Magic numbers | `if (retries > 3)` | Named constant: `MAX_RETRIES = 3` |
 | Primitive obsession | Passing 5 related strings around | Create a data object/type |
+| Direct mutation | `user.name = 'x'`, `arr.push(y)` | Immutable: `{...obj, name: 'x'}`, `[...arr, y]` |
+| Missing boundary validation | Business logic handles raw user input | Schema validation (Zod, Pydantic) at API entry point |
 
 ### Security
 

@@ -115,6 +115,32 @@ Routes → Controllers → Services → Repositories → Database
 - Services: receive/return plain data (not `req`/`res`). All logic here.
 - Repositories: abstract DB access. Services access data through repositories only.
 
+### Repository Pattern (Interface Abstraction)
+
+Define repository interfaces so services depend on abstractions, not implementations:
+
+```typescript
+interface UserRepository {
+  findAll(filters?: UserFilters): Promise<User[]>
+  findById(id: string): Promise<User | null>
+  create(data: CreateUserDto): Promise<User>
+  update(id: string, data: UpdateUserDto): Promise<User>
+  delete(id: string): Promise<void>
+}
+
+// Concrete implementation — swap without touching services
+class PostgresUserRepository implements UserRepository {
+  async findById(id: string): Promise<User | null> {
+    const { data, error } = await db.from('users').select('*').eq('id', id).single()
+    if (error) throw new DatabaseError(error.message)
+    return data
+  }
+  // ...
+}
+```
+
+Benefits: testable (mock the interface), swappable (Postgres → Supabase → in-memory), single responsibility.
+
 ---
 
 ## 3. Error Handling (Always Follow)
@@ -321,7 +347,24 @@ See `references/core/observability.md` for auto-instrumentation setup, custom sp
 
 ---
 
-## 8. Pre-Flight Checklist
+## 8. Skeleton Project Evaluation
+
+When starting from a template or boilerplate, verify before building on top:
+
+| Check | What to Verify |
+|-------|---------------|
+| Dependencies | Up-to-date? CVEs? Unnecessary packages? |
+| Architecture fit | Does the template's structure match your actual needs? |
+| Auth/security | Is the auth pattern appropriate for your use case? |
+| Database | Is the ORM/query builder suitable for your data model? |
+| Dead code | Remove unused example routes, models, and middleware |
+| Config management | Environment-based config, no hardcoded values |
+
+Treat templates as starting points, not gospel. Strip to essentials, then add what you need.
+
+---
+
+## 9. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Consistent response envelope on every endpoint

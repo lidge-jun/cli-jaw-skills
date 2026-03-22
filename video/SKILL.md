@@ -7,7 +7,7 @@ description: "Remotion video create, render, preview. Triggers: video, Remotion,
 
 JSON-driven timeline rendering with Remotion. Create, render, preview, and review videos.
 Triggers: "video", "Remotion", "animation", "mp4", "render video", "slides to video".
-Covers: JSON-driven timeline, theme system, resolution presets, TTS narration, render pipeline.
+Covers: JSON-driven timeline, theme system, resolution presets, TTS narration, render pipeline, FFmpeg processing, final polish.
 
 ---
 
@@ -59,7 +59,7 @@ node skills_ref/video/scripts/pipeline.mjs \
 
 ## Timeline Authoring
 
-See [timeline-schema.md](../devlog/_plan/260308_remotion_video_pipeline/video/timeline-schema.md) for full TypeScript interface.
+Refer to the project's timeline schema TypeScript interface for the full type definition.
 
 ### Minimal Example
 
@@ -241,6 +241,117 @@ Full component details → `reference/components.md`
 | `Square-1080p`    | 1080  | 1080   | 1:1    | Instagram/LinkedIn  |
 
 Default: `Landscape-1080p`. Agent picks based on user keywords (reels/shorts → Portrait).
+
+---
+
+## FFmpeg Patterns
+
+FFmpeg handles deterministic cuts, batch processing, and preprocessing outside of Remotion.
+
+### Extract segment by timestamp
+
+```bash
+ffmpeg -i raw.mp4 -ss 00:12:30 -to 00:15:45 -c copy segment_01.mp4
+```
+
+### Batch cut from edit decision list
+
+```bash
+#!/bin/bash
+# cuts.txt format: start,end,label
+while IFS=, read -r start end label; do
+  ffmpeg -i raw.mp4 -ss "$start" -to "$end" -c copy "segments/${label}.mp4"
+done < cuts.txt
+```
+
+### Concatenate segments
+
+```bash
+for f in segments/*.mp4; do echo "file '$f'"; done > concat.txt
+ffmpeg -f concat -safe 0 -i concat.txt -c copy assembled.mp4
+```
+
+### Create proxy for faster editing
+
+```bash
+ffmpeg -i raw.mp4 -vf "scale=960:-2" -c:v libx264 -preset ultrafast -crf 28 proxy.mp4
+```
+
+### Extract audio for transcription
+
+```bash
+ffmpeg -i raw.mp4 -vn -acodec pcm_s16le -ar 16000 audio.wav
+```
+
+### Normalize audio levels
+
+```bash
+ffmpeg -i segment.mp4 -af loudnorm=I=-16:TP=-1.5:LRA=11 -c:v copy normalized.mp4
+```
+
+### Scene detection
+
+```bash
+# Detect scene changes (threshold 0.3 = moderate sensitivity)
+ffmpeg -i input.mp4 -vf "select='gt(scene,0.3)',showinfo" -vsync vfr -f null - 2>&1 | grep showinfo
+```
+
+### Silence detection (auto-cut dead air)
+
+```bash
+ffmpeg -i input.mp4 -af silencedetect=noise=-30dB:d=2 -f null - 2>&1 | grep silence
+```
+
+### Social media reframing
+
+```bash
+# 16:9 → 9:16 (center crop for TikTok/Reels)
+ffmpeg -i input.mp4 -vf "crop=ih*9/16:ih,scale=1080:1920" vertical.mp4
+
+# 16:9 → 1:1 (center crop for Instagram)
+ffmpeg -i input.mp4 -vf "crop=ih:ih,scale=1080:1080" square.mp4
+```
+
+---
+
+## ElevenLabs Voice (Supplementary)
+
+For professional voiceover outside the Remotion TTS pipeline, ElevenLabs is available via direct API:
+
+```python
+import os, requests
+
+resp = requests.post(
+    f"https://api.elevenlabs.io/v1/text-to-speech/<voice_id>",
+    headers={
+        "xi-api-key": os.environ["ELEVENLABS_API_KEY"],
+        "Content-Type": "application/json"
+    },
+    json={
+        "text": "Your narration text here",
+        "model_id": "eleven_turbo_v2_5",
+        "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+    }
+)
+with open("voiceover.mp3", "wb") as f:
+    f.write(resp.content)
+```
+
+Use when: high-fidelity English narration, voice cloning, or emotion control beyond what Gemini/Supertone provide. Requires `ELEVENLABS_API_KEY`.
+
+---
+
+## Final Polish (Descript / CapCut)
+
+For tasks that code-driven rendering handles poorly — use a traditional editor as the last mile:
+
+- **Pacing**: adjust cuts that feel too fast or slow
+- **Captions**: auto-generated, then manually cleaned
+- **Color grading**: basic correction and mood
+- **Final audio mix**: balance voice, music, and SFX levels
+- **Export**: platform-specific formats and quality settings
+
+AI clears repetitive work. Final creative taste lives in this layer.
 
 ---
 

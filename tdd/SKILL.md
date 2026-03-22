@@ -149,6 +149,67 @@ When adding mocks or test utilities, read @testing-anti-patterns.md to avoid:
 - Adding test-only methods to production classes
 - Mocking without understanding dependencies
 
+## Eval-Driven TDD for AI Code
+
+When AI generates implementation code, the test suite doubles as an **evaluation harness**.
+
+### pass@k Metric
+
+Measures probability that at least one of *k* generated samples passes all tests.
+
+| Metric | Meaning |
+|--------|---------|
+| pass@1 | First attempt passes all tests |
+| pass@5 | At least one of 5 attempts passes |
+| pass@10 | At least one of 10 attempts passes |
+
+Workflow:
+1. Write the test suite (RED phase) — this is your eval spec.
+2. Generate *k* candidate implementations (varying temperature / prompt).
+3. Run each candidate against the full suite. Record pass/fail per candidate.
+4. Select the passing candidate, then REFACTOR as usual.
+
+### Eval Harness Design
+
+- Tests should be **deterministic** and **fast** so they can evaluate many candidates.
+- Cover functional correctness, edge cases, and performance bounds.
+- Separate **behavioral tests** (part of eval) from **integration tests** (not part of eval).
+- Keep eval-critical tests tagged or in a dedicated suite for automated scoring.
+
+```bash
+# Run eval suite against a candidate
+npm test -- --testPathPattern="eval/" --bail
+# Score: count passing candidates out of k
+```
+
+### When to Use Eval-Driven TDD
+
+- Generating utility functions, algorithms, data transformers
+- Comparing prompt strategies for the same spec
+- Validating AI-assisted refactors against the existing suite
+
+## Coverage Integration
+
+### Threshold Configuration
+
+```json
+{
+  "coverageThreshold": {
+    "global": { "branches": 80, "functions": 80, "lines": 80, "statements": 80 }
+  }
+}
+```
+
+### Quick Coverage Commands
+
+```bash
+npx vitest run --coverage          # Vitest
+npm test -- --coverage             # Jest
+pytest --cov --cov-report=term     # pytest
+```
+
+Review coverage by risk priority: auth, money, mutations, uploads, error paths.
+
 ## Verification Checklist
 
 Before marking work complete:
@@ -160,3 +221,4 @@ Before marking work complete:
 - [ ] All tests pass with clean output
 - [ ] Mocks used only when unavoidable
 - [ ] Edge cases and errors covered
+- [ ] Coverage meets project thresholds

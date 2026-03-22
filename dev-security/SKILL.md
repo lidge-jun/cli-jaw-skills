@@ -239,7 +239,39 @@ gitleaks detect --source=. --no-git
 For CI templates, pre-commit hooks, and tool-specific guidance, read `references/static-analysis.md`.
 For review gating, combine this with `dev-code-reviewer/SKILL.md` §§1-2.
 
-## 8. Pre-Flight Security Checklist
+## 8. Agent Configuration Security
+
+Agent-authored configuration files create a trust surface distinct from application code.
+
+### Configuration Audit Checklist
+
+| File | Check For |
+| --- | --- |
+| `CLAUDE.md` / `AGENTS.md` | Hardcoded secrets, auto-run instructions, prompt injection patterns |
+| `settings.json` | Overly permissive allow lists (`Bash(*)`), missing deny lists, dangerous bypass flags |
+| `mcp.json` | Risky MCP servers, hardcoded env secrets, `npx -y` supply chain risks |
+| `hooks/` | Command injection via `${file}` interpolation, data exfiltration, silent error suppression |
+| Agent definitions | Unrestricted tool access, prompt injection surface, missing model constraints |
+
+### MCP Server Vetting
+
+Before enabling any MCP server:
+- Verify the package source and maintainer on npm/PyPI.
+- Prefer pinned versions over `npx -y` auto-install.
+- Restrict server capabilities to the minimum required scope.
+- Use `${ENV_VAR}` references for all credentials.
+
+### Sandboxing and Blast Radius Containment
+
+Reduce the impact of any single compromise:
+- Run agent tools with least-privilege filesystem access.
+- Scope database credentials to the minimum required tables and operations.
+- Isolate CI runners from production secrets using environment separation.
+- Use network egress filtering for build and agent environments.
+- Prefer ephemeral credentials that expire after the task completes.
+- When an agent can execute shell commands, maintain an explicit deny list for destructive operations.
+
+## 9. Pre-Flight Security Checklist
 
 A security-sensitive change is complete only when every applicable item passes.
 
@@ -273,7 +305,7 @@ A security-sensitive change is complete only when every applicable item passes.
 
 If any item remains unknown, stop, investigate, and resolve the gap before proceeding.
 
-## 9. Security Ownership Matrix
+## 10. Security Ownership Matrix
 
 This matrix clarifies who defines, implements, and verifies each security control across the skill bundle:
 

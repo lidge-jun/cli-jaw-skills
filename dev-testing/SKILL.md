@@ -289,6 +289,56 @@ Default to **Hybrid**: mock external systems, keep internal collaboration real u
 - `dev-debugging` owns **root-cause methodology** once a failure is mysterious or multi-layered.
 - After `dev-debugging` isolates the cause, come back here to lock it in with tests.
 ---
+## 6.5 AI-Assisted Development Regressions
+
+When an AI writes and reviews its own code, it carries the same assumptions into both steps. Automated tests break this feedback loop.
+
+### Common AI Regression Patterns
+
+| Pattern | Description | Test Strategy |
+|---------|-------------|---------------|
+| Sandbox/production mismatch | Fix applied to one code path, not both | Assert same response shape in both modes |
+| SELECT clause omission | New field in response but missing from DB query | Assert all required fields are present and defined |
+| Error state leakage | Error set but stale data not cleared | Assert state cleanup on error transitions |
+| Missing rollback | Optimistic UI update without recovery on failure | Assert state restoration after simulated API error |
+
+### Regression Naming Convention
+
+Name tests after the bug they prevent:
+
+```typescript
+it('notification_settings is not undefined (BUG-R1 regression)', async () => {
+  const res = await GET(createTestRequest('/api/user/profile'));
+  const { json } = await parseResponse(res);
+  expect(json.data.notification_settings).toBeDefined();
+});
+```
+
+### Required Fields Contract
+
+Define the expected response contract and assert every field:
+
+```typescript
+const REQUIRED_FIELDS = ['id', 'email', 'name', 'notification_settings'];
+
+it('returns all required fields', async () => {
+  const res = await GET(createTestRequest('/api/user/profile'));
+  const { json } = await parseResponse(res);
+  for (const field of REQUIRED_FIELDS) {
+    expect(json.data).toHaveProperty(field);
+  }
+});
+```
+
+### Sandbox-Mode API Testing
+
+When the project supports a sandbox/mock mode, use it for fast DB-free regression testing:
+- Force sandbox mode in test setup: `process.env.SANDBOX_MODE = 'true'`
+- Assert sandbox responses match the same contract as production responses.
+- Treat sandbox/production parity as a high-priority regression target.
+- Write tests for bugs that were found, not for code that already works — test count grows organically with bug fixes.
+
+---
 ## 7. Security Testing
 **→ Delegated**: threat modeling and secure design policy belong to `dev-security`.
 This section covers the **automated test hooks and CI gates** that enforce those rules.

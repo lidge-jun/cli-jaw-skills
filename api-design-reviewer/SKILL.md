@@ -57,6 +57,8 @@ Filtering:    /api/v1/users?status=active&role=admin
 }
 ```
 
+Implementation tip: fetch `LIMIT + 1` rows to determine `hasMore` without a separate count query.
+
 ### Offset-Based
 ```json
 {
@@ -64,6 +66,15 @@ Filtering:    /api/v1/users?status=active&role=admin
   "pagination": { "offset": 20, "limit": 10, "total": 150, "hasMore": true }
 }
 ```
+
+### When to Use Which
+
+| Use Case | Pagination Type | Why |
+|----------|----------------|-----|
+| Admin dashboards, small datasets (<10K) | Offset | Users expect page numbers |
+| Infinite scroll, feeds, large datasets | Cursor | Consistent performance at any depth |
+| Public APIs | Cursor (default), offset (optional) | Scalable by default |
+| Search results | Offset | Users expect "page N of M" |
 
 ---
 
@@ -109,6 +120,17 @@ Filtering:    /api/v1/users?status=active&role=admin
 | Header | `Accept: application/vnd.api+json;version=1` | Clean URLs | Less visible |
 | Query parameter | `/api/users?version=1` | Simple | Not RESTful |
 
+### Versioning Lifecycle
+
+```
+1. Start with /api/v1/ — version only when breaking changes arise
+2. Maintain at most 2 active versions (current + previous)
+3. Deprecation timeline (public APIs):
+   - Announce deprecation with 6 months notice
+   - Add Sunset header: Sunset: Sat, 01 Jan 2026 00:00:00 GMT
+   - Return 410 Gone after sunset date
+```
+
 ---
 
 ## Breaking vs Non-Breaking Changes
@@ -140,6 +162,39 @@ X-RateLimit-Reset: 1640995200
 ### 429 Response
 ```json
 { "error": { "code": "RATE_LIMIT_EXCEEDED", "message": "Too many requests", "retryAfter": 3600 } }
+```
+
+### Rate Limit Tiers
+
+| Tier | Limit | Window | Use Case |
+|------|-------|--------|----------|
+| Anonymous | 30/min | Per IP | Public endpoints |
+| Authenticated | 100/min | Per user | Standard API access |
+| Premium | 1000/min | Per API key | Paid API plans |
+| Internal | 10000/min | Per service | Service-to-service |
+
+---
+
+## Filtering, Sorting, and Search
+
+```
+# Equality filters
+GET /api/v1/orders?status=active&customer_id=abc-123
+
+# Comparison operators (bracket notation)
+GET /api/v1/products?price[gte]=10&price[lte]=100
+
+# Multiple values (comma-separated)
+GET /api/v1/products?category=electronics,clothing
+
+# Sorting (prefix - for descending, comma for multi-field)
+GET /api/v1/products?sort=-created_at,price
+
+# Full-text search
+GET /api/v1/products?q=wireless+headphones
+
+# Sparse fieldsets (reduce payload)
+GET /api/v1/users?fields=id,name,email
 ```
 
 ---
