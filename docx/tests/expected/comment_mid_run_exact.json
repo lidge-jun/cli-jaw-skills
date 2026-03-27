@@ -1,0 +1,20 @@
+{
+  "sequence": [
+    "r",
+    "commentRangeStart",
+    "r",
+    "r",
+    "commentRangeEnd",
+    "r",
+    "r"
+  ],
+  "texts": [
+    "xx",
+    "",
+    "Hello",
+    "World",
+    "",
+    "",
+    "yy"
+  ]
+}

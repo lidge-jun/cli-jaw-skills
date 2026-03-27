@@ -1,0 +1,20 @@
+{
+  "fixture": "duplicate_media_chart_deck.pptx",
+  "sha256": "dfb46e23783d4205a192885ee005faa6fa83ba51f79c17bb03abe4f28ae54000",
+  "must_exist": [
+    "ppt/slides/slide1.xml",
+    "ppt/slides/_rels/slide1.xml.rels",
+    "ppt/media/image1.png",
+    "ppt/charts/chart1.xml"
+  ],
+  "xml_assertions": [
+    {
+      "path": "ppt/slides/_rels/slide1.xml.rels",
+      "contains": "relationships/chart"
+    },
+    {
+      "path": "ppt/slides/_rels/slide1.xml.rels",
+      "contains": "relationships/image"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "passed": false,
+  "errors": [
+    "Duplicate notes reference: '../notesSlides/notesSlide1.xml' used by slide1.xml and slide2.xml"
+  ],
+  "warnings": [
+    "slide1.xml: no slideLayout relationship found",
+    "slide2.xml: no slideLayout relationship found"
+  ],
+  "stats": {
+    "file_type": ".pptx",
+    "xml_files_checked": 9,
+    "relationships_checked": 5,
+    "broken_relationships": 0
+  }
+}

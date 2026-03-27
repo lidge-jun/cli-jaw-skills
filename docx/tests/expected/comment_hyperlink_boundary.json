@@ -1,0 +1,18 @@
+{
+  "sequence": [
+    "r",
+    "commentRangeStart",
+    "hyperlink",
+    "commentRangeEnd",
+    "r",
+    "r"
+  ],
+  "texts": [
+    "Prefix ",
+    "",
+    "LinkTarget",
+    "",
+    "",
+    " suffix"
+  ]
+}

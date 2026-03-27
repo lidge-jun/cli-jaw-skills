@@ -109,6 +109,84 @@ def inject_korean_lang(xml_dir: str, lang: str = "ko-KR", alt_lang: str = "en-US
 
 
 # ---------------------------------------------------------------------------
+# Word-native Korean lang injection (w:rPr → w:lang)
+# ---------------------------------------------------------------------------
+
+W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def inject_korean_lang_word(
+    xml_dir: str,
+    lang: str = "ko-KR",
+    east_asia: str = "ko-KR",
+    bidi: str = "ar-SA",
+) -> int:
+    """Add w:lang elements to w:rPr in Word XML files.
+
+    Unlike ``inject_korean_lang()`` which targets DrawingML ``a:rPr`` (PPTX),
+    this function targets WordprocessingML ``w:r`` runs and ensures each has
+    a ``<w:lang>`` child inside ``<w:rPr>``.
+
+    If a ``w:r`` has no ``w:rPr``, one is created as the first child
+    (OOXML spec requires rPr to be the first child of w:r).
+
+    Operates on all ``*.xml`` files under *xml_dir* (recursive).
+    Returns the number of files modified.
+    """
+    count = 0
+    for path in glob.glob(os.path.join(xml_dir, "**", "*.xml"), recursive=True):
+        with open(path, "r", encoding="utf-8") as fh:
+            original = fh.read()
+        try:
+            dom = defusedxml.minidom.parseString(original.encode("utf-8"))
+        except Exception:
+            continue
+
+        modified = False
+
+        # Process every w:r (run) element
+        for run in dom.getElementsByTagNameNS(W_NS, "r"):
+            # Find or create w:rPr
+            rpr = None
+            for child in run.childNodes:
+                if (
+                    getattr(child, "localName", None) == "rPr"
+                    and child.namespaceURI == W_NS
+                ):
+                    rpr = child
+                    break
+
+            if rpr is None:
+                # Create w:rPr as first child of w:r
+                rpr = dom.createElementNS(W_NS, "w:rPr")
+                if run.firstChild:
+                    run.insertBefore(rpr, run.firstChild)
+                else:
+                    run.appendChild(rpr)
+
+            # Check if w:lang already exists inside this rPr
+            has_lang = any(
+                getattr(c, "localName", None) == "lang" and c.namespaceURI == W_NS
+                for c in rpr.childNodes
+            )
+            if has_lang:
+                continue
+
+            lang_elem = dom.createElementNS(W_NS, "w:lang")
+            lang_elem.setAttribute("w:val", lang)
+            lang_elem.setAttribute("w:eastAsia", east_asia)
+            lang_elem.setAttribute("w:bidi", bidi)
+            rpr.appendChild(lang_elem)
+            modified = True
+
+        if modified:
+            with open(path, "wb") as fh:
+                fh.write(dom.toxml(encoding="UTF-8"))
+            count += 1
+    return count
+
+
+# ---------------------------------------------------------------------------
 # WCAG 2.1 contrast ratio
 # ---------------------------------------------------------------------------
 

@@ -163,43 +163,173 @@ def _add_comment_element(dom, comment_id: int, author: str, text: str) -> None:
 
 
 def _insert_comment_markers(dom, comment_id: int, anchor_text: str) -> bool:
-    """Insert commentRangeStart/End markers around matching text in document."""
+    """Insert commentRangeStart/End markers, handling text split across runs.
+
+    Strategy:
+    1. Build a text map per paragraph (concatenating all w:t in all w:r)
+    2. Find the character offset of anchor_text in the paragraph text
+    3. Map char offset back to specific w:r/w:t nodes
+    4. Insert commentRangeStart before first run, commentRangeEnd after last
+    """
     body = dom.getElementsByTagNameNS(NS["w"], "body")
     if not body:
         return False
 
-    # Find text nodes matching anchor
-    for t_elem in dom.getElementsByTagNameNS(NS["w"], "t"):
-        if t_elem.childNodes and anchor_text in t_elem.childNodes[0].nodeValue:
-            # Get the parent run and paragraph
-            run = t_elem.parentNode  # w:r
-            para = run.parentNode  # w:p
+    for para in dom.getElementsByTagNameNS(NS["w"], "p"):
+        runs_map, idx = _find_anchor_span(para, anchor_text)
+        if idx == -1:
+            continue
 
-            # Create markers
-            range_start = dom.createElementNS(NS["w"], "w:commentRangeStart")
-            range_start.setAttributeNS(NS["w"], "w:id", str(comment_id))
+        anchor_end = idx + len(anchor_text)
+        first_entry, last_entry = _find_span_entries(runs_map, idx, anchor_end)
+        if first_entry is None or last_entry is None:
+            continue
 
-            range_end = dom.createElementNS(NS["w"], "w:commentRangeEnd")
-            range_end.setAttributeNS(NS["w"], "w:id", str(comment_id))
+        if anchor_end < last_entry[4]:
+            if not _entry_supports_split(last_entry):
+                continue
+            _split_run_at(dom, last_entry[1], last_entry[2], anchor_end - last_entry[3])
 
-            # Comment reference run
-            ref_run = dom.createElementNS(NS["w"], "w:r")
-            ref = dom.createElementNS(NS["w"], "w:commentReference")
-            ref.setAttributeNS(NS["w"], "w:id", str(comment_id))
-            ref_run.appendChild(ref)
+        if idx > first_entry[3]:
+            if not _entry_supports_split(first_entry):
+                continue
+            _split_run_at(dom, first_entry[1], first_entry[2], idx - first_entry[3])
 
-            # Insert markers
-            para.insertBefore(range_start, run)
-            if run.nextSibling:
-                para.insertBefore(range_end, run.nextSibling)
-                para.insertBefore(ref_run, range_end.nextSibling)
-            else:
-                para.appendChild(range_end)
-                para.appendChild(ref_run)
+        runs_map, idx = _find_anchor_span(para, anchor_text)
+        if idx == -1:
+            continue
+        anchor_end = idx + len(anchor_text)
+        first_entry, last_entry = _find_span_entries(runs_map, idx, anchor_end)
+        if first_entry is None or last_entry is None:
+            continue
 
-            return True
+        first_container = first_entry[0]
+        last_container = last_entry[0]
+
+        # 3. Insert markers
+        range_start = dom.createElementNS(NS["w"], "w:commentRangeStart")
+        range_start.setAttributeNS(NS["w"], "w:id", str(comment_id))
+        range_end = dom.createElementNS(NS["w"], "w:commentRangeEnd")
+        range_end.setAttributeNS(NS["w"], "w:id", str(comment_id))
+        ref_run = dom.createElementNS(NS["w"], "w:r")
+        ref = dom.createElementNS(NS["w"], "w:commentReference")
+        ref.setAttributeNS(NS["w"], "w:id", str(comment_id))
+        ref_run.appendChild(ref)
+
+        para.insertBefore(range_start, first_container)
+        if last_container.nextSibling:
+            para.insertBefore(range_end, last_container.nextSibling)
+            para.insertBefore(ref_run, range_end.nextSibling)
+        else:
+            para.appendChild(range_end)
+            para.appendChild(ref_run)
+        return True
 
     return False
+
+
+def _find_anchor_span(para, anchor_text: str):
+    """Return paragraph run map and anchor start offset, or -1 if absent."""
+    runs_map = []
+    offset = 0
+    for container in para.childNodes:
+        if getattr(container, "localName", None) not in ("r", "hyperlink"):
+            continue
+        if container.namespaceURI != NS["w"]:
+            continue
+        for run, t in _iter_text_nodes(container):
+            text = t.childNodes[0].nodeValue if t.childNodes else ""
+            runs_map.append((container, run, t, offset, offset + len(text)))
+            offset += len(text)
+
+    para_text = "".join(
+        entry[2].childNodes[0].nodeValue if entry[2].childNodes else ""
+        for entry in runs_map
+    )
+    return runs_map, para_text.find(anchor_text)
+
+
+def _find_span_entries(runs_map, start_idx: int, end_idx: int):
+    """Return first/last entries intersecting [start_idx, end_idx)."""
+    first_entry = last_entry = None
+    for entry in runs_map:
+        _, _, _, start, end = entry
+        if start < end_idx and end > start_idx:
+            if first_entry is None:
+                first_entry = entry
+            last_entry = entry
+    return first_entry, last_entry
+
+
+def _iter_text_nodes(container):
+    """Yield (run, w:t) pairs in document order for a paragraph inline container."""
+    if getattr(container, "localName", None) == "r" and container.namespaceURI == NS["w"]:
+        for child in container.childNodes:
+            if getattr(child, "localName", None) == "t" and child.namespaceURI == NS["w"]:
+                yield container, child
+        return
+
+    for run in container.getElementsByTagNameNS(NS["w"], "r"):
+        for child in run.childNodes:
+            if getattr(child, "localName", None) == "t" and child.namespaceURI == NS["w"]:
+                yield run, child
+
+
+def _set_text(dom, t_elem, text: str) -> None:
+    """Replace the text content of a w:t node."""
+    while t_elem.firstChild:
+        t_elem.removeChild(t_elem.firstChild)
+    if text:
+        t_elem.appendChild(dom.createTextNode(text))
+
+
+def _text_child_index(run, target_t) -> int:
+    """Get the ordinal of a w:t child within a run."""
+    idx = 0
+    for child in run.childNodes:
+        if getattr(child, "localName", None) == "t" and child.namespaceURI == NS["w"]:
+            if child is target_t:
+                return idx
+            idx += 1
+    raise ValueError("target text node not found in run")
+
+
+def _text_child_by_index(run, index: int):
+    """Return the nth w:t child within a run."""
+    idx = 0
+    for child in run.childNodes:
+        if getattr(child, "localName", None) == "t" and child.namespaceURI == NS["w"]:
+            if idx == index:
+                return child
+            idx += 1
+    raise ValueError("text child index out of range")
+
+
+def _split_run_at(dom, run, t_elem, split_offset: int):
+    """Split a run's target text node into left/right runs at split_offset."""
+    text = t_elem.childNodes[0].nodeValue if t_elem.childNodes else ""
+    if split_offset <= 0 or split_offset >= len(text):
+        return run, None
+
+    text_index = _text_child_index(run, t_elem)
+    new_run = run.cloneNode(deep=True)
+    new_t = _text_child_by_index(new_run, text_index)
+
+    _set_text(dom, t_elem, text[:split_offset])
+    _set_text(dom, new_t, text[split_offset:])
+
+    parent = run.parentNode
+    if run.nextSibling:
+        parent.insertBefore(new_run, run.nextSibling)
+    else:
+        parent.appendChild(new_run)
+    return run, new_run
+
+
+def _entry_supports_split(entry) -> bool:
+    """Return True if the entry can be split without crossing a non-run container."""
+    container, run, _, _, _ = entry
+    return container is run
 
 
 def _ensure_rels(tmp_path: Path) -> None:

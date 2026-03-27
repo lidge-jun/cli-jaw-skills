@@ -37,7 +37,7 @@ def add_blank_slide(unpacked_dir: str, position: int | None = None) -> str:
     rels_dir = slides_dir / "_rels"
     rels_dir.mkdir(exist_ok=True)
     rels_path = rels_dir / f"slide{next_num}.xml.rels"
-    rels_path.write_text(_create_slide_rels_xml(root), encoding="utf-8")
+    rels_path.write_text(_create_slide_rels_xml(root, prefer_blank=True), encoding="utf-8")
 
     # Update presentation.xml
     _register_slide(root, next_num, position)
@@ -63,11 +63,18 @@ def duplicate_slide(unpacked_dir: str, source_num: int, position: int | None = N
     dest_path = slides_dir / f"slide{next_num}.xml"
     shutil.copy2(source_path, dest_path)
 
-    # Copy rels if exists
+    # Copy rels if exists, otherwise create from source's layout
     source_rels = slides_dir / "_rels" / f"slide{source_num}.xml.rels"
     if source_rels.exists():
         dest_rels = slides_dir / "_rels" / f"slide{next_num}.xml.rels"
         shutil.copy2(source_rels, dest_rels)
+    else:
+        rels_dir = slides_dir / "_rels"
+        rels_dir.mkdir(exist_ok=True)
+        dest_rels = rels_dir / f"slide{next_num}.xml.rels"
+        dest_rels.write_text(
+            _create_slide_rels_xml(root, prefer_blank=False), encoding="utf-8"
+        )
 
     # Update presentation.xml
     _register_slide(root, next_num, position)
@@ -106,15 +113,107 @@ def _create_blank_slide_xml() -> str:
     )
 
 
-def _create_slide_rels_xml(root: Path) -> str:
-    """Create slide rels pointing to a layout."""
-    # Find a layout to reference
+# ---------------------------------------------------------------------------
+# Layout detection helpers
+# ---------------------------------------------------------------------------
+
+_BLANK_NAMES = {"blank", "빈 화면", "空白", "leer", "vide", "vacío", "vuota"}
+P_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
+
+
+def _find_blank_layout(root: Path) -> str:
+    """Find a visually blank slide layout.
+
+    Strategy priority:
+    1. Match by p:cSld name attribute (Blank/빈 화면/空白/Leer/Vide)
+    2. Empty spTree (structurally blank regardless of name)
+    3. Any layout with valid slideMaster relationship
+    4. Fallback to slideLayout1.xml
+    """
     layouts_dir = root / "ppt" / "slideLayouts"
-    layout_target = "../slideLayouts/slideLayout1.xml"
-    if layouts_dir.is_dir():
-        layouts = sorted(layouts_dir.glob("slideLayout*.xml"))
-        if layouts:
-            layout_target = f"../slideLayouts/{layouts[0].name}"
+    if not layouts_dir.is_dir():
+        return ""
+
+    # Strategy 1: Match by name
+    for layout_path in sorted(layouts_dir.glob("slideLayout*.xml")):
+        try:
+            dom = defusedxml.minidom.parseString(layout_path.read_bytes())
+            for csld in dom.getElementsByTagNameNS(P_NS, "cSld"):
+                name = (csld.getAttribute("name") or "").strip().lower()
+                if name in _BLANK_NAMES:
+                    return f"../slideLayouts/{layout_path.name}"
+        except Exception:
+            continue
+
+    # Strategy 2: Find layout with empty shape tree
+    for layout_path in sorted(layouts_dir.glob("slideLayout*.xml")):
+        try:
+            dom = defusedxml.minidom.parseString(layout_path.read_bytes())
+            sp_trees = dom.getElementsByTagNameNS(P_NS, "spTree")
+            if sp_trees:
+                sp_tree = sp_trees[0]
+                shape_count = sum(
+                    1
+                    for c in sp_tree.childNodes
+                    if getattr(c, "localName", None)
+                    not in (None, "nvGrpSpPr", "grpSpPr")
+                )
+                if shape_count == 0:
+                    return f"../slideLayouts/{layout_path.name}"
+        except Exception:
+            continue
+
+    # Strategy 3: Any layout with valid slideMaster relationship
+    rels_dir = layouts_dir / "_rels"
+    for layout_path in sorted(layouts_dir.glob("slideLayout*.xml")):
+        rels_file = rels_dir / f"{layout_path.name}.rels"
+        if rels_file.exists():
+            try:
+                dom = defusedxml.minidom.parseString(rels_file.read_bytes())
+                for rel in dom.getElementsByTagName("Relationship"):
+                    if "slideMaster" in rel.getAttribute("Type"):
+                        return f"../slideLayouts/{layout_path.name}"
+            except Exception:
+                continue
+
+    # Strategy 4: Fallback
+    return ""
+
+
+def _find_source_layout(root: Path) -> str | None:
+    """Reuse slide1's layout relationship (for --duplicate)."""
+    slide1_rels = root / "ppt" / "slides" / "_rels" / "slide1.xml.rels"
+    if not slide1_rels.exists():
+        return None
+    try:
+        dom = defusedxml.minidom.parseString(slide1_rels.read_bytes())
+        for rel in dom.getElementsByTagName("Relationship"):
+            if "slideLayout" in rel.getAttribute("Type"):
+                return rel.getAttribute("Target")
+    except Exception:
+        pass
+    return None
+
+
+def _create_slide_rels_xml(root: Path, *, prefer_blank: bool = True) -> str:
+    """Create slide rels pointing to a compatible layout.
+
+    Args:
+        root: Unpacked PPTX root directory.
+        prefer_blank: If True, prioritize blank layouts (for --blank).
+                      If False, clone slide1's layout (for --duplicate).
+    """
+    if prefer_blank:
+        layout_target = _find_blank_layout(root)
+    else:
+        layout_target = _find_source_layout(root) or _find_blank_layout(root)
+
+    if not layout_target:
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n'
+            "</Relationships>"
+        )
 
     return (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'

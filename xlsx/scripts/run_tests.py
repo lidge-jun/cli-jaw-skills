@@ -41,6 +41,8 @@ TEST_CASES: list[tuple[str, list[str], str, str]] = [
     # Sheet overview
     ("sheet-overview", [str(FIXTURES_DIR / "multi_sheet.xlsx"), "--json"],
      "sheet_overview_multi.json", "json"),
+    ("sheet-overview", [str(FIXTURES_DIR / "wide_columns_ad.xlsx"), "--json"],
+     "sheet_overview_wide_columns_ad.json", "json"),
 
     # Text extraction
     ("text", [str(FIXTURES_DIR / "multi_sheet.xlsx")],
@@ -49,6 +51,10 @@ TEST_CASES: list[tuple[str, list[str], str, str]] = [
     # Search
     ("search", [str(FIXTURES_DIR / "multi_sheet.xlsx"), ".", "--json"],
      "search_multi_sheet.json", "json"),
+    ("formula-audit", [str(FIXTURES_DIR / "formula_uncached.xlsx"), "--json"],
+     "formula_audit_uncached.json", "json"),
+    ("search", [str(FIXTURES_DIR / "korean_identifier_stress.xlsx"), "매출", "--json"],
+     "search_korean_identifier_stress.json", "json"),
 ]
 
 

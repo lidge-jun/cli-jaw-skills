@@ -1,52 +1,23 @@
-"""Accept all tracked changes in a DOCX file via LibreOffice macro.
+"""Accept all tracked changes in a DOCX file via direct OOXML processing.
 
-Runs LibreOffice in headless mode with a Basic macro that accepts
-all insertions, deletions, and format changes, then saves the result.
+This implementation intentionally uses the OOXML fallback path because the
+LibreOffice macro module is not provisioned by this script. The output is
+verified with a post-assertion pass before success is reported.
 
 Usage:
     python accept_changes.py <input.docx> <output.docx>
 """
 
 import argparse
-import shutil
 import sys
 import tempfile
 from pathlib import Path
 
-from ooxml.soffice import run_soffice
-
-MACRO_SCRIPT = """\
-Sub AcceptAllChanges(url As String, outUrl As String)
-    Dim oDoc As Object
-    Dim oChanges As Object
-
-    oDoc = StarDesktop.loadComponentFromURL( _
-        ConvertToURL(url), "_blank", 0, _
-        Array(MakePropertyValue("Hidden", True)))
-
-    If IsNull(oDoc) Or IsEmpty(oDoc) Then
-        MsgBox "Failed to open document"
-        Exit Sub
-    End If
-
-    oChanges = oDoc.getRedlines()
-    If Not IsNull(oChanges) Then
-        oDoc.setPropertyValue("RedlineProtectionKey", Array())
-        oDoc.setPropertyValue("RecordChanges", False)
-        oDoc.getRedlines().acceptAllChanges()
-    End If
-
-    oDoc.store()
-    oDoc.close(True)
-End Sub
-
-Function MakePropertyValue(sName As String, vValue) As com.sun.star.beans.PropertyValue
-    Dim oPropertyValue As New com.sun.star.beans.PropertyValue
-    oPropertyValue.Name = sName
-    oPropertyValue.Value = vValue
-    MakePropertyValue = oPropertyValue
-End Function
-"""
+# Revision markup tags that indicate tracked changes
+REVISION_TAGS = (
+    "ins", "del", "rPrChange", "pPrChange",
+    "tblPrChange", "trPrChange", "tcPrChange", "sectPrChange",
+)
 
 
 def accept_changes(input_path: str, output_path: str) -> str:
@@ -61,36 +32,17 @@ def accept_changes(input_path: str, output_path: str) -> str:
         return f"Error: {input_path} must be a .docx file"
 
     try:
-        # Copy to output first (soffice will modify in place)
-        shutil.copy2(src, dst)
-
-        # Run macro via headless soffice
-        result = run_soffice(
-            [
-                "--headless",
-                "--invisible",
-                f"macro:///Standard.Module1.AcceptAllChanges({dst})",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-
-        if result.returncode != 0:
-            # Fallback: try python-docx approach (import change acceptance)
-            return _fallback_accept(src, dst)
-
-        return f"Accepted all tracked changes: {input_path} → {output_path}"
+        return _fallback_accept(src, dst)
 
     except Exception as e:
         return f"Error: {e}"
 
 
 def _fallback_accept(src: Path, dst: Path) -> str:
-    """Fallback: use OOXML manipulation to accept tracked changes.
+    """Fallback: process ALL word/*.xml parts, not just document.xml.
 
-    This removes revision markup elements (w:ins, w:del, w:rPrChange, etc.)
-    and keeps/removes their content appropriately.
+    Removes revision markup elements (w:ins, w:del, w:rPrChange, etc.)
+    from document.xml, headers, footers, endnotes, and footnotes.
     """
     import zipfile
 
@@ -102,29 +54,40 @@ def _fallback_accept(src: Path, dst: Path) -> str:
         with zipfile.ZipFile(src, "r") as zf:
             zf.extractall(tmp_path)
 
-        doc_xml = tmp_path / "word" / "document.xml"
-        if not doc_xml.exists():
-            return "Error: not a valid DOCX (missing word/document.xml)"
+        word_dir = tmp_path / "word"
+        if not word_dir.is_dir():
+            return "Error: not a valid DOCX (missing word/ directory)"
 
-        dom = defusedxml.minidom.parseString(doc_xml.read_bytes())
+        # Process ALL xml files in word/ (document, headers, footers, etc.)
+        for xml_path in word_dir.glob("*.xml"):
+            try:
+                dom = defusedxml.minidom.parseString(xml_path.read_bytes())
+            except Exception:
+                continue
 
-        # Accept insertions: unwrap w:ins (keep children)
-        for ins in list(dom.getElementsByTagNameNS("*", "ins")):
-            parent = ins.parentNode
-            for child in list(ins.childNodes):
-                parent.insertBefore(child, ins)
-            parent.removeChild(ins)
+            modified = False
 
-        # Accept deletions: remove w:del entirely
-        for del_elem in list(dom.getElementsByTagNameNS("*", "del")):
-            del_elem.parentNode.removeChild(del_elem)
+            # Accept insertions: unwrap w:ins (keep children)
+            for ins in list(dom.getElementsByTagNameNS("*", "ins")):
+                parent = ins.parentNode
+                for child in list(ins.childNodes):
+                    parent.insertBefore(child, ins)
+                parent.removeChild(ins)
+                modified = True
 
-        # Remove format change markers
-        for tag in ("rPrChange", "pPrChange", "tblPrChange", "trPrChange", "tcPrChange", "sectPrChange"):
-            for elem in list(dom.getElementsByTagNameNS("*", tag)):
-                elem.parentNode.removeChild(elem)
+            # Accept deletions: remove w:del entirely
+            for del_elem in list(dom.getElementsByTagNameNS("*", "del")):
+                del_elem.parentNode.removeChild(del_elem)
+                modified = True
 
-        doc_xml.write_bytes(dom.toxml(encoding="UTF-8"))
+            # Remove format change markers
+            for tag in REVISION_TAGS[2:]:
+                for elem in list(dom.getElementsByTagNameNS("*", tag)):
+                    elem.parentNode.removeChild(elem)
+                    modified = True
+
+            if modified:
+                xml_path.write_bytes(dom.toxml(encoding="UTF-8"))
 
         # Repack
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -132,7 +95,31 @@ def _fallback_accept(src: Path, dst: Path) -> str:
                 if f.is_file():
                     zf.write(f, f.relative_to(tmp_path))
 
-    return f"Accepted all tracked changes (fallback): {src} → {dst}"
+    # Post-assertion: verify output is clean
+    residue = _count_revision_tags(dst)
+    if residue > 0:
+        return f"Error: {residue} revision tag(s) still remain after accept"
+    return f"Accepted all tracked changes: {src} → {dst}"
+
+
+def _count_revision_tags(docx_path: Path) -> int:
+    """Count remaining revision tags in all word/*.xml parts. Returns 0 if clean."""
+    import zipfile
+
+    import defusedxml.minidom
+
+    count = 0
+    with zipfile.ZipFile(docx_path, "r") as zf:
+        for name in zf.namelist():
+            if not name.startswith("word/") or not name.endswith(".xml"):
+                continue
+            try:
+                dom = defusedxml.minidom.parseString(zf.read(name))
+                for tag in REVISION_TAGS:
+                    count += len(dom.getElementsByTagNameNS("*", tag))
+            except Exception:
+                continue
+    return count
 
 
 if __name__ == "__main__":

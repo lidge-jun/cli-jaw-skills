@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "errors": [],
+  "warnings": [],
+  "stats": {
+    "file_type": ".pptx",
+    "xml_files_checked": 10,
+    "relationships_checked": 6,
+    "broken_relationships": 0
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "fixture": "notes_reuse_conflict.pptx",
+  "sha256": "bf69e984abdfe9d22a57fdba100ea3e9241d796a37187dd04e8e6343bd3f3bfb",
+  "must_exist": [
+    "ppt/slides/slide1.xml",
+    "ppt/slides/slide2.xml",
+    "ppt/notesSlides/notesSlide1.xml"
+  ],
+  "xml_assertions": [
+    {
+      "path": "ppt/slides/_rels/slide1.xml.rels",
+      "contains": "relationships/notesSlide"
+    },
+    {
+      "path": "ppt/slides/_rels/slide2.xml.rels",
+      "contains": "relationships/notesSlide"
+    }
+  ]
+}
