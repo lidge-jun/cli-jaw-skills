@@ -135,12 +135,12 @@ When text is added via `officecli add`, the fork binary calls `DetectScript()` a
 ```bash
 officecli create multilang.docx
 officecli batch multilang.docx --commands '[
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"한국어 섹션","style":"Heading1"}},
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"한국 시장 분석 보고서입니다."}},
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"日本語セクション","style":"Heading1"}},
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"日本市場の分析レポートです。"}},
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"中文部分","style":"Heading1"}},
-  {"command":"add","path":"/body","type":"paragraph","props":{"text":"这是中国市场分析报告。"}}
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"한국어 섹션","style":"Heading1"}},
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"한국 시장 분석 보고서입니다."}},
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"日本語セクション","style":"Heading1"}},
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"日本市場の分析レポートです。"}},
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"中文部分","style":"Heading1"}},
+  {"command":"add","parent":"/body","type":"paragraph","props":{"text":"这是中国市场分析报告。"}}
 ]'
 ```
 

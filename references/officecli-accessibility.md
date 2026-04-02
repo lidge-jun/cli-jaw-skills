@@ -119,7 +119,7 @@ Links should describe their destination, not use generic phrases.
 officecli batch slides.pptx --commands '[
   {"command":"set","path":"/slide[1]/picture[1]","props":{"alt":"Company revenue chart for Q4 2025"}},
   {"command":"set","path":"/slide[2]/picture[1]","props":{"alt":"Team photo at annual meeting"}},
-  {"command":"set","path":"/slide[3]/picture[1]","props":{"alt":""}},
+  {"command":"set","path":"/slide[3]/picture[1]","props":{"alt":""}}
 ]'
 officecli validate slides.pptx
 ```
