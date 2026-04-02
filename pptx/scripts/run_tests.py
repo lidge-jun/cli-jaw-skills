@@ -19,6 +19,7 @@ import tempfile
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+SKILLS_REF_DIR = SCRIPT_DIR.parent.parent
 SKILL_DIR = SCRIPT_DIR.parent
 TESTS_DIR = SKILL_DIR / "tests"
 FIXTURES_DIR = TESTS_DIR / "fixtures"
@@ -99,8 +100,12 @@ def _build_and_validate_with_action(fixture_name: str, *action_args: str) -> tup
             text=True,
         )
 
+        sys.path.insert(0, str(SKILLS_REF_DIR))
         sys.path.insert(0, str(SCRIPT_DIR))
-        from ooxml.validate import validate
+        try:
+            from ooxml_core.validate import validate
+        except ImportError:
+            from ooxml.validate import validate
 
         vresult = validate(str(out_pptx))
         return vresult["passed"], vresult if vresult["passed"] else result.stdout.strip() or json.dumps(vresult)
@@ -155,8 +160,12 @@ def run_duplicate_slide_media_chart_regression() -> tuple[bool, str]:
 
 
 def run_notes_reuse_conflict_regression() -> tuple[bool, str]:
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
-    from ooxml.validate import validate
+    try:
+        from ooxml_core.validate import validate
+    except ImportError:
+        from ooxml.validate import validate
 
     result = validate(str(FIXTURES_DIR / "notes_reuse_conflict.pptx"))
     return _compare_expected(result, "notes_reuse_conflict.json", "json")

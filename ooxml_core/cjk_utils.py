@@ -4,7 +4,12 @@ CJK text utilities for OOXML processing.
 Provides:
 - Display width calculation (full-width vs half-width characters)
 - Korean language attribute injection for OOXML XML files
+  - DrawingML (a:rPr) for PPTX/XLSX
+  - WordprocessingML (w:rPr → w:lang) for DOCX
+- CJK font injection for both DrawingML and WordML namespaces
 - WCAG 2.1 color contrast checking
+- CJK text-box width estimation
+- EMU ↔ pixel conversion helpers
 """
 
 from __future__ import annotations
@@ -13,6 +18,7 @@ import glob
 import os
 import unicodedata
 from typing import Optional
+from xml.etree import ElementTree as ET
 
 import defusedxml.minidom
 
@@ -69,7 +75,7 @@ def auto_fit_columns(
 
 
 # ---------------------------------------------------------------------------
-# Korean lang injection (DOM-based, safe against comments/CDATA)
+# DrawingML Korean lang injection (a:rPr — for PPTX/XLSX)
 # ---------------------------------------------------------------------------
 
 
@@ -82,7 +88,7 @@ def inject_korean_lang(xml_dir: str, lang: str = "ko-KR", alt_lang: str = "en-US
     Operates on all ``*.xml`` files under *xml_dir* (recursive).
     Returns the number of files modified.
 
-    Intended for post-processing unpacked PPTX or DOCX packages where
+    Intended for post-processing unpacked PPTX or XLSX packages where
     PptxGenJS / docx-js did not set language attributes.
     """
     count = 0
@@ -109,7 +115,7 @@ def inject_korean_lang(xml_dir: str, lang: str = "ko-KR", alt_lang: str = "en-US
 
 
 # ---------------------------------------------------------------------------
-# Word-native Korean lang injection (w:rPr → w:lang)
+# WordprocessingML Korean lang injection (w:rPr → w:lang — for DOCX)
 # ---------------------------------------------------------------------------
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -178,6 +184,129 @@ def inject_korean_lang_word(
             lang_elem.setAttribute("w:bidi", bidi)
             rpr.appendChild(lang_elem)
             modified = True
+
+        if modified:
+            with open(path, "wb") as fh:
+                fh.write(dom.toxml(encoding="UTF-8"))
+            count += 1
+    return count
+
+
+# ---------------------------------------------------------------------------
+# CJK font injection (dual namespace: WordML + DrawingML)
+# ---------------------------------------------------------------------------
+
+_DML_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
+
+_DEFAULT_CJK_FONTS = {
+    "eastAsia": "Malgun Gothic",
+    "hAnsi": "Malgun Gothic",
+}
+
+
+def inject_cjk_fonts(
+    xml_dir: str,
+    fonts: dict[str, str] | None = None,
+    *,
+    target: str = "auto",
+) -> int:
+    """Inject CJK font declarations into OOXML XML files.
+
+    Supports two namespaces selected by *target*:
+    - ``"word"``   → ``w:rFonts`` inside ``w:rPr`` (DOCX body text)
+    - ``"drawing"`` → ``a:ea`` inside ``a:rPr`` (PPTX / XLSX charts & shapes)
+    - ``"auto"``   → detect from directory structure (``word/`` → word, ``ppt/`` or ``xl/`` → drawing)
+
+    *fonts* is a dict of attribute-name → font-name mappings. Defaults to
+    ``{"eastAsia": "Malgun Gothic", "hAnsi": "Malgun Gothic"}``.
+
+    Returns the number of files modified.
+    """
+    fonts = fonts or dict(_DEFAULT_CJK_FONTS)
+
+    if target == "auto":
+        target = _detect_font_target(xml_dir)
+
+    if target == "word":
+        return _inject_cjk_fonts_word(xml_dir, fonts)
+    else:
+        return _inject_cjk_fonts_drawing(xml_dir, fonts)
+
+
+def _detect_font_target(xml_dir: str) -> str:
+    """Detect whether xml_dir is a Word or Drawing package."""
+    if os.path.isdir(os.path.join(xml_dir, "word")):
+        return "word"
+    return "drawing"
+
+
+def _inject_cjk_fonts_word(xml_dir: str, fonts: dict[str, str]) -> int:
+    """Add w:rFonts attributes to w:rPr elements in Word XML."""
+    count = 0
+    for path in glob.glob(os.path.join(xml_dir, "**", "*.xml"), recursive=True):
+        with open(path, "r", encoding="utf-8") as fh:
+            original = fh.read()
+        try:
+            dom = defusedxml.minidom.parseString(original.encode("utf-8"))
+        except Exception:
+            continue
+
+        modified = False
+        for rpr in dom.getElementsByTagNameNS(W_NS, "rPr"):
+            # Find or create w:rFonts
+            rfonts = None
+            for child in rpr.childNodes:
+                if (
+                    getattr(child, "localName", None) == "rFonts"
+                    and child.namespaceURI == W_NS
+                ):
+                    rfonts = child
+                    break
+
+            if rfonts is None:
+                rfonts = dom.createElementNS(W_NS, "w:rFonts")
+                if rpr.firstChild:
+                    rpr.insertBefore(rfonts, rpr.firstChild)
+                else:
+                    rpr.appendChild(rfonts)
+
+            for attr, font in fonts.items():
+                w_attr = f"w:{attr}"
+                if not rfonts.getAttribute(w_attr):
+                    rfonts.setAttribute(w_attr, font)
+                    modified = True
+
+        if modified:
+            with open(path, "wb") as fh:
+                fh.write(dom.toxml(encoding="UTF-8"))
+            count += 1
+    return count
+
+
+def _inject_cjk_fonts_drawing(xml_dir: str, fonts: dict[str, str]) -> int:
+    """Add a:ea font element to a:rPr elements in DrawingML XML."""
+    ea_font = fonts.get("eastAsia", "Malgun Gothic")
+    count = 0
+    for path in glob.glob(os.path.join(xml_dir, "**", "*.xml"), recursive=True):
+        with open(path, "r", encoding="utf-8") as fh:
+            original = fh.read()
+        try:
+            dom = defusedxml.minidom.parseString(original.encode("utf-8"))
+        except Exception:
+            continue
+
+        modified = False
+        for rpr in dom.getElementsByTagName("a:rPr"):
+            # Check if a:ea already exists
+            has_ea = any(
+                getattr(c, "tagName", None) == "a:ea"
+                for c in rpr.childNodes
+            )
+            if not has_ea:
+                ea_elem = dom.createElement("a:ea")
+                ea_elem.setAttribute("typeface", ea_font)
+                rpr.appendChild(ea_elem)
+                modified = True
 
         if modified:
             with open(path, "wb") as fh:

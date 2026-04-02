@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+testpaths = ["tests", "docx/tests", "xlsx/tests", "pptx/tests"]
+markers = [
+    "slow: marks tests as slow",
+    "cjk: CJK text roundtrip tests",
+    "regression: regression tests against fixture files",
+    "officecli: requires officecli binary",
+]
+addopts = "--import-mode=importlib"

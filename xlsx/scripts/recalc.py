@@ -16,7 +16,17 @@ import sys
 import tempfile
 from pathlib import Path
 
-from ooxml.soffice import run_soffice
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILLS_REF_DIR = SCRIPT_DIR.parent.parent
+
+import sys
+sys.path.insert(0, str(SKILLS_REF_DIR))
+sys.path.insert(0, str(SCRIPT_DIR))
+
+try:
+    from ooxml_core.soffice import run_soffice
+except ImportError:
+    from ooxml.soffice import run_soffice
 
 # Common Excel formula error values
 FORMULA_ERRORS = {

@@ -43,6 +43,7 @@ import zipfile
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+SKILLS_REF_DIR = SCRIPT_DIR.parent.parent  # ooxml_core lives here
 
 # DrawingML namespace for text elements
 ANS = "http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -118,8 +119,12 @@ def _ordered_slide_files(pptx_path: str) -> list[tuple[int, str]]:
 
 def cmd_open(args: argparse.Namespace) -> int:
     """Unpack PPTX with pretty-printed XML."""
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
-    from ooxml.unpack import unpack
+    try:
+        from ooxml_core.unpack import unpack
+    except ImportError:
+        from ooxml.unpack import unpack
     msg = unpack(args.input, args.output_dir)
     print(msg)
     return 1 if msg.startswith("Error") else 0
@@ -127,8 +132,12 @@ def cmd_open(args: argparse.Namespace) -> int:
 
 def cmd_save(args: argparse.Namespace) -> int:
     """Pack directory to PPTX."""
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
-    from ooxml.pack import pack
+    try:
+        from ooxml_core.pack import pack
+    except ImportError:
+        from ooxml.pack import pack
     msg = pack(args.input_dir, args.output)
     print(msg)
     return 1 if msg.startswith("Error") else 0
@@ -136,8 +145,12 @@ def cmd_save(args: argparse.Namespace) -> int:
 
 def cmd_validate(args: argparse.Namespace) -> int:
     """Structural validation."""
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
-    from ooxml.validate import validate
+    try:
+        from ooxml_core.validate import validate
+    except ImportError:
+        from ooxml.validate import validate
     result = validate(args.input, verbose=not args.json)
     if args.json:
         print(json.dumps(result, indent=2))
@@ -157,8 +170,12 @@ def cmd_repair(args: argparse.Namespace) -> int:
 
     work = _unpack_to_tmpdir(args.input)
     try:
+        sys.path.insert(0, str(SKILLS_REF_DIR))
         sys.path.insert(0, str(SCRIPT_DIR))
-        from ooxml.repair import repair
+        try:
+            from ooxml_core.repair import repair
+        except ImportError:
+            from ooxml.repair import repair
         result = repair(work, dry_run=dry_run)
 
         if args.json:
@@ -173,7 +190,10 @@ def cmd_repair(args: argparse.Namespace) -> int:
                 print("No issues found.")
 
         if apply and result["repaired"] > 0:
-            from ooxml.pack import pack
+            try:
+                from ooxml_core.pack import pack
+            except ImportError:
+                from ooxml.pack import pack
             output = args.output or args.input
             if not args.output:
                 backup = Path(args.input).with_suffix(".pptx.bak")
@@ -183,7 +203,10 @@ def cmd_repair(args: argparse.Namespace) -> int:
             pack(work, output)
             print(f"Output: {output}")
 
-            from ooxml.validate import validate
+            try:
+                from ooxml_core.validate import validate
+            except ImportError:
+                from ooxml.validate import validate
             vresult = validate(output)
             if vresult["passed"]:
                 print("Post-repair validation: PASS")
@@ -254,8 +277,12 @@ def cmd_clean(args: argparse.Namespace) -> int:
 
 def cmd_export_pdf(args: argparse.Namespace) -> int:
     """Convert PPTX to PDF via LibreOffice."""
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
-    from ooxml.soffice import run_soffice
+    try:
+        from ooxml_core.soffice import run_soffice
+    except ImportError:
+        from ooxml.soffice import run_soffice
 
     src = Path(args.input).resolve()
     dst = Path(args.output).resolve()

@@ -3,6 +3,9 @@
 Operates on unpacked directories. Repairs are non-destructive — they only
 fix known-safe issues (whitespace attrs, ID range, orphan rels, Content_Types).
 
+Format-aware: Word-specific repairs (whitespace normalization, durable ID fixes)
+only run on DOCX packages, detected via [Content_Types].xml analysis.
+
 Usage:
     python repair.py <unpacked_dir> [--dry-run]
 
@@ -21,8 +24,38 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 
+def _detect_format(unpacked: Path) -> str:
+    """Detect OOXML format from [Content_Types].xml or directory structure.
+
+    Returns one of: "docx", "pptx", "xlsx", or "unknown".
+    """
+    ct_path = unpacked / "[Content_Types].xml"
+    if ct_path.exists():
+        try:
+            content = ct_path.read_text(encoding="utf-8")
+            if "wordprocessingml" in content or "word/" in content.lower():
+                return "docx"
+            if "presentationml" in content or "ppt/" in content.lower():
+                return "pptx"
+            if "spreadsheetml" in content or "xl/" in content.lower():
+                return "xlsx"
+        except Exception:
+            pass
+
+    # Fallback to directory structure
+    if (unpacked / "word").is_dir():
+        return "docx"
+    if (unpacked / "ppt").is_dir():
+        return "pptx"
+    if (unpacked / "xl").is_dir():
+        return "xlsx"
+    return "unknown"
+
+
 def repair(path: str, *, dry_run: bool = False) -> dict:
     """Run all repair functions on an unpacked OOXML directory.
+
+    Format-aware: Word-specific repairs only run on DOCX packages.
 
     Returns {"repaired": int, "details": [...]}
     """
@@ -30,10 +63,15 @@ def repair(path: str, *, dry_run: bool = False) -> dict:
     if not p.is_dir():
         return {"repaired": 0, "details": [f"Not a directory: {path}"]}
 
+    fmt = _detect_format(p)
     details: list[str] = []
 
-    details.extend(repair_whitespace(p, dry_run=dry_run))
-    details.extend(repair_durable_ids(p, dry_run=dry_run))
+    # Word-specific repairs — only for DOCX
+    if fmt == "docx":
+        details.extend(repair_whitespace(p, dry_run=dry_run))
+        details.extend(repair_durable_ids(p, dry_run=dry_run))
+
+    # Universal repairs — all formats
     details.extend(repair_orphan_rels(p, dry_run=dry_run))
     details.extend(repair_content_types(p, dry_run=dry_run))
 
