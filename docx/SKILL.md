@@ -234,7 +234,9 @@ officecli set template.docx /body/p[5]/r[1] --prop text="2026-03-27"
 
 ---
 
-## Accessibility
+## Accessibility (WCAG 2.1 AA)
+
+> 접근성 기준 → see `references/officecli-accessibility.md`
 
 officecli covers the machine-checkable parts of DOCX accessibility well enough for first-pass QA.
 
@@ -244,14 +246,64 @@ officecli query report.docx "image:no-alt"
 officecli query report.docx "p[style=Heading1]"
 ```
 
+### Heading Structure
+
+Headings must follow a logical hierarchy — never skip levels (H1 → H3 is invalid).
+
+```bash
+# Check heading hierarchy
+officecli view report.docx outline
+officecli view report.docx outline | grep -E 'H[1-6]'
+
+# Fix heading levels
+officecli set report.docx '/body/p[5]' --prop style=Heading2
+```
+
+### Alt-Text for Images
+
+Every image, chart, and non-text element needs alternative text for screen readers.
+
+```bash
+# Find images without alt-text
+officecli query report.docx 'picture' --json
+officecli query report.docx "image:no-alt"
+
+# Add alt-text to a picture
+officecli add report.docx /body --type picture \
+  --prop path=chart.png --prop width=4in --prop height=3in \
+  --prop alt="Bar chart showing Q4 revenue by region"
+```
+
+### Table Headers
+
+Tables must have a designated header row for screen readers.
+
+```bash
+officecli get report.docx '/body/tbl[1]' --depth 2 --json
+```
+
+- Every table must have a header row
+- Avoid merged cells (they confuse screen readers)
+- Don't use tables for layout — use them for data only
+
+### Reading Order
+
+```bash
+# Check for generic link text
+officecli view report.docx text | grep -iE 'click here|read more|learn more|here'
+```
+
 ### Accessibility checklist
 
 - [ ] All images have alt text
-- [ ] Heading hierarchy is sequential
-- [ ] Links use descriptive text
+- [ ] Heading hierarchy is sequential (no skips)
+- [ ] Lists use proper list styles (not manual bullets)
+- [ ] Links use descriptive text (not "click here")
 - [ ] Document metadata includes title/author when required
-- [ ] Body text remains readable at target size
+- [ ] Body text remains readable at target size (≥ 12pt)
 - [ ] Tables keep header semantics where needed
+- [ ] No empty paragraphs used for spacing
+- [ ] Language metadata is set correctly
 
 ---
 
@@ -277,6 +329,8 @@ python scripts/soffice.py report.docx --to pdf
 
 ## CJK Handling (Korean / Japanese / Chinese)
 
+> CJK 상세 규칙 → see `references/officecli-cjk.md`
+
 ### Primary: fork binary auto-handles CJK
 
 The cli-jaw fork includes `CjkHelper.cs`, which auto-detects CJK text and applies appropriate fonts and `w:lang` tags.
@@ -286,6 +340,44 @@ OFFICECLI=700_projects/cli-jaw/officecli/build-local/officecli
 $OFFICECLI add report.docx /body --type paragraph --prop text="분기별 보고서" --prop style=Heading1
 $OFFICECLI add report.docx /body --type paragraph --prop text="매출이 전년 대비 15% 증가했다."
 ```
+
+### DOCX-Specific CJK Commands
+
+Use `w:rFonts` and `w:lang` for East Asian font and language tag injection:
+
+```bash
+# Set East Asian font via raw XML on specific runs
+officecli raw-set report.docx /document \
+  --xpath '//w:r[w:t[contains(.,"분기")]]/w:rPr' \
+  --action append \
+  --xml '<w:rFonts w:eastAsia="Malgun Gothic" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
+
+# Set language tag for Korean spell-checking
+officecli raw-set report.docx /document \
+  --xpath '//w:r/w:rPr' \
+  --action append \
+  --xml '<w:lang w:eastAsia="ko-KR" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
+
+# Set CJK font on a specific run (high-level)
+officecli set report.docx '/body/p[1]/r[1]' --prop font.name="Malgun Gothic"
+
+# Batch font application across all runs
+officecli batch report.docx --commands '[
+  {"command":"set","path":"/body/p[1]/r[1]","props":{"font.name":"Malgun Gothic"}},
+  {"command":"set","path":"/body/p[2]/r[1]","props":{"font.name":"Malgun Gothic"}}
+]'
+```
+
+### Verify CJK Tags
+
+```bash
+officecli raw report.docx /document | grep -E 'rFonts|w:lang'
+officecli raw report.docx /document | grep kinsoku
+```
+
+### CJK Styles
+
+Pre-built CJK document styles are available in `references/cjk-styles/`. See `references/cjk-styles/INDEX.md` for the catalog.
 
 ### Legacy fallback
 

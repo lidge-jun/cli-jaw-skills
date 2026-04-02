@@ -231,19 +231,44 @@ officecli add deck.pptx /slide[1] --type shape --prop text='23%' --prop color=E7
 
 ## CJK / Korean Text Handling
 
+> CJK 상세 규칙 → see `references/officecli-cjk.md`
+
 ### Primary: fork binary auto-handles CJK
 
 The cli-jaw fork includes `CjkHelper.cs` for PPTX. It auto-detects Korean/Japanese/Chinese text and applies language tags plus sane default fonts.
 
 ```bash
 OFFICECLI=700_projects/cli-jaw/officecli/build-local/officecli
-$OFFICECLI add deck.pptx /slide[1] --type shape   --prop text='분기별 실적 보고서'   --prop x=2cm --prop y=3cm --prop width=20cm --prop height=3cm   --prop size=30 --prop bold=true
+$OFFICECLI add deck.pptx /slide[1] --type shape \
+  --prop text='분기별 실적 보고서' \
+  --prop x=2cm --prop y=3cm --prop width=20cm --prop height=3cm \
+  --prop size=30 --prop bold=true
 ```
 
-### Manual override when needed
+### PPTX-Specific CJK: DrawingML East Asian Fonts
+
+PPTX uses DrawingML (`a:ea`) instead of WordprocessingML (`w:rFonts`):
 
 ```bash
-$OFFICECLI set deck.pptx /slide[1]/shape[2] --prop font='Noto Sans KR'
+# Set East Asian font on a shape
+officecli set deck.pptx /slide[1]/shape[2] --prop font='Malgun Gothic'
+
+# Japanese slide
+officecli add deck.pptx /slide[2] --type shape \
+  --prop text="日本語のプレゼンテーション" \
+  --prop x=1cm --prop y=1cm --prop w=8cm --prop h=1.5cm
+officecli set deck.pptx '/slide[2]/shape[1]' --prop font="Yu Gothic"
+
+# Override with Noto Sans for cross-platform safety
+officecli set deck.pptx /slide[1]/shape[2] --prop font='Noto Sans KR'
+```
+
+### CJK Text Overflow Check
+
+```bash
+# PPTX-specific: check for text overflow in CJK slides
+officecli check deck.pptx
+# CJK text often overflows due to wider character widths
 ```
 
 ### Legacy fallback
@@ -311,19 +336,100 @@ Inspect for:
 
 ## Accessibility (WCAG 2.1 AA)
 
+> 접근성 기준 → see `references/officecli-accessibility.md`
+
+Presentations are where accessibility matters most — they're projected, shared, and read aloud.
+
 ```bash
 officecli add deck.pptx / --type slide --prop layout=titleContent --prop title='Section Name'
 officecli query deck.pptx 'picture:no-alt'
 ```
 
+### Reading Order
+
+For screen readers, the reading order = shape order (z-order) on each slide.
+
+```bash
+# View shapes in reading order
+officecli get deck.pptx '/slide[1]' --depth 1 --json
+
+# Text appears in the order a screen reader would read it
+officecli view deck.pptx text
+
+# Fix reading order: move shape to a specific position (1-based)
+officecli move deck.pptx '/slide[1]/shape[3]' --index 1
+# Shape 3 is now read first
+
+# Ensure title is read before body content
+officecli move deck.pptx '/slide[1]/shape[2]' --index 1
+```
+
+**Reading order rules per slide:**
+1. Title/heading shapes should be first in order
+2. Body content follows in logical sequence (top→bottom, left→right)
+3. Decorative elements should be last (or marked as decorative)
+4. Navigation elements in consistent position across slides
+
+### Slide Titles
+
+Every slide MUST have a title for screen reader navigation. Slides without titles are invisible landmarks.
+
+```bash
+# Create slide with explicit title
+officecli add deck.pptx / --type slide --prop layout=titleContent --prop title='Key Metrics'
+
+# Check for missing titles
+officecli view deck.pptx outline
+```
+
+### Alt-Text for Shapes and Images
+
+```bash
+# Find pictures without alt-text
+officecli query deck.pptx 'picture:no-alt'
+
+# Set alt-text on images
+officecli set deck.pptx '/slide[1]/picture[1]' \
+  --prop alt="Bar chart showing Q4 revenue by region: East $2.1M, West $1.8M"
+
+# Mark decorative shapes (empty alt)
+officecli set deck.pptx '/slide[1]/picture[3]' --prop alt=""
+
+# Batch alt-text remediation
+officecli batch deck.pptx --commands '[
+  {"command":"set","path":"/slide[1]/picture[1]","props":{"alt":"Company revenue chart for Q4 2025"}},
+  {"command":"set","path":"/slide[2]/picture[1]","props":{"alt":"Team photo at annual meeting"}},
+  {"command":"set","path":"/slide[3]/picture[1]","props":{"alt":""}}
+]'
+```
+
+### Contrast Checking
+
+```bash
+# Inspect shape colors for contrast issues
+officecli get deck.pptx '/slide[1]' --depth 2 --json
+# Check font.color against fill values
+
+# officecli check flags some contrast issues
+officecli check deck.pptx --json
+
+# Fix low-contrast text
+officecli set deck.pptx '/slide[1]/shape[1]' --prop font.color=1A1A2E
+officecli set deck.pptx '/slide[1]/shape[1]' --prop fill=FFFFFF
+```
+
 ### Accessibility checklist
 
-- [ ] Every slide has a real title
-- [ ] Picture alt text exists where required
-- [ ] Contrast stays readable
+- [ ] Every slide has a real title: `officecli view deck.pptx outline`
+- [ ] Picture alt text exists where required: `officecli query deck.pptx 'picture:no-alt'`
+- [ ] Tab/reading order matches visual order: `officecli view deck.pptx text`
+- [ ] Title is read first on each slide
+- [ ] Contrast stays readable (≥ 4.5:1 normal, ≥ 3:1 large): `officecli check deck.pptx`
 - [ ] Captions do not drop below 10pt
-- [ ] Reading order is logical
 - [ ] Language metadata is correct for CJK slides
+- [ ] Information not conveyed by color alone
+- [ ] Charts use patterns/labels in addition to color
+- [ ] Decorative images have empty alt-text (`alt=""`)
 
 ---
 
