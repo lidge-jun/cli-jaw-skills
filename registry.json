@@ -3136,6 +3136,19 @@
             "requires": null,
             "install": null,
             "version": "1.0.0"
+        },
+        "diagram": {
+            "name": "Diagram",
+            "name_ko": "다이어그램",
+            "name_en": "Diagram",
+            "emoji": "📊",
+            "category": "visualization",
+            "description": "SVG 다이어그램, 차트, 인터랙티브 시각화 생성",
+            "desc_ko": "SVG 다이어그램, 차트, 인터랙티브 시각화 생성",
+            "desc_en": "SVG diagrams, charts, and interactive visualizations",
+            "requires": {},
+            "install": null,
+            "version": "1.0.0"
         }
     }
 }
