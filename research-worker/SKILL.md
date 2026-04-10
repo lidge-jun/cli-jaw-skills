@@ -1,10 +1,10 @@
 ---
 name: research-worker
-description: "Search guidance and output contract for the Research worker. Read-only codebase exploration, uncertainty reduction, structured reports."
+description: "Search guidance and output contract for the Research employee. Read-only codebase exploration, uncertainty reduction, structured reports."
 version: 1.0.0
 ---
 
-# Research Worker Skill
+# Research Employee Skill
 
 ## Purpose
 
