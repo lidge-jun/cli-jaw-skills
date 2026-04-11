@@ -113,6 +113,7 @@ For detailed patterns, see:
 - `reference/svg-components.md` — SVG primitives, layout templates
 - `reference/color-palette.md` — Full color values (light + dark)
 - `reference/module-chart.md` — Chart.js + D3 integration
+- `reference/module-widget.md` — Physics (Matter.js), math graphs (Math.js), mini-games
 - `reference/module-interactive.md` — Sliders, buttons, sendPrompt
 - `reference/module-mockup.md` — UI mockup patterns
 - `reference/module-art.md` — Decorative SVG patterns

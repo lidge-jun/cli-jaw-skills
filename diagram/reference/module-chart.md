@@ -17,10 +17,10 @@ const isDark = window.__jawTheme?.isDark ?? true;
 const T = window.__jawTokens || {};
 
 const chartColors = {
-  text:   T['--text']     || (isDark ? '#e8e6e3' : '#1a1a1a'),
-  dim:    T['--text-dim'] || (isDark ? '#999'     : '#666'),
-  grid:   (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
-  border: T['--border']   || (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'),
+  text:   T['--text']     || (isDark ? '#e2e0dd' : '#1a1a1a'),
+  dim:    T['--text-dim'] || (isDark ? '#aaa'    : '#555'),
+  grid:   (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'),
+  border: T['--border']   || (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)'),
   accent: T['--accent']   || '#3b82f6',
   bg:     T['--surface']  || (isDark ? '#1a1a1a' : '#fff'),
 };
