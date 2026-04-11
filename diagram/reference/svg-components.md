@@ -1,14 +1,42 @@
 # SVG Components Reference
 
+## ViewBox Safety Checklist
+
+Before finalizing any SVG, verify:
+
+1. **Width**: viewBox width = 680 (mandatory, never change)
+2. **Content bounds**: all elements within x=20..660. Safe area: x=40..640.
+3. **Height**: find lowest element (max `y + height`), set viewBox height = that + 40px.
+4. **Horizontal fit**: for each row, verify `sum(box widths + gaps) ≤ 640`. Four 160px boxes + three 20px gaps = 700px → **doesn't fit**. Shrink boxes or subtitles.
+5. **text-anchor**: `text-anchor="end"` at x<60 is risky — text extends left past x=0. Use `text-anchor="start"` or verify: `label_chars × 8 < anchor_x`.
+6. **No negative coords**: viewBox starts at 0,0. No negative x or y.
+
+## Font Calibration (Geist Sans)
+
+SVG `<text>` never auto-wraps. Each character ≈ 8px wide at 14px, ≈ 6.5px at 12px.
+
+| Text example | Chars | Weight | Size | Approx width |
+|---|---|---|---|---|
+| Authentication Service | 22 | 500 | 14px | ~176px |
+| Background Processor | 20 | 500 | 14px | ~160px |
+| Detects incoming tokens | 22 | 400 | 12px | ~143px |
+| forwards request | 16 | 400 | 12px | ~104px |
+
+Before placing text in a box: does `text_width + 2×padding` fit the container?
+If subtitle needs wrapping (`<tspan>`), it's too long — shorten it.
+
+## Style Rules
+
+- **Stroke width**: 0.5px for borders and connector edges
+- **Connector paths**: MUST have `fill="none"` — SVG defaults to `fill: black`
+- **Rect rounding**: `rx="4"` subtle, `rx="8"` emphasized, `rx="12"` max
+- **Text vertical alignment**: every `<text>` inside a box needs `dominant-baseline="central"`
+- **Font sizes**: 14px (node labels, `.label`) and 12px (subtitles) only
+- **No rotated text**
+
 ## Primitives
 
-### Rounded Rectangle Node
-```svg
-<rect class="node c-blue-bg" x="10" y="10" width="160" height="48" rx="8" ry="8" />
-<text class="label c-blue-text" x="90" y="34">Node Label</text>
-```
-
-### Connector Arrow
+### Arrow Marker (include in every SVG)
 ```svg
 <defs>
   <marker id="arrowhead" markerWidth="10" markerHeight="7"
@@ -16,17 +44,33 @@
     <polygon class="c-slate-fill" points="0 0, 10 3.5, 0 7" />
   </marker>
 </defs>
-<path class="connector" d="M 90 58 L 90 90" marker-end="url(#arrowhead)" />
 ```
 
-### Label Text
+### Single-Line Node (48px tall)
 ```svg
-<text class="label c-blue-text" x="100" y="30">Label Text</text>
+<rect class="node c-blue-bg" x="260" y="20" width="160" height="48" rx="8" />
+<text class="label c-blue-text" x="340" y="44"
+  dominant-baseline="central">Step 1</text>
+```
+
+### Two-Line Node (64px tall)
+```svg
+<rect class="node c-blue-bg" x="240" y="20" width="200" height="64" rx="8" />
+<text class="label c-blue-text" x="340" y="40"
+  dominant-baseline="central" font-weight="500">Title</text>
+<text class="label c-blue-text" x="340" y="60"
+  dominant-baseline="central" font-size="12">Subtitle (≤5 words)</text>
+```
+
+### Connector Arrow
+```svg
+<path class="connector" d="M 340 68 L 340 100"
+  fill="none" marker-end="url(#arrowhead)" />
 ```
 
 ### Diagram Title
 ```svg
-<text class="diagram-title" x="340" y="24">Diagram Title</text>
+<text class="diagram-title" x="340" y="24">Diagram title</text>
 ```
 
 ## Layout Templates
@@ -44,27 +88,27 @@
     </marker>
   </defs>
 
-  <!-- Node 1 -->
-  <rect class="node c-blue-bg" x="260" y="20" width="160" height="48" />
-  <text class="label c-blue-text" x="340" y="44">Step 1</text>
+  <rect class="node c-blue-bg" x="260" y="20" width="160" height="48" rx="8" />
+  <text class="label c-blue-text" x="340" y="44"
+    dominant-baseline="central">Step 1</text>
 
-  <!-- Arrow 1→2 -->
-  <path class="connector" d="M 340 68 L 340 100" marker-end="url(#arrowhead)" />
+  <path class="connector" d="M 340 68 L 340 100"
+    fill="none" marker-end="url(#arrowhead)" />
 
-  <!-- Node 2 -->
-  <rect class="node c-green-bg" x="260" y="100" width="160" height="48" />
-  <text class="label c-green-text" x="340" y="124">Step 2</text>
+  <rect class="node c-green-bg" x="260" y="100" width="160" height="48" rx="8" />
+  <text class="label c-green-text" x="340" y="124"
+    dominant-baseline="central">Step 2</text>
 
-  <!-- Arrow 2→3 -->
-  <path class="connector" d="M 340 148 L 340 180" marker-end="url(#arrowhead)" />
+  <path class="connector" d="M 340 148 L 340 180"
+    fill="none" marker-end="url(#arrowhead)" />
 
-  <!-- Node 3 -->
-  <rect class="node c-purple-bg" x="260" y="180" width="160" height="48" />
-  <text class="label c-purple-text" x="340" y="204">Step 3</text>
+  <rect class="node c-purple-bg" x="260" y="180" width="160" height="48" rx="8" />
+  <text class="label c-purple-text" x="340" y="204"
+    dominant-baseline="central">Step 3</text>
 </svg>
 ```
 
-Spacing: 60px between nodes (48px node + 12px gap + arrow).
+Spacing: 60px between nodes (48px node + 12px gap + arrow). Max 4-5 nodes per flowchart.
 
 ### Comparison (Side-by-Side)
 ```svg
@@ -73,18 +117,15 @@ Spacing: 60px between nodes (48px node + 12px gap + arrow).
   <title id="cmp-title">Option Comparison</title>
   <desc id="cmp-desc">Side-by-side comparison of two options</desc>
 
-  <!-- Left column -->
-  <rect class="node c-blue-bg" x="20" y="40" width="300" height="140" />
-  <text class="diagram-title c-blue-text" x="170" y="70">Option A</text>
-  <text class="label c-blue-text" x="170" y="100">Feature details</text>
+  <rect class="node c-cyan-bg" x="20" y="40" width="300" height="140" rx="8" />
+  <text class="diagram-title c-cyan-text" x="170" y="70">Option A</text>
+  <text class="label c-cyan-text" x="170" y="100" font-size="12">Feature details</text>
 
-  <!-- Divider -->
   <line class="connector" x1="340" y1="20" x2="340" y2="200" />
 
-  <!-- Right column -->
-  <rect class="node c-green-bg" x="360" y="40" width="300" height="140" />
-  <text class="diagram-title c-green-text" x="510" y="70">Option B</text>
-  <text class="label c-green-text" x="510" y="100">Feature details</text>
+  <rect class="node c-pink-bg" x="360" y="40" width="300" height="140" rx="8" />
+  <text class="diagram-title c-pink-text" x="510" y="70">Option B</text>
+  <text class="label c-pink-text" x="510" y="100" font-size="12">Feature details</text>
 </svg>
 ```
 
@@ -95,24 +136,23 @@ Spacing: 60px between nodes (48px node + 12px gap + arrow).
   <title id="tl-title">Project Timeline</title>
   <desc id="tl-desc">Key milestones on a horizontal timeline</desc>
 
-  <!-- Axis -->
   <line class="connector" x1="40" y1="60" x2="640" y2="60" />
 
-  <!-- Markers -->
-  <circle class="c-blue-bg" cx="120" cy="60" r="8" />
-  <text class="label c-blue-text" x="120" y="90">Q1</text>
+  <circle class="c-cyan-bg" cx="120" cy="60" r="8" />
+  <text class="label c-cyan-text" x="120" y="90">Q1</text>
 
-  <circle class="c-green-bg" cx="300" cy="60" r="8" />
-  <text class="label c-green-text" x="300" y="90">Q2</text>
+  <circle class="c-pink-bg" cx="300" cy="60" r="8" />
+  <text class="label c-pink-text" x="300" y="90">Q2</text>
 
   <circle class="c-purple-bg" cx="480" cy="60" r="8" />
   <text class="label c-purple-text" x="480" y="90">Q3</text>
 </svg>
 ```
 
-## Guidelines
+## Guidelines Summary
 - Always use `viewBox="0 0 680 {height}"` — width 680 is mandatory
 - Use `<g>` for grouping related elements (not nested `<svg>`)
 - Keep text concise — truncate long labels
-- Minimum touch target: 44×44px for interactive elements
 - Use `dominant-baseline="central"` for vertical text centering
+- Include arrow marker `<defs>` in every flowchart SVG
+- All connectors need `fill="none"`
