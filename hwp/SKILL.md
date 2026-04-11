@@ -3,388 +3,317 @@ name: hwp
 description: "HWP/HWPX create, read, edit, review. Triggers: 한글, .hwp, .hwpx, HWP, HWPX, Korean documents."
 ---
 
-# HWP/HWPX Document Skill
+# HWPX Document Skill
 
-Create, read, edit, and validate Hancom Office HWP 5.0 (binary) and HWPX (ZIP+XML) files.
-HWPX uses **XML-first direct editing**; HWP uses **read + convert strategy**.
-
-Triggers: "한글", ".hwp", ".hwpx", "HWP", "HWPX", Korean documents, 한컴오피스, OWPML.
+Use this skill for any `.hwpx` task: create, read, edit, review, template-fill, or QA verification.
+Triggers: `"한글"`, `".hwpx"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
+Primary tool: **officecli** (`build-local/officecli` or `~/.local/bin/officecli`).
+Fallback: **Legacy Python scripts** only when officecli does not cover the operation.
+Do NOT use this skill for PDFs, spreadsheets, or DOCX files.
 
 ---
 
-## Quick Reference
+## Tool Discovery
 
-| Task | Tool / Command |
-|------|----------------|
-| **Detect format** | `file doc.hwpx` → ZIP = HWPX, "HWP Document" = HWP 5.0 |
-| **Create HWPX** | `python-hwpx` API or `build_hwpx.py` (template-based) |
-| **Read HWPX** | `hwpx_cli.py text input.hwpx` or `text_extract.py` |
-| **Read HWP** | `hwp5proc xml input.hwp` + pipe to python for text extraction |
-| **Edit HWPX** | unpack → pretty-print → Edit → pack (auto strip+minify) |
-| **Search/Replace** | `hwpx_cli.py search` / `replace` / `batch-replace` |
-| **Tables** | `hwpx_cli.py tables` / `fill-table` (path-based) |
-| **Content QA** | `hwpx_cli.py content-check` (keyword scan) |
-| **Upgrade HWP** | `hwp_convert.py input.hwp output.hwpx` |
-| **Validate** | `hwpx_cli.py validate` + `hwpx_cli.py page-guard` |
-| **HWPX → PDF** | `soffice --headless --convert-to pdf` (needs H2Orestart+Java) |
-| **Visual QA** | PDF → `pdftoppm -jpeg -r 150` → subagent inspection |
-
-### Unified CLI (`hwpx_cli.py`)
+Always confirm syntax from help before guessing:
 
 ```bash
-python scripts/hwpx_cli.py open input.hwpx work/           # unpack + pretty-print
-python scripts/hwpx_cli.py save work/ output.hwpx           # minify + strip + pack (atomic)
-python scripts/hwpx_cli.py text input.hwpx                  # extract text
-python scripts/hwpx_cli.py search input.hwpx "pattern"      # regex search
-python scripts/hwpx_cli.py replace input.hwpx "old" "new" -o out.hwpx
-python scripts/hwpx_cli.py batch-replace input.hwpx map.json -o out.hwpx
-python scripts/hwpx_cli.py tables input.hwpx [--csv]        # list tables / CSV
-python scripts/hwpx_cli.py fill-table input.hwpx IDX '{"label>dir":"val"}' -o out.hwpx
-python scripts/hwpx_cli.py validate input.hwpx
-python scripts/hwpx_cli.py page-guard -r ref.hwpx -o out.hwpx
-python scripts/hwpx_cli.py toc input.hwpx [--json]
-python scripts/hwpx_cli.py chunk input.hwpx [--by heading|size|pagebreak] [--json]
-python scripts/hwpx_cli.py search-chunks input.hwpx "pattern" [--json]
-python scripts/hwpx_cli.py repair input.hwpx                # dry-run (default)
-python scripts/hwpx_cli.py repair input.hwpx --apply        # conservative auto-fix
-python scripts/hwpx_cli.py content-check input.hwpx --must-not-have "[X],TODO,lorem"
-python scripts/hwpx_cli.py insert-table input.hwpx --json '[["A","B"],["1","2"]]' -o out.hwpx
-python scripts/hwpx_cli.py structure input.hwpx
+officecli --help
+officecli hwpx add
+officecli hwpx set
+officecli hwpx view --help
 ```
 
-### Format Overview
+### Binary Location
+
+| Binary | Path | Notes |
+|--------|------|-------|
+| officecli (fork) | `700_projects/cli-jaw/build-local/officecli` | Primary — full HWPX support |
+
+---
+
+## Quick Decision
+
+| Task | Command | Notes |
+|------|---------|-------|
+| Read text | `officecli view doc.hwpx text` | `text`, `annotated`, `outline`, `stats`, `html`, `styles`, `forms` |
+| Add paragraph | `officecli add doc.hwpx /section --type paragraph --prop text="내용"` | First add replaces empty p[1] |
+| Edit paragraph | `officecli set doc.hwpx /section/p[1] --prop bold=true --prop align=CENTER` | |
+| Add table | `officecli add doc.hwpx /section --type table --prop rows=3 --prop cols=4` | |
+| Edit cell | `officecli set doc.hwpx '/section/p[N]/tbl[1]/tr[1]/tc[1]' --prop text="값"` | |
+| Add heading | `officecli add doc.hwpx /section --type paragraph --prop text="제목" --prop styleidref=2 --prop bold=true` | styleidref=2 = 개요 1 |
+| Add image | `officecli add doc.hwpx /section --type picture --prop src=image.png` | |
+| Add shape | `officecli add doc.hwpx /section --type rect --prop width=20000 --prop height=10000 --prop fillcolor=#4472C4` | `line`, `rect`, `ellipse`, `textbox`, `polygon`, `triangle`, `pentagon`, `arrow` |
+| Add field | `officecli add doc.hwpx /section --type clickhere` | `clickhere`, `filepath`, `summary`, `date` |
+| Add TOC | `officecli add doc.hwpx /section --type toc` | `--prop mode=field` for field-based |
+| Add section | `officecli add doc.hwpx / --type section --prop orientation=LANDSCAPE` | Multi-section |
+| Find/replace | `officecli set doc.hwpx / --prop find="old" --prop replace="new"` | Regex: `find=regex:\d+` |
+| Remove | `officecli remove doc.hwpx /section/p[3]` | Also: `/toc`, `/watermark`, `/section[2]` |
+| Set metadata | `officecli set doc.hwpx / --prop title="문서제목" --prop author="작성자"` | |
+| HTML preview | `officecli view doc.hwpx html --browser` | A4 미리보기 |
+| Validate | `officecli validate doc.hwpx` | ZIP/XML/IDRef 검증 |
+| Raw XML | `officecli raw doc.hwpx Contents/section0.xml` | 디버깅용 |
+| Form value | `officecli set doc.hwpx '/formfield[ID]' --prop value="홍길동"` | 누름틀 값 설정 |
+
+---
+
+## Core Command Model
+
+officecli syntax is **file-first**:
+
+```bash
+officecli view FILE MODE
+officecli add FILE PARENT --type TYPE --prop key=value
+officecli set FILE PATH --prop key=value
+officecli remove FILE PATH
+officecli query FILE "selector"
+officecli get FILE PATH
+officecli raw FILE ENTRY_PATH
+```
+
+### PATH Syntax
+
+```text
+/section                    # First section (shortcut for /section[1])
+/section[N]                 # Nth section (1-based)
+/section/p[N]               # Nth paragraph
+/section/p[N]/tbl[1]        # Table inside paragraph N (auto-traverses run)
+/section/p[N]/tbl[1]/tr[R]/tc[C]  # Cell at row R, column C
+/header/style[N]            # Nth style in header
+/formfield[ID]              # Form field by instId
+/                           # Document root
+/toc                        # TOC (for remove)
+/watermark                  # Page background (for remove)
+```
+
+---
+
+## Common Workflows
+
+### Create and populate a document
+
+```bash
+officecli add doc.hwpx /section --type paragraph --prop text="분기별 보고서" --prop styleidref=2 --prop bold=true --prop fontsize=20
+officecli add doc.hwpx /section --type paragraph --prop text="매출이 전년 대비 15% 증가했습니다."
+officecli add doc.hwpx /section --type paragraph --prop text="상세 내용" --prop italic=true --prop color=#FF0000
+```
+
+### Tables
+
+```bash
+officecli add doc.hwpx /section --type table --prop rows=3 --prop cols=3
+officecli set doc.hwpx '/section/p[2]/tbl[1]/tr[1]/tc[1]' --prop text="항목" --prop align=CENTER
+officecli set doc.hwpx '/section/p[2]/tbl[1]/tr[1]/tc[2]' --prop text="값"
+officecli set doc.hwpx '/section/p[2]/tbl[1]/tr[1]' --prop height=3000
+officecli set doc.hwpx '/section/p[2]/tbl[1]' --prop colwidth1=20000
+```
+
+### Shapes and drawings
+
+```bash
+officecli add doc.hwpx /section --type line --prop width=30000
+officecli add doc.hwpx /section --type rect --prop width=20000 --prop height=8000 --prop fillcolor=#4472C4 --prop text="사각형"
+officecli add doc.hwpx /section --type ellipse --prop width=15000 --prop height=10000 --prop fillcolor=#FFC000
+officecli add doc.hwpx /section --type textbox --prop width=25000 --prop height=5000 --prop text="텍스트 상자"
+officecli add doc.hwpx /section --type triangle --prop width=15000 --prop height=13000 --prop fillcolor=#FF6347
+officecli add doc.hwpx /section --type arrow --prop width=25000 --prop color=#FF0000
+```
+
+### Fields and forms
+
+```bash
+officecli add doc.hwpx /section --type clickhere --prop direction="이름을 입력하세요"
+officecli add doc.hwpx /section --type filepath
+officecli add doc.hwpx /section --type summary --prop command='$createtime'
+officecli view doc.hwpx forms
+officecli set doc.hwpx '/formfield[2019709239]' --prop value="홍길동"
+```
+
+### Multi-section
+
+```bash
+officecli add doc.hwpx / --type section --prop orientation=LANDSCAPE
+officecli add doc.hwpx '/section[2]' --type paragraph --prop text="가로 페이지"
+officecli set doc.hwpx /section --prop margintop=8504
+officecli remove doc.hwpx '/section[2]'
+```
+
+### Find/replace (basic, regex, scoped)
+
+```bash
+officecli set doc.hwpx / --prop find="중요" --prop replace="핵심"
+officecli set doc.hwpx / --prop 'find=regex:\d{3}-\d{4}' --prop 'replace=***-****'
+officecli set doc.hwpx '/section[1]' --prop find="가" --prop replace="나"
+```
+
+### Read and inspect
+
+```bash
+officecli view doc.hwpx text
+officecli view doc.hwpx annotated
+officecli view doc.hwpx outline
+officecli view doc.hwpx stats
+officecli view doc.hwpx html --browser
+officecli view doc.hwpx styles
+officecli view doc.hwpx forms
+officecli get doc.hwpx /
+officecli query doc.hwpx "p:contains(검색어)"
+```
+
+### Styles
+
+```bash
+officecli view doc.hwpx styles
+officecli add doc.hwpx / --type style --prop name="강조체" --prop engname=Emphasis
+officecli set doc.hwpx '/section/p[3]' --prop style=강조체
+officecli set doc.hwpx '/header/style[2]' --prop fontsize=16 --prop bold=true
+```
+
+### Metadata
+
+```bash
+officecli set doc.hwpx / --prop title="보고서" --prop author="홍길동" --prop subject="분기보고"
+officecli view doc.hwpx stats   # Title/Creator 표시
+```
+
+### Remove with cascade
+
+```bash
+officecli remove doc.hwpx /section/p[3]           # 단락 삭제
+officecli remove doc.hwpx /section/p[5]            # 표 wrapper 삭제
+officecli remove doc.hwpx /toc                     # 목차 삭제 (V1+V2)
+officecli remove doc.hwpx /watermark               # 배경색 삭제
+officecli remove doc.hwpx '/section[2]'            # 섹션 삭제
+```
+
+---
+
+## Settable Properties
+
+### Paragraph-level
+
+| Property | Example | Notes |
+|----------|---------|-------|
+| `text` | `text=안녕하세요` | |
+| `bold` | `bold=true` | |
+| `italic` | `italic=true` | |
+| `underline` | `underline=true` | |
+| `strikeout` | `strikeout=true` | |
+| `fontsize` | `fontsize=16` | **pt 단위** (16 = 16pt → height=1600) |
+| `color` | `color=#FF0000` | |
+| `align` | `align=CENTER` | LEFT, CENTER, RIGHT, JUSTIFY |
+| `charspacing` | `charspacing=-5` | 자간 (%) |
+| `hangingindent` | `hangingindent=500` | 내어쓰기 (HWPML units, 283≈1mm) |
+| `keepnext` | `keepnext=true` | 다음 문단과 함께 |
+| `pagebreakbefore` | `pagebreakbefore=true` | 페이지 나눔 |
+| `style` | `style=강조체` | 스타일 이름 적용 |
+| `highlight` | `highlight=#FFFF00` | 형광펜 |
+
+### Section-level
+
+| Property | Example | Notes |
+|----------|---------|-------|
+| `pagebackground` | `pagebackground=#F5F5DC` | 배경색 |
+| `orientation` | `orientation=LANDSCAPE` | NARROWLY (가로), WIDELY (세로) |
+| `margintop` | `margintop=8504` | HWPML units |
+| `pagewidth` | `pagewidth=59528` | |
+
+### Table/Cell-level
+
+| Property | Target | Example |
+|----------|--------|---------|
+| `text` | tc | 셀 텍스트 |
+| `align` | tc | 수평 정렬 |
+| `valign` | tc | 수직 정렬 (TOP, CENTER, BOTTOM) |
+| `colspan` | tc | 셀 병합 |
+| `height` | tr | 행 높이 |
+| `colwidth1` | tbl | 개별 열 너비 (1-based) |
+
+### Shape-level
+
+| Property | Target | Example |
+|----------|--------|---------|
+| `wrap` | shape | `char` (글자처럼), `square`, `behind`, `front` |
+| `width` | shape | 크기 |
+| `height` | shape | 크기 |
+
+---
+
+## HWPX-Specific Notes
+
+### Units
+- Font size: **pt** (fontsize=16 = 16pt, internally stored as 1600 centi-points)
+- Page dimensions: HWPML units (59528 = A4 width, 84186 = A4 height)
+- Margins: HWPML units (8504 ≈ 30mm)
+- 283 units ≈ 1mm
+
+### Orientation
+- `WIDELY` = 세로 (portrait) — 한컴 기본
+- `NARROWLY` = 가로 (landscape)
+- 치수(width/height)는 바뀌지 않음 — landscape 속성만 변경
+
+### 글자처럼 취급 (Inline)
+- `<hp:pos treatAsChar="1">` = 글자처럼 취급
+- `officecli set doc.hwpx '/section/p[3]/rect[1]' --prop wrap=char`
+
+### 누름틀 (CLICK_HERE)
+- `type="CLICK_HERE"` (underscore 포함)
+- 빨간 이탤릭 charPr 자동 생성
+- `dirty="0"` for fresh, `"1"` after user edit
+
+### TOC
+- **V1 (static)**: `--type toc` — 텍스트 기반, 즉시 표시
+- **V2 (field)**: `--type toc --prop mode=field` — 한컴에서 "필드 업데이트" 가능
+
+---
+
+## QA Verification
+
+```bash
+officecli validate doc.hwpx
+officecli view doc.hwpx stats
+officecli view doc.hwpx text
+officecli view doc.hwpx html --browser
+```
+
+### Checklist
+- [ ] `validate` passes
+- [ ] `view ... text` matches expected content
+- [ ] HTML preview renders correctly
+- [ ] 한컴에서 정상 열림
+
+---
+
+## Format Overview
 
 | Format | Ext | Structure | Read | Write | Notes |
 |--------|-----|-----------|------|-------|-------|
 | HWPX | `.hwpx` | ZIP + XML (OWPML) | ✅ | ✅ | Korean gov standard, cross-platform |
-| HWP | `.hwp` | OLE2 compound binary | ✅ | ❌ | Legacy v5, read-only |
+| HWP | `.hwp` | OLE2 compound binary | ❌ | ❌ | 한컴에서 .hwpx로 변환 후 사용 |
 
 ---
 
-## 1. HWPX Editing Workflow (Core)
+## Legacy Python CLI (Fallback)
 
-### Single-Line XML Problem
+Use these only when officecli does not cover the requirement:
 
-Hancom saves HWPX internal XML as **minified single-line** text. grep/diff/Edit tools break on it.
-Follow this pipeline:
+| Script | Role | Status |
+|--------|------|--------|
+| `python scripts/hwpx_cli.py text input.hwpx` | Text extraction fallback | Legacy |
+| `python scripts/office/unpack.py input.hwpx work/` | Pretty-print XML | Legacy |
+| `python scripts/office/pack.py work/ output.hwpx` | Repack with minify | Legacy |
+| `python scripts/validate.py output.hwpx` | Structural validation | Legacy |
+| `python scripts/page_guard.py --reference ref.hwpx --output out.hwpx` | Page count guard | Legacy |
 
-```
-unpack (pretty-print) → Edit → pack (auto strip + minify) → validate → page-guard
-```
-
-### Step 1: Unpack + Pretty-print
-
-```bash
-python scripts/office/unpack.py input.hwpx work/
-```
-
-### Step 2: Edit XML directly
-
-Edit the pretty-printed XML. Key constraints:
-- Preserve **secPr** in the first run of the first paragraph of each section (defines page geometry)
-- **charPrIDRef, paraPrIDRef, borderFillIDRef** values must match header.xml definitions
-- Preserve all existing namespace declarations
-
-### Step 3: Pack (auto linesegarray strip + minify)
-
-```bash
-python scripts/office/pack.py work/ output.hwpx
-# Options: --keep-linesegarray, --no-minify
-```
-
-linesegarray is a layout cache that Hancom recalculates on open. Stale cache causes text compression and missing line breaks — pack.py strips it automatically.
-
-### Step 4: Validate + Page Guard
-
-```bash
-python scripts/validate.py output.hwpx
-python scripts/page_guard.py --reference input.hwpx --output output.hwpx
-```
-
-Both validate and page-guard pass before completion. On page-guard failure: fix cause → rebuild.
+> Most legacy operations are now covered by officecli: `view text`, `raw`, `validate`, `set find/replace`.
 
 ---
 
-## 2. Reference-Based Restoration
-
-Default workflow when user provides a reference HWPX:
-
-```bash
-# 1) Analyze reference + extract XML blueprints
-python scripts/analyze_template.py reference.hwpx \
-  --extract-header /tmp/ref_header.xml \
-  --extract-section /tmp/ref_section.xml
-
-# 2) Clone ref_section.xml → modify only text/data as requested
-#    Preserve structure: tables, paragraph count, style IDs
-
-# 3) Build restored document
-python scripts/build_hwpx.py \
-  --header /tmp/ref_header.xml \
-  --section /tmp/new_section0.xml \
-  --output result.hwpx
-
-# 4) Validate
-python scripts/validate.py result.hwpx
-python scripts/page_guard.py --reference reference.hwpx --output result.hwpx
-```
-
-### 99% Restoration Checklist
-
-- [ ] charPrIDRef, paraPrIDRef, borderFillIDRef reference chain identical
-- [ ] Table rowCnt, colCnt, colSpan, rowSpan, cellSz, cellMargin identical
-- [ ] Paragraph order, count, blank-line positions identical
-- [ ] Page size, margins, section properties (secPr) identical
-- [ ] Changes limited to user-requested scope only
-- [ ] Page count identical (page_guard PASS)
-
----
-
-## 3. Creating New HWPX Documents
-
-### python-hwpx API (simple documents)
-
-```python
-from hwpx import HwpxDocument
-
-doc = HwpxDocument.new()
-doc.add_paragraph("First paragraph.")
-table = doc.add_table(rows=3, cols=4)
-table.set_cell_text(0, 0, "Name")
-doc.save_to_path("output.hwpx")
-```
-
-See [python-hwpx GitHub](https://github.com/airmang/python-hwpx) for full API.
-
-Known bug: `set_header_text()` / `set_footer_text()` silently fail. Workaround: unpack → manually edit header/footer XML in section0.xml `<hp:headerFooter>` → pack.
-
-### Template-based creation
-
-```bash
-python scripts/build_hwpx.py \
-  --template gonmun \
-  --section my_section.xml \
-  --title "Document Title" \
-  --output gonmun.hwpx
-```
-
-Available templates: `base`, `gonmun` (official letter), `report`, `minutes`, `proposal`
-
-### Table Builder (H2Orestart-compatible)
-
-Use `table_builder.py` instead of raw XML tables, which crash H2Orestart due to missing undocumented attributes:
-
-```bash
-python scripts/table_builder.py --json '[["연도","규모"],["2024","4200"]]' -o table.xml
-python scripts/table_builder.py --csv data.csv -o table.xml
-```
-
-Golden table templates: `reference/table_templates/`
-
-### Markdown/JSON → HWPX
-
-```bash
-python scripts/create_document.py --input content.md --output doc.hwpx
-```
-
----
-
-## 4. Text Extraction
-
-### HWPX
-
-```bash
-python scripts/text_extract.py input.hwpx                    # plain text
-python scripts/text_extract.py input.hwpx --format markdown   # markdown
-python scripts/text_extract.py input.hwpx --include-tables    # include tables
-```
-
-### HWP 5.0 (upgrade-first strategy)
-
-HWPX is the canonical format. Upgrade HWP files to HWPX for editing:
-
-```bash
-# Read / inspect
-hwp5proc xml input.hwp           # XML representation
-hwp5proc ls input.hwp            # list OLE streams
-
-# Quick text extraction:
-hwp5proc xml input.hwp | python3 -c "
-import sys, xml.etree.ElementTree as ET
-tree = ET.parse(sys.stdin)
-for elem in tree.getroot().iter():
-    if elem.text and elem.text.strip():
-        print(elem.text.strip())
-"
-
-# Upgrade to HWPX
-python scripts/hwp_convert.py input.hwp output.hwpx
-# Then edit the resulting HWPX using Section 1 workflow
-```
-
-> `@ssabrojs/hwpxjs convert:hwp` may produce dummy HWPX with placeholder text for some files (2026-03-18). Verify section0.xml content after conversion.
-
-> 출처: [HWP→HWPX API license](https://forum.developer.hancom.com/t/hwp-hwpx-api/2980)
-> 출처: [HWPX→HWP API not available](https://forum.developer.hancom.com/t/hwpx-hwp-api/2606)
-
----
-
-## 5. XML Writing Guides
-
-Detailed XML reference for section0.xml and header.xml editing:
-
-- **Section0.xml**: paragraphs, blank lines, mixed formatting, tables → `reference/section0-xml-guide.md`
-- **Header.xml**: charPr, paraPr, borderFill definitions → `reference/header-xml-guide.md`
-- **Style ID maps**: template-specific ID ranges → `reference/style_id_maps.md`
-
----
-
-## 6. QA Verification Loop
-
-First render almost always has issues. Treat QA as bug hunting, not confirmation.
-
-### Step 1: Structural validation
-
-```bash
-python scripts/validate.py output.hwpx
-```
-
-Checks: ZIP validity, required files, mimetype position/compression, XML well-formedness.
-
-### Step 2: Page guard (when reference exists)
-
-```bash
-python scripts/page_guard.py --reference input.hwpx --output output.hwpx
-```
-
-Thresholds: text >15%, paragraph >25% → FAIL.
-
-### Step 3: Content QA
-
-```bash
-python scripts/text_extract.py output.hwpx | grep -iE "xxxx|lorem|placeholder|TODO|견본"
-
-python scripts/hwpx_cli.py content-check output.hwpx \
-  --must-not-have "[X],TODO,lorem,placeholder,견본"
-```
-
-### Step 4: Visual QA
-
-Use subagents for visual inspection — fresh eyes catch issues you miss after editing XML.
-
-```bash
-export JAVA_HOME="$(brew --prefix openjdk)/libexec/openjdk.jdk/Contents/Home"
-soffice --headless --norestore --convert-to pdf output.hwpx
-pdftoppm -jpeg -r 150 output.pdf page
-```
-
-Subagent prompt template: `reference/visual_qa_prompt.md`
-
-### Step 5: Fix & Re-verify
-
-1. Find issue → fix XML → re-pack
-2. Re-render only changed pages: `pdftoppm -jpeg -r 150 -f N -l N output.pdf page-fixed`
-3. Re-inspect — one fix often creates another problem
-4. Complete at least 1 fix-and-verify cycle before declaring done
-
-### QA Checklist
-
-- [ ] validate.py PASS
-- [ ] page_guard.py PASS (if reference exists)
-- [ ] No placeholder remnants in text
-- [ ] Visual render matches expected layout
-- [ ] Table content complete, text not compressed (linesegarray stripped)
-- [ ] Style consistency, page count matches reference
-- [ ] Korean text wrapping correctly, fonts rendering as intended
-- [ ] Color contrast ≥ 4.5:1, font size ≥ 9pt
-
----
-
-## 7. CJK/Korean Text Handling
-
-- Korean fonts: verify `맑은 고딕`, `함초롬돋움`, `함초롬바탕` in header.xml `<hh:fontRef>`
-- CJK display width: fullwidth chars = 2 units (`scripts/ooxml/cjk_utils.py` → `get_display_width()`)
-- Color contrast: WCAG 2.1 AA ratio 4.5:1 (`check_contrast()`)
-- `inject_korean_lang()` and `auto_fit_columns()` in cjk_utils.py are **OOXML-specific** (DOCX/PPTX). For HWPX, set Korean attributes directly in header.xml charPr `<hh:fontRef hangul="..."/>`.
-
----
-
-## 8. HWPX → PDF Conversion
-
-Requires LibreOffice + H2Orestart extension + Java Runtime.
-
-```bash
-soffice --headless --norestore --convert-to pdf input.hwpx --outdir ./
-pdftoppm -jpeg -r 150 input.pdf page   # for visual QA
-```
-
-If conversion fails ("source file could not be loaded"):
-1. Verify Java is installed: `java -version`
-2. Verify H2Orestart extension is installed in LibreOffice
-3. Terminate stale soffice processes then retry
-4. Use absolute paths for input file
-
----
-
-## 9. Essential Rules
-
-1. **HWPX is the canonical format** — all edits target HWPX; HWP is an upgrade-source only
-2. **Preserve secPr** in first paragraph's first run (defines page geometry)
-3. **mimetype first** — first ZIP entry, ZIP_STORED, `application/hwp+zip`
-4. **Preserve namespaces** — keep all existing ns declarations during XML edits
-5. **Strip linesegarray** after any text change — Hancom trusts stale cache, causing layout corruption
-6. **Pretty-print ↔ minify** — pretty-print on unpack, minify on pack
-7. **validate + page-guard** before completion — both required
-8. **Style ID sync** — section XML IDRefs must match header.xml definitions
-9. **Rebuild on page-guard failure** — fix cause, rebuild, re-verify
-10. **Change only what user requested** — preserve existing structure (tables, paragraphs, secPr)
-11. **Whitespace in `<hp:t>` is significant** — preserve carefully
-12. **Verify XML well-formedness** before build — fix unclosed tags immediately
-13. **Preserve table structure** — rowCnt/colCnt/colSpan/rowSpan changes only when requested
-14. **Templates are read-only** — copy before modifying
-15. **Match reference page count** — adjust text to fit existing layout
-16. **Atomic save** — pack.py writes temp file → validates → atomic rename
-17. **Fill-table by label path** — `hwpx_cli.py fill-table` for gov forms: `"이름 > 오른쪽": "value"`
-18. **repair is dry-run by default** — use `--apply` or `-o` for fixes (safe: XML decl, linesegarray, IDRef→0)
-19. **Agentic reading for long docs** — use `toc` → `chunk` → `search-chunks` for 50+ page documents
-20. **Use pack.py or hwpx_cli.py save** for repacking — raw zipfile skips linesegarray strip, mimetype STORED, XML minify
-21. **Use table_builder.py or python-hwpx API** for tables — raw XML causes H2Orestart crashes
-22. **Verify hwpxjs conversion output** — some HWP files produce dummy HWPX content
-
----
-
-## 10. Dependencies & Platform
-
-See `reference/dependencies.md` for full installation guide, cross-platform matrix, and library tiers.
-
-### Core Python packages
-
-```bash
-pip install hwpx lxml pyhwp olefile defusedxml openpyxl Pillow
-```
-
-### System dependencies
-
-```bash
-# macOS
-brew install libreoffice openjdk poppler
-# H2Orestart: https://github.com/ebandal/H2Orestart/releases
-```
-
----
-
-## File Structure
-
-```
-hwp_hwpx/
-├── SKILL.md
-├── reference/          ← hwpx-format.md, style_id_maps.md, visual_qa_prompt.md,
-│                         section0-xml-guide.md, header-xml-guide.md, dependencies.md
-├── scripts/
-│   ├── office/         ← unpack.py (pretty-print), pack.py (strip+minify)
-│   ├── hwpx_cli.py     ← unified CLI
-│   ├── validate.py, page_guard.py, build_hwpx.py, analyze_template.py
-│   ├── text_extract.py, create_document.py, hwp_reader.py
-│   └── ooxml/          ← cjk_utils.py, soffice.py
-└── templates/          ← base, gonmun, report, minutes, proposal
-```
+## Dependencies
+
+| Tool | Why | Required? |
+|------|-----|-----------|
+| `officecli` (fork binary) | Primary HWPX CLI | **Required** |
+| `dotnet` | Build officecli from source | Required for builds |
+| `python3` | Legacy fallback scripts | Optional |
+| `soffice` | PDF conversion | Optional |
