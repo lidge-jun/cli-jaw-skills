@@ -158,6 +158,9 @@ WebGL works in `sandbox="allow-scripts"` without `allow-same-origin`.
 
 **Important**: Three.js r172+ is ES Module only — must use `<script type="module">`.
 
+**Textures**: CDN-hosted textures (cdnjs, jsdelivr, unpkg) are allowed by CSP.
+External URLs from other domains are blocked. For procedural textures, use `ShaderMaterial` or canvas-generated `CanvasTexture`.
+
 ```html
 <div id="c" style="width:100%; height:400px;"></div>
 <script type="module">
@@ -367,4 +370,6 @@ No external library needed — zero loading time.
 - Always add `onerror` on CDN `<script>` tags
 - Theme tokens: `window.__jawTheme.isDark`, `window.__jawTokens['--*']`
 - `sendPrompt(text)` to populate chat input (max 500 chars, rate-limited)
-- CDN allowlist: `cdnjs.cloudflare.com` and `cdn.jsdelivr.net` only
+- CDN allowlist (CSP-enforced): `cdnjs.cloudflare.com`, `cdn.jsdelivr.net`, `unpkg.com`, `esm.sh`
+- Import maps auto-injected for Three.js bare specifiers (`import from 'three'`)
+- If widget includes its own `<script type="importmap">`, the auto-injection is skipped
