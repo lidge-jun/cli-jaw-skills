@@ -11,7 +11,7 @@ All libraries below work with the current sandbox (`allow-scripts`, no CSP chang
 | Matter.js | 0.20.0 | cdnjs | ~26 KB | 1 (drop-in) |
 | Math.js | 14.8.1 | cdnjs | ~193 KB | 1 (drop-in) |
 | Three.js | 0.172.0 | jsdelivr (ES Module) | ~176 KB | 2 (WebGL) |
-| p5.js | 1.11.13 | cdnjs | ~269 KB | 2 (creative) |
+| p5.js | 1.11.10 | cdnjs | ~269 KB | 2 (creative) |
 | Tone.js | 15.1.22 | cdnjs | ~77 KB | 2 (audio) |
 | Vanilla JS | — | — | 0 KB | 1 |
 
@@ -209,7 +209,7 @@ Use for: generative art, particle systems, creative visual demos.
 Runs in global mode (attaches to `window.setup`/`window.draw`).
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.13/p5.min.js"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.10/p5.min.js"
   onerror="document.body.innerHTML='<p>p5.js failed to load.</p>'">
 </script>
 <script>
