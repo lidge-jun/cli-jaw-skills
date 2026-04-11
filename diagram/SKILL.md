@@ -23,24 +23,67 @@ version: 1.1.0
 
 ## Diagram Type Selection
 
-Route on the verb, not the noun. Same subject gets different diagrams:
+Route on the verb, not the noun. Same subject gets different diagrams. Prefer Mermaid when the diagram type maps cleanly to a native Mermaid syntax — it's cheaper than hand-rolling SVG.
 
-| User says | Type | Output |
+| User says / intent | Type | Output |
 |---|---|---|
 | "how does X work" | Illustrative SVG | Spatial metaphor, cross-section, physical layout |
-| "architecture of X" | Structural SVG | Containers, regions, nesting |
-| "steps of X" | Flowchart SVG | Top-down boxes + arrows |
+| "architecture of X" (system context) | Structural SVG | Containers, regions, nesting |
+| "steps of X" (generic process) | Flowchart SVG or Mermaid `flowchart` | Top-down boxes + arrows |
 | "compare A vs B" | Comparison SVG | Side-by-side columns |
-| "DB schema" | Mermaid | ` ```mermaid ` erDiagram |
-| "show data / chart" | diagram-html | Chart.js / D3 iframe widget |
-| "simulate / interactive" | diagram-html | Matter.js / Canvas / controls |
+| "DB schema / entity relationship" | Mermaid | ` ```mermaid ` `erDiagram` |
+| "class diagram / OOP structure" | Mermaid | ` ```mermaid ` `classDiagram` |
+| "state machine / lifecycle" | Mermaid | ` ```mermaid ` `stateDiagram-v2` |
+| "sequence / call order / API flow" | Mermaid | ` ```mermaid ` `sequenceDiagram` |
+| "timeline / roadmap / history" | Mermaid | ` ```mermaid ` `timeline` |
+| "mind map / brainstorm / outline" | Mermaid | ` ```mermaid ` `mindmap` |
+| "git branching / release history" | Mermaid | ` ```mermaid ` `gitGraph` |
+| "2×2 matrix / priority quadrant" | Mermaid | ` ```mermaid ` `quadrantChart` |
+| "radar / spider / skill profile" | Mermaid v11.6+ (beta) | ` ```mermaid ` `radar-beta` |
+| "gantt / project schedule" | Mermaid | ` ```mermaid ` `gantt` |
+| "user journey map" | Mermaid | ` ```mermaid ` `journey` |
+| "pie breakdown (simple)" | Mermaid | ` ```mermaid ` `pie` |
+| "kanban board" | Mermaid v11.12+ (beta, test before use) | ` ```mermaid ` `kanban` |
+| "cloud/infra architecture" | Mermaid (beta) | ` ```mermaid ` `architecture-beta` |
+| "hierarchy / proportional size" | Mermaid (beta) | ` ```mermaid ` `treemap-beta` |
+| "free-form block layout" | Mermaid (beta) | ` ```mermaid ` `block-beta` |
+| "show data / chart" | diagram-html | Chart.js / D3 / ECharts iframe widget |
+| "simulate / interactive" | diagram-html | Matter.js / Canvas / sliders |
+| "interactive map (with pan/zoom/markers)" | diagram-html | Leaflet iframe widget — see `reference/module-map.md` |
+| "static country/state choropleth" | diagram-html | D3 + TopoJSON — see `reference/module-chart.md` |
 
-Default to illustrative for "how does X work?" — don't default to flowchart.
+Default to illustrative SVG for "how does X work?" — don't default to flowchart. Default to Mermaid when the type is in the table above — don't hand-roll an SVG when `classDiagram`/`sequenceDiagram`/`stateDiagram` already exists.
+
+### Mermaid gotchas (read before using beta/experimental types)
+
+- **Do NOT use C4 diagrams** (`C4Context`, `C4Container`, etc.) — theme tokens are not applied in dark mode, text becomes unreadable ([mermaid #4906](https://github.com/mermaid-js/mermaid/issues/4906)). Substitute routing:
+  - **C4 System Context** → Structural SVG (custom) OR Mermaid `flowchart` with subgraphs
+  - **C4 Container** → Mermaid `architecture-beta` (cloud/infra layout)
+  - **C4 Component** → Mermaid `flowchart` with `subgraph` grouping
+  - **C4 Dynamic** → Mermaid `sequenceDiagram`
+  - **C4 Deployment** → Mermaid `architecture-beta`
+- **`sankey-beta` / `xychart-beta`** — known to break scale-down at narrow chat widths. Prefer `diagram-html` + ECharts sankey for flow diagrams, Chart.js for simple XY.
+- **`radar-beta`** is the keyword as of Mermaid v11.6+ (not bare `radar` — the beta suffix is still required at the time of writing per [mermaid/syntax/radar](https://mermaid.js.org/syntax/radar.html)). `treemap-beta`, `block-beta`, `architecture-beta`, `packet-beta`, `kanban` are still beta but functional — test each in cli-jaw Web UI before finalizing. If the installed Mermaid version drops the `-beta` suffix, update the routing table accordingly.
+- **`sandbox` securityLevel iframe background bug** ([mermaid #5034](https://github.com/mermaid-js/mermaid/issues/5034)) — affects host rendering, not your output. No action needed from the agent.
+- **Theme**: all stable Mermaid types pick up the host dark/light theme automatically via cli-jaw's `themeVariables`. Do NOT set explicit colors in `%%{init: ...}%%` unless overriding for semantic reasons.
 
 ## When to Use
 Produce a diagram when the user's question benefits from visual explanation:
 flowcharts, comparisons, timelines, org charts, data charts, maps, UI mockups,
 physics simulations, interactive demos.
+
+## Delivery Mechanism (read before producing anything)
+
+All three formats — inline SVG, ` ```mermaid `, ` ```diagram-html ` — are **rendered inline in the chat response**. The jaw frontend parses your reply text and mounts them automatically. `diagram-html` goes into a sandboxed `<iframe>` that the host creates; you do **not** create the iframe.
+
+| ❌ Don't | ✅ Do |
+|---|---|
+| Save to `.svg` / `.html` / `.png` file (Write tool, `cat >`, fs.writeFile) | Paste raw block directly into your reply |
+| Wrap `diagram-html` in your own `<iframe>` / `<html>` / `<body>` / `<head>` | Start at `<div>` / `<canvas>` / `<style>` — host injects the shell |
+| Send via `/api/channel/send` or Telegram/Discord — it is NOT an attachment | Let the renderer handle it; diagrams are response text |
+| Reference an external image URL and call it a diagram | Output the SVG/widget code itself |
+
+If the user says "save this diagram" or "download it", still output it inline first so they see it rendered; only write a file if they explicitly ask for a file on disk (and even then, the inline version is the canonical delivery).
 
 ## Output Formats
 
@@ -175,8 +218,9 @@ This ensures visual content appears before scripts execute (important during str
 For detailed patterns, see:
 - `reference/svg-components.md` — SVG primitives, viewBox checklist, layout templates
 - `reference/color-palette.md` — Full color values (light + dark), assignment rules
-- `reference/module-chart.md` — Chart.js + D3 integration
+- `reference/module-chart.md` — Chart.js + D3 + ECharts 6 integration (bar/line/pie/choropleth + heatmap/sankey/radar/treemap/gauge/funnel/candlestick/chord)
 - `reference/module-widget.md` — Physics (Matter.js), math graphs (Math.js), 3D (Three.js), creative coding (p5.js), audio (Tone.js), mini-games
-- `reference/module-interactive.md` — Sliders, buttons, sendPrompt
+- `reference/module-interactive.md` — Sliders, selects, segmented buttons, toggles, play/pause/reset, debouncing, sendPrompt, keyboard accessibility, control layout pattern
+- `reference/module-map.md` — Leaflet interactive maps (OpenStreetMap tiles, markers, popups, dark mode)
 - `reference/module-mockup.md` — UI mockup patterns
 - `reference/module-art.md` — Decorative SVG patterns

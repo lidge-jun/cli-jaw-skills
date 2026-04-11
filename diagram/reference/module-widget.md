@@ -10,7 +10,8 @@ All libraries below work with the current sandbox (`allow-scripts`, no CSP chang
 |---|---|---|---|---|
 | Matter.js | 0.20.0 | cdnjs | ~26 KB | 1 (drop-in) |
 | Math.js | 14.8.1 | cdnjs | ~193 KB | 1 (drop-in) |
-| Three.js | 0.172.0 | jsdelivr (ES Module) | ~176 KB | 2 (WebGL) |
+| Three.js (WebGL 2, default) | 0.172.0 | jsdelivr (ES Module) | ~176 KB | 2 (WebGL) |
+| Three.js (WebGPU, optional)  | 0.180.0 | jsdelivr (ES Module) | ~200 KB | 3 (advanced) |
 | p5.js | 1.11.10 | cdnjs | ~269 KB | 2 (creative) |
 | Tone.js | 15.1.22 | cdnjs | ~77 KB | 2 (audio) |
 | Vanilla JS | — | — | 0 KB | 1 |
@@ -203,6 +204,59 @@ External URLs from other domains are blocked. For procedural textures, use `Shad
 - External models (`.glb`/`.gltf`): blocked by `connect-src 'none'`
 - Always add `onerror` fallback for WebGL failure
 - jsdelivr only (NOT cdnjs — Three.js not available as UMD on cdnjs)
+
+### Optional: WebGPU path (r171+, pinned r0.180.0)
+
+Use only when you need GPGPU compute, custom TSL shaders, or compute-heavy particles that hit WebGL 2 limits. **Default remains the WebGL 2 path above** — do not switch unless the widget specifically benefits.
+
+Top-level `await` inside `<script type="module">` is standard ES2022+ and works in Chrome/Edge/Safari/Firefox. cli-jaw's iframe CSP already allows `script-src 'unsafe-inline'` for inline module scripts, so the pattern below works as-is inside srcdoc. Dynamic `import()` is used inside the `else` branch because static `import` cannot be conditional.
+
+```html
+<div id="gpu" style="width:100%; height:400px;"></div>
+<script type="module">
+  const el = document.getElementById('gpu');
+
+  // Capability guard — WebGPU is not available in very old browsers or disabled contexts
+  if (!('gpu' in navigator)) {
+    el.textContent = 'WebGPU not available — this widget requires WebGPU';
+  } else {
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, el.clientWidth / 400, 0.1, 100);
+    camera.position.z = 3;
+
+    const renderer = new THREE.WebGPURenderer({ antialias: true, alpha: true });
+    await renderer.init();               // REQUIRED — WebGPU async device bootstrap
+    renderer.setSize(el.clientWidth, 400);
+    el.appendChild(renderer.domElement);
+
+    // ... scene setup identical to WebGL path ...
+
+    renderer.setAnimationLoop(() => renderer.render(scene, camera));
+  }
+</script>
+```
+
+**WebGPU-specific rules**:
+- Entry point is `build/three.webgpu.min.js` — **not** the main `three.module.min.js`
+- Version pinned to `0.180.0`. Minimum for production WebGPURenderer is r171 (2025-09); r180 is the current safe anchor as of 2026-04. Do NOT use `^` / `~` / `+` ranges in the URL.
+- `renderer.init()` is **async** — must `await` before using the renderer. Pattern above uses dynamic `import()` inside an `if/else` block (static `import` can't be conditional). Alternative: wrap the whole thing in an `async` IIFE after a top-level static import.
+- Use `renderer.setAnimationLoop(cb)` instead of `requestAnimationFrame` recursion — required for WebXR/WebGPU frame pacing
+- TSL shaders (`tsl` module) let you write one shader that compiles to both WGSL and GLSL — useful only if you're writing custom materials
+- Falls back silently if device init fails — always include the `'gpu' in navigator` guard + user-visible message
+- **Do not** mix WebGL and WebGPU in the same widget; pick one per iframe
+- Browser support: Chrome/Edge 113+, Safari 26 (2025-09) + iOS 26, Firefox 141+ (2025 late). Guard above handles old browsers gracefully.
+
+**When to use which**:
+
+| Scenario | Use |
+|---|---|
+| Static or lightly-animated 3D scene (≤100 objects) | WebGL 2 (r0.172.0 default) |
+| Physics, particles, cloth, GPU compute (10k+ instances) | WebGPU (r0.180.0, min r171) |
+| Custom fragment/vertex shaders in GLSL | WebGL 2 |
+| Custom shaders targeting both backends (TSL) | WebGPU |
+| Torus knot / single mesh demo | WebGL 2 — simpler, smaller bundle |
 
 ---
 
