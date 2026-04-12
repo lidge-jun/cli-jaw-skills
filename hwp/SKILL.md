@@ -64,6 +64,12 @@ officecli hwpx view --help
 | Template merge (JSON) | `officecli merge tpl.hwpx out.hwpx --data data.json` | JSON 파일도 가능 |
 | **Document diff** | `officecli compare a.hwpx b.hwpx` | text/outline/table diff (Plan 84) |
 | Diff (mode) | `officecli compare a.hwpx b.hwpx --mode outline --json` | --mode text\|outline\|table, --json |
+| **Swap** | `officecli swap doc.hwpx '/section[1]/p[1]' '/section[1]/p[2]'` | 두 요소 순서 교환 (Plan 96) |
+| **Column break** | `officecli add doc.hwpx /section[1] --type columnbreak --prop cols=2` | 2단/3단 레이아웃 (Plan 96) |
+| ~~Watermark~~ | ~~`officecli add doc.hwpx /section[1] --type watermark --prop path=img.png`~~ | ⏸ 999 보류 (한컴 렌더링 이슈) |
+| **Author field** | `officecli add doc.hwpx /section[1] --type author` | 만든 사람 필드 (Plan 97) |
+| Title field | `officecli add doc.hwpx /section[1] --type title` | 문서 제목 필드 |
+| Filename field | `officecli add doc.hwpx /section[1] --type filename` | 파일명 필드 |
 | Watch HWPX | `officecli watch doc.hwpx` | 라이브 HTML 프리뷰 (Plan 74) |
 | Remove | `officecli remove doc.hwpx /section/p[3]` | Also: `/toc`, `/watermark`, `/section[2]` |
 | Set metadata | `officecli set doc.hwpx / --prop title="문서제목" --prop author="작성자"` | |
