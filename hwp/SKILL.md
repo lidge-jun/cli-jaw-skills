@@ -267,6 +267,32 @@ officecli remove doc.hwpx '/section[2]'            # 섹션 삭제
 
 ---
 
+## Critical Gotchas
+
+### linesegarray (Layout Cache)
+HWPX paragraphs contain `<hp:linesegarray>` — Hancom's **layout cache** storing line break positions.
+When modifying text via `officecli set`, this cache is automatically invalidated (removed).
+Hancom recalculates layout on open.
+
+**If you ever edit HWPX XML directly** (not via officecli), you MUST delete `<hp:linesegarray>` from
+any paragraph whose text content changed. Stale cache causes:
+- Text compressed into single line (characters overlap)
+- Visible in Hancom only (officecli text view looks correct)
+
+### charPr height is centi-points
+`fontsize=16` (pt) → internally stored as `height=1600`. officecli handles conversion.
+
+### Orientation values are counterintuitive
+- `WIDELY` = 세로 (portrait) — default
+- `NARROWLY` = 가로 (landscape)
+- Page dimensions (width/height) do NOT change
+
+### CLICK_HERE field type
+- Must be `type="CLICK_HERE"` (with underscore), not `"CLICKHERE"`
+- Hancom uses `"SUMMERY"` (not `"SUMMARY"`)
+
+---
+
 ## QA Verification
 
 ```bash
