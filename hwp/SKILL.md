@@ -60,6 +60,8 @@ officecli hwpx view --help
 | **Expanded query** | `officecli query doc.hwpx 'tc[text~=홍길동]'` | `=`, `!=`, `~=`, `>=`, `<=`, `:has()`, `:contains()`, `>` combinator (Plan 75) |
 | **MD→HWPX import** | `officecli create out.hwpx --from-markdown input.md` | 마크다운 → HWPX 변환 (Plan 85) |
 | MD import (왼쪽정렬) | `officecli create out.hwpx --from-markdown input.md --align left` | justify(기본), left, center, right |
+| **Template merge** | `officecli merge tpl.hwpx out.hwpx --data '{"key":"val"}'` | `{{key}}` 플레이스홀더 치환 (Plan 95) |
+| Template merge (JSON) | `officecli merge tpl.hwpx out.hwpx --data data.json` | JSON 파일도 가능 |
 | **Document diff** | `officecli compare a.hwpx b.hwpx` | text/outline/table diff (Plan 84) |
 | Diff (mode) | `officecli compare a.hwpx b.hwpx --mode outline --json` | --mode text\|outline\|table, --json |
 | Watch HWPX | `officecli watch doc.hwpx` | 라이브 HTML 프리뷰 (Plan 74) |
