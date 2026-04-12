@@ -36,7 +36,7 @@ officecli hwpx view --help
 
 | Task | Command | Notes |
 |------|---------|-------|
-| Read text | `officecli view doc.hwpx text` | `text`, `annotated`, `outline`, `stats`, `html`, `styles`, `forms` |
+| Read text | `officecli view doc.hwpx text` | `text`, `annotated`, `outline`, `stats`, `html`, `styles`, `forms`, `tables`, `markdown`, `objects` |
 | Add paragraph | `officecli add doc.hwpx /section --type paragraph --prop text="내용"` | First add replaces empty p[1] |
 | Edit paragraph | `officecli set doc.hwpx /section/p[1] --prop bold=true --prop align=CENTER` | |
 | Add table | `officecli add doc.hwpx /section --type table --prop rows=3 --prop cols=4` | |
@@ -48,6 +48,17 @@ officecli hwpx view --help
 | Add TOC | `officecli add doc.hwpx /section --type toc` | `--prop mode=field` for field-based |
 | Add section | `officecli add doc.hwpx / --type section --prop orientation=LANDSCAPE` | Multi-section |
 | Find/replace | `officecli set doc.hwpx / --prop find="old" --prop replace="new"` | Regex: `find=regex:\d+` |
+| **Label fill** | `officecli set doc.hwpx / --prop 'fill:대표자=홍길동'` | 라벨 옆 셀 자동 채우기 |
+| Label fill (방향) | `officecli set doc.hwpx / --prop 'fill:주소>down=서울시'` | right(기본), down, left, up |
+| Label fill (batch) | `officecli set doc.hwpx /table/fill --prop '대표자=홍길동' --prop '직위=이사'` | fill: prefix 생략 |
+| Form recognize | `officecli view doc.hwpx forms --auto` | 테이블 label-value 자동 인식 (Plan 70.1) |
+| Form recognize JSON | `officecli view doc.hwpx forms --auto --json` | AI 파이프라인: recognize → map → fill |
+| **Table map** | `officecli view doc.hwpx tables` | 테이블 2D 그리드 + 라벨 맵 (Plan 71) |
+| **Markdown export** | `officecli view doc.hwpx markdown` | GFM 마크다운 변환 (Plan 72) |
+| **Object finder** | `officecli view doc.hwpx objects` | picture/field/bookmark/equation 목록 (Plan 82) |
+| Object filter | `officecli view doc.hwpx objects --object-type picture` | 특정 타입만 필터 |
+| **Expanded query** | `officecli query doc.hwpx 'tc[text~=홍길동]'` | `=`, `!=`, `~=`, `>=`, `<=`, `:has()`, `:contains()`, `>` combinator (Plan 75) |
+| Watch HWPX | `officecli watch doc.hwpx` | 라이브 HTML 프리뷰 (Plan 74) |
 | Remove | `officecli remove doc.hwpx /section/p[3]` | Also: `/toc`, `/watermark`, `/section[2]` |
 | Set metadata | `officecli set doc.hwpx / --prop title="문서제목" --prop author="작성자"` | |
 | HTML preview | `officecli view doc.hwpx html --browser` | A4 미리보기 |
@@ -136,6 +147,92 @@ officecli add doc.hwpx / --type section --prop orientation=LANDSCAPE
 officecli add doc.hwpx '/section[2]' --type paragraph --prop text="가로 페이지"
 officecli set doc.hwpx /section --prop margintop=8504
 officecli remove doc.hwpx '/section[2]'
+```
+
+### Label-based table fill (Plan 70)
+
+```bash
+# 라벨 기반 자동 채우기 — 테이블에서 라벨 텍스트를 찾아 인접 셀에 값 입력
+officecli set form.hwpx / --prop 'fill:대표자=홍길동' --prop 'fill:주소=서울시 강남구'
+officecli set form.hwpx / --prop 'fill:설립일>down=2025년 9월' # 아래 방향
+officecli set form.hwpx /table/fill --prop '이름=김서준' --prop '학번=2023156789' # prefix 생략
+```
+
+### Form recognize → fill 파이프라인 (Plan 70.2-70.4 ✅)
+
+```bash
+# AI 자동 양식 채우기 워크플로우 (3-step)
+# Step 1: 테이블 label-value 자동 인식
+officecli view form.hwpx forms --auto --json > fields.json
+# Output: {"clickHere": [...], "autoRecognized": [{"label":"성 명","value":"","path":"...", ...}]}
+
+# Step 2: AI가 인식된 라벨에 값 매핑 (label 그대로 사용 — NormalizeLabel 동일)
+
+# Step 3: fill (인식된 라벨 → 동일 셀 매칭)
+officecli set form.hwpx /table/fill --prop '성 명=홍길동' --prop '학 번=2024123456'
+```
+
+### Table map — 테이블 구조 한눈에 파악 (Plan 71 ✅)
+
+```bash
+# 이전: 30+ 명령어로 수동 cellAddr 매핑 → 이제 한 줄
+officecli view doc.hwpx tables
+# Table 1 (/section[1]/tbl[1], 8×4):
+#   [0] 접수번호  2026-0412-001  접수일자  2026.04.12
+#   [1] 동아리명  넥스트레벨    사업분야  AI/소프트웨어
+#   Labels: 21
+#     접수번호: 2026-0412-001 (r0,c0)
+#     대표자: 이지은 (r2,c0)
+
+# JSON 출력 (AI 파이프라인용)
+officecli view doc.hwpx tables --json
+```
+
+### Markdown export (Plan 72 ✅)
+
+```bash
+officecli view doc.hwpx markdown
+# **고려대학교 창업동아리 참가신청서**
+# | 접수번호 | 2026-0412-001 | 접수일자 | 2026.04.12 |
+# | --- | --- | --- | --- |
+# ...
+```
+
+### Object finder — 특정 타입 객체 검색 (Plan 82 ✅)
+
+```bash
+officecli view doc.hwpx objects                      # 전체: picture, field, bookmark, equation
+officecli view doc.hwpx objects --object-type field   # 필드만
+officecli view doc.hwpx objects --json                # JSON
+```
+
+### Expanded query — 확장 셀렉터 문법 (Plan 75 ✅)
+
+```bash
+officecli query doc.hwpx 'run[bold=true]'              # 굵은 글씨 run
+officecli query doc.hwpx 'tc[text~=홍길동]'            # 셀 텍스트 검색
+officecli query doc.hwpx 'p:has(tbl)'                  # 테이블 포함 단락
+officecli query doc.hwpx 'tbl > tr > tc[colSpan!=1]'   # 병합 셀
+officecli query doc.hwpx 'p[heading=1]'                # heading level 1
+officecli query doc.hwpx 'run[fontsize>=20]'           # 20pt 이상 run
+```
+
+### 기존 문서 편집 — 테이블 구조 파악 필수 워크플로우
+
+```bash
+# 1단계: 전체 테이블 맵 (Plan 71 — 수동 매핑 대체)
+officecli view doc.hwpx tables
+
+# 2단계: 특정 셀 검색 (Plan 75 — 확장 쿼리)
+officecli query doc.hwpx 'tc[text~=대표자]'
+
+# 3단계: 편집 (label fill 또는 직접 경로)
+officecli set doc.hwpx /table/fill --prop '대표자=홍길동'
+# 또는
+officecli set doc.hwpx '/section/p[N]/tbl[1]/tr[R]/tc[C]' --prop 'text=값'
+
+# 4단계: PDF로 시각 검증
+soffice --headless --convert-to pdf --outdir /tmp doc.hwpx
 ```
 
 ### Find/replace (basic, regex, scoped)
@@ -291,6 +388,77 @@ any paragraph whose text content changed. Stale cache causes:
 - Must be `type="CLICK_HERE"` (with underscore), not `"CLICKHERE"`
 - Hancom uses `"SUMMERY"` (not `"SUMMARY"`)
 
+### charPr 공유 오염 — fontsize는 반드시 모든 단락에 명시
+`add --prop fontsize=22`는 charPr ID 0 (전역 기본)을 22pt로 수정한다.
+이후 fontsize를 지정하지 않은 모든 단락이 22pt로 생성됨.
+**해결**: 모든 `add` 호출에 반드시 `fontsize=N`을 명시. 테이블 셀도 마찬가지 — 기본 charPr를 공유하므로 의도하지 않은 크기가 적용될 수 있음.
+```bash
+# BAD: fontsize 미지정 → charPr 0의 크기 상속 (오염 시 22pt)
+officecli add doc.hwpx /section --type paragraph --prop 'text=본문'
+# GOOD: 항상 명시
+officecli add doc.hwpx /section --type paragraph --prop 'text=본문' --prop fontsize=11
+```
+
+### SetCellText clears ALL paragraphs
+`officecli set ... --prop text=값`은 셀 내 **모든 단락**을 제거하고 새 텍스트를 넣는다.
+가이드 텍스트(※ 내용을 입력하세요)가 자동 삭제됨. 여러 줄을 보존해야 하면 find/replace 사용.
+
+### Table cell mapping — cellAddr 필수 확인
+HWPX 테이블은 복잡한 병합 구조를 가짐. `tc[N]`은 **물리적 순서**, `cellAddr`는 **논리적 그리드 좌표**.
+편집 전 반드시 cellAddr 매핑:
+```bash
+officecli get doc.hwpx '/section/p[N]/tbl[1]/tr[R]/tc[C]'
+# → row: X, col: Y, rowSpan: M, colSpan: N
+```
+**주의**: 같은 `tr[R]`의 `tc[3]`과 `tc[4]`가 시각적으로 인접하지 않을 수 있음 (colSpan 때문).
+병합된 행의 하단 row는 셀 수가 적음 (나머지는 rowSpan으로 가려짐).
+
+### find/replace 스코프 주의
+`officecli set doc.hwpx / --prop 'find=X' --prop 'replace=Y'` 는 **전체 문서** 대상.
+동일 패턴이 여러 곳에 있으면 **모두 치환됨**. 특정 영역만 치환하려면 스코프 지정:
+```bash
+officecli set doc.hwpx '/section/p[2]' --prop 'find=□' --prop 'replace=■'     # 해당 테이블만
+officecli set doc.hwpx '/section/p[10]/tbl[1]/tr[4]/tc[3]' --prop 'find=□ 학부' --prop 'replace=■ 학부'  # 특정 셀만
+```
+
+### charPr 0 (전역 기본 스타일)은 자동 보호
+officecli는 charPr ID=0 (전역 기본)을 직접 수정하지 않고 항상 clone한다.
+`add --prop fontsize=22`로 제목을 만들어도 테이블/본문의 기본 폰트 크기에 영향 없음.
+이전에 테이블 셀이 24pt로 생성되던 버그가 이것으로 해결됨.
+
+### File locking — Finder/한컴 열린 상태에서도 편집 가능
+officecli는 `FileShare.ReadWrite`로 파일을 여므로 Finder 미리보기나 한컴이 열려 있어도 편집 가능.
+
+### Form recognize → fill 파이프라인 라벨 계약 (Plan 70.2-70.4 ✅)
+`forms --auto` (인식)과 `/table/fill` (채우기) 모두 내부적으로 `NormalizeLabel()`을 호출:
+trim → 공백 축소 → 콜론 제거. 인식 결과의 label을 그대로 fill에 전달하면 동일 셀을 찾음.
+```bash
+# Step 1: 인식 → JSON
+officecli view form.hwpx forms --auto --json > fields.json
+# Step 2: AI가 label-value 매핑 생성 (label 그대로 사용)
+# Step 3: fill (NormalizeLabel 동일 → 같은 셀 매칭)
+officecli set form.hwpx /table/fill --prop '성 명=홍길동' --prop '학 번=2024123456'
+```
+
+### BuildTableGrid — 2D 그리드 공유 인프라 (Plan 70.1 ✅)
+`FindCellInTable()`에서 추출된 `BuildTableGrid(tbl)` 헬퍼.
+Plan 70 (label fill), Plan 70.2 (form recognize), Plan 71 (table map view), Plan 82 (object finder)에서 공유.
+cellAddr + rowSpan/colSpan 기반 2D `XElement?[,]` 배열 반환.
+
+### Corpus smoke testing (Plan 86 ✅)
+16개 실전 HWPX (jakal-hwpx 샘플)로 open→view→validate smoke path 자동 실행.
+xUnit `[Theory]` + `[MemberData]`로 corpus 디렉토리 자동 스캔. corpus 없으면 skip.
+
+### Expanded query — virtual attributes (Plan 75 ✅)
+`query` 셀렉터가 `text`, `bold`, `italic`, `fontsize`, `colSpan`, `rowSpan`, `heading` 가상 속성 지원.
+연산자: `=`, `!=`, `~=` (contains), `>=`, `<=`. Child combinator: `parent > child`.
+실제 XML attribute와 가상 attribute 모두 같은 `[attr op value]` 문법으로 접근.
+
+### HashSet vs string[] for Korean keyword matching
+Korean has no case distinction → `StringComparer.OrdinalIgnoreCase` 무의미.
+키워드 매칭은 substring `.Contains()` 사용 → HashSet의 O(1) lookup 이점 없음.
+`string[]` + `.Any(kw => text.Contains(kw))` 가 의미적으로 정확.
+
 ---
 
 ## QA Verification
@@ -302,9 +470,22 @@ officecli view doc.hwpx text
 officecli view doc.hwpx html --browser
 ```
 
+### PDF 변환 검증 (필수)
+한컴이 없는 환경이나 시각 검증이 필요할 때 soffice로 PDF 변환:
+```bash
+soffice --headless --convert-to pdf --outdir /tmp doc.hwpx
+```
+PDF에서 반드시 확인할 항목:
+- [ ] 표 셀이 정확한 위치에 채워졌는지 (cellAddr 매핑 오류 가장 흔함)
+- [ ] 가이드 텍스트(※, 예시 등)가 완전히 제거되었는지
+- [ ] 체크박스 □/■ 변환이 의도한 곳에만 적용되었는지
+- [ ] 병합셀 안의 텍스트가 올바른 행에 있는지 (가이드 행 vs 내용 행)
+- [ ] 총원, 학년별 인원 등 숫자가 전역 치환으로 오염되지 않았는지
+
 ### Checklist
 - [ ] `validate` passes
 - [ ] `view ... text` matches expected content
+- [ ] **soffice PDF 변환 후 표 시각 검증** (셀 위치, 가이드 제거, 체크박스)
 - [ ] HTML preview renders correctly
 - [ ] 한컴에서 정상 열림
 
