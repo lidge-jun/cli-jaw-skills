@@ -66,7 +66,7 @@ officecli hwpx view --help
 | Diff (mode) | `officecli compare a.hwpx b.hwpx --mode outline --json` | --mode text\|outline\|table, --json |
 | **Swap** | `officecli swap doc.hwpx '/section[1]/p[1]' '/section[1]/p[2]'` | 두 요소 순서 교환 (Plan 96) |
 | **Column break** | `officecli add doc.hwpx /section[1] --type columnbreak --prop cols=2` | 2단/3단 레이아웃 (Plan 96) |
-| ~~Watermark~~ | ~~`officecli add doc.hwpx /section[1] --type watermark --prop path=img.png`~~ | ⏸ 999 보류 (한컴 렌더링 이슈) |
+| **Image watermark** | `officecli add doc.hwpx /section[1] --type watermark --prop src=watermark.png` | Plan 98 재활성화. Opaque RGB 권장, light/simple asset은 `bright=0 --prop contrast=0` 권장 |
 | **Author field** | `officecli add doc.hwpx /section[1] --type author` | 만든 사람 필드 (Plan 97) |
 | Title field | `officecli add doc.hwpx /section[1] --type title` | 문서 제목 필드 |
 | Filename field | `officecli add doc.hwpx /section[1] --type filename` | 파일명 필드 |
@@ -217,6 +217,23 @@ officecli view doc.hwpx objects                      # 전체: picture, field, b
 officecli view doc.hwpx objects --object-type field   # 필드만
 officecli view doc.hwpx objects --json                # JSON
 ```
+
+### Image watermark — Hancom validated recipe (Plan 98 재활성화, 2026-04-13)
+
+```bash
+# 권장: repo build-local binary 사용 (installed ~/.local/bin 이 lagging build일 수 있음)
+700_projects/cli-jaw/build-local/officecli add doc.hwpx /section[1] \
+  --type watermark \
+  --prop src=/path/to/watermark.png \
+  --prop bright=0 \
+  --prop contrast=0
+```
+
+실전 규칙:
+- **Opaque RGB PNG 우선** — 투명 PNG(RGBA)는 한컴 page background 경로에서 불안정할 수 있음
+- **단순한 흰 배경 + 연한 회색 텍스트는 기본 필터(`bright=70`, `contrast=-50`)에서 사라질 수 있음**
+- **간단한 텍스트 워터마크는 2112×1162 캔버스의 미리 렌더링된 PNG로 전달하는 것이 안전**
+- **`build-local/officecli` 1.0.42에서는 동작 확인**, `~/.local/bin/officecli`가 `Unsupported element type: watermark`를 내면 바이너리 재빌드/동기화 필요
 
 ### Expanded query — 확장 셀렉터 문법 (Plan 75 ✅)
 
