@@ -7,7 +7,7 @@ description: "HWP/HWPX create, read, edit, review. Triggers: 한글, .hwp, .hwpx
 
 Use this skill for any `.hwpx` task: create, read, edit, review, template-fill, or QA verification.
 Triggers: `"한글"`, `".hwpx"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
-Primary tool: **officecli** (`build-local/officecli` or `~/.local/bin/officecli`).
+Primary tool: **officecli** (PATH — global install).
 Fallback: **Legacy Python scripts** only when officecli does not cover the operation.
 Do NOT use this skill for PDFs, spreadsheets, or DOCX files.
 
@@ -28,14 +28,14 @@ officecli hwpx view --help
 
 | Binary | Path | Notes |
 |--------|------|-------|
-| officecli (fork) | `700_projects/cli-jaw/build-local/officecli` | Primary — full HWPX support |
+| officecli | `officecli` (PATH) | Primary — full HWPX support via global install |
 
 ---
 
 ## Legacy Python Fallback (officecli 미지원 기능)
 
 officecli가 지원하지 않는 작업은 `skills_ref/hwp/scripts/` Python 스크립트를 사용.
-스크립트 경로: `700_projects/cli-jaw/skills_ref/hwp/scripts/`
+스크립트 경로: `~/.cli-jaw/skills_ref/hwp/scripts/`
 
 | Task | Tool | Command |
 |------|------|---------|
@@ -126,7 +126,7 @@ file doc.hwp    # "HWP Document" → HWP 5.0 (binary, read-only)
 ## Legacy Python Fallback (officecli 미지원 기능)
 
 officecli가 지원하지 않는 작업은 `skills_ref/hwp/scripts/` Python 스크립트를 사용.
-스크립트 경로: `700_projects/cli-jaw/skills_ref/hwp/scripts/`
+스크립트 경로: `~/.cli-jaw/skills_ref/hwp/scripts/`
 
 | Task | Tool | Command |
 |------|------|---------|
@@ -305,8 +305,7 @@ officecli view doc.hwpx objects --json                # JSON
 ### Image watermark — Hancom validated recipe (Plan 98 재활성화, 2026-04-13)
 
 ```bash
-# 권장: repo build-local binary 사용 (installed ~/.local/bin 이 lagging build일 수 있음)
-700_projects/cli-jaw/build-local/officecli add doc.hwpx /section[1] \
+officecli add doc.hwpx /section[1] \
   --type watermark \
   --prop src=/path/to/watermark.png \
   --prop bright=0 \

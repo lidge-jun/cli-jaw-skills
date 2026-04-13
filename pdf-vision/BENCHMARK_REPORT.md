@@ -1,7 +1,7 @@
 # pdf-expert E2E Benchmark Report
 
 - **Date**: 2026-03-04
-- **Test PDF**: `/Users/jun/Desktop/air 프로모션.pdf` (2.7 MB, 13 pages)
+- **Test PDF**: `air 프로모션.pdf` (2.7 MB, 13 pages)
 - **Platform**: macOS Darwin 25.2.0, Apple Silicon
 - **Model**: Claude Opus 4.6
 

@@ -37,8 +37,7 @@ officecli docx set style
 
 | Binary | Path | Notes |
 |--------|------|-------|
-| officecli (upstream) | `~/.local/bin/officecli` | Default binary for general DOCX work |
-| officecli (fork) | `700_projects/cli-jaw/officecli/build-local/officecli` | Prefer for Korean/Japanese/Chinese authoring because CjkHelper.cs auto-applies fonts/lang tags |
+| officecli | `officecli` (PATH) | Global install includes CJK fork with CjkHelper.cs — auto-applies fonts/lang tags |
 
 ---
 
@@ -336,9 +335,8 @@ python scripts/soffice.py report.docx --to pdf
 The cli-jaw fork includes `CjkHelper.cs`, which auto-detects CJK text and applies appropriate fonts and `w:lang` tags.
 
 ```bash
-OFFICECLI=700_projects/cli-jaw/officecli/build-local/officecli
-$OFFICECLI add report.docx /body --type paragraph --prop text="분기별 보고서" --prop style=Heading1
-$OFFICECLI add report.docx /body --type paragraph --prop text="매출이 전년 대비 15% 증가했다."
+officecli add report.docx /body --type paragraph --prop text="분기별 보고서" --prop style=Heading1
+officecli add report.docx /body --type paragraph --prop text="매출이 전년 대비 15% 증가했다."
 ```
 
 ### DOCX-Specific CJK Commands
@@ -413,8 +411,7 @@ Use these only when officecli does not yet cover the requirement.
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
-| `~/.local/bin/officecli` | Primary DOCX CLI | Required |
-| `700_projects/cli-jaw/officecli/build-local/officecli` | Fork with CJK auto-handling | Recommended for CJK |
+| `officecli` (PATH) | Primary DOCX CLI — global install includes CJK fork | Required |
 | `dotnet` | Runtime/build for officecli | Required for fork builds |
 | `python3` | Fallback scripts | Optional fallback |
 | `soffice` | PDF conversion / `.doc` migration / macro workflows | Optional fallback |
@@ -423,6 +420,6 @@ Use these only when officecli does not yet cover the requirement.
 ### Fork build
 
 ```bash
-cd 700_projects/cli-jaw/officecli
+# For development only — production users get officecli via the packaged installer
 dotnet publish -c Release -o build-local
 ```

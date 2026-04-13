@@ -48,7 +48,7 @@ officecli pptx set shape
 | Batch slide construction | officecli | `officecli batch deck.pptx --commands '[...]'` | Use for repeated layout work |
 | Resident workflow | officecli | `officecli open deck.pptx` | Still pass file path after open |
 | Layout / overflow scan | officecli | `officecli check deck.pptx` | Pair with `view ... issues` |
-| CJK-safe authoring | officecli fork | `700_projects/cli-jaw/officecli/build-local/officecli` | Fork auto-handles CJK fonts/lang |
+| CJK-safe authoring | officecli | `officecli` (PATH) | Global install includes CJK fork — auto-handles fonts/lang |
 | Large data-driven deck generation | pptxgenjs (fallback) | `npm install pptxgenjs` | Fallback for 50+ composable slides |
 | Thumbnails / orphan cleanup | Legacy Python fallback | `python scripts/thumbnail.py deck.pptx out_dir/ --individual` | Utility-only |
 
@@ -238,8 +238,7 @@ officecli add deck.pptx /slide[1] --type shape --prop text='23%' --prop color=E7
 The cli-jaw fork includes `CjkHelper.cs` for PPTX. It auto-detects Korean/Japanese/Chinese text and applies language tags plus sane default fonts.
 
 ```bash
-OFFICECLI=700_projects/cli-jaw/officecli/build-local/officecli
-$OFFICECLI add deck.pptx /slide[1] --type shape \
+officecli add deck.pptx /slide[1] --type shape \
   --prop text='분기별 실적 보고서' \
   --prop x=2cm --prop y=3cm --prop width=20cm --prop height=3cm \
   --prop size=30 --prop bold=true
@@ -468,8 +467,7 @@ Even in `pptxgenjs` flows, officecli remains the preferred finishing/QA tool for
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
-| `~/.local/bin/officecli` | Primary PPTX CLI | Required |
-| `700_projects/cli-jaw/officecli/build-local/officecli` | Fork with CJK auto-handling | Recommended for CJK |
+| `officecli` (PATH) | Primary PPTX CLI — global install includes CJK fork | Required |
 | `dotnet` | Runtime/build for officecli | Required for fork builds |
 | `pptxgenjs` | Large programmatic generation | Optional fallback |
 | `python3` | Utility scripts | Optional fallback |

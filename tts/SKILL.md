@@ -65,9 +65,9 @@ python3 /tmp/tg_voice.py
 
 ```python
 # /tmp/tg_voice.py
-import json, requests
+import json, os, requests
 
-with open("/Users/junny/.cli-jaw/settings.json") as f:
+with open(os.path.expanduser("~/.cli-jaw/settings.json")) as f:
     s = json.load(f)
 token = s["telegram"]["token"]
 chat_id = s["telegram"]["allowedChatIds"][-1]
