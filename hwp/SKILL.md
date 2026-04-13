@@ -45,6 +45,7 @@ officecli hwpx view --help
 | Add image | `officecli add doc.hwpx /section --type picture --prop src=image.png` | |
 | Add shape | `officecli add doc.hwpx /section --type rect --prop width=20000 --prop height=10000 --prop fillcolor=#4472C4` | `line`, `rect`, `ellipse`, `textbox`, `polygon`, `triangle`, `pentagon`, `arrow` |
 | Add field | `officecli add doc.hwpx /section --type clickhere` | `clickhere`, `filepath`, `summary`, `date` |
+| New form field creation | `officecli add doc.hwpx /section[1] --type formfield --prop type=text` | **Blocked** — source prototype exists, but Hancom golden/manual verification and published binary parity are not closed |
 | Add TOC | `officecli add doc.hwpx /section --type toc` | `--prop mode=field` for field-based |
 | Add section | `officecli add doc.hwpx / --type section --prop orientation=LANDSCAPE` | Multi-section |
 | Find/replace | `officecli set doc.hwpx / --prop find="old" --prop replace="new"` | Regex: `find=regex:\d+` |
@@ -476,6 +477,11 @@ any paragraph whose text content changed. Stale cache causes:
 ### CLICK_HERE field type
 - Must be `type="CLICK_HERE"` (with underscore), not `"CLICKHERE"`
 - Hancom uses `"SUMMERY"` (not `"SUMMARY"`)
+
+### Form field creation (Plan 100) is not release-closed
+- `text/checkbox/dropdown` formfield creation has a source prototype, but the feature is still blocked
+- Reason: Hancom golden template diff and manual verification are not closed
+- If a local binary reports `Unsupported element type: formfield`, treat that as expected until the build is republished and acceptance is complete
 
 ### charPr 공유 오염 — fontsize는 반드시 모든 단락에 명시
 `add --prop fontsize=22`는 charPr ID 0 (전역 기본)을 22pt로 수정한다.
