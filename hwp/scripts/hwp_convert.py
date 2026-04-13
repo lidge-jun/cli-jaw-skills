@@ -25,19 +25,52 @@ from pathlib import Path
 
 SIDECAR_DIR = Path("/tmp/hwp2hwpx")
 SIDECAR_REPO = "https://github.com/neolord0/hwp2hwpx"
-MAIN_CLASS = "kr.dogfoot.hwp2hwpx.CliMain"
+MAIN_CLASS = "CliRunner"
+
+# Minimal CLI runner — hwp2hwpx is a library with no main method
+_CLI_RUNNER_SRC = """\
+import kr.dogfoot.hwp2hwpx.Hwp2Hwpx;
+import kr.dogfoot.hwplib.object.HWPFile;
+import kr.dogfoot.hwplib.reader.HWPReader;
+import kr.dogfoot.hwpxlib.object.HWPXFile;
+import kr.dogfoot.hwpxlib.writer.HWPXWriter;
+
+public class CliRunner {
+    public static void main(String[] args) throws Exception {
+        if (args.length < 2) {
+            System.err.println("Usage: CliRunner input.hwp output.hwpx");
+            System.exit(1);
+        }
+        HWPFile hwp = HWPReader.fromFile(args[0]);
+        HWPXFile hwpx = Hwp2Hwpx.toHWPX(hwp);
+        HWPXWriter.toFilepath(hwpx, args[1]);
+        System.out.println("OK: " + args[0] + " -> " + args[1]);
+    }
+}
+"""
 
 
 def _check_tool(name: str) -> bool:
     return shutil.which(name) is not None
 
 
+def _patch_pom_source_target(pom_path: Path) -> None:
+    """Patch pom.xml source/target from 7 to 11 for modern JDKs."""
+    text = pom_path.read_text()
+    if "<source>7</source>" in text:
+        text = text.replace("<source>7</source>", "<source>11</source>")
+        text = text.replace("<target>7</target>", "<target>11</target>")
+        pom_path.write_text(text)
+        print("Patched pom.xml: source/target 7 → 11", file=sys.stderr)
+
+
 def _ensure_sidecar() -> Path:
-    """Clone and build hwp2hwpx if not already cached."""
+    """Clone, patch, inject CLI runner, and build hwp2hwpx."""
     classes_dir = SIDECAR_DIR / "target" / "classes"
     deps_dir = SIDECAR_DIR / "target" / "dependency"
+    runner_class = classes_dir / "CliRunner.class"
 
-    if classes_dir.exists() and deps_dir.exists():
+    if classes_dir.exists() and deps_dir.exists() and runner_class.exists():
         return SIDECAR_DIR
 
     print("Building hwp2hwpx sidecar (first run only)...", file=sys.stderr)
@@ -48,6 +81,11 @@ def _ensure_sidecar() -> Path:
             check=True, capture_output=True, text=True,
         )
 
+    # Patch source/target for JDK 17+
+    pom_path = SIDECAR_DIR / "pom.xml"
+    if pom_path.exists():
+        _patch_pom_source_target(pom_path)
+
     subprocess.run(
         ["mvn", "-DskipTests", "package", "dependency:copy-dependencies"],
         cwd=str(SIDECAR_DIR), check=True, capture_output=True, text=True,
@@ -55,6 +93,16 @@ def _ensure_sidecar() -> Path:
 
     if not classes_dir.exists():
         raise RuntimeError("Maven build succeeded but target/classes not found")
+
+    # Inject CLI runner
+    runner_src = SIDECAR_DIR / "CliRunner.java"
+    runner_src.write_text(_CLI_RUNNER_SRC)
+    cp = _build_classpath(SIDECAR_DIR)
+    subprocess.run(
+        ["javac", "-cp", cp, str(runner_src), "-d", str(classes_dir)],
+        check=True, capture_output=True, text=True,
+    )
+    runner_src.unlink()
 
     print("Sidecar built successfully.", file=sys.stderr)
     return SIDECAR_DIR
