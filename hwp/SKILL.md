@@ -32,6 +32,47 @@ officecli hwpx view --help
 
 ---
 
+## Legacy Python Fallback (officecli 미지원 기능)
+
+officecli가 지원하지 않는 작업은 `skills_ref/hwp/scripts/` Python 스크립트를 사용.
+스크립트 경로: `700_projects/cli-jaw/skills_ref/hwp/scripts/`
+
+| Task | Tool | Command |
+|------|------|---------|
+| **HWP 5.0 바이너리 읽기** | `hwp_reader.py` | `python scripts/hwp_reader.py input.hwp` |
+| **HWP→HWPX 변환** | `hwp_convert.py` | `python scripts/hwp_convert.py input.hwp output.hwpx` |
+| **HWPX 생성 (템플릿)** | `build_hwpx.py` | `python scripts/build_hwpx.py --template report --output out.hwpx` |
+| **텍스트 추출 (Python)** | `text_extract.py` | `python scripts/text_extract.py input.hwpx` |
+| **HWPX 언팩/편집/리팩** | `hwpx_cli.py` | `python scripts/hwpx_cli.py open input.hwpx work/` → edit → `save work/ out.hwpx` |
+| **검색/치환** | `hwpx_cli.py` | `python scripts/hwpx_cli.py replace input.hwpx "old" "new" -o out.hwpx` |
+| **배치 치환** | `hwpx_cli.py` | `python scripts/hwpx_cli.py batch-replace input.hwpx map.json -o out.hwpx` |
+| **테이블 조작** | `hwpx_cli.py` | `python scripts/hwpx_cli.py fill-table input.hwpx IDX '{"label>dir":"val"}' -o out.hwpx` |
+| **HWPX→PDF 변환** | `soffice` | `soffice --headless --convert-to pdf --outdir /tmp input.hwpx` |
+| **시각 QA** | PDF→이미지 | `pdftoppm -jpeg -r 150 out.pdf preview` → 서브에이전트 검수 |
+| **검증 (Python)** | `validate.py` | `python scripts/validate.py input.hwpx` |
+| **페이지 수 보호** | `page_guard.py` | `python scripts/page_guard.py -r ref.hwpx -o out.hwpx` |
+| **문서 구조** | `hwpx_cli.py` | `python scripts/hwpx_cli.py structure input.hwpx` |
+| **수리** | `hwpx_cli.py` | `python scripts/hwpx_cli.py repair input.hwpx --apply` |
+
+### Python 환경 의존성
+
+```bash
+pip install pyhwp lxml   # HWP 읽기 + XML 처리
+# soffice: LibreOffice 설치 필요 (macOS: brew install --cask libreoffice)
+# H2Orestart: Java 기반 HWP 변환 엔진 (PDF 변환 시 필요)
+```
+
+### 포맷 판별
+
+```bash
+file doc.hwpx   # "Zip archive" → HWPX
+file doc.hwp    # "HWP Document" → HWP 5.0 (binary, read-only)
+```
+
+> **우선순위**: officecli로 가능하면 officecli 사용. Python은 officecli가 못 하는 작업(HWP 바이너리 읽기, 변환, PDF 출력, 템플릿 기반 생성)에만 사용.
+
+---
+
 ## Quick Decision
 
 | Task | Command | Notes |

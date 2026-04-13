@@ -57,9 +57,26 @@ def _check_tool(name: str) -> bool:
 def _patch_pom_source_target(pom_path: Path) -> None:
     """Patch pom.xml source/target from 7 to 11 for modern JDKs."""
     text = pom_path.read_text()
+    changed = False
     if "<source>7</source>" in text:
         text = text.replace("<source>7</source>", "<source>11</source>")
+        changed = True
+    if "<target>7</target>" in text:
         text = text.replace("<target>7</target>", "<target>11</target>")
+        changed = True
+    if "<maven.compiler.source>7</maven.compiler.source>" in text:
+        text = text.replace(
+            "<maven.compiler.source>7</maven.compiler.source>",
+            "<maven.compiler.source>11</maven.compiler.source>",
+        )
+        changed = True
+    if "<maven.compiler.target>7</maven.compiler.target>" in text:
+        text = text.replace(
+            "<maven.compiler.target>7</maven.compiler.target>",
+            "<maven.compiler.target>11</maven.compiler.target>",
+        )
+        changed = True
+    if changed:
         pom_path.write_text(text)
         print("Patched pom.xml: source/target 7 → 11", file=sys.stderr)
 
@@ -87,7 +104,14 @@ def _ensure_sidecar() -> Path:
         _patch_pom_source_target(pom_path)
 
     subprocess.run(
-        ["mvn", "-DskipTests", "package", "dependency:copy-dependencies"],
+        [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.compiler.source=11",
+            "-Dmaven.compiler.target=11",
+            "package",
+            "dependency:copy-dependencies",
+        ],
         cwd=str(SIDECAR_DIR), check=True, capture_output=True, text=True,
     )
 
