@@ -694,8 +694,34 @@ Python 패턴매칭 + lineseg strip 전략을 사용한다.
 주요 패턴: lineseg strip(R1), checkbox(R6), label detect(R7-R8), uniform space(R10),
 checkbox hierarchy(R21), appendix ref(R22), digit-title concat(R23).
 
-**Python 도구**: `hwpx_form_edit.py` (범용 CLI, 미구현), `hwpx_form_patterns.py` (패턴 함수).
+**Python 도구**: `hwpx_form_edit.py` (범용 CLI, `officecli/scripts/`에 구현됨), `hwpx_form_patterns.py` (패턴 함수).
 기존 재사용: `pack.py` (strip/minify/repack), `hwpx_cli.py` (NS/text helpers).
+
+### Exam XML Structure (시험지 특화)
+
+KICE 시험지 XML은 일반 양식과 다른 고유 구조를 가짐 (2025 수능 수학 분석):
+
+**Page/Column breaks** — `<hp:p>` 속성으로 인코딩:
+- `pageBreak="1"` = 새 페이지, `columnBreak="1"` = 새 단 (2단 NEWSPAPER 레이아웃)
+- 문제 경계 탐지: `pageBreak` + 문제번호 regex (`^\d{1,2}\.\s*$`) 조합
+
+**수식 인터리빙** — 문제 텍스트가 `<t>` ↔ `<equation>` 교차:
+```
+"2." T | "함수 " T | [EQ] | "에 대하여 " T | [EQ] | "의 " T
+```
+수식은 opaque (binary/MathML) — **텍스트(`<t>`) 노드만 편집 가능**, 수식 자체는 수정 불가.
+
+**답안 구조**: `①` + 5개 `<equation>` (5지선다), 단답형은 "구하시오." 종결.
+
+**텍스트 파편화**: 제목 텍스트가 1~2자 단위 `<t>` 노드로 분할 (HWP 변환 아티팩트).
+패턴매칭 시 반드시 paragraph 전체 텍스트 연결 후 매칭 필요.
+
+**p[0] Monster**: 첫 paragraph에 secPr(섹션 설정) + colPr(단 설정) + tbl(제목 표) + 문제1 텍스트 합체.
+
+**검증 완료**: 페이지 삭제(139p 제거), 문제 텍스트 교체(4문제), lineseg strip(47개),
+section1 축소(94→1p) — Hancom 정상 렌더링 확인.
+
+상세 → `hwp_recog/24-exam-xml-structure-patterns.md`, Plan 99.7 "HWPX XML Structure Patterns" 섹션.
 
 ---
 
