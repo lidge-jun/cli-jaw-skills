@@ -67,6 +67,7 @@ officecli hwpx view --help
 | **Swap** | `officecli swap doc.hwpx '/section[1]/p[1]' '/section[1]/p[2]'` | 두 요소 순서 교환 (Plan 96) |
 | **Column break** | `officecli add doc.hwpx /section[1] --type columnbreak --prop cols=2` | 2단/3단 레이아웃 (Plan 96) |
 | **Image watermark** | `officecli add doc.hwpx /section[1] --type watermark --prop src=watermark.png` | Plan 98 재활성화. Opaque RGB 권장, light/simple asset은 `bright=0 --prop contrast=0` 권장 |
+| **Image anchor** | `officecli add doc.hwpx /section[1] --type picture --prop anchor=page --prop halign=center --prop valign=middle` | Plan 98B. 페이지/문단 기준 floating, 계산형 위치 지원 |
 | **Author field** | `officecli add doc.hwpx /section[1] --type author` | 만든 사람 필드 (Plan 97) |
 | Title field | `officecli add doc.hwpx /section[1] --type title` | 문서 제목 필드 |
 | Filename field | `officecli add doc.hwpx /section[1] --type filename` | 파일명 필드 |
@@ -235,6 +236,56 @@ officecli view doc.hwpx objects --json                # JSON
 - **간단한 텍스트 워터마크는 2112×1162 캔버스의 미리 렌더링된 PNG로 전달하는 것이 안전**
 - **`build-local/officecli` 1.0.42에서는 동작 확인**, `~/.local/bin/officecli`가 `Unsupported element type: watermark`를 내면 바이너리 재빌드/동기화 필요
 
+### Image anchor / floating picture (Plan 98B ✅)
+
+```bash
+# 기본: inline (글자처럼 취급)
+officecli add doc.hwpx /section[1] --type picture --prop path=image.png
+
+# 페이지 기준 정중앙
+officecli add doc.hwpx /section[1] --type picture \
+  --prop path=image.png \
+  --prop anchor=page \
+  --prop halign=center \
+  --prop valign=middle \
+  --prop width=10000 \
+  --prop height=5000
+
+# 페이지 기준 우하단 근처
+officecli add doc.hwpx /section[1] --type picture \
+  --prop path=image.png \
+  --prop anchor=page \
+  --prop halign=right \
+  --prop valign=bottom \
+  --prop x=-1200 \
+  --prop y=-800
+
+# 문단 기준 floating
+officecli add doc.hwpx /section[1] --type picture \
+  --prop path=image.png \
+  --prop anchor=para \
+  --prop wrap=square \
+  --prop halign=center \
+  --prop y=1200
+
+# 글 뒤로
+officecli add doc.hwpx /section[1] --type picture \
+  --prop path=image.png \
+  --prop wrap=behind
+
+# 생성 후 위치/잠금 수정
+officecli set doc.hwpx '/section[1]/p[2]/run[1]/pic[1]' \
+  --prop x=1111 --prop y=2222 --prop lock=1 --prop wrap=topbottom
+```
+
+핵심 규칙:
+- `anchor=page`는 **용지 전체(PAPER)** 기준
+- 중앙/우측/하단 정렬은 새 enum이 아니라 offset 계산으로 구현됨
+- `anchor=para`는 V1에서 본문 폭 기준 가로 배치 + `y` explicit only
+- `wrap=behind`, `wrap=front`, `wrap=square`, `wrap=topbottom` 지원
+- set 경로는 현재 `x`, `y`, `lock`, `wrap=topbottom`까지만 문서화
+- picture path는 `'/section[1]/p[N]/run[1]/pic[1]'` 형태를 사용
+
 ### Expanded query — 확장 셀렉터 문법 (Plan 75 ✅)
 
 ```bash
@@ -360,6 +411,9 @@ officecli remove doc.hwpx '/section[2]'            # 섹션 삭제
 | Property | Target | Example |
 |----------|--------|---------|
 | `wrap` | shape | `char` (글자처럼), `square`, `behind`, `front` |
+| `x` | pic/shape | `x=1111` |
+| `y` | pic/shape | `y=2222` |
+| `lock` | pic/shape | `lock=1` |
 | `width` | shape | 크기 |
 | `height` | shape | 크기 |
 
@@ -381,6 +435,12 @@ officecli remove doc.hwpx '/section[2]'            # 섹션 삭제
 ### 글자처럼 취급 (Inline)
 - `<hp:pos treatAsChar="1">` = 글자처럼 취급
 - `officecli set doc.hwpx '/section/p[3]/rect[1]' --prop wrap=char`
+
+### Image anchor / picture path
+- 그림 객체는 실제 XML에서 `<hp:pic>` 이다
+- set/get 경로는 `'/section[1]/p[N]/run[1]/pic[1]'` 형태를 사용
+- `anchor=page`는 `PAPER/PAPER`, `anchor=para`는 `PARA/PARA`
+- 중앙 정렬은 `halign=center`, `valign=middle` + offset 계산
 
 ### 누름틀 (CLICK_HERE)
 - `type="CLICK_HERE"` (underscore 포함)
@@ -427,6 +487,11 @@ officecli add doc.hwpx /section --type paragraph --prop 'text=본문'
 # GOOD: 항상 명시
 officecli add doc.hwpx /section --type paragraph --prop 'text=본문' --prop fontsize=11
 ```
+
+### Image anchor는 alignment enum이 아니라 offset 계산
+- `anchor=page --prop halign=center --prop valign=middle` 은 `horzOffset` / `vertOffset` 계산으로 저장됨
+- `anchor=para`는 V1에서 세로 중앙 정렬을 일반화하지 않음 — `y`를 명시적으로 주는 것이 안전
+- `wrap=char`가 아니거나 `anchor/page/para`, `x/y`, `halign/valign`이 들어오면 floating picture 경로로 본다
 
 ### SetCellText clears ALL paragraphs
 `officecli set ... --prop text=값`은 셀 내 **모든 단락**을 제거하고 새 텍스트를 넣는다.
