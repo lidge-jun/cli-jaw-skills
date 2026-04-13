@@ -542,10 +542,22 @@ HWPX paragraphs contain `<hp:linesegarray>` — Hancom's **layout cache** storin
 When modifying text via `officecli set`, this cache is automatically invalidated (removed).
 Hancom recalculates layout on open.
 
-**If you ever edit HWPX XML directly** (not via officecli), you MUST delete `<hp:linesegarray>` from
-any paragraph whose text content changed. Stale cache causes:
+**If you ever edit HWPX XML directly** (not via officecli), you MUST delete ALL `<hp:linesegarray>` elements
+from every section XML. Stripping ALL (not just changed paragraphs) is safe and simplest — Hancom
+fully recalculates layout on open. Stale cache causes:
 - Text compressed into single line (characters overlap)
 - Visible in Hancom only (officecli text view looks correct)
+
+**Verified on 3 document types** (2026-04-13):
+- KICE exam template: 193 lineseg stripped, full edit (year/subject/period/equation/text) — Hancom OK
+- University application form (참가신청서): 472 paragraphs, lineseg stripped — Hancom OK
+- Regulation document (운영지침, HWP→HWPX converted): 599 lineseg stripped, 6 edits (year/name/phone/email) — Hancom OK
+
+**Python strip pattern** (from pack.py, regex-based for namespace safety):
+```python
+re.sub(r'<(?:hp:)?linesegarray[^>]*>.*?</(?:hp:)?linesegarray>', '', xml, flags=re.DOTALL)
+re.sub(r'<(?:hp:)?linesegarray[^/]*/>', '', result)  # self-closing
+```
 
 ### charPr height is centi-points
 `fontsize=16` (pt) → internally stored as `height=1600`. officecli handles conversion.
@@ -656,6 +668,34 @@ XML, IDRef, table, namespace, BinData 무결성, field pair, section count.
 ### MD→HWPX frontmatter/fence 자동 스킵 (Plan 85 ✅)
 `ImportMarkdown()`이 YAML frontmatter (`---...---`), 코드 펜스 (` ``` `), 이미지 (`![]()`),
 수평선 (`---`) 자동 스킵. 리스트 (`- item`)는 일반 단락으로 fallback.
+
+### Pattern-Match Editing (Python fallback, Plan 90.999 + 99.7)
+
+officecli의 `set`/`find-replace`로 커버되지 않는 **복잡한 양식 편집**(KICE 시험지, 규정/운영지침 등)은
+Python 패턴매칭 + lineseg strip 전략을 사용한다.
+
+**핵심 원리**: lineseg strip → 패턴매칭 편집 → 리팩 (ZIP 재생성). 한컴이 열 때 레이아웃 자동 재계산.
+
+**문서 분류** (5가지 유형):
+| 유형 | 판별 기준 | 예시 |
+|------|-----------|------|
+| `exam` | equation 10+, rect 존재 | KICE 수능/모의고사 |
+| `form` | table 3+, checkbox(□/■) 존재 | 신청서, 지원서, 이력서 |
+| `regulation` | ○ 10+, 별첨/조항 참조, table 10+ | 운영지침, 내규, 시행세칙 |
+| `report` | table 2이하, 긴 텍스트 20+ | 보고서, 논문 |
+| `mixed` | 위 기준 미충족 | 사업계획서 등 |
+
+**검증 완료 문서** (3종):
+1. KICE 수학 양식 — 연도/과목/교시/수식/텍스트 전체 편집 OK
+2. KU 창업동아리 참가신청서 — 17 테이블, 13 필드, 체크박스 파싱 OK
+3. KU 창업동아리 운영지침 (HWP→HWPX) — 36 테이블, 57 체크박스, 6개 편집 OK
+
+**Regex 인벤토리**: 25개 패턴 (R1-R25). 상세 → Plan 99.7.
+주요 패턴: lineseg strip(R1), checkbox(R6), label detect(R7-R8), uniform space(R10),
+checkbox hierarchy(R21), appendix ref(R22), digit-title concat(R23).
+
+**Python 도구**: `hwpx_form_edit.py` (범용 CLI, 미구현), `hwpx_form_patterns.py` (패턴 함수).
+기존 재사용: `pack.py` (strip/minify/repack), `hwpx_cli.py` (NS/text helpers).
 
 ---
 
