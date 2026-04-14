@@ -11,6 +11,34 @@ Primary tool: **officecli** (`~/.local/bin/officecli`).
 Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover the operation.
 Do NOT use this skill for PDFs, spreadsheets, or Google Docs.
 
+## ⚠️ Subskills (MUST READ before any officecli command)
+
+This is the **reference** skill. CLI implementation details are in subskills below.
+**Before executing ANY officecli command**, read the relevant subskill:
+
+| Subskill | Path (relative) | Contains |
+|----------|-----------------|----------|
+| **officecli-docx** | `./officecli-docx/SKILL.md` | Quick Decision, CLI syntax, Common Pitfalls, creating/editing guides |
+| **officecli-academic-paper** | `./officecli-academic-paper/SKILL.md` | Academic paper template, citation, TOC generation |
+
+For creating: also read `./officecli-docx/creating.md`
+For editing: also read `./officecli-docx/editing.md`
+
+> Auto-synced from OfficeCLI repo via GitHub Actions. Also: `officecli skills install word`
+
+## ⚠️ Mandatory Verification (NEVER SKIP)
+
+After ANY DOCX edit, ALWAYS execute:
+```bash
+# 1. Validate
+officecli validate output.docx
+
+# 2. PDF verification
+soffice --headless --convert-to pdf --outdir /tmp output.docx
+# Check: formatting, tables, images, headers/footers in PDF
+```
+Skip PDF verification = unverified output. Inform user if soffice unavailable.
+
 ---
 
 ## Tool Discovery

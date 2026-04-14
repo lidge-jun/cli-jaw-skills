@@ -13,6 +13,41 @@ Primary tool: **officecli** (PATH — global install).
 Fallback: **Legacy Python scripts** only when officecli does not cover the operation.
 Do NOT use this skill for PDFs, spreadsheets, or DOCX files.
 
+## ⚠️ Subskills (MUST READ before any officecli command)
+
+This is the **reference** skill. CLI implementation details are in subskills below.
+**Before executing ANY officecli command**, read the relevant subskill:
+
+| Subskill | Path (relative) | Contains |
+|----------|-----------------|----------|
+| **officecli-hwpx** | `./officecli-hwpx/SKILL.md` | Quick Decision, Pitfalls, CLI syntax, Form 4-strategy, Fill 3-phase, Phase A-I |
+
+**Before ANY officecli command**, read: `./officecli-hwpx/SKILL.md`
+
+> Auto-synced from OfficeCLI repo via GitHub Actions. Also: `officecli skills install hwpx`
+
+## ⚠️ Mandatory Verification (NEVER SKIP)
+
+After ANY HWPX edit operation, ALWAYS execute these in order:
+
+```bash
+# 1. Validate structure (MUST pass)
+officecli validate output.hwpx
+
+# 2. PDF conversion verification (MUST verify visually)
+soffice --headless --convert-to pdf --outdir /tmp output.hwpx
+# Open /tmp/output.pdf and check:
+#   - [ ] Table cells in correct positions
+#   - [ ] Guide text (※, 예시) fully removed
+#   - [ ] Checkboxes □/■ in intended cells only
+#   - [ ] Merged cells text in correct row
+#   - [ ] Numbers not corrupted by global replace
+
+# 3. If Hancom Office available, also open .hwpx directly
+```
+
+**Skip PDF verification = unverified output. Always inform user if soffice is unavailable.**
+
 ---
 
 ## Tool Discovery
@@ -594,6 +629,24 @@ Common script syntax:
 
 **KICE exam editing**: Equation scripts can be modified via Python text replacement on `<hp:script>` nodes.
 Verified on 2025 수능 수학 (836 equations). See hwp_recog/10, 11, 18.
+
+### HWP→HWPX 변환 파일 편집 시 주의사항
+HWP 변환 파일과 한컴 네이티브 HWPX는 텍스트 구조가 다르다:
+
+| 항목 | 한컴 네이티브 HWPX | HWP→HWPX 변환 |
+|------|-------------------|---------------|
+| 텍스트 단위 | run별 짧은 `<t>` | **문단 전체가 하나의 `<t>`** |
+| 제목 p[0] | secPr + tbl + 문제텍스트 | **페이지번호 조각 `<t>20</t>` + `<t>1</t>` 포함** |
+| 문장 교체 | run-level 정밀 교체 가능 | **raw string replace 또는 문단 통째 교체 필요** |
+
+**편집 전략**:
+1. **제목**: run-aware 교체 — `set_run_text(p0, '2025학년도', '2026학년도...')` (페이지번호 run 무시)
+2. **본문**: 직렬화된 XML에서 `sec0.replace(old_sentence, new_sentence)` (raw string)
+3. **multi-`<t>`**: `ReplaceTextInCell()` (I5) — 전체 연결 → 매칭 → 분배
+
+검증 문서: 2025 수능 국어 (HWP 10MB → HWPX 변환, 1045 paragraphs, 지문+문제 교체 테스트)
+
+> Updated 2026-04-14: HWP→HWPX conversion editing limitations documented
 
 ### charPr height is centi-points
 `fontsize=16` (pt) → internally stored as `height=1600`. officecli handles conversion.

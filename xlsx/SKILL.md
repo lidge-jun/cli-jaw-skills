@@ -11,6 +11,28 @@ Primary data pipeline: **pandas** for DataFrame transforms, joins, and aggregati
 Fallback: **Legacy Python / openpyxl / helper scripts** only when officecli or pandas does not cover the requirement.
 Do NOT use this skill for Word, HTML dashboards, or external database orchestration.
 
+## ⚠️ Subskills (MUST READ before any officecli command)
+
+| Subskill | Path (relative) | Contains |
+|----------|-----------------|----------|
+| **officecli-xlsx** | `./officecli-xlsx/SKILL.md` | Quick Decision, CLI syntax, Common Pitfalls |
+| **officecli-financial-model** | `./officecli-financial-model/SKILL.md` | Financial model template, formulas |
+| **officecli-data-dashboard** | `./officecli-data-dashboard/SKILL.md` | Dashboard layout, charts, pivot |
+
+For creating: also read `./officecli-xlsx/creating.md`
+For editing: also read `./officecli-xlsx/editing.md`
+
+> Auto-synced from OfficeCLI repo via GitHub Actions. Also: `officecli skills install excel`
+
+## ⚠️ Mandatory Verification (NEVER SKIP)
+
+After ANY XLSX edit, ALWAYS execute:
+```bash
+officecli validate output.xlsx
+soffice --headless --convert-to pdf --outdir /tmp output.xlsx
+# Check: formula results, cell formatting, chart rendering, merged cells
+```
+
 ---
 
 ## Tool Discovery

@@ -1,0 +1,104 @@
+# Sync OfficeCLI skills into cli-jaw-skills
+#
+# Trigger: repository_dispatch from OfficeCLI repo, or manual
+# What it does:
+#   1. Clones OfficeCLI repo (skills/ directory only via sparse-checkout)
+#   2. Copies each skill folder into the correct parent format directory
+#   3. Commits and pushes if anything changed
+#
+# OfficeCLI side setup:
+#   Add a workflow that sends repository_dispatch to this repo on skills/ changes.
+#   See: .github/workflows/notify-skills-update.yml (template at bottom of this file)
+
+name: Sync OfficeCLI Skills
+
+on:
+  repository_dispatch:
+    types: [officecli-skills-updated]
+  workflow_dispatch:  # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cli-jaw-skills
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clone OfficeCLI (sparse — skills/ only)
+        run: |
+          git clone --filter=blob:none --sparse \
+            https://github.com/lidge-jun/OfficeCLI.git \
+            /tmp/officecli
+          cd /tmp/officecli
+          git sparse-checkout set skills/
+
+      - name: Sync skills into format directories
+        run: |
+          SRC="/tmp/officecli/skills"
+
+          # Mapping: officecli skill folder → skills_ref parent directory
+          sync_skill() {
+            local skill="$1" parent="$2"
+            local src_dir="$SRC/$skill"
+            local dst_dir="$parent/$skill"
+
+            if [ ! -d "$src_dir" ]; then
+              echo "⚠️  Skip $skill (not found in OfficeCLI)"
+              return
+            fi
+
+            mkdir -p "$dst_dir"
+
+            # Copy all .md files
+            for f in "$src_dir"/*.md; do
+              [ -f "$f" ] && cp "$f" "$dst_dir/"
+            done
+
+            # Copy subdirectories (reference/, scripts/, etc.)
+            for d in "$src_dir"/*/; do
+              [ -d "$d" ] && cp -r "$d" "$dst_dir/"
+            done
+
+            echo "✅ $skill → $parent/$skill/"
+          }
+
+          # HWP
+          sync_skill "officecli-hwpx" "hwp"
+
+          # DOCX
+          sync_skill "officecli-docx" "docx"
+          sync_skill "officecli-academic-paper" "docx"
+
+          # PPTX
+          sync_skill "officecli-pptx" "pptx"
+          sync_skill "officecli-pitch-deck" "pptx"
+          sync_skill "morph-ppt" "pptx"
+          sync_skill "morph-ppt-3d" "pptx"
+
+          # XLSX
+          sync_skill "officecli-xlsx" "xlsx"
+          sync_skill "officecli-financial-model" "xlsx"
+          sync_skill "officecli-data-dashboard" "xlsx"
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "chore: sync officecli skills ($TIMESTAMP)
+
+          Auto-synced from OfficeCLI repo.
+          Triggered by: ${{ github.event_name }}"
+            git push
+            echo "✅ Pushed skill updates"
+          fi

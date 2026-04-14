@@ -11,6 +11,29 @@ Primary tool: **officecli** (`~/.local/bin/officecli`).
 Fallback: **pptxgenjs** for large programmatic generation and **Legacy Python scripts** for utilities officecli still lacks.
 Do NOT use this skill for Keynote, Google Slides API automation, or image generation.
 
+## ⚠️ Subskills (MUST READ before any officecli command)
+
+| Subskill | Path (relative) | Contains |
+|----------|-----------------|----------|
+| **officecli-pptx** | `./officecli-pptx/SKILL.md` | Quick Decision, CLI syntax, Common Pitfalls |
+| **officecli-pitch-deck** | `./officecli-pitch-deck/SKILL.md` | Pitch deck template, narrative flow |
+| **morph-ppt** | `./morph-ppt/SKILL.md` | PowerPoint morph transition animations |
+| **morph-ppt-3d** | `./morph-ppt-3d/SKILL.md` | 3D morph effects |
+
+For creating: also read `./officecli-pptx/creating.md`
+For editing: also read `./officecli-pptx/editing.md`
+
+> Auto-synced from OfficeCLI repo via GitHub Actions. Also: `officecli skills install pptx`
+
+## ⚠️ Mandatory Verification (NEVER SKIP)
+
+After ANY PPTX edit, ALWAYS execute:
+```bash
+officecli validate output.pptx
+soffice --headless --convert-to pdf --outdir /tmp output.pptx
+# Check: slide layout, text overflow, image positions, chart data
+```
+
 ---
 
 ## Tool Discovery
