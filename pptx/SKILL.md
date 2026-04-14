@@ -378,6 +378,8 @@ Batch and resident mode are independent. Each improves performance alone; they c
 | `view text` misses tables | `view text` misses table content -- use `view annotated` for full text extraction, or `officecli get deck.pptx '/slide[N]/table[M]' --json` for table text |
 | Chart series after creation | Cannot add series after creation. Delete and recreate with all series |
 | Modifying an open file | Close the file in PowerPoint/WPS first |
+| Korean filename + resident | CJK filenames cause resident process UTF-8 encoding corruption → zombie file locks. **Use ASCII filenames during creation**, then `cp` to Korean filename at the end. If stuck: `pkill -9 -f "resident-serve"` |
+| Resident zombie after error | If commands hang or return "currently opened by resident": `pkill -9 -f "resident-serve"`, wait 1s, retry. Check with `ps aux \| grep resident-serve` |
 | Negative coordinates | Supported -- `x=-2cm` creates bleed effects |
 
 ---
