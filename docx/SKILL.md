@@ -27,14 +27,9 @@ Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover t
 | Validation / issue scan | officecli | `officecli validate FILE` | Pair with `view FILE issues` |
 | Accept tracked changes | officecli | `officecli set FILE / --prop accept-changes=all` | Also `reject-changes=all` |
 | PDF conversion / visual QA | soffice | `soffice --headless --convert-to pdf FILE` | Screenshot-based QA |
-
-## Quick Reference
-
-| Task | Action |
-|------|--------|
-| Read / analyze content | Use `view` and `get` commands (see Core Workflows) |
-| Edit existing document | Read [editing.md](./editing.md) |
-| Create from scratch | Read [creating.md](./creating.md) |
+| Read / analyze content | officecli | Use `view` and `get` commands | See Core Workflows |
+| Edit existing document | -- | Read [editing.md](./editing.md) | Detailed editing guides |
+| Create from scratch | -- | Read [creating.md](./creating.md) | Detailed creation recipes |
 
 ---
 
@@ -157,7 +152,14 @@ soffice --headless --convert-to pdf --outdir /tmp output.docx
 
 ---
 
-## 5. Tool Discovery
+## 5. Prerequisite Check
+
+```bash
+which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
+which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+```
+
+## 6. Tool Discovery
 
 Always confirm syntax from help before guessing:
 
@@ -183,7 +185,7 @@ officecli docx set style
 
 ---
 
-## 6. Core Workflows
+## 7. Core Workflows
 
 ### 6.1 Execution Model
 
@@ -289,7 +291,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 
 ---
 
-## 7. Common Pitfalls
+## 8. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -316,7 +318,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 
 ---
 
-## 8. Known Issues
+## 9. Known Issues
 
 | Issue | Workaround |
 |---|---|
@@ -336,7 +338,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 
 ---
 
-## 9. QA Checklist
+## 10. QA Checklist
 
 **Assume there are problems. Your job is to find them.**
 
@@ -395,7 +397,7 @@ officecli query doc.docx 'p:contains("placeholder")'
 
 ---
 
-## 10. Legacy Python CLI (Fallback)
+## 11. Legacy Python CLI (Fallback)
 
 Use these ONLY when officecli does not cover the requirement.
 
@@ -409,7 +411,7 @@ Use these ONLY when officecli does not cover the requirement.
 
 ---
 
-## 11. Anti-Patterns (MUST AVOID)
+## 12. Anti-Patterns (MUST AVOID)
 
 - **Placeholder data**: NEVER leave "Acme Corp", "Alice Chen", "Lorem ipsum" in output. If the user has not provided data, **ask**.
 - **Footer PAGE fields**: When setting page numbers via `raw-set`, the XML structure must be exact. See the Headers & Footers section for the correct `fldChar`/`instrText`/`fldChar` sequence.
@@ -420,7 +422,7 @@ Use these ONLY when officecli does not cover the requirement.
 
 ---
 
-## 12. Dependencies
+## 13. Dependencies
 
 | Tool | Purpose | Status |
 |------|---------|--------|

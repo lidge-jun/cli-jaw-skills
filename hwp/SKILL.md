@@ -14,7 +14,7 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 
 ---
 
-## Quick Decision
+## 1. Quick Decision
 
 | Task | OK? | Command |
 |------|-----|---------|
@@ -47,7 +47,7 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 
 ---
 
-## Bonus Subskill References
+## 2. Bonus Subskill References
 
 No bonus subskills currently exist for HWP. If future subskills are added
 (e.g., `./creating.md`, `./editing.md`), read them only for the specific task at hand.
@@ -55,7 +55,7 @@ Reference files live in `./reference/` (format specs, style maps, visual QA prom
 
 ---
 
-## Design Principles for Korean Documents
+## 3. Design Principles for Korean Documents
 
 ### Korean Government Form Aesthetics (한국 공공양식 미감)
 
@@ -92,7 +92,7 @@ Korean forms often use uniform character spacing for names in cells:
 
 ---
 
-## Mandatory Verification (NEVER SKIP)
+## 4. Mandatory Verification (NEVER SKIP)
 
 After ANY HWPX edit operation, ALWAYS execute these in order:
 
@@ -112,7 +112,14 @@ soffice --headless --convert-to pdf --outdir /tmp output.hwpx
 
 ---
 
-## Tool Discovery
+## 5. Prerequisite Check
+
+```bash
+which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
+which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+```
+
+## 6. Tool Discovery
 
 Always confirm syntax from help before guessing:
 
@@ -125,7 +132,7 @@ officecli hwpx view --help
 
 ---
 
-## Core Workflows
+## 7. Core Workflows
 
 ### Create & Import & Merge
 
@@ -190,6 +197,35 @@ Operators: `=`, `!=`, `~=` (contains), `>=`, `<=`
 Pseudo: `:empty`, `:contains(text)`, `:has(child)`, `:first`, `:last`
 Virtual attrs: `text`, `bold`, `italic`, `fontsize`, `colSpan`, `rowSpan`, `heading`
 
+### Resident Mode (live connection)
+
+```bash
+officecli open doc.hwpx          # open live session
+officecli view text               # view without re-opening
+officecli set '/p[1]' --prop bold=true
+officecli close                   # close session
+```
+
+### Batch Mode (multiple commands)
+
+```bash
+officecli batch doc.hwpx <<'EOF'
+view text
+view stats
+view forms --auto
+EOF
+```
+
+### Pre-Delivery Checklist
+
+- [ ] `officecli validate` passes (0 errors)
+- [ ] `soffice --headless --convert-to pdf` → visual check
+- [ ] Table cells in correct positions (cellAddr mapping)
+- [ ] Guide text (※, 예시) fully removed
+- [ ] Checkboxes □/■ in intended cells only
+- [ ] Merged cell text in correct row
+- [ ] If Hancom available, open .hwpx directly
+
 ### Compare
 
 ```bash
@@ -241,7 +277,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 
 ---
 
-## Common Pitfalls
+## 8. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -261,7 +297,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 
 ---
 
-## Form Recognition & Fill
+## 9. Form Recognition & Fill
 
 ### 4-Strategy Recognition
 
@@ -311,7 +347,7 @@ officecli set form.hwpx /table/fill --prop '성 명=홍길동'   # Step 3: fill
 
 ---
 
-## Security
+## 10. Security
 
 | Check | Limits |
 |-------|--------|
@@ -322,7 +358,7 @@ officecli set form.hwpx /table/fill --prop '성 명=홍길동'   # Step 3: fill
 
 ---
 
-## HWP->HWPX Conversion
+## 11. HWP->HWPX Conversion
 
 ### Format Detection
 
@@ -347,7 +383,7 @@ file doc.hwp    # "HWP Document" -> HWP 5.0 (OLE2 binary, read-only)
 
 ---
 
-## Equation Handling (수식)
+## 12. Equation Handling (수식)
 
 HWPX equations use Hancom's **proprietary script language**. NOT MathML, NOT LaTeX, NOT OMML.
 
@@ -376,7 +412,7 @@ Math exam docs (KICE) require `<hp:equation>` for every expression. Never use pl
 
 ---
 
-## Pattern-Match Editing (Python Fallback)
+## 13. Pattern-Match Editing (Python Fallback)
 
 For complex form editing beyond officecli `set`/`find-replace` (KICE exams, regulations):
 
@@ -390,7 +426,7 @@ uniform space normalization (R10), checkbox hierarchy (R21), appendix ref (R22).
 
 ---
 
-## Legacy Python Fallback
+## 14. Legacy Python Fallback
 
 Scripts path: `~/.cli-jaw/skills_ref/hwp/scripts/`
 
@@ -436,7 +472,7 @@ pip install pyhwp lxml   # HWP reading + XML processing
 
 ---
 
-## Anti-Patterns (MUST AVOID)
+## 15. Anti-Patterns (MUST AVOID)
 
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
 2. **No direct HWP binary editing** -- HWP 5.0 (`.hwp`) is read-only; convert to HWPX first
@@ -445,7 +481,7 @@ pip install pyhwp lxml   # HWP reading + XML processing
 
 ---
 
-## Dependencies
+## 16. Dependencies
 
 | Tool | Purpose | Required? |
 |------|---------|-----------|

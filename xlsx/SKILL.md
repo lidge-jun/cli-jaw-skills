@@ -13,7 +13,7 @@ Do NOT use this skill for Word, HTML dashboards, or external database orchestrat
 
 ---
 
-## Quick Reference
+## 1. Quick Reference
 
 | Task | Action |
 |------|--------|
@@ -39,7 +39,7 @@ Do NOT use this skill for Word, HTML dashboards, or external database orchestrat
 
 ---
 
-## Subskill References
+## 2. Subskill References
 
 Read **only** the subskill relevant to the current task. Do not preload all.
 
@@ -52,7 +52,7 @@ Read **only** the subskill relevant to the current task. Do not preload all.
 
 ---
 
-## Design Principles for Spreadsheets
+## 3. Design Principles for Spreadsheets
 
 **Professional spreadsheets need clear structure, correct formulas, and intentional formatting.**
 
@@ -104,7 +104,7 @@ officecli set data.xlsx "/Sheet1/B10" --prop formula="SUM(B2:B9)"
 
 ---
 
-## Mandatory Verification (NEVER SKIP)
+## 4. Mandatory Verification (NEVER SKIP)
 
 After ANY XLSX edit, ALWAYS execute both steps:
 
@@ -121,7 +121,14 @@ Skip neither step. `validate` catches structural errors; the PDF catches renderi
 
 ---
 
-## Tool Discovery
+## 5. Prerequisite Check
+
+```bash
+which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
+which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+```
+
+## 6. Tool Discovery
 
 **When unsure about property names, value formats, or command syntax, run help instead of guessing.** One help query is faster than guess-fail-retry loops.
 
@@ -137,7 +144,7 @@ officecli xlsx query            # Query selector syntax
 
 ---
 
-## Core Workflows
+## 7. Core Workflows
 
 ### Execution Model
 
@@ -259,9 +266,18 @@ officecli import f.xlsx /Sheet1 data.tsv --header --format tsv  # TSV
 cat data.csv | officecli import f.xlsx /Sheet1 --stdin --header  # stdin
 ```
 
+### Chart Creation
+
+```bash
+# Add a column chart from data range
+officecli add doc.xlsx /Sheet1 --type chart --prop chartType=column --prop data=Sheet1!A1:D10 --prop title="Revenue by Quarter"
+
+# For detailed chart customization (series, axes, legends), read ./officecli-data-dashboard/SKILL.md
+```
+
 ---
 
-## pandas Pipeline
+## 8. pandas Pipeline
 
 **pandas is the PRIMARY analysis layer, NOT legacy.** It is the first-choice tool for data transforms that officecli should not reimplement.
 
@@ -288,7 +304,7 @@ This path keeps pandas focused on transforms and lets officecli own the OOXML pa
 
 ---
 
-## Formula Recalculation (CRITICAL)
+## 9. Formula Recalculation (CRITICAL)
 
 **officecli writes formulas but does NOT recalculate them.**
 Always run a recalc pass after formula generation.
@@ -309,7 +325,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 
 ---
 
-## Number Format Reference
+## 10. Number Format Reference
 
 ### Standard Formats
 
@@ -340,7 +356,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 
 ---
 
-## Common Pitfalls
+## 11. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -418,7 +434,7 @@ officecli validate data.xlsx                            # Structural validation
 
 ---
 
-## Anti-Patterns (NEVER DO)
+## 12. Anti-Patterns (NEVER DO)
 
 **Formula results hardcoded as values -- STRICTLY FORBIDDEN.** The workbook must remain recalculable when inputs change.
 
@@ -430,7 +446,7 @@ officecli validate data.xlsx                            # Structural validation
 
 ---
 
-## Legacy Python CLI (Fallback)
+## 13. Legacy Python CLI (Fallback)
 
 | Command | Role | Status |
 |---------|------|--------|
@@ -454,7 +470,7 @@ officecli validate data.xlsx                            # Structural validation
 
 ---
 
-## Dependencies
+## 14. Dependencies
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
