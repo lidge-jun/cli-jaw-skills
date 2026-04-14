@@ -231,7 +231,7 @@ officecli add deck.pptx /slide[1] --type shape --prop text='23%' --prop color=E7
 
 ## CJK / Korean Text Handling
 
-> CJK 상세 규칙 → see `references/officecli-cjk.md`
+> CJK 상세 규칙 → see `../references/officecli-cjk.md`
 
 ### Primary: fork binary auto-handles CJK
 
@@ -270,19 +270,9 @@ officecli check deck.pptx
 # CJK text often overflows due to wider character widths
 ```
 
-### Legacy fallback
+### Additional CJK Guidance
 
-For old `pptxgenjs` output that lacks proper tags, use the fallback path only as needed:
-
-```bash
-python scripts/ooxml/unpack.py output.pptx unpacked/
-python -c "from scripts.ooxml.cjk_utils import inject_korean_lang; inject_korean_lang('unpacked/ppt/slides/')"
-python scripts/ooxml/pack.py unpacked/ output_ko.pptx --original output.pptx
-```
-
-### Phase 05 note
-
-> PPTX CJK post-processing in `scripts/ooxml/cjk_utils.py` overlaps with the fork's built-in `CjkHelper.cs`. Phase 05 should consolidate the remaining duplication and leave Python only for exceptional fallback cases.
+If a deck needs stricter locale/font policy than the built-in defaults, consult `../references/officecli-cjk.md`.
 
 ---
 
@@ -335,7 +325,7 @@ Inspect for:
 
 ## Accessibility (WCAG 2.1 AA)
 
-> 접근성 기준 → see `references/officecli-accessibility.md`
+> 접근성 기준 → see `../references/officecli-accessibility.md`
 
 Presentations are where accessibility matters most — they're projected, shared, and read aloud.
 
@@ -454,12 +444,13 @@ Even in `pptxgenjs` flows, officecli remains the preferred finishing/QA tool for
 
 | Command | Role | Status |
 |---------|------|--------|
-| `python scripts/thumbnail.py deck.pptx out_dir/ --individual` | Slide thumbnails | Fallback |
-| `python scripts/clean.py work/` | Orphan media scan | Fallback |
-| `python scripts/pptx_cli.py validate deck.pptx --json` | Validation helper | Fallback |
-| `python scripts/pptx_cli.py search deck.pptx 'pattern' --json` | Text search helper | Fallback |
-| `python scripts/ooxml/unpack.py output.pptx unpacked/` | Raw OOXML surgery | Legacy |
-| `python scripts/ooxml/pack.py unpacked/ output_fixed.pptx` | Repack OOXML | Legacy |
+| `python3 scripts/thumbnail.py deck.pptx out_dir/ --individual` | Slide thumbnails | Fallback |
+| `python3 scripts/clean.py work/` | Orphan media scan | Fallback |
+| `python3 scripts/pptx_cli.py validate deck.pptx --json` | Validation helper | Fallback |
+| `python3 scripts/pptx_cli.py repair deck.pptx --json` | Structural repair dry-run | Fallback |
+| `python3 scripts/pptx_cli.py open deck.pptx unpacked/` | Unpack OOXML for deep inspection | Legacy |
+| `python3 scripts/pptx_cli.py save unpacked/ output_fixed.pptx` | Repack inspected OOXML | Legacy |
+| `python3 scripts/pptx_cli.py search deck.pptx 'pattern' --json` | Text search helper | Fallback |
 
 ---
 

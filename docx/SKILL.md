@@ -56,7 +56,7 @@ officecli docx set style
 | Template-safe replacement | officecli | `officecli set template.docx / --prop find="{{NAME}}" --prop replace="Acme"` | In-place editing preserves template structure |
 | Validation / issue scan | officecli | `officecli validate report.docx` | Pair with `officecli view report.docx issues` |
 | Accept tracked changes | officecli | `officecli set report.docx / --prop accept-changes=all` | Also `--prop reject-changes=all` |
-| Visual review / PDF conversion | Legacy Python / soffice fallback | `python scripts/soffice.py report.docx --to pdf` | For screenshot-based QA |
+| Visual review / PDF conversion | soffice fallback | `soffice --headless --convert-to pdf report.docx` | For screenshot-based QA |
 
 ---
 
@@ -235,7 +235,7 @@ officecli set template.docx /body/p[5]/r[1] --prop text="2026-03-27"
 
 ## Accessibility (WCAG 2.1 AA)
 
-> 접근성 기준 → see `references/officecli-accessibility.md`
+> 접근성 기준 → see `../references/officecli-accessibility.md`
 
 officecli covers the machine-checkable parts of DOCX accessibility well enough for first-pass QA.
 
@@ -313,7 +313,7 @@ officecli validate report.docx
 officecli view report.docx stats
 officecli view report.docx text
 officecli view report.docx issues
-python scripts/soffice.py report.docx --to pdf
+soffice --headless --convert-to pdf report.docx
 ```
 
 ### QA loop
@@ -328,7 +328,7 @@ python scripts/soffice.py report.docx --to pdf
 
 ## CJK Handling (Korean / Japanese / Chinese)
 
-> CJK 상세 규칙 → see `references/officecli-cjk.md`
+> CJK 상세 규칙 → see `../references/officecli-cjk.md`
 
 ### Primary: fork binary auto-handles CJK
 
@@ -373,21 +373,9 @@ officecli raw report.docx /document | grep -E 'rFonts|w:lang'
 officecli raw report.docx /document | grep kinsoku
 ```
 
-### CJK Styles
+### Additional CJK Guidance
 
-Pre-built CJK document styles are available in `references/cjk-styles/`. See `references/cjk-styles/INDEX.md` for the catalog.
-
-### Legacy fallback
-
-If the fork binary is unavailable, post-process with the legacy script:
-
-```bash
-python scripts/ooxml/cjk_utils.py report.docx
-```
-
-### Phase 05 note
-
-> `scripts/ooxml/cjk_utils.py` and unpack/pack workflows overlap with officecli raw/set behavior. Phase 05 should consolidate the remaining DOCX OOXML duplication behind officecli-native commands.
+If the document needs stricter locale/font policy, consult `../references/officecli-cjk.md`.
 
 ---
 
@@ -397,13 +385,13 @@ Use these only when officecli does not yet cover the requirement.
 
 | Script | Role | Status |
 |--------|------|--------|
-| `python scripts/accept_changes.py report.docx` | Accept tracked changes via LibreOffice macro | Fallback |
-| `python scripts/soffice.py report.docx --to pdf` | PDF conversion / visual QA | Fallback |
-| `python scripts/ooxml/repair.py report.docx` | Repair malformed OOXML | Fallback |
-| `python scripts/ooxml/merge_runs.py report.docx` | Merge adjacent identical runs | Fallback |
-| `python scripts/ooxml/redline_diff.py report.docx` | Tracked-change validation | Fallback |
-| `python scripts/ooxml/unpack.py report.docx unpacked/` | Raw zip surgery | Legacy |
-| `python scripts/ooxml/pack.py unpacked/ report_fixed.docx` | Repack OOXML | Legacy |
+| `python3 scripts/accept_changes.py report.docx` | Accept tracked changes via Python helper | Fallback |
+| `python3 scripts/docx_cli.py repair report.docx --json` | Structural repair dry-run | Fallback |
+| `python3 scripts/docx_cli.py open report.docx unpacked/` | Unpack OOXML for deep inspection | Legacy |
+| `python3 scripts/docx_cli.py save unpacked/ report_fixed.docx` | Repack inspected OOXML | Legacy |
+| `python3 scripts/ooxml/merge_runs.py report.docx` | Merge adjacent identical runs | Fallback |
+| `python3 scripts/ooxml/redline_diff.py report.docx` | Tracked-change validation | Fallback |
+| `soffice --headless --convert-to pdf report.docx` | PDF conversion / visual QA | Fallback |
 
 ---
 

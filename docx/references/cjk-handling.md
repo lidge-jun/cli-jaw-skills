@@ -55,17 +55,8 @@ const doc = new Document({
 
 ## DXA Width for CJK
 
-CJK characters occupy roughly twice the width of Latin characters. Use `scripts/ooxml/cjk_utils.py`:
-
-```python
-from scripts.ooxml.cjk_utils import get_display_width, pixel_to_emu, emu_to_pixel
-
-get_display_width("Hello")     # 5
-get_display_width("한글 테스트")  # 10
-
-pixel_to_emu(400)              # 3810000
-emu_to_pixel(3810000)          # 400
-```
+CJK characters occupy roughly twice the width of Latin characters. In this workspace, prefer explicit
+width estimates and `officecli` verification instead of a local helper script.
 
 Table column width estimation:
 
@@ -82,19 +73,20 @@ const columnWidths = headers.map(h => {
 
 ## Korean Language Injection (Post-processing)
 
-Inject `lang="ko-KR"` for proper kinsoku and spell-check:
+Inject `lang="ko-KR"` for proper kinsoku and spell-check with `officecli raw-set`:
 
 ```bash
-python scripts/ooxml/unpack.py output.docx unpacked/
-python -c "from scripts.ooxml.cjk_utils import inject_korean_lang; inject_korean_lang('unpacked/')"
-python scripts/ooxml/pack.py unpacked/ output_ko.docx --original output.docx
+officecli raw-set output.docx /document \
+  --xpath '//w:r/w:rPr' \
+  --action append \
+  --xml '<w:lang w:eastAsia="ko-KR" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>'
 ```
 
 ## Accessibility for CJK
 
 | Requirement       | Standard          | Implementation                                  |
 | ----------------- | ----------------- | ----------------------------------------------- |
-| Color contrast    | >= 4.5:1          | Use `cjk_utils.check_contrast()` to verify      |
+| Color contrast    | >= 4.5:1          | Verify with an external contrast checker        |
 | Image alt text    | Required on all   | `ImageRun({ altText: { title, description } })` |
 | Minimum font size | >= 10pt           | No captions below 10pt                          |
 | Language metadata | `lang="ko-KR"`    | Enables screen reader pronunciation             |
@@ -112,9 +104,4 @@ new ImageRun({
 });
 ```
 
-```python
-# Contrast check
-from scripts.ooxml.cjk_utils import check_contrast
-ratio = check_contrast("FFFFFF", "4472C4")
-assert ratio >= 4.5, f"Contrast insufficient: {ratio:.1f}:1 (need >= 4.5:1)"
-```
+Use a WCAG contrast checker for exact ratio confirmation when the document is customer-facing.

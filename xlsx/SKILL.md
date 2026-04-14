@@ -50,8 +50,8 @@ officecli xlsx set chart
 | CSV/TSV import | officecli | `officecli import model.xlsx /Data data.csv --header` | Simpler than manual loops |
 | Add table / validation / chart | officecli | `officecli add model.xlsx /Data --type table --prop ref=A1:D10` | Native structured workbook objects |
 | Data transformation | pandas | `pd.read_excel(...)` → transform → write workbook | Not legacy; pandas is primary for analysis |
-| Formula recalculation | Fallback helper | `python scripts/recalc.py output.xlsx` | officecli does not recalculate |
-| CJK width/font handling | Legacy Python fallback | `scripts/ooxml/cjk_utils.py` | Excel native CJK work is deferred to Phase 08 |
+| Formula recalculation | Fallback helper | `python3 scripts/recalc.py output.xlsx` | officecli does not recalculate |
+| CJK width/font handling | Manual officecli workflow | `officecli set data.xlsx '/Sheet1/col[A]' --prop width=18` | Excel native CJK auto-fit is not bundled here |
 
 ---
 
@@ -487,7 +487,7 @@ officecli validate "$OUTPUT"
 
 ## CJK / Korean Text Handling
 
-> CJK 상세 규칙 → see `references/officecli-cjk.md`
+> CJK 상세 규칙 → see `../references/officecli-cjk.md`
 
 > **Phase 08 scope:** Excel-specific CJK width/font handling in officecli is deferred. This is not a Phase 04 failure.
 
@@ -513,17 +513,13 @@ officecli set data.xlsx '/Sheet1/col[A]' --prop width=18
 
 ### Current fallback
 
-Use the existing helper when Korean text width or column-fit matters:
-
-```bash
-python scripts/ooxml/cjk_utils.py report.xlsx
-```
+This workspace does not bundle a dedicated XLSX CJK helper. Use explicit font assignment, wider column widths, and visual verification instead.
 
 ---
 
 ## Accessibility (WCAG 2.1 AA)
 
-> 접근성 기준 → see `references/officecli-accessibility.md`
+> 접근성 기준 → see `../references/officecli-accessibility.md`
 
 ```bash
 officecli add model.xlsx / --type sheet --prop name='Revenue Summary'
@@ -572,7 +568,7 @@ officecli view output.xlsx outline
 officecli view output.xlsx issues
 officecli validate output.xlsx
 officecli view output.xlsx annotated
-python scripts/recalc.py output.xlsx
+python3 scripts/recalc.py output.xlsx
 soffice --headless --convert-to pdf output.xlsx
 ```
 
@@ -591,12 +587,12 @@ soffice --headless --convert-to pdf output.xlsx
 
 | Command | Role | Status |
 |---------|------|--------|
-| `python scripts/xlsx_cli.py validate input.xlsx --json` | Workbook validation helper | Fallback |
-| `python scripts/xlsx_cli.py formula-audit input.xlsx --json` | Formula audit | Fallback |
-| `python scripts/recalc.py output.xlsx` | Formula recalculation | Required fallback |
-| `python scripts/soffice.py convert output.xlsx output.pdf` | PDF conversion | Fallback |
-| `python scripts/ooxml/unpack.py file.xlsx unpacked/` | Zip-level OOXML surgery | Legacy |
-| `python scripts/ooxml/pack.py unpacked/ fixed.xlsx` | Repack OOXML | Legacy |
+| `python3 scripts/xlsx_cli.py validate input.xlsx --json` | Workbook validation helper | Fallback |
+| `python3 scripts/xlsx_cli.py formula-audit input.xlsx --json` | Formula audit | Fallback |
+| `python3 scripts/recalc.py output.xlsx` | Formula recalculation | Required fallback |
+| `soffice --headless --convert-to pdf output.xlsx` | PDF conversion | Fallback |
+| `officecli raw output.xlsx /xl/workbook.xml` | Raw OOXML inspection | Preferred fallback |
+| `officecli raw-set output.xlsx /xl/workbook.xml ...` | Raw OOXML edit | Preferred fallback |
 
 ---
 
@@ -610,4 +606,4 @@ soffice --headless --convert-to pdf output.xlsx
 | `python3` | Helper scripts | Optional fallback |
 | `soffice` | Recalculation / PDF export | Optional fallback |
 | `alasql` + `xlsx` | Optional SQL-style workbook querying | Optional |
-| `scripts/ooxml/cjk_utils.py` | Excel CJK width/font fallback | Deferred until Phase 08 replacement |
+| Manual officecli width/font adjustments | Excel CJK width/font fallback | Current workspace fallback |
