@@ -7,7 +7,7 @@ description: "Word DOCX create, read, edit, review. Triggers: Word doc, .docx, r
 
 Use this skill for any `.docx` task: create, read, edit, review, template-fill, or QA verification.
 Triggers: `"Word doc"`, `".docx"`, reports, memos, letters, templates.
-Primary tool: **officecli** (`~/.local/bin/officecli`).
+Primary tool: **officecli** (`officecli` (PATH)).
 Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover the operation.
 
 **DOCX only.** Do NOT use this skill for PDFs, spreadsheets, HWPX, Google Docs, or any other format.

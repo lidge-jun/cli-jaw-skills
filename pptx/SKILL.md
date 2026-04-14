@@ -7,7 +7,7 @@ description: "PowerPoint PPTX create, read, edit, review. Triggers: PowerPoint, 
 
 Use this skill for PowerPoint `.pptx` creation, editing, review, and QA.
 Triggers: `"PowerPoint"`, `"PPTX"`, `"presentation"`, `"slides"`, `"deck"`.
-Primary tool: **officecli** (`~/.local/bin/officecli`).
+Primary tool: **officecli** (`officecli` (PATH)).
 Fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides, composable factories, heavy loop/branch logic). Even in pptxgenjs flows, officecli remains the finishing/QA tool.
 Do NOT use this skill for Keynote, Google Slides API automation, or image generation.
 

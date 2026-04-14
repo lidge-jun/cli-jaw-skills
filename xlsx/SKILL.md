@@ -458,7 +458,7 @@ officecli validate data.xlsx                            # Structural validation
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
-| `~/.local/bin/officecli` | Primary Excel CLI | Required |
+| `officecli` (PATH) | Primary Excel CLI | Required |
 | `pandas` | DataFrame analysis pipeline | Primary for transforms |
 | `openpyxl` | pandas Excel engine + fallback editing | Fallback support |
 | `python3` | Helper scripts | Optional fallback |
