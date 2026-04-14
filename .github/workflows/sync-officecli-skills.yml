@@ -3,12 +3,11 @@
 # Trigger: repository_dispatch from OfficeCLI repo, or manual
 # What it does:
 #   1. Clones OfficeCLI repo (skills/ directory only via sparse-checkout)
-#   2. Copies each skill folder into the correct parent format directory
-#   3. Commits and pushes if anything changed
-#
-# OfficeCLI side setup:
-#   Add a workflow that sends repository_dispatch to this repo on skills/ changes.
-#   See: .github/workflows/notify-skills-update.yml (template at bottom of this file)
+#   2. For MAIN skills (docx/pptx/xlsx): copies creating.md + editing.md to PARENT level
+#      (SKILL.md is NOT copied — it's merged into the parent SKILL.md)
+#   3. For BONUS skills (academic-paper, pitch-deck, morph-ppt, etc.): copies EVERYTHING
+#   4. HWP: no sync needed (no creating.md/editing.md, SKILL.md is merged)
+#   5. Commits and pushes if anything changed
 
 name: Sync OfficeCLI Skills
 
@@ -41,14 +40,33 @@ jobs:
         run: |
           SRC="/tmp/officecli/skills"
 
-          # Mapping: officecli skill folder → skills_ref parent directory
-          sync_skill() {
+          # ── MAIN skills: creating.md + editing.md only (SKILL.md merged into parent) ──
+          sync_main_files() {
+            local skill="$1" parent="$2"
+            local src_dir="$SRC/$skill"
+
+            if [ ! -d "$src_dir" ]; then
+              echo "⚠️  Skip $skill (not found)"
+              return
+            fi
+
+            # Copy creating.md and editing.md to PARENT level (not into subfolder)
+            for f in creating.md editing.md; do
+              if [ -f "$src_dir/$f" ]; then
+                cp "$src_dir/$f" "$parent/$f"
+                echo "  ✅ $skill/$f → $parent/$f"
+              fi
+            done
+          }
+
+          # ── BONUS skills: full copy (SKILL.md + creating.md + everything) ──
+          sync_bonus_skill() {
             local skill="$1" parent="$2"
             local src_dir="$SRC/$skill"
             local dst_dir="$parent/$skill"
 
             if [ ! -d "$src_dir" ]; then
-              echo "⚠️  Skip $skill (not found in OfficeCLI)"
+              echo "⚠️  Skip $skill (not found)"
               return
             fi
 
@@ -64,26 +82,37 @@ jobs:
               [ -d "$d" ] && cp -r "$d" "$dst_dir/"
             done
 
-            echo "✅ $skill → $parent/$skill/"
+            echo "  ✅ $skill → $parent/$skill/ (full)"
           }
 
-          # HWP
-          sync_skill "officecli-hwpx" "hwp"
+          echo "=== MAIN skills (files only, SKILL.md excluded) ==="
+
+          # HWP: no creating.md/editing.md exists — skip
+          echo "  hwp: skip (no creating/editing files)"
 
           # DOCX
-          sync_skill "officecli-docx" "docx"
-          sync_skill "officecli-academic-paper" "docx"
+          sync_main_files "officecli-docx" "docx"
 
           # PPTX
-          sync_skill "officecli-pptx" "pptx"
-          sync_skill "officecli-pitch-deck" "pptx"
-          sync_skill "morph-ppt" "pptx"
-          sync_skill "morph-ppt-3d" "pptx"
+          sync_main_files "officecli-pptx" "pptx"
 
           # XLSX
-          sync_skill "officecli-xlsx" "xlsx"
-          sync_skill "officecli-financial-model" "xlsx"
-          sync_skill "officecli-data-dashboard" "xlsx"
+          sync_main_files "officecli-xlsx" "xlsx"
+
+          echo ""
+          echo "=== BONUS skills (full copy) ==="
+
+          # DOCX bonus
+          sync_bonus_skill "officecli-academic-paper" "docx"
+
+          # PPTX bonus
+          sync_bonus_skill "officecli-pitch-deck" "pptx"
+          sync_bonus_skill "morph-ppt" "pptx"
+          sync_bonus_skill "morph-ppt-3d" "pptx"
+
+          # XLSX bonus
+          sync_bonus_skill "officecli-financial-model" "xlsx"
+          sync_bonus_skill "officecli-data-dashboard" "xlsx"
 
       - name: Commit and push if changed
         run: |
@@ -99,6 +128,9 @@ jobs:
 
           Auto-synced from OfficeCLI repo.
           Triggered by: ${{ github.event_name }}"
+
+            # Pull-rebase to handle concurrent runs, then push
+            git pull --rebase origin main || true
             git push
             echo "✅ Pushed skill updates"
           fi
