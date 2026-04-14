@@ -5,6 +5,8 @@ description: "HWP/HWPX create, read, edit, review. Triggers: 한글, .hwp, .hwpx
 
 # HWPX Document Skill
 
+> Updated 2026-04-14: Plan 99.9 Phase A-I implemented.
+
 Use this skill for any `.hwpx` task: create, read, edit, review, template-fill, or QA verification.
 Triggers: `"한글"`, `".hwpx"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
 Primary tool: **officecli** (PATH — global install).
@@ -117,9 +119,20 @@ file doc.hwp    # "HWP Document" → HWP 5.0 (binary, read-only)
 | Remove | `officecli remove doc.hwpx /section/p[3]` | Also: `/toc`, `/watermark`, `/section[2]` |
 | Set metadata | `officecli set doc.hwpx / --prop title="문서제목" --prop author="작성자"` | |
 | HTML preview | `officecli view doc.hwpx html --browser` | A4 미리보기 |
-| Validate | `officecli validate doc.hwpx` | 9-level: ZIP, package, XML, IDRef, table, NS, BinData, field pair |
+| Validate | `officecli validate doc.hwpx` | 9-level: ZIP, package, XML, IDRef, table, NS, BinData, field pair, section count |
 | Raw XML | `officecli raw doc.hwpx Contents/section0.xml` | 디버깅용 |
 | Form value | `officecli set doc.hwpx '/formfield[ID]' --prop value="홍길동"` | 누름틀 값 설정 |
+| **Fill (3-phase)** | `officecli set doc.hwpx / --prop 'fill:대표자=홍길동'` | in-cell → label-value → inline pipeline + checkbox □→☑ + prefix 60% matching (Plan 99.9) |
+| **Compare (LCS)** | `officecli compare a.hwpx b.hwpx` | LCS DP diff + table diff (dim 0.3 + content 0.7). Fallback for >10M matrix cells (Plan 99.9) |
+| **Forms (4-strategy)** | `officecli view doc.hwpx forms --auto` | adjacent, header-data, in-cell patterns, KV table + confidence score (Plan 99.9) |
+
+### Security (Plan 99.9 Phase C)
+
+ZIP input defense for all HWPX operations:
+- **ZIP bomb**: max 1000 entries, 200MB total, 100:1 compression ratio
+- **Path traversal**: `../` and absolute path rejection
+- **Symlink**: symlink entries rejected
+- **XXE**: `DtdProcessing.Prohibit` on all XML parsing
 
 ---
 
@@ -559,6 +572,29 @@ re.sub(r'<(?:hp:)?linesegarray[^>]*>.*?</(?:hp:)?linesegarray>', '', xml, flags=
 re.sub(r'<(?:hp:)?linesegarray[^/]*/>', '', result)  # self-closing
 ```
 
+### Equation (수식) Handling
+HWPX equations use Hancom's **proprietary script language** (NOT MathML/LaTeX/OMML).
+Stored in `<hp:equation>` → `<hp:script>` text nodes.
+
+**Create**: `officecli add doc.hwpx /section --type equation --prop 'script=x^2 + y^2 = r^2'`
+**View**: `officecli view doc.hwpx objects` (shows equation scripts)
+**Edit script**: Modify `<hp:script>` text directly (Python XML editing — same as `<t>` text nodes)
+**Convert**: HwpxEquationConverter provides Hancom script → LaTeX and StarMath conversion
+
+Common script syntax:
+| Script | Result |
+|--------|--------|
+| `{1 over 2}` | ½ (fraction) |
+| `sqrt{x}` | √x |
+| `x^2`, `x_i` | superscript, subscript |
+| `int _0 ^1 f(x)dx` | definite integral |
+| `sum _{i=1} ^n` | sigma summation |
+| `lim _{x->0}` | limit |
+| `matrix{a&b # c&d}` | 2×2 matrix |
+
+**KICE exam editing**: Equation scripts can be modified via Python text replacement on `<hp:script>` nodes.
+Verified on 2025 수능 수학 (836 equations). See hwp_recog/10, 11, 18.
+
 ### charPr height is centi-points
 `fontsize=16` (pt) → internally stored as `height=1600`. officecli handles conversion.
 
@@ -656,10 +692,10 @@ Korean has no case distinction → `StringComparer.OrdinalIgnoreCase` 무의미.
 `tables`, `markdown`, `objects`, `styles` view 모드가 CLI뿐 아니라 ResidentServer, McpServer에서도 동작.
 에이전트 자동화 시 transport에 따라 결과가 달라지지 않음.
 
-### Validate = ViewAsIssues 통합 (Plan 94 ✅)
-`officecli validate`가 9-level 전부 수행: ZIP, package (mimetype STORED, rootfile, version.xml),
-XML, IDRef, table, namespace, BinData 무결성, field pair, section count.
-`view issues`와 동일한 검사 범위.
+### Validate = ViewAsIssues 통합 (Plan 94 ✅, updated Plan 99.9)
+`officecli validate`가 9-level 전부 수행: ZIP integrity (bomb/traversal/symlink defense), package (mimetype STORED, rootfile, version.xml),
+XML well-formedness, IDRef, table structure, namespace, BinData integrity, field pair, section count.
+`view issues`와 동일한 검사 범위. Plan 99.9 Phase C added ZIP bomb defense (1000 entries, 200MB, 100:1 ratio).
 
 ### Rootfile-aware loader (Plan 80 ✅)
 `HwpxManifest.Parse(ZipArchive)`가 `META-INF/container.xml` → rootfile → OPF manifest 순으로 로딩.
@@ -694,7 +730,7 @@ Python 패턴매칭 + lineseg strip 전략을 사용한다.
 주요 패턴: lineseg strip(R1), checkbox(R6), label detect(R7-R8), uniform space(R10),
 checkbox hierarchy(R21), appendix ref(R22), digit-title concat(R23).
 
-**Python 도구**: `hwpx_form_edit.py` (범용 CLI, `officecli/scripts/`에 구현됨), `hwpx_form_patterns.py` (패턴 함수).
+**Python 도구**: `hwpx_form_edit.py` (범용 CLI, `officecli/scripts/`에 구현됨 — 12 commands: classify, hierarchy, appendix, strip-lineseg, extract, digit-headings, pages, problems, incell, markers, headers-footers, fill), `hwpx_form_patterns.py` (패턴 함수).
 기존 재사용: `pack.py` (strip/minify/repack), `hwpx_cli.py` (NS/text helpers).
 
 ### Exam XML Structure (시험지 특화)
@@ -722,6 +758,19 @@ KICE 시험지 XML은 일반 양식과 다른 고유 구조를 가짐 (2025 수�
 section1 축소(94→1p) — Hancom 정상 렌더링 확인.
 
 상세 → `hwp_recog/24-exam-xml-structure-patterns.md`, Plan 99.7 "HWPX XML Structure Patterns" 섹션.
+
+### Phase A-I Enhancements (Updated 2026-04-14)
+
+Plan 99.9 Phase A-I implementation — capabilities added to officecli core:
+
+- **FillByLabel feedback**: `FillResult(Filled, Unmatched)` return type — unmatched labels are reported in CLI output for user correction
+- **Broken ZIP recovery**: corrupted HWPX files are recovered via Local File Header scanning (Phase B)
+- **Font-size heading detection**: when `paraPr` outline level is absent, font size ratio is used as fallback (H1=1.5x, H2=1.3x, H3=1.15x base)
+- **LCS-based diff**: `compare` uses proper LCS DP alignment instead of linear scan. Fallback for large docs with >10M matrix cells (Phase D)
+- **Multi-`<hp:t>` replacement**: in-cell pattern fills handle text split across multiple `<t>` nodes (Phase I)
+- **3-phase fill pipeline**: in-cell pattern → label-value adjacency → inline replacement + checkbox □→☑ + prefix 60% fuzzy matching (Phase I)
+- **4-strategy form recognition**: adjacent cell, header-data, in-cell patterns, KV table — each with confidence score (Phase F)
+- **LabelKeywords expanded**: 64 keywords (was 56). Added: 핸드폰, 확인자, 승인자, 번호, 등록기준지, 본적, 위임인, 청구사유
 
 ---
 
