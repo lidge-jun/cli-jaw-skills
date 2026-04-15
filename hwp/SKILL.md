@@ -8,8 +8,8 @@ description: "HWP/HWPX create, read, edit, review, template-fill, QA. Triggers: 
 > **Scope**: HWP/HWPX only. Do NOT reference or load skills for other formats
 > (DOCX, PPTX, XLSX, PDF). If the task involves a non-HWP format, stop and tell the user.
 
-Primary tool: **officecli** (on PATH -- global install).
-Fallback: **Legacy Python scripts** only when officecli does not cover the operation.
+Primary tool: **officecli** (on PATH — global install) for ~70% of tasks.
+Fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what officecli cannot cover — HWP binary reading, HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
 Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
 
 ---
@@ -18,6 +18,8 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 
 | Task | OK? | Command |
 |------|-----|---------|
+| **Format like existing .hwpx** | Yes | `cp source.hwpx target.hwpx && officecli open target.hwpx` — inherit styles. See §2 |
+| **Template-based create** | Yes | `python3 scripts/build_hwpx.py --template {base\|gonmun\|minutes\|proposal\|report} --output out.hwpx` — see §4 |
 | Create new .hwpx | Yes | `officecli create file.hwpx` |
 | Create from Markdown | Yes | `officecli create file.hwpx --from-markdown input.md` |
 | Read / analyze .hwpx | Yes | `view text`, `annotated`, `outline`, `stats`, `html`, `markdown`, `tables`, `forms`, `objects` |
@@ -42,20 +44,181 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | Validate .hwpx | Yes | `validate` (9-level check) |
 | Raw XML | Yes | `raw`, `raw-set` |
 | Watermark (image) | Yes | `add --type watermark --prop src=img.png` (opaque RGB preferred) |
+| **Pattern-match editing** | Python (L4) | `scripts/hwpx_cli.py open` → pattern edit XML → `save` — see §16 |
+| **Visual QA** | Python (L3) | `scripts/contact_sheet.py` + subagent review with `reference/visual_qa_prompt.md` |
 | New form field creation | Blocked | source prototype exists; Hancom verification not closed |
-| Open .hwp (binary) | No | Convert to .hwpx first (Hancom Office or `hwp_convert.py`) |
+| Open .hwp (binary) | L3 only | `python3 scripts/hwp_reader.py` (read-only) or `scripts/hwp_convert.py IN.hwp OUT.hwpx` |
 
 ---
 
-## 2. Bonus Subskill References
+## 2. Reference-Based Editing (Edit > Create from Scratch)
 
-No bonus subskills currently exist for HWP. If future subskills are added
-(e.g., `./creating.md`, `./editing.md`), read them only for the specific task at hand.
-Reference files live in `./reference/` (format specs, style maps, visual QA prompts).
+When the user says "format like X.hwpx", "공문 양식처럼", "기존 보고서 스타일", or provides a source file — **start from the source. Don't rebuild from scratch.**
+
+### Workflow
+
+1. **Copy the source**: `cp source.hwpx target.hwpx` — inherits header.xml (styles), section0.xml (structure), META-INF
+2. **Open** with `officecli open target.hwpx` — daemon returns immediately (do NOT run as `run_in_background`)
+3. **Remove body paragraphs only** — keep `header.xml` (charPr/paraPr/borderFill), `META-INF`, settings
+4. **Add new content** using existing styleidref values — they auto-apply
+
+### Why This Matters
+
+HWPX header.xml holds all style definitions (charPr, paraPr, borderFill, listItems). Rebuilding these from scratch:
+
+- Breaks styleidref cross-references in section0.xml
+- Loses consistent 공문/보고서 visual conventions
+- Breaks validation (`officecli validate` fails)
+- Takes 10× longer than modifying the copy
+
+### Template Sources (priority order)
+
+1. **User-provided source file** — first-class template
+2. **`tests/fixtures/agentic/*.hwpx`** — realistic samples (gonmun with headings, report, minutes with tables)
+3. **`templates/{base,gonmun,minutes,proposal,report}/`** — **Template Assembly system** (see §4)
+4. **`officecli create`** blank — only when nothing else applies
+
+### Example — Official Letter (공문) Reuse
+
+```bash
+# Method A: direct copy
+cp SampleGonmun.hwpx MyGonmun.hwpx
+officecli open MyGonmun.hwpx
+# Use /table/fill to replace label-value cells
+officecli set MyGonmun.hwpx /table/fill --prop '문서번호=2026-123'
+officecli set MyGonmun.hwpx /table/fill --prop '수신=관계 부서장'
+officecli close MyGonmun.hwpx
+
+# Method B: template assembly (see §4)
+python3 scripts/build_hwpx.py --template gonmun --output MyGonmun.hwpx
+# Then edit with officecli as above
+```
 
 ---
 
-## 3. Design Principles for Korean Documents
+## 3. Reference Materials & Script Map
+
+officecli covers most HWPX operations. For template assembly, direct XML editing, HWP conversion, and pattern matching, use these references + Python scripts.
+
+### References (`reference/` — singular)
+
+| File | Read when | Contains |
+|------|-----------|----------|
+| `reference/hwpx-format.md` | **Before any direct XML edit** | OWPML ZIP structure, namespaces, file layout, mimetype |
+| `reference/header-xml-guide.md` | Adding/modifying charPr/paraPr/borderFill/listItems styles | How to add new styles to header.xml — required reading for style customization |
+| `reference/section0-xml-guide.md` | Paragraph/table/mixed-formatting direct XML | XML template for section0.xml bodies |
+| `reference/style_id_maps.md` | **Style ID lookup for template overlay** | Complete style ID index for base/gonmun/minutes/proposal/report templates |
+| `reference/dependencies.md` | First-time setup / environment check | Python/system packages needed (pyhwp, lxml, soffice, JAVA_HOME) |
+| `reference/visual_qa_prompt.md` | Visual QA via subagent | Ready-to-use prompt for PDF-image inspection |
+| `reference/table_templates/*.xml` | Inserting pre-built tables | 2x6, 3x3, 4x4, 5x4 grid XML fragments |
+
+### Scripts (`scripts/`) — Python OWPML Toolkit
+
+| Script | Run when | Command |
+|--------|----------|---------|
+| `scripts/hwpx_cli.py` | Unified Python CLI (14+ commands) — unpack, save, text, search, replace, batch-replace, tables, fill-table, validate, page-guard, toc, chunk, search-chunks, repair, content-check, insert-table, structure | `python3 scripts/hwpx_cli.py {command} ...` |
+| `scripts/build_hwpx.py` | **Template-based creation** (§4) | `python3 scripts/build_hwpx.py --template {type} --output X.hwpx` |
+| `scripts/analyze_template.py` | Inspect template structure before overlay | `python3 scripts/analyze_template.py work/` |
+| `scripts/create_document.py` | Create empty or custom HWPX | `python3 scripts/create_document.py OUT.hwpx` |
+| `scripts/table_builder.py` | Build table XML from Python objects | Used internally by `insert-table` command |
+| `scripts/page_guard.py` | Detect paragraph/table/text drift vs reference doc | `python3 scripts/page_guard.py -r ref.hwpx -o out.hwpx` |
+| `scripts/contact_sheet.py` | QA contact sheet (page grid image) | `python3 scripts/contact_sheet.py INPUT.pdf sheet.png` |
+| `scripts/validate.py` | 9-level structural validation (Python fallback) | `python3 scripts/validate.py INPUT.hwpx` |
+| `scripts/hwp_reader.py` | Read HWP 5.0 binary (OLE2, read-only) | `python3 scripts/hwp_reader.py INPUT.hwp` |
+| `scripts/hwp_convert.py` | HWP → HWPX conversion (H2Orestart-based) | `python3 scripts/hwp_convert.py IN.hwp OUT.hwpx` |
+| `scripts/text_extract.py` | Extract plain text from HWPX | `python3 scripts/text_extract.py INPUT.hwpx` |
+| `scripts/ooxml/pack.py` / `unpack.py` | ZIP atomicity helpers | Used internally by other scripts |
+
+### Editing Escalation Ladder
+
+When officecli can't do the job, escalate in this order:
+
+| Level | When | Tool |
+|-------|------|------|
+| **L1** officecli high-level | Typical add/set/remove, label-fill, view modes | `officecli add/set/remove/query/view/merge` |
+| **L2** officecli `raw` / `raw-set` | Direct section0.xml / header.xml tweaks | `officecli raw FILE /Contents/section0.xml` or `raw-set` |
+| **L3** Python script | Bulk find/replace, batch-replace, template assembly, pattern-match | `python3 scripts/hwpx_cli.py ...` or `scripts/build_hwpx.py` |
+| **L4** Unpack → edit XML → repack (with lineseg strip) | KICE exams, regulations, anything requiring multi-file XML edit | `scripts/hwpx_cli.py open` → edit `work/Contents/*.xml` → strip lineseg → `save` |
+
+**Escalation signals:**
+- officecli cannot add custom style → **L2** (raw-set header.xml) + read `reference/header-xml-guide.md`
+- Custom template overlay → **L3** (`scripts/build_hwpx.py`) + read `reference/style_id_maps.md`
+- **HWP binary** input → **L3** (`scripts/hwp_convert.py` first, then edit HWPX)
+- **Multi-file pattern match** (exam questions, regulations) → **L4** (see §16)
+- **Style ID lookup** → Read `reference/style_id_maps.md` FIRST
+
+---
+
+## 4. Template Assembly (HWP 전용)
+
+HWP has a unique **base + overlay template system**. Most HWPX creation for 공문/보고서/회의록/제안서 should use this instead of `officecli create` blank.
+
+### Available Templates
+
+| Template | Purpose |
+|----------|---------|
+| `templates/base/` | Empty HWPX skeleton (mimetype, META-INF, empty header/section) |
+| `templates/gonmun/` | Official letter (공문) styles — 문서번호, 수신, 참조, 제목, 본문 |
+| `templates/minutes/` | Meeting minutes (회의록) styles — 일시, 장소, 참석자, 안건, 결정사항 |
+| `templates/proposal/` | Proposal (제안서) styles — 제안개요, 배경, 내용, 기대효과 |
+| `templates/report/` | Report (보고서) styles — 요약, 현황, 분석, 제언 |
+
+### Method 1: build_hwpx.py (recommended)
+
+```bash
+python3 scripts/build_hwpx.py --template report --output Q4Report.hwpx
+# Then edit content with officecli
+officecli open Q4Report.hwpx
+officecli set Q4Report.hwpx /table/fill --prop '제목=2026 Q4 보고'
+# ... continue editing ...
+```
+
+### Method 2: Manual Overlay (for customization)
+
+```bash
+# 1. Copy base skeleton
+cp -r templates/base/ work/
+
+# 2. Overlay domain-specific styles
+cp -r templates/gonmun/* work/Contents/
+
+# 3. Edit header.xml and section0.xml as needed
+#    Reference: reference/header-xml-guide.md, reference/section0-xml-guide.md
+#    Style IDs: reference/style_id_maps.md
+
+# 4. Repack as HWPX (ZIP with strip + minify)
+python3 scripts/ooxml/pack.py work/ out.hwpx
+
+# 5. Validate
+officecli validate out.hwpx
+```
+
+### Style ID Reference
+
+Every template defines charPr/paraPr/borderFill style IDs. To customize without breaking cross-references:
+
+1. Read `reference/style_id_maps.md` for the template's complete ID index
+2. Use `scripts/analyze_template.py work/` to inspect current structure
+3. Add new styles via `reference/header-xml-guide.md` patterns — preserve existing IDs
+
+---
+
+## 5. Subskill & Resource Map
+
+HWP does not have bonus subskill folders (unlike docx's `officecli-academic-paper/` or pptx's `morph-ppt/`). All auxiliary resources live directly inside this skill:
+
+| Resource | Location | Purpose |
+|----------|----------|---------|
+| **Reference docs** | `./reference/*.md` | XML guides, style ID maps, QA prompts — see §3 |
+| **Python scripts** | `./scripts/*.py` | OOXML toolkit, HWP conversion, template assembly — see §3 |
+| **Templates (base+overlay)** | `./templates/{base,gonmun,minutes,proposal,report}/` | Template assembly system — see §4 |
+| **Test fixtures** | `./tests/fixtures/` | Pre-built `.hwpx` samples usable as `cp` sources — see §2 |
+
+If future bonus subskills are added (e.g., `./creating.md`, `./editing.md`, `./officecli-kice-exam/`), read them only for the specific task at hand.
+
+---
+
+## 6. Design Principles for Korean Documents
 
 ### Korean Government Form Aesthetics (한국 공공양식 미감)
 
@@ -92,7 +255,7 @@ Korean forms often use uniform character spacing for names in cells:
 
 ---
 
-## 4. Mandatory Verification (NEVER SKIP)
+## 7. Mandatory Verification (NEVER SKIP)
 
 After ANY HWPX edit operation, ALWAYS execute these in order:
 
@@ -105,21 +268,27 @@ soffice --headless --convert-to pdf --outdir /tmp output.hwpx
 # Verify: table positions, guide text removed, checkboxes correct,
 #         merged cell text in correct row, numbers not corrupted
 
-# 3. If Hancom Office available, also open .hwpx directly
+# 3. Visual QA via subagent (use reference/visual_qa_prompt.md)
+#    python3 scripts/contact_sheet.py /tmp/output.pdf sheet.png
+#    Then: dispatch subagent with reference/visual_qa_prompt.md
+
+# 4. If Hancom Office available, also open .hwpx directly
 ```
 
 **Skip PDF verification = unverified output. Always inform user if soffice is unavailable.**
 
 ---
 
-## 5. Prerequisite Check
+## 8. Prerequisite Check
 
 ```bash
 which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
 which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+python3 -c "import lxml; import pyhwp" 2>/dev/null || echo "OPTIONAL: pip install lxml pyhwp (for Python fallbacks)"
+echo "JAVA_HOME=$JAVA_HOME (required for H2Orestart HWP→HWPX conversion)"
 ```
 
-## 6. Tool Discovery
+## 9. Tool Discovery
 
 Always confirm syntax from help before guessing:
 
@@ -128,11 +297,13 @@ officecli --help
 officecli hwpx add
 officecli hwpx set
 officecli hwpx view --help
+python3 scripts/hwpx_cli.py --help
+python3 scripts/build_hwpx.py --help
 ```
 
 ---
 
-## 7. Core Workflows
+## 10. Core Workflows
 
 ### Create & Import & Merge
 
@@ -142,6 +313,9 @@ officecli create doc.hwpx --from-markdown input.md           # MD->HWPX (JUSTIFY
 officecli create doc.hwpx --from-markdown input.md --align left  # left-aligned
 officecli merge template.hwpx out.hwpx --data '{"이름":"홍길동"}'  # template {{key}} replace
 officecli merge template.hwpx out.hwpx --data data.json           # JSON file data
+
+# Template assembly (see §4)
+python3 scripts/build_hwpx.py --template gonmun --output gonmun.hwpx
 ```
 
 ### View Modes
@@ -200,11 +374,13 @@ Virtual attrs: `text`, `bold`, `italic`, `fontsize`, `colSpan`, `rowSpan`, `head
 ### Resident Mode (live connection)
 
 ```bash
-officecli open doc.hwpx          # open live session
+officecli open doc.hwpx          # returns IMMEDIATELY; daemon in bg
 officecli view text               # view without re-opening
 officecli set '/p[1]' --prop bold=true
 officecli close                   # close session
 ```
+
+> **Do NOT run `officecli open` as a background shell job.** It returns immediately and the daemon lives in the background automatically. Running it as a monitored shell creates zombies and file locks.
 
 ### Batch Mode (multiple commands)
 
@@ -216,15 +392,7 @@ view forms --auto
 EOF
 ```
 
-### Pre-Delivery Checklist
-
-- [ ] `officecli validate` passes (0 errors)
-- [ ] `soffice --headless --convert-to pdf` → visual check
-- [ ] Table cells in correct positions (cellAddr mapping)
-- [ ] Guide text (※, 예시) fully removed
-- [ ] Checkboxes □/■ in intended cells only
-- [ ] Merged cell text in correct row
-- [ ] If Hancom available, open .hwpx directly
+> **Error decoding:** `'X' is an invalid start of a value` = shell syntax leaked into JSON-style batch. Use heredoc with single-quoted delimiter `<<'EOF'`.
 
 ### Compare
 
@@ -275,20 +443,34 @@ officecli unwatch doc.hwpx         # stop
 officecli view doc.hwpx html --browser  # one-shot A4 preview
 ```
 
+### Pre-Delivery Checklist
+
+- [ ] `officecli validate` passes (0 errors)
+- [ ] `soffice --headless --convert-to pdf` → visual check
+- [ ] Table cells in correct positions (cellAddr mapping)
+- [ ] Guide text (※, 예시) fully removed
+- [ ] Checkboxes □/■ in intended cells only
+- [ ] Merged cell text in correct row
+- [ ] If Hancom available, open .hwpx directly
+
 ---
 
-## 8. Common Pitfalls
+## 11. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
 | `--props text=Hello` | `--prop text=Hello` -- singular `--prop` always |
 | `/body/p[1]` path | HWPX uses `/section[1]/p[1]` -- section-based, not body |
-| `.hwp` (binary) open | Convert to `.hwpx` first (Hancom Office or `hwp_convert.py`) |
+| `.hwp` (binary) open | Convert to `.hwpx` first (Hancom Office or `scripts/hwp_convert.py`) |
 | Unquoted `[N]` in shell | `"/section[1]/p[1]"` -- always quote paths |
 | fontsize omitted | `--prop fontsize=11` always -- prevents charPr 0 pollution |
 | `officecli view file.hwpx` (no mode) | Error. Must specify: `text`, `markdown`, `tables`, etc. |
 | Manual table mapping | `view tables` replaces manual inspection |
 | HWP->HWPX text replace | Whole-paragraph `<t>` -- use raw string replace; p[0] may contain page-number fragments |
+| **Recreating header.xml styles that exist in template** | `cp source.hwpx target.hwpx` first. Read `reference/style_id_maps.md` before custom styling. See §2 |
+| **`officecli open` as background shell** | Run foreground — returns immediately, daemon runs in bg automatically. Background shell spawn creates zombies |
+| **Direct XML edit without lineseg strip** | Stale `<hp:linesegarray>` cache causes text overlap. Use `scripts/hwpx_cli.py` (strips automatically) or apply lineseg strip manually (see §16) |
+| **Custom style work without reading reference/** | `reference/header-xml-guide.md` + `reference/style_id_maps.md` are mandatory reading. See §3 |
 
 ### Essential Rules (from subskill)
 
@@ -297,7 +479,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 
 ---
 
-## 9. Form Recognition & Fill
+## 12. Form Recognition & Fill
 
 ### 4-Strategy Recognition
 
@@ -347,7 +529,7 @@ officecli set form.hwpx /table/fill --prop '성 명=홍길동'   # Step 3: fill
 
 ---
 
-## 10. Security
+## 13. Security
 
 | Check | Limits |
 |-------|--------|
@@ -358,13 +540,23 @@ officecli set form.hwpx /table/fill --prop '성 명=홍길동'   # Step 3: fill
 
 ---
 
-## 11. HWP->HWPX Conversion
+## 14. HWP->HWPX Conversion
 
 ### Format Detection
 
 ```bash
 file doc.hwpx   # "Zip archive" -> HWPX (ZIP + OWPML XML)
 file doc.hwp    # "HWP Document" -> HWP 5.0 (OLE2 binary, read-only)
+```
+
+### Conversion
+
+```bash
+# Python fallback (H2Orestart-based)
+python3 scripts/hwp_convert.py input.hwp output.hwpx
+
+# Read-only HWP inspection (no conversion)
+python3 scripts/hwp_reader.py input.hwp
 ```
 
 ### Structural Differences
@@ -383,7 +575,7 @@ file doc.hwp    # "HWP Document" -> HWP 5.0 (OLE2 binary, read-only)
 
 ---
 
-## 12. Equation Handling (수식)
+## 15. Equation Handling (수식)
 
 HWPX equations use Hancom's **proprietary script language**. NOT MathML, NOT LaTeX, NOT OMML.
 
@@ -412,81 +604,62 @@ Math exam docs (KICE) require `<hp:equation>` for every expression. Never use pl
 
 ---
 
-## 13. Pattern-Match Editing (Python Fallback)
+## 16. Pattern-Match Editing (Python L4 Fallback)
 
-For complex form editing beyond officecli `set`/`find-replace` (KICE exams, regulations):
+For complex form editing beyond officecli `set`/`find-replace` (KICE exams, multi-section regulations, fragmented text nodes):
 
-**Core flow**: unpack HWPX -> strip lineseg -> pattern-match edit XML -> repack ZIP.
-Hancom recalculates layout on open. Tools: `hwpx_form_edit.py` (12 CLI commands), `pack.py`.
+**Core flow**: unpack HWPX → strip lineseg → pattern-match edit XML → repack ZIP. Hancom recalculates layout on open.
 
-**Pattern catalog**: 98+ patterns (Plan 99.8), 58 implementation tasks (Plan 99.9).
+Tools: `scripts/hwpx_cli.py` (unpack/search/replace/batch-replace/fill-table — strips lineseg automatically), `scripts/ooxml/pack.py`.
 
-Key patterns: lineseg strip (R1), checkbox (R6), label detect (R7-R8),
-uniform space normalization (R10), checkbox hierarchy (R21), appendix ref (R22).
+### Key Patterns (non-exhaustive)
 
----
+| Pattern | Description | Where |
+|---------|-------------|-------|
+| **Lineseg strip** | Remove stale `<hp:linesegarray>` cache | Apply on every direct XML write (see below) |
+| **Checkbox substitution** | `□` → `☑`, with multi-`<t>` node handling | `hwpx_cli.py replace` or regex |
+| **Label→value detection** | Label cell adjacent to value cell (right/down/left/up) | `officecli set /table/fill` handles most cases |
+| **Uniform-space normalization** | `"홍 길 동"` ↔ `"홍길동"` conversion | Automatic in officecli; manual in direct XML |
+| **Checkbox hierarchy** | `□` (section) → `○` (item) → `-` (detail) → `*` (footnote) | Regulation-specific |
+| **Appendix references** | `[별첨 제N호]`, `[별지 N]` linked to form templates | Regulation-specific |
+| **p[0] Monster** | secPr + tbl + question 1 text merged in first paragraph (HWP-converted files) | `scripts/hwp_convert.py` output requires paragraph-level replace |
+| **Equation interleaving** | `<t>` ↔ `<equation>` alternating | Skip equations during text extraction |
 
-## 14. Legacy Python Fallback
-
-Scripts path: `~/.cli-jaw/skills_ref/hwp/scripts/`
-
-| Task | Tool | Command |
-|------|------|---------|
-| HWP binary read | `hwp_reader.py` | `python scripts/hwp_reader.py input.hwp` |
-| HWP->HWPX convert | `hwp_convert.py` | `python scripts/hwp_convert.py input.hwp output.hwpx` |
-| HWPX create (template) | `build_hwpx.py` | `python scripts/build_hwpx.py --template report --output out.hwpx` |
-| Text extract | `text_extract.py` | `python scripts/text_extract.py input.hwpx` |
-| Unpack/edit/repack | `hwpx_cli.py` | `python scripts/hwpx_cli.py open input.hwpx work/` -> edit -> `save work/ out.hwpx` |
-| Search/replace | `hwpx_cli.py` | `python scripts/hwpx_cli.py replace input.hwpx "old" "new" -o out.hwpx` |
-| Batch replace | `hwpx_cli.py` | `python scripts/hwpx_cli.py batch-replace input.hwpx map.json -o out.hwpx` |
-| Table manipulation | `hwpx_cli.py` | `python scripts/hwpx_cli.py fill-table input.hwpx IDX '{"label>dir":"val"}' -o out.hwpx` |
-| HWPX->PDF | `soffice` | `soffice --headless --convert-to pdf --outdir /tmp input.hwpx` |
-| Visual QA | PDF->image | `pdftoppm -jpeg -r 150 out.pdf preview` -> sub-agent review |
-| Validate | `validate.py` | `python scripts/validate.py input.hwpx` |
-| Page count guard | `page_guard.py` | `python scripts/page_guard.py -r ref.hwpx -o out.hwpx` |
-| Doc structure | `hwpx_cli.py` | `python scripts/hwpx_cli.py structure input.hwpx` |
-| Repair | `hwpx_cli.py` | `python scripts/hwpx_cli.py repair input.hwpx --apply` |
-
-> **Priority**: use officecli first. Python is for operations officecli cannot do
-> (HWP binary read, HWP->HWPX conversion, PDF output, template generation, pattern-match editing).
+For repository-internal pattern catalog references (Plan 99.8 / 99.9) see the devlog; the scripts above implement the concrete operations.
 
 ### Lineseg Strip (critical for direct XML editing)
 
-When editing HWPX XML directly (not via officecli), you MUST strip ALL `<hp:linesegarray>`
-elements. Stale layout cache causes characters to overlap into a single line.
+When editing HWPX XML directly (NOT via officecli or scripts/hwpx_cli.py), you MUST strip ALL `<hp:linesegarray>` elements. Stale layout cache causes characters to overlap into a single line.
 
 ```python
-re.sub(r'<(?:hp:)?linesegarray[^>]*>.*?</(?:hp:)?linesegarray>', '', xml, flags=re.DOTALL)
-re.sub(r'<(?:hp:)?linesegarray[^/]*/>', '', result)  # self-closing
+import re
+xml = re.sub(r'<(?:hp:)?linesegarray[^>]*>.*?</(?:hp:)?linesegarray>', '', xml, flags=re.DOTALL)
+xml = re.sub(r'<(?:hp:)?linesegarray[^/]*/>', '', xml)  # self-closing
 ```
 
-officecli handles this automatically. This rule applies only to direct Python XML editing.
-
-### Python Environment
-
-```bash
-pip install pyhwp lxml   # HWP reading + XML processing
-# soffice: LibreOffice (macOS: brew install --cask libreoffice)
-# H2Orestart: Java-based HWP conversion engine (for PDF conversion)
-```
+officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies only to raw Python XML editing.
 
 ---
 
-## 15. Anti-Patterns (MUST AVOID)
+## 17. Anti-Patterns (MUST AVOID)
 
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
-2. **No direct HWP binary editing** -- HWP 5.0 (`.hwp`) is read-only; convert to HWPX first
-3. **No XML editing without lineseg strip** -- stale cache causes overlapping text
+2. **No direct HWP binary editing** -- HWP 5.0 (`.hwp`) is read-only; convert to HWPX first via `scripts/hwp_convert.py`
+3. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
 4. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
+5. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
+6. **Ignoring reference materials** — `reference/header-xml-guide.md`, `reference/section0-xml-guide.md`, and `reference/style_id_maps.md` are mandatory reading for custom XML work. See §3
 
 ---
 
-## 16. Dependencies
+## 18. Dependencies
 
 | Tool | Purpose | Required? |
 |------|---------|-----------|
 | `officecli` (global) | Primary HWPX CLI | **Required** |
-| `python3` | Legacy fallback scripts | Optional |
+| `python3` | Fallback scripts (`scripts/*.py`) | **Required for L3/L4** |
+| `lxml` | XML processing for scripts/* | Required for L3/L4 (`pip install lxml`) |
+| `pyhwp` | HWP 5.0 binary reading | Required for HWP→HWPX |
 | `soffice` (LibreOffice) | PDF conversion + visual verification | Recommended |
-| `Java` (JAVA_HOME) | H2Orestart HWP conversion engine | For HWP->HWPX only |
+| `Java` (JAVA_HOME) | H2Orestart HWP conversion engine | For HWP→HWPX only |
 | `dotnet` | Build officecli from source | For builds only |

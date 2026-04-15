@@ -7,8 +7,9 @@ description: "PowerPoint PPTX create, read, edit, review. Triggers: PowerPoint, 
 
 Use this skill for PowerPoint `.pptx` creation, editing, review, and QA.
 Triggers: `"PowerPoint"`, `"PPTX"`, `"presentation"`, `"slides"`, `"deck"`.
-Primary tool: **officecli** (PATH).
-Fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides). Even in pptxgenjs flows, officecli remains the finishing/QA tool.
+
+Primary tool: **officecli** (PATH) for ~80% of tasks (slide add/set/remove, validate, query).
+Fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides). **Python scripts** (`scripts/*.py`) for unpack/repair/thumbnail/cleanup. See §3.
 Do NOT use this skill for Keynote, Google Slides API automation, or image generation.
 
 ---
@@ -17,6 +18,7 @@ Do NOT use this skill for Keynote, Google Slides API automation, or image genera
 
 | Task | Action |
 |------|--------|
+| **Format like existing deck** | `cp source.pptx target.pptx && officecli open target.pptx` — **inherit theme/layouts/masters. See §2.** |
 | Read / analyze content | `view` and `get` commands (see Core Workflows) |
 | Edit existing presentation | Read [editing.md](./editing.md) |
 | Create from scratch | Read [creating.md](./creating.md) |
@@ -24,12 +26,115 @@ Do NOT use this skill for Keynote, Google Slides API automation, or image genera
 | Morph transition animations | Read [morph-ppt/SKILL.md](./morph-ppt/SKILL.md) |
 | 3D morph effects with models | Read [morph-ppt-3d/SKILL.md](./morph-ppt-3d/SKILL.md) |
 | JS programmatic fallback | Read [pptxgenjs.md](./pptxgenjs.md) |
+| Color palette / typography | Read `references/design-system.md` — 20 palettes, 8 font pairings |
+| Thumbnail grid / visual QA | `python3 scripts/thumbnail.py deck.pptx grid.png` |
+| Unpack / repair | `python3 scripts/pptx_cli.py {open\|save\|validate\|repair}` |
 
 **Execution model:** Run commands one at a time. Check exit code before proceeding. Non-zero = stop and fix.
 
 ---
 
-## 2. Subskill References
+## 2. Reference-Based Editing (Edit > Create from Scratch)
+
+When the user says "format like X.pptx", "match existing deck style", "based on template", or provides a source file — **start from the source. Don't rebuild from scratch.**
+
+### Workflow
+
+1. **Copy the source**: `cp source.pptx target.pptx` — inherits theme, slide masters, layouts, fonts, colors
+2. **Open** with `officecli open target.pptx` — daemon returns immediately (do NOT run as `run_in_background`)
+3. **Remove slide content** but keep `/slideMaster`, `/slideLayout`, `/theme`
+4. **Add new slides** using existing layouts (`--prop layout=Title+Content`) — they auto-inherit theme
+
+### Why This Matters
+
+Slide master and theme definitions (fonts, colors, placeholder geometry) are document-specific. Recreating them from scratch:
+
+- Loses consistent branding across slides
+- Breaks existing placeholder positions
+- Takes 5-10× longer than modifying the copy
+
+### Template Sources (priority order)
+
+1. **User-provided source file** — first-class template
+2. **`tests/fixtures/*.pptx`** — pre-built examples shipped with this skill
+3. **`officecli-pitch-deck/` templates** — if pitch/investor context
+4. **`morph-ppt/reference/styles/*`** — 48 curated style definitions (`bw--brutalist`, `dark--aurora-softedge`, `light--minimal-product`, etc.)
+5. **`officecli create`** blank — only when nothing else applies
+
+### Example — Inherit Existing Brand
+
+```bash
+# CORRECT: inherit theme and layouts
+cp CompanyBrand.pptx Q4Report.pptx
+officecli open Q4Report.pptx
+officecli remove Q4Report.pptx "/slide[1]"          # remove sample slides
+officecli add Q4Report.pptx / --type slide --prop layout=Title
+officecli add Q4Report.pptx '/slide[1]' --type textbox --prop text="Q4 Report" --prop placeholder=title
+officecli close Q4Report.pptx
+
+# WRONG: recreate theme (loses brand)
+officecli create Q4Report.pptx
+# ... add all fonts, colors, masters from scratch ...
+```
+
+---
+
+## 3. Reference Materials & Script Map
+
+officecli covers most PPTX tasks. For design, QA, and repair, use these references + scripts.
+
+### References (`references/`)
+
+| File | Read when | Contains |
+|------|-----------|----------|
+| `references/design-system.md` | **Before picking colors/fonts** — palette + typography decision | 20 palettes (business/nature/energy/tech/warm), 8 font pairings, 4 Korean fonts |
+
+### Deep-Dive Files (inside subskills)
+
+These are specific reference files nested inside subskill folders. Load only the one you need. §4 lists the top-level subskill SKILL.md entry points.
+
+| Path | Read when | Contains |
+|------|-----------|----------|
+| `morph-ppt/reference/decision-rules.md` | Planning framework for content-heavy decks | Pyramid Principle, SCQA, page types |
+| `morph-ppt/reference/pptx-design.md` | Canvas spec, ghost position math | Canvas, fonts, spacing tokens (x=36cm ghost) |
+| `morph-ppt/reference/styles/INDEX.md` | Picking a distinct visual style | 48 style definitions with spec + example |
+| `morph-ppt/reference/quality-gates.md` | Phase 4–5 QA gates for morph decks | QA checklist |
+| `morph-ppt/reference/officecli-pptx-min.md` | Morph-specific officecli commands | Minimal command reference |
+| `pptxgenjs.md` | Programmatic generation (50+ data-driven slides) | PptxGenJS API reference |
+| `recipes.md` | 3 copy-paste repair patterns | Section divider z-order, KPI overflow, timeline spacing |
+
+### Scripts (`scripts/`) — Python OOXML Toolkit
+
+| Script | Run when | Command |
+|--------|----------|---------|
+| `scripts/pptx_cli.py` | Unified Python CLI — unpack, save, validate, repair, thumbnail, search, TOC, add-slide, clean, export-pdf | `python3 scripts/pptx_cli.py {open\|save\|validate\|repair\|text\|search\|toc\|thumbnail\|export-pdf\|add-slide\|clean}` |
+| `scripts/thumbnail.py` | Slide thumbnail grid or individual PNGs (visual QA) | `python3 scripts/thumbnail.py IN.pptx grid.png` or `IN.pptx out_dir/ --individual` |
+| `scripts/clean.py` | Find/remove orphaned media/files from unpacked PPTX | `python3 scripts/clean.py work/ [--delete]` |
+| `scripts/add_slide.py` | Add or duplicate slides on unpacked dir (legacy OOXML) | `python3 scripts/add_slide.py work/ --blank` or `--duplicate 3 --position 1` |
+| `scripts/run_tests.py` | Run skill regression tests (fixtures + expected outputs) | `python3 scripts/run_tests.py` |
+
+### Editing Escalation Ladder
+
+When officecli can't do the job, escalate in this order:
+
+| Level | When | Tool |
+|-------|------|------|
+| **L1** officecli high-level | Typical slide/shape add/set/remove | `officecli add/set/remove/query/view` |
+| **L2** officecli `raw-set` | XML injection — custom animations, chart XML, theme tweaks | `officecli raw-set FILE PATH --xpath X --action A --xml ...` |
+| **L3** Python script | Thumbnail generation, orphan cleanup, unified CLI ops | `python3 scripts/*.py` |
+| **L4** Unpack → edit XML → repack | Morph transitions beyond officecli, custom `p:transition` XML, macro handling | `scripts/pptx_cli.py open` → edit `work/ppt/slides/*.xml` → `save` |
+| **L5** pptxgenjs | 50+ slides from datasets, composable factories, heavy loop logic | `npm install pptxgenjs` + JS pipeline |
+
+**Escalation signals:**
+- officecli shows **"silently ignored"** or unsupported prop → **L2**
+- Need **morph/custom transitions** beyond high-level → **L4**
+- **Bulk generation** from data (50+ slides) → **L5** (pptxgenjs)
+- **Unpacked workflow** for cleanup/reorg → **L3** (`pptx_cli.py clean`)
+- **Design pick** (color, font, style) → Read `references/design-system.md` + `morph-ppt/reference/styles/INDEX.md` FIRST
+
+---
+
+## 4. Subskill References
 
 Load ONLY the one subskill matching your task. Do not load all of them.
 
@@ -43,7 +148,7 @@ Load ONLY the one subskill matching your task. Do not load all of them.
 
 ---
 
-## 3. Design Ideas
+## 5. Design Ideas
 
 Don't create boring slides. Plain bullets on a white background won't impress anyone.
 
@@ -53,6 +158,9 @@ Don't create boring slides. Plain bullets on a white background won't impress an
 - **One color dominates** (60-70% visual weight), with 1-2 supporting tones and one sharp accent.
 - **Dark/light contrast**: Dark backgrounds for title + conclusion slides, light for content ("sandwich" structure). Or commit to dark throughout for a premium feel.
 - **Commit to a visual motif**: Pick ONE distinctive element and repeat it — colored cards, thick side borders, icon circles. Carry it across every slide.
+
+> Full palettes + typography guide: read `references/design-system.md` (20 palettes, 8 font pairings).
+> Distinct design styles: read `morph-ppt/reference/styles/INDEX.md` (48 curated styles).
 
 ### Design dials
 
@@ -241,7 +349,7 @@ A 10-slide deck should have at minimum 4 distinct layout types:
 
 ---
 
-## 4. Creation Workflow
+## 6. Creation Workflow
 
 ```bash
 # 1. ASCII 파일명으로 /tmp/ 에서 작업 (한국어 파일명은 resident 깨짐)
@@ -263,7 +371,7 @@ python3 -c "import shutil; shutil.copy2('/tmp/deck_work.pptx', 'final.pptx')"
 
 ---
 
-## 5. QA (Required)
+## 7. QA (Required)
 
 **Assume there are problems. Your job is to find them.**
 
@@ -283,6 +391,9 @@ officecli check output.pptx
 
 ```bash
 officecli view output.pptx html --browser
+
+# Alternative: thumbnail grid for quick scan
+python3 scripts/thumbnail.py output.pptx grid.png
 ```
 
 **USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
@@ -313,14 +424,14 @@ Fix with `officecli set`, rerun QA. **Do not declare success until you've comple
 
 ---
 
-## 6. Prerequisite Check
+## 8. Prerequisite Check
 
 ```bash
 which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
 which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
 ```
 
-## 7. Tool Discovery
+## 9. Tool Discovery
 
 Always inspect help before inventing properties:
 
@@ -336,7 +447,7 @@ officecli pptx query           # query selector syntax
 
 ---
 
-## 8. Core Workflows
+## 10. Core Workflows
 
 ### Reading & Analyzing
 
@@ -378,11 +489,13 @@ officecli view slides.pptx svg --start 1 --end 1 --browser
 ### Resident Mode
 
 ```bash
-officecli open slides.pptx
+officecli open slides.pptx      # returns IMMEDIATELY; daemon in bg
 officecli add slides.pptx ...
 officecli set slides.pptx ...
 officecli close slides.pptx     # always close explicitly
 ```
+
+> **Do NOT run `officecli open` as a background shell job.** It returns immediately and the daemon lives in the background automatically. Running it as a monitored shell creates zombies and file locks.
 
 ### Batch Mode
 
@@ -397,9 +510,11 @@ EOF
 
 Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, `raw`, `raw-set`, `validate`.
 
+> **Error decoding:** `'X' is an invalid start of a value` = shell syntax leaked into JSON. Use heredoc `cat <<'EOF' | officecli batch FILE` with single-quoted delimiter.
+
 ---
 
-## 9. Common Pitfalls
+## 11. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -412,10 +527,14 @@ Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, 
 | Chart series after creation | Cannot add — delete and recreate |
 | Korean filename + resident | CJK causes resident UTF-8 corruption. Use ASCII, then copy. If stuck: `pkill -9 -f "resident-serve"` |
 | Resident zombie | `pkill -9 -f "resident-serve"`, wait 1s, retry |
+| **Recreating theme/masters that exist** | `cp source.pptx target.pptx` first. Keep `/slideMaster`, `/slideLayout`, `/theme`. See §2 |
+| **`officecli open` as background shell** | Run foreground — returns immediately, daemon runs in bg automatically. Background shell spawn creates zombies |
+| **Batch JSON `'X' is an invalid start of a value`** | Shell syntax leaked. Use heredoc: `cat <<'EOF' \| officecli batch FILE.pptx` |
+| **Picking colors/fonts blindly** | Read `references/design-system.md` (20 palettes, 8 font pairings) BEFORE picking. See §3 |
 
 ---
 
-## 10. Pre-Delivery Checklist
+## 12. Pre-Delivery Checklist
 
 - [ ] Speaker notes on all content slides
 - [ ] At least one transition style applied
@@ -428,7 +547,7 @@ Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, 
 
 ---
 
-## 11. Quick Recipes
+## 13. Quick Recipes
 
 See [recipes.md](./recipes.md) for 3 copy-paste repair patterns:
 1. Section Divider z-order fix
@@ -437,7 +556,7 @@ See [recipes.md](./recipes.md) for 3 copy-paste repair patterns:
 
 ---
 
-## 12. Anti-Patterns
+## 14. Anti-Patterns
 
 - Never use example data from subskill files (FitPulse, LearnFlow, etc.)
 - Never leave placeholder text: `lorem`, `ipsum`, `XXXX`, `TODO`
@@ -446,23 +565,12 @@ See [recipes.md](./recipes.md) for 3 copy-paste repair patterns:
 - Max 2 font families per deck
 - `Malgun Gothic` as sole font = rejected
 - `view issues` "(untitled)" for blank-layout is expected, not a defect
+- **Recreating theme/masters instead of copying source**: When user provides a reference deck, `cp` first. See §2
+- **Ignoring reference materials**: If design-pick fails, READ `references/design-system.md` + `morph-ppt/reference/styles/INDEX.md` (§3) BEFORE defaulting to generic blue + Arial
 
 ---
 
-## 13. Legacy Python + pptxgenjs
-
-| Script | Purpose |
-|--------|---------|
-| `thumbnail.py` | Slide thumbnails |
-| `clean.py` | Orphan media scan |
-| `pptx_cli.py validate` | Validation helper |
-| `pptx_cli.py repair` | Structural repair |
-
-**pptxgenjs** (`npm install pptxgenjs`): 50+ slides from datasets, composable factories, heavy loop logic. officecli remains the finishing tool.
-
----
-
-## 14. CJK / Korean
+## 15. CJK / Korean
 
 cli-jaw fork auto-detects Korean and applies language tags + default fonts.
 
@@ -472,7 +580,7 @@ officecli check deck.pptx    # catches CJK text overflow
 
 ---
 
-## 15. Accessibility (WCAG 2.1 AA)
+## 16. Accessibility (WCAG 2.1 AA)
 
 - Every slide has a title: `officecli view deck.pptx outline`
 - Alt text on images: `officecli query deck.pptx 'picture:no-alt'`
@@ -482,11 +590,11 @@ officecli check deck.pptx    # catches CJK text overflow
 
 ---
 
-## 16. Dependencies
+## 17. Dependencies
 
 | Tool | Purpose | Status |
 |------|---------|--------|
 | `officecli` (PATH) | Primary PPTX CLI | Required |
-| `pptxgenjs` | Large programmatic generation | Optional |
-| `python3` | Utility scripts | Optional |
+| `pptxgenjs` | Large programmatic generation (L5) | Optional |
+| `python3` | Scripts (`scripts/*.py`) for L3 | Required for L3/L4 |
 | `soffice` | PDF conversion for QA | Optional |

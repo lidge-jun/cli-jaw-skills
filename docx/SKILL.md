@@ -7,8 +7,9 @@ description: "Word DOCX create, read, edit, review. Triggers: Word doc, .docx, r
 
 Use this skill for any `.docx` task: create, read, edit, review, template-fill, or QA verification.
 Triggers: `"Word doc"`, `".docx"`, reports, memos, letters, templates.
-Primary tool: **officecli** (`officecli` (PATH)).
-Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover the operation.
+
+Primary tool: **officecli** (`officecli` on PATH) for ~80% of tasks (add/set/remove, validate, query, track-change accept/reject).
+Fallback: **Python OOXML scripts** (`scripts/*.py`) for what officecli cannot do — tracked-change **creation**, OMML equations, bulk pattern matching, unpack/edit/repack. See §3.
 
 **DOCX only.** Do NOT use this skill for PDFs, spreadsheets, HWPX, Google Docs, or any other format.
 
@@ -18,6 +19,7 @@ Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover t
 
 | Task | Tool | Command pattern | Notes |
 |------|------|-----------------|-------|
+| **Format like existing doc** | shell + officecli | `cp source.docx target.docx && officecli open target.docx` | **Inherit styles/headers/footers. See §2.** |
 | Create blank DOCX | officecli | `officecli create report.docx` | Start from real Office file |
 | Add paragraph | officecli | `officecli add FILE /body --type paragraph --prop text="..."` | Primary write path |
 | Edit paragraph/run | officecli | `officecli set FILE /body/p[N] --prop ...` | Exact path targeting |
@@ -25,15 +27,103 @@ Fallback: **Legacy Python / OOXML scripts** only when officecli does not cover t
 | Query document | officecli | `officecli query FILE "p[style=Heading1]"` | CSS-like selectors |
 | Template-safe replacement | officecli | `officecli set FILE / --prop find="{{X}}" --prop replace="Y"` | Preserves template structure |
 | Validation / issue scan | officecli | `officecli validate FILE` | Pair with `view FILE issues` |
-| Accept tracked changes | officecli | `officecli set FILE / --prop accept-changes=all` | Also `reject-changes=all` |
+| Accept/reject tracked changes | officecli | `officecli set FILE / --prop accept-changes=all` | Also `reject-changes=all` |
+| **CREATE tracked changes** | Python (L3/L4) | `scripts/docx_cli.py` + `ooxml/redline_diff.py` | **officecli cannot create — only accept/reject** |
+| **OMML equations** | Python (L4) | Unpack → inject `<m:oMath>` → repack | **officecli cannot generate OMML** |
+| **Complex anchored comments** | Python (L3) | `python3 scripts/comment.py IN OUT --text "..." --anchor "..."` | For comments beyond officecli |
 | PDF conversion / visual QA | soffice | `soffice --headless --convert-to pdf FILE` | Screenshot-based QA |
-| Read / analyze content | officecli | Use `view` and `get` commands | See Core Workflows |
 | Edit existing document | -- | Read [editing.md](./editing.md) | Detailed editing guides |
 | Create from scratch | -- | Read [creating.md](./creating.md) | Detailed creation recipes |
 
 ---
 
-## 2. Subskill References
+## 2. Reference-Based Editing (Edit > Create from Scratch)
+
+When the user says "format like X.docx", "match existing style", "based on template", or provides a source file — **start from the source file. Don't rebuild from scratch.**
+
+### Workflow
+
+1. **Copy the source**: `cp source.docx target.docx` — inherits all styles, margins, numbering, headers, footers
+2. **Open** with `officecli open target.docx` — daemon starts; command returns immediately (do NOT run as `run_in_background` shell)
+3. **Remove body content only** — keep `/styles`, `/numbering`, `/header`, `/footer`
+4. **Add new paragraphs** using style names that already exist (e.g. `--prop style=Heading1`) — they auto-apply
+
+### Why This Matters
+
+Pandoc-generated and Word-generated documents have specific style IDs (e.g. `Heading1`, `BodyText`, `FirstParagraph`) unique to that document. Adding a new style with the same name causes:
+
+- `officecli validate` errors about duplicate style IDs
+- Word/LibreOffice rendering falls back to defaults
+- The task takes 10× longer than necessary
+
+### Template Sources (priority order)
+
+1. **User-provided source file** — first-class template
+2. **`tests/fixtures/*.docx`** — pre-built working examples shipped with this skill
+3. **`officecli create`** blank — only when nothing else applies
+
+### Example — Assignment Case
+
+```bash
+# CORRECT: inherit Pandoc styles
+cp Assignment1.docx Assignment2.docx
+officecli open Assignment2.docx
+officecli remove Assignment2.docx "/body/p[1]"   # remove old body (keep styles/headers/footers)
+# ... remove more paragraphs ...
+officecli add Assignment2.docx /body --type paragraph --prop text="New title" --prop style=Heading1
+officecli close Assignment2.docx
+
+# WRONG: recreate styles that already exist — validate fails
+officecli add doc.docx /styles --type style --prop name=Heading1 --prop size=20pt ...
+```
+
+---
+
+## 3. Reference Materials & Script Map
+
+officecli covers most DOCX tasks. For the rest, use these reference docs + Python scripts.
+
+### References (`references/`)
+
+| File | Read when | Contains |
+|------|-----------|----------|
+| `references/cjk-handling.md` | Korean text / East Asian font / wrapping issues | `rFonts` East Asian fonts, `lang` tags, accessibility |
+| `references/tracked-changes.md` | Track changes / comments / redline work | `w:ins`, `w:del`, comments XML, script usage examples |
+| `references/docx-js-api.md` | **DEPRECATED** — npm `docx` library API, not applicable to officecli ecosystem | Ignore — kept for historical reference only |
+
+### Scripts (`scripts/`) — Python OOXML Toolkit
+
+| Script | Run when | Command |
+|--------|----------|---------|
+| `scripts/docx_cli.py` | Unified Python CLI — unpack, save, validate, repair, search, TOC, chunk, comment, accept-changes, merge-runs | `python3 scripts/docx_cli.py {open\|save\|validate\|repair\|text\|search\|toc\|chunk\|comment\|accept-changes\|merge-runs}` |
+| `scripts/accept_changes.py` | Accept all tracked changes (alternative to officecli) | `python3 scripts/accept_changes.py IN.docx OUT.docx` |
+| `scripts/comment.py` | Add W3C-compliant OOXML comments anchored to text | `python3 scripts/comment.py IN.docx OUT.docx --text "..." --anchor "..."` |
+| `scripts/ooxml/merge_runs.py` | Merge adjacent runs with identical formatting (post-edit cleanup) | `python3 scripts/ooxml/merge_runs.py unpacked/` |
+| `scripts/ooxml/redline_diff.py` | Validate tracked-change correctness vs original | `python3 scripts/ooxml/redline_diff.py unpacked/ original.docx` |
+| `scripts/ooxml/simplify_tracked.py` | Simplify same-author adjacent tracked changes | `python3 scripts/ooxml/simplify_tracked.py unpacked/` |
+
+### Editing Escalation Ladder
+
+When officecli can't do the job, escalate in this order:
+
+| Level | When | Tool |
+|-------|------|------|
+| **L1** officecli high-level | Typical add/set/remove operations | `officecli add/set/remove/query/view` |
+| **L2** officecli `raw-set` | XML injection — PAGE field, fldChar, hyperlink anchor, custom attributes | `officecli raw-set FILE PATH --xpath X --action A --xml ...` |
+| **L3** Python script | Bulk tracked-change ops, comment add, merge runs, redline validation | `python3 scripts/*.py` |
+| **L4** Unpack → edit XML → repack | OMML equations, custom style injection, pattern-match editing, anything L1-L3 can't reach | `scripts/docx_cli.py open FILE work/` → edit `work/word/*.xml` → `scripts/docx_cli.py save work/ OUT.docx` |
+
+**Escalation signals:**
+- officecli shows **"silently ignored"** → **L2** (raw-set)
+- Need **OMML/MathML equations** → **L4** (inject `<m:oMath>` XML — officecli cannot generate these)
+- Need to **CREATE** tracked changes (officecli only accepts/rejects) → **L3** or **L4**
+- **Bulk find/replace** across 100+ targets → **L3** (`docx_cli.py search/replace`)
+- **Pandoc-generated** doc with custom style IDs → **§2 Reference-Based Editing** first
+- Task **still fails after L1+L2** → Read relevant `references/*.md` BEFORE giving up
+
+---
+
+## 4. Subskill References
 
 Additional detail lives in companion files. Load only the one you need.
 
@@ -49,15 +139,16 @@ Additional detail lives in companion files. Load only the one you need.
 Is the document an academic paper (thesis, journal, conference)?
   YES --> read officecli-academic-paper/SKILL.md
   NO  --> continue with this file
-Need detailed creation steps?  --> also read ./creating.md
-Need detailed editing steps?   --> also read ./editing.md
+User provided a source file to match?
+  YES --> §2 Reference-Based Editing + ./editing.md
+  NO  --> ./creating.md
 ```
 
 ---
 
-## 3. Design Principles for Business Documents
+## 5. Design Principles for Business Documents
 
-### 3.1 Heading Hierarchy
+### 5.1 Heading Hierarchy
 
 - **H1**: Document title (one per document)
 - **H2**: Major sections
@@ -69,7 +160,7 @@ Need detailed editing steps?   --> also read ./editing.md
 officecli view report.docx outline
 ```
 
-### 3.2 Color Palette
+### 5.2 Color Palette
 
 Use professional, muted tones only:
 
@@ -81,7 +172,7 @@ Use professional, muted tones only:
 
 **NEVER** use rainbow colors, bright primary colors, or more than 3 accent colors in a single document.
 
-### 3.3 Font Selection
+### 5.3 Font Selection
 
 | Script | Primary font | Fallback |
 |--------|-------------|----------|
@@ -94,17 +185,17 @@ The CJK fork auto-applies East Asian fonts, but verify with:
 officecli raw report.docx /document | grep rFonts
 ```
 
-### 3.4 Typography
+### 5.4 Typography
 
 Choose a readable body font (Calibri, Cambria, Georgia, Times New Roman). Keep body at 11-12pt. Headings should step up: **H1=18pt minimum (20pt preferred for long documents)**, H2=14pt bold, H3=12pt bold.
 
-### 3.5 Spacing & Page Setup
+### 5.5 Spacing & Page Setup
 
 Use paragraph spacing (`spaceBefore`/`spaceAfter`) instead of empty paragraphs. Line spacing of 1.15x-1.5x for body text.
 
 Always set margins explicitly. US Letter default: `pageWidth=12240`, `pageHeight=15840`, margins=1440 (1 inch).
 
-### 3.6 Table of Contents
+### 5.6 Table of Contents
 
 TOC generation depends entirely on heading styles. Before inserting TOC:
 
@@ -112,12 +203,12 @@ TOC generation depends entirely on heading styles. Before inserting TOC:
 2. Run `officecli view FILE outline` to verify hierarchy.
 3. Generate TOC via the subskill method.
 
-### 3.7 Table Design & Color Usage
+### 5.7 Table Design & Color Usage
 
 Alternate row shading for readability. Header row with contrasting background. Consistent cell padding.
 Use color sparingly -- accent color for headings or table headers, not rainbow formatting.
 
-### 3.8 Content-to-Element Mapping
+### 5.8 Content-to-Element Mapping
 
 | Content Type | Recommended Element(s) | Why |
 |---|---|---|
@@ -134,7 +225,7 @@ Use color sparingly -- accent color for headings or table headers, not rainbow f
 
 ---
 
-## 4. Mandatory Verification (NEVER SKIP)
+## 6. Mandatory Verification (NEVER SKIP)
 
 After ANY DOCX creation or edit, ALWAYS execute both steps:
 
@@ -152,14 +243,14 @@ soffice --headless --convert-to pdf --outdir /tmp output.docx
 
 ---
 
-## 5. Prerequisite Check
+## 7. Prerequisite Check
 
 ```bash
 which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
 which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
 ```
 
-## 6. Tool Discovery
+## 8. Tool Discovery
 
 Always confirm syntax from help before guessing:
 
@@ -185,9 +276,9 @@ officecli docx set style
 
 ---
 
-## 7. Core Workflows
+## 9. Core Workflows
 
-### 6.1 Execution Model
+### 9.1 Execution Model
 
 **Run commands one at a time. Do not write all commands into a shell script and execute it as a single block.**
 
@@ -197,7 +288,7 @@ OfficeCLI is incremental: every `add`, `set`, and `remove` immediately modifies 
 2. **Non-zero exit = stop and fix immediately.** Do not continue building on a broken state.
 3. **Verify after structural operations.** After adding a style, table, chart, or section, run `get` or `validate` before building on top of it.
 
-### 6.2 Reading & Analyzing
+### 9.2 Reading & Analyzing
 
 ```bash
 officecli view doc.docx text                    # Full text extraction
@@ -208,7 +299,7 @@ officecli view doc.docx annotated               # Style/font/size per run, equat
 officecli view doc.docx stats                   # Paragraph count, style/font distribution
 ```
 
-### 6.3 Element Inspection
+### 9.3 Element Inspection
 
 ```bash
 officecli get doc.docx /                        # Document root (metadata, page setup)
@@ -223,7 +314,7 @@ officecli get doc.docx /numbering                # Numbering definitions
 officecli get doc.docx "/body/p[1]" --json       # JSON output for scripting
 ```
 
-### 6.4 CSS-like Queries
+### 9.4 CSS-like Queries
 
 ```bash
 officecli query doc.docx 'paragraph[style=Heading1]'            # By style
@@ -235,7 +326,7 @@ officecli query doc.docx 'paragraph[size>=24pt]'                # By size
 officecli query doc.docx 'field[fieldType!=page]'               # Fields by type
 ```
 
-### 6.5 Headers & Footers
+### 9.5 Headers & Footers
 
 **Standard footer setup (always use this pattern for documents with a cover page):**
 
@@ -259,18 +350,20 @@ officecli raw-set doc.docx "/footer[2]" \
 
 > **LibreOffice rendering note:** Page number fields may display as static "Page" in LibreOffice PDF preview -- this is a LibreOffice limitation. Open in Microsoft Word to see actual page numbers. Confirm the field with `officecli get doc.docx "/footer[2]"` -- output must show `fldChar` children.
 
-### 6.6 Resident Mode (Performance)
+### 9.6 Resident Mode (Performance)
 
 **Always use `open`/`close` -- it is the smart default.** Every command benefits: no repeated file I/O.
 
 ```bash
-officecli open doc.docx           # Load once into memory
+officecli open doc.docx           # Load once into memory (returns IMMEDIATELY; daemon in bg)
 officecli add doc.docx ...        # All commands run in memory -- fast
 officecli set doc.docx ...
 officecli close doc.docx          # Write once to disk
 ```
 
-### 6.7 Batch Mode (Performance)
+> **Do NOT run `officecli open` as a background shell job (e.g. via `run_in_background`).** It returns immediately and the daemon lives in the background automatically. Running it as a monitored shell creates zombies and file locks. If stuck: `pkill -9 -f "officecli.*resident"` then retry.
+
+### 9.7 Batch Mode (Performance)
 
 Execute multiple operations in a single open/save cycle:
 
@@ -289,9 +382,11 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 
 `parent` = container to add into (for `add`). `path` = element to modify (for `set`, `get`, `remove`, `move`, `swap`).
 
+> **Error decoding:** `'X' is an invalid start of a value` = shell syntax leaked into JSON (unquoted `$`, stray shell metachar). Use heredoc `cat <<'EOF' | officecli batch FILE` with single-quoted `'EOF'` delimiter — prevents shell expansion.
+
 ---
 
-## 8. Common Pitfalls
+## 10. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -311,19 +406,23 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | listStyle on run | `listStyle` is a paragraph property, not a run property |
 | Row-level bold/color/shd | Row `set` only supports `height`, `header`, and `c1/c2/c3` text shortcuts. Use cell-level `set` for formatting |
 | Section vs root property names | Section uses `pagewidth`/`pageheight` (lowercase). Document root uses `pageWidth`/`pageHeight` (camelCase) |
-| `--prop field=page` in footer | **SILENTLY IGNORED** in `add --type footer`. Must use `raw-set` to inject `<w:fldChar>`. See Headers & Footers section. |
+| `--prop field=page` in footer | **SILENTLY IGNORED** in `add --type footer`. Must use `raw-set` to inject `<w:fldChar>`. See §9.5 |
 | Page number on cover | Adding `--type footer --prop type=first` auto-enables differentFirstPage. Do NOT use `set / --prop differentFirstPage=true` -- unsupported and silently fails |
 | TOC skipped for multi-heading docs | Any document with 3+ headings requires a TOC. Add with `--type toc --index 0` after cover page break |
 | Code block indentation via spaces | Use `ind.left` paragraph property (e.g. `--prop ind.left=720`) -- consecutive spaces produce warnings |
+| **Recreating styles that exist in template** | `cp source.docx target.docx` first. Don't add styles with existing IDs — validate fails. See §2 |
+| **`officecli open` as background shell** | Run foreground — `open` returns immediately, daemon runs in bg automatically. Background shell spawn creates zombies + file locks |
+| **Batch JSON `'X' is an invalid start of a value`** | Shell syntax leaked into JSON. Use heredoc: `cat <<'EOF' \| officecli batch FILE.docx` |
+| **OMML equation creation** | officecli cannot generate OMML. Options: (a) inline text, or (b) L4 — `scripts/docx_cli.py open FILE work/` → inject `<m:oMath>` into `work/word/document.xml` → `scripts/docx_cli.py save`. No dedicated OMML guide; author XML by hand or port from an existing equation-containing fixture in `tests/fixtures/` |
 
 ---
 
-## 9. Known Issues
+## 11. Known Issues
 
 | Issue | Workaround |
 |---|---|
 | **No visual preview** | Unlike pptx (SVG/HTML), docx has no built-in rendering. Use `view text`/`outline`/`annotated`/`issues` for verification. Users must open in Word for visual check. |
-| **Track changes creation requires raw XML** | OfficeCLI can accept/reject tracked changes but cannot create them via high-level commands. Use `raw-set` with XML. |
+| **Track changes creation requires raw XML** | OfficeCLI can accept/reject tracked changes but cannot create them via high-level commands. Use `raw-set` with XML or `scripts/docx_cli.py` (L3). |
 | **Tab stops may require raw XML** | Tab stop creation is not exposed in high-level commands. Use `raw-set` to add tab stop definitions. |
 | **Chart series cannot be added after creation** | `set --prop data=` can only update existing series, not add new ones. Delete and recreate the chart. |
 | **Complex numbering definitions** | `listStyle=bullet/numbered` covers simple cases. For multi-level lists, use `numId`/`numLevel` properties. |
@@ -335,10 +434,11 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | **`\mathcal` in equations causes validation errors** | Use `\mathit` or plain letters instead. |
 | **`view text` shows "1." for all numbered items** | Display-only limitation. Rendered output in Word/LibreOffice shows correct auto-incrementing numbers. |
 | **`chartType=pie`/`doughnut` in LibreOffice PDF** | Do NOT use these chart types when LibreOffice PDF delivery is required. Slices are invisible. Use `chartType=column` or `bar` instead. |
+| **OMML equation creation via officecli** | officecli has no high-level OMML generator. Escalate to L4: `scripts/docx_cli.py open FILE work/` → inject `<m:oMath>` into `work/word/document.xml` → `scripts/docx_cli.py save`. Copy OMML from a reference fixture (`tests/fixtures/`) rather than authoring from scratch. |
 
 ---
 
-## 10. QA Checklist
+## 12. QA Checklist
 
 **Assume there are problems. Your job is to find them.**
 
@@ -397,21 +497,7 @@ officecli query doc.docx 'p:contains("placeholder")'
 
 ---
 
-## 11. Legacy Python CLI (Fallback)
-
-Use these ONLY when officecli does not cover the requirement.
-
-| Script | Role | Status |
-|--------|------|--------|
-| `python3 scripts/accept_changes.py FILE` | Accept tracked changes | Fallback |
-| `python3 scripts/ooxml/merge_runs.py FILE` | Merge adjacent identical runs | Fallback |
-| `python3 scripts/ooxml/redline_diff.py FILE` | Tracked-change validation | Fallback |
-| `python3 scripts/docx_cli.py repair FILE --json` | Structural repair dry-run | Fallback |
-| `soffice --headless --convert-to pdf FILE` | PDF conversion / visual QA | Fallback |
-
----
-
-## 12. Anti-Patterns (MUST AVOID)
+## 13. Anti-Patterns (MUST AVOID)
 
 - **Placeholder data**: NEVER leave "Acme Corp", "Alice Chen", "Lorem ipsum" in output. If the user has not provided data, **ask**.
 - **Footer PAGE fields**: When setting page numbers via `raw-set`, the XML structure must be exact. See the Headers & Footers section for the correct `fldChar`/`instrText`/`fldChar` sequence.
@@ -419,16 +505,19 @@ Use these ONLY when officecli does not cover the requirement.
 - **Manual bullet characters** (-, *): Use `listStyle=bullet` or `listStyle=number`.
 - **Manual font XML injection**: Use `--prop font=...` when it suffices.
 - **Chinese comments in output**: Some subskill reference files contain Chinese-language code comments (operational notes). NEVER copy these into user-facing document output. Treat them as internal annotations only.
+- **Ignoring reference materials**: If a complex task fails with officecli, READ `references/*.md` + check `scripts/*.py` (§3) BEFORE giving up or falling back to inline text. The Pre-officecli OOXML workflow is still available via scripts.
+- **Recreating existing styles**: When user provides a source file ("format like X.docx"), copy it and modify — do not rebuild styles from scratch. See §2.
 
 ---
 
-## 13. Dependencies
+## 14. Dependencies
 
 | Tool | Purpose | Status |
 |------|---------|--------|
 | `officecli` (PATH) | Primary DOCX CLI -- global install includes CJK fork | Required |
 | `dotnet` | Runtime/build for officecli | Required for fork builds |
-| `python3` | Fallback scripts | Optional fallback |
+| `python3` | Fallback scripts (scripts/*.py) | Required for L3/L4 |
+| `lxml` | Python XML processing for scripts/ooxml/* | Required for L3/L4 (`pip install lxml`) |
 | `soffice` | PDF conversion / `.doc` migration / macro workflows | Optional fallback |
 | `pdftoppm` | Image-based QA after PDF render | Optional fallback |
 

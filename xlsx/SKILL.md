@@ -6,40 +6,132 @@ description: "Excel XLSX create, read, edit, analyze. Triggers: Excel, .xlsx, sp
 # XLSX Skill
 
 Use this skill for `.xlsx`, `.xlsm`, `.csv`, and `.tsv` work that ends in an Excel workbook.
+
 Primary tool: **officecli** for workbook mutation and inspection.
-Primary data pipeline: **pandas** for DataFrame transforms, joins, and aggregations.
-Fallback: **Legacy Python / openpyxl / helper scripts** only when officecli or pandas does not cover the requirement.
+Primary data pipeline: **pandas** for DataFrame transforms, joins, aggregations.
+Fallback: **Python OOXML scripts** (`scripts/*.py`) and **openpyxl** for tasks officecli/pandas cannot cover — formula recalc, raw OOXML inspection, complex openpyxl styling. See §3.
+
 Do NOT use this skill for Word, HTML dashboards, or external database orchestration.
 
 ---
 
-## 1. Quick Reference
-
-| Task | Action |
-|------|--------|
-| Read / analyze content | Use `view` and `get` commands below |
-| Edit existing workbook | Read [editing.md](./editing.md) |
-| Create from scratch | Read [creating.md](./creating.md) |
-
-### Quick Decision
+## 1. Quick Decision
 
 | Task | Tool | Command | Notes |
 |------|------|---------|-------|
+| **Format like existing workbook** | shell + officecli | `cp source.xlsx target.xlsx && officecli open target.xlsx` | **MANDATORY for "format like X" requests — see §2** |
 | Create workbook | officecli | `officecli create model.xlsx` | Blank workbook first |
 | Add worksheet | officecli | `officecli add model.xlsx / --type sheet --prop name=Inputs` | Workbook root is `/` |
 | Add/edit cell | officecli | `officecli set model.xlsx /Inputs/B2 --prop value=12500 --prop type=number` | Primary mutation path |
 | Read workbook | officecli | `officecli view model.xlsx text` | `text`, `annotated`, `outline`, `stats`, `issues`, `html` |
 | Query cells/tables | officecli | `officecli query model.xlsx 'cell:contains("Revenue")'` | Prefer tested selectors |
 | Batch workbook edits | officecli | `officecli batch model.xlsx --commands '[...]'` | JSON uses `command`, not `action` |
-| Resident workflow | officecli | `officecli open model.xlsx` | Still pass file path on later commands |
+| Resident workflow | officecli | `officecli open model.xlsx` | Returns immediately; daemon in bg |
 | CSV/TSV import | officecli | `officecli import model.xlsx /Data data.csv --header` | TSV: `--format tsv`; stdin: `--stdin` |
 | Add table / validation / chart | officecli | `officecli add model.xlsx /Data --type table --prop ref=A1:D10` | Native structured workbook objects |
 | Data transformation | pandas | `pd.read_excel(...)` -> transform -> write | pandas is PRIMARY for analysis |
-| Formula recalculation | Fallback helper | `python3 scripts/recalc.py output.xlsx` | officecli does not recalculate |
+| **Formula recalculation** | Python (L3) | `python3 scripts/recalc.py output.xlsx` | **officecli does not recalculate — MANDATORY after formula writes** |
+| **Complex openpyxl formatting** | Python (L3/L4) | See `references/openpyxl_guide.md` | Styling beyond officecli |
+| **Raw OOXML inspection/edit** | officecli (L2) | `officecli raw output.xlsx /xl/workbook.xml` | For L2 XML tweaks |
+| Financial conventions | -- | Read `references/financial_conventions.md` | Blue input / black formula / source annotations |
+| Edit existing workbook | -- | Read [editing.md](./editing.md) | Detailed editing guides |
+| Create from scratch | -- | Read [creating.md](./creating.md) | Detailed creation recipes |
 
 ---
 
-## 2. Subskill References
+## 2. Reference-Based Editing (Edit > Create from Scratch)
+
+When the user says "format like X.xlsx", "match existing style", "based on template", or provides a source file — **start from the source. Don't rebuild from scratch.**
+
+### Core Rule: Preserve Existing Templates
+
+When modifying files, **match existing format, style, and conventions exactly.** Excel workbooks often have:
+
+- Named ranges that formulas depend on
+- Conditional formatting rules on specific ranges
+- Data validation on input cells
+- Custom number formats per column
+- Sheet protection / locked cells
+- Hidden/very-hidden sheets
+
+Rebuilding these from scratch silently breaks formulas, validation, and visual consistency.
+
+### Workflow
+
+1. **Copy the source**: `cp source.xlsx target.xlsx` — inherits sheets, named ranges, styles, validation, CF rules
+2. **Open** with `officecli open target.xlsx` — daemon returns immediately (do NOT run as `run_in_background`)
+3. **Clear data cells only** — keep sheet structure, named ranges, validation, conditional formatting
+4. **Write new values** into the preserved structure — formulas auto-recalculate
+
+### Template Sources (priority order)
+
+1. **User-provided source file** — first-class template
+2. **`tests/fixtures/*.xlsx`** — pre-built examples shipped with this skill
+3. **`officecli-financial-model/` templates** — 3-statement, DCF, budget starting points
+4. **`officecli-data-dashboard/` templates** — chart/pivot/CF starting points
+5. **`officecli create`** blank — only when nothing else applies
+
+### Example — Budget Template Reuse
+
+```bash
+# CORRECT: preserve named ranges + CF
+cp Q3Budget.xlsx Q4Budget.xlsx
+officecli open Q4Budget.xlsx
+# Clear only data cells (keep headers, formulas, named ranges)
+officecli set Q4Budget.xlsx "/Inputs/B2:B20" --prop value=""
+# Write new Q4 inputs
+officecli set Q4Budget.xlsx "/Inputs/B2" --prop value=15000 --prop type=number
+officecli close Q4Budget.xlsx
+python3 scripts/recalc.py Q4Budget.xlsx   # recalc formulas
+
+# WRONG: rebuild from scratch, loses named ranges + CF
+officecli create Q4Budget.xlsx
+# ... all formulas break ...
+```
+
+---
+
+## 3. Reference Materials & Script Map
+
+officecli covers most XLSX tasks. pandas handles analysis. For formatting, recalc, and raw OOXML work, use these references + scripts.
+
+### References (`references/`)
+
+| File | Read when | Contains |
+|------|-----------|----------|
+| `references/cjk_handling.md` | Korean text width / auto-fit / column sizing | CJK auto-fit logic, `rFonts`, common width pitfalls |
+| `references/financial_conventions.md` | **Financial model work** — 3-statement, DCF, budgets, assumption sheets | Blue=input, Black=formula, Green=link, numFmt conventions, source annotation rules |
+| `references/openpyxl_guide.md` | Complex formatting beyond officecli — conditional formatting, data validation, charts, tables, named ranges | openpyxl API patterns, styling examples |
+
+### Scripts (`scripts/`) — Python OOXML Toolkit
+
+| Script | Run when | Command |
+|--------|----------|---------|
+| `scripts/xlsx_cli.py` | Unified Python CLI — unpack, save, validate, repair, recalc, text, sheet-overview, formula-audit, search | `python3 scripts/xlsx_cli.py {open\|save\|validate\|repair\|recalc\|text\|sheet-overview\|formula-audit\|search}` |
+| `scripts/recalc.py` | **MANDATORY after formula writes** — openpyxl does not recalc, and Excel caches stale values | `python3 scripts/recalc.py output.xlsx` |
+| `scripts/run_tests.py` | Run skill regression tests | `python3 scripts/run_tests.py` |
+
+### Editing Escalation Ladder
+
+When officecli can't do the job, escalate in this order:
+
+| Level | When | Tool |
+|-------|------|------|
+| **L1** officecli high-level | Typical cell/sheet/chart add/set/remove | `officecli add/set/remove/query/view/batch/import` |
+| **L2** officecli `raw` / `raw-set` | Raw OOXML inspection/edit — workbook.xml, sharedStrings.xml, sheet XML | `officecli raw FILE /xl/PATH.xml` or `raw-set` |
+| **L3** Python script | Formula recalc (MANDATORY), validate, formula-audit, bulk OOXML ops | `python3 scripts/xlsx_cli.py ...` or `scripts/recalc.py` |
+| **L4** pandas + openpyxl | Complex styling, data pipelines, multi-source joins | `pd.read_excel` → transform → `openpyxl` → save |
+
+**Escalation signals:**
+- **Wrote formulas via officecli** → **L3** `scripts/recalc.py` (non-negotiable)
+- Need **data transforms** (groupby, pivot, merge) → **L4** pandas
+- Need **complex CF / data validation / named-range math** → **L4** openpyxl (see `references/openpyxl_guide.md`)
+- Need **financial convention** (blue input, black formula, source annotation) → Read `references/financial_conventions.md`
+- Need **raw OOXML tweak** (shared strings, theme XML) → **L2** `officecli raw-set`
+
+---
+
+## 4. Subskill References
 
 Read **only** the subskill relevant to the current task. Do not preload all.
 
@@ -52,9 +144,13 @@ Read **only** the subskill relevant to the current task. Do not preload all.
 
 ---
 
-## 3. Design Principles for Spreadsheets
+## 5. Design Principles for Spreadsheets
 
 **Professional spreadsheets need clear structure, correct formulas, and intentional formatting.**
+
+### Core Rule: Preserve Existing Templates (MANDATORY)
+
+When modifying files, match existing format, style, and conventions exactly. Rebuilding from scratch silently breaks named ranges, CF rules, and validation. See §2.
 
 ### Alignment
 
@@ -72,6 +168,8 @@ Read **only** the subskill relevant to the current task. Do not preload all.
 | Red | `FF0000` | Warning / negative values | Broken assumptions, losses |
 
 Apply via: `officecli set model.xlsx /Inputs/B2:B20 --prop font.color=0000FF`
+
+> Full financial convention details: read `references/financial_conventions.md`.
 
 ### 3-Sheet Separation
 
@@ -104,7 +202,7 @@ officecli set data.xlsx "/Sheet1/B10" --prop formula="SUM(B2:B9)"
 
 ---
 
-## 4. Mandatory Verification (NEVER SKIP)
+## 6. Mandatory Verification (NEVER SKIP)
 
 After ANY XLSX edit, ALWAYS execute both steps:
 
@@ -117,18 +215,26 @@ soffice --headless --convert-to pdf --outdir /tmp output.xlsx
 # Check: formula results, cell formatting, chart rendering, merged cells
 ```
 
-Skip neither step. `validate` catches structural errors; the PDF catches rendering issues (truncated CJK, broken charts, invisible text).
+If formulas were written, ADD:
+
+```bash
+# Step 3: recalc pass (formulas do NOT calculate until this runs)
+python3 scripts/recalc.py output.xlsx
+```
+
+Skip none. `validate` catches structural errors; the PDF catches rendering issues (truncated CJK, broken charts, invisible text); `recalc.py` updates cached values for all formulas.
 
 ---
 
-## 5. Prerequisite Check
+## 7. Prerequisite Check
 
 ```bash
 which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
 which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+python3 -c "import pandas, openpyxl" || echo "MISSING: pip install pandas openpyxl"
 ```
 
-## 6. Tool Discovery
+## 8. Tool Discovery
 
 **When unsure about property names, value formats, or command syntax, run help instead of guessing.** One help query is faster than guess-fail-retry loops.
 
@@ -144,7 +250,7 @@ officecli xlsx query            # Query selector syntax
 
 ---
 
-## 7. Core Workflows
+## 9. Core Workflows
 
 ### Execution Model
 
@@ -249,14 +355,18 @@ EOF
 Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, `raw`, `raw-set`, `validate`.
 Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after`, `before`, `props` (dict), `selector`, `mode`, `depth`, `part`, `xpath`, `action`, `xml`.
 
+> **Error decoding:** `'X' is an invalid start of a value` = shell syntax leaked into JSON. Use heredoc `cat <<'EOF' | officecli batch FILE` with single-quoted delimiter.
+
 ### Resident Mode
 
 ```bash
-officecli open data.xlsx        # Load once into memory
+officecli open data.xlsx        # Returns IMMEDIATELY; daemon in bg
 officecli add data.xlsx ...     # All commands run in memory -- fast
 officecli set data.xlsx ...
 officecli close data.xlsx       # Write once to disk
 ```
+
+> **Do NOT run `officecli open` as a background shell job.** It returns immediately and the daemon lives in the background automatically. Running it as a monitored shell creates zombies and file locks.
 
 ### CSV / TSV Import
 
@@ -277,7 +387,7 @@ officecli add doc.xlsx /Sheet1 --type chart --prop chartType=column --prop data=
 
 ---
 
-## 8. pandas Pipeline
+## 10. pandas Pipeline
 
 **pandas is the PRIMARY analysis layer, NOT legacy.** It is the first-choice tool for data transforms that officecli should not reimplement.
 
@@ -298,16 +408,20 @@ officecli create output.xlsx
 officecli import output.xlsx /Sheet1 data.csv --header
 officecli batch output.xlsx --commands '[formatting...]'
 officecli validate output.xlsx
+python3 scripts/recalc.py output.xlsx   # if formulas added
 ```
 
 This path keeps pandas focused on transforms and lets officecli own the OOXML package. One `import` command replaces dozens of `set cell` calls.
 
+For complex openpyxl-based styling (CF gradients, data bars, custom chart XML), see `references/openpyxl_guide.md`.
+
 ---
 
-## 9. Formula Recalculation (CRITICAL)
+## 11. Formula Recalculation (CRITICAL)
 
-**officecli writes formulas but does NOT recalculate them.**
-Always run a recalc pass after formula generation.
+**officecli writes formulas but does NOT recalculate them.** openpyxl does not recalc either. Excel displays the cached value until recalc runs.
+
+Always run a recalc pass after formula generation:
 
 ```bash
 python3 scripts/recalc.py output.xlsx
@@ -325,7 +439,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 
 ---
 
-## 10. Number Format Reference
+## 12. Number Format Reference
 
 ### Standard Formats
 
@@ -356,7 +470,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 
 ---
 
-## 11. Common Pitfalls
+## 13. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|
@@ -376,6 +490,10 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 | Number format with `$` | Shell interprets `$` -- use single quotes: `numFmt='$#,##0'` |
 | Year displayed as "2,026" | Set cell type to string: `--prop type=string` or use `numFmt="@"` |
 | Sheet names containing `!` | Excel uses `!` as sheet-range delimiter. Use only alphanumeric, spaces, hyphens, underscores. |
+| **Rebuilding existing template** | `cp source.xlsx target.xlsx` first. Named ranges, CF, validation cannot be trivially recreated. See §2 |
+| **`officecli open` as background shell** | Run foreground — returns immediately, daemon runs in bg automatically |
+| **Batch JSON `'X' is an invalid start of a value`** | Shell syntax leaked. Use heredoc: `cat <<'EOF' \| officecli batch FILE.xlsx` |
+| **Forgot `scripts/recalc.py` after formula writes** | officecli does NOT recalc. Cached values stay stale. Always run recalc.py before delivery |
 
 ### Formula Verification Checklist
 
@@ -393,6 +511,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 
 - [ ] Metadata set (title, author)
 - [ ] All formula cells contain formulas (not hardcoded values)
+- [ ] **`python3 scripts/recalc.py` executed after formula writes**
 - [ ] No formula error values (#REF!, #DIV/0!, #VALUE!, #NAME?, #N/A)
 - [ ] Number formats applied (currency, percentage, dates)
 - [ ] Column widths set explicitly (no default 8.43)
@@ -403,7 +522,7 @@ soffice --headless --calc --convert-to xlsx output.xlsx
 - [ ] Named ranges defined for key assumptions
 - [ ] Document validates with `officecli validate`
 - [ ] No placeholder text remaining
-- [ ] Comments on hardcoded assumption values documenting their source
+- [ ] Comments on hardcoded assumption values documenting their source (see `references/financial_conventions.md`)
 
 ### QA Error Scan
 
@@ -424,17 +543,18 @@ officecli validate data.xlsx                            # Structural validation
 
 1. Generate workbook
 2. Run `view issues` + `view annotated` (sample ranges) + `validate`
-3. Run formula error queries (all 5 error types)
-4. List issues found (if none found, look again more critically)
-5. Fix issues
-6. Re-verify affected areas -- one fix often creates another problem
-7. Repeat until a full pass reveals no new issues
+3. `python3 scripts/recalc.py` if formulas present
+4. Run formula error queries (all 5 error types)
+5. List issues found (if none found, look again more critically)
+6. Fix issues
+7. Re-verify affected areas -- one fix often creates another problem
+8. Repeat until a full pass reveals no new issues
 
 **Do not declare success until you have completed at least one fix-and-verify cycle.**
 
 ---
 
-## 12. Anti-Patterns (NEVER DO)
+## 14. Anti-Patterns (NEVER DO)
 
 **Formula results hardcoded as values -- STRICTLY FORBIDDEN.** The workbook must remain recalculable when inputs change.
 
@@ -444,38 +564,33 @@ officecli validate data.xlsx                            # Structural validation
 
 **Sheet names containing `!` -- ESCAPE WARNING.** Excel uses `!` as the sheet-range delimiter.
 
+**Rebuilding existing template from scratch -- STRICTLY FORBIDDEN** when user provides a source file. `cp` first; match existing conventions. Named ranges, CF, validation, locked cells cannot be trivially recreated. See §2.
+
+**Skipping `recalc.py` after formula writes -- FORBIDDEN.** Cached formula values stay stale until recalc runs. Deliverables show wrong numbers.
+
+**Ignoring reference materials -- FORBIDDEN.** For financial conventions, read `references/financial_conventions.md`. For complex openpyxl styling, read `references/openpyxl_guide.md`. The Pre-officecli openpyxl/pandas workflow is still available.
+
 ---
 
-## 13. Legacy Python CLI (Fallback)
-
-| Command | Role | Status |
-|---------|------|--------|
-| `python3 scripts/xlsx_cli.py validate input.xlsx --json` | Workbook validation helper | Fallback |
-| `python3 scripts/xlsx_cli.py formula-audit input.xlsx --json` | Formula audit | Fallback |
-| `python3 scripts/recalc.py output.xlsx` | Formula recalculation | Required fallback |
-| `soffice --headless --convert-to pdf output.xlsx` | PDF conversion | Fallback |
-| `officecli raw output.xlsx /xl/workbook.xml` | Raw OOXML inspection | Preferred fallback |
-| `officecli raw-set output.xlsx /xl/workbook.xml ...` | Raw OOXML edit | Preferred fallback |
-
-### Known Issues
+## 15. Known Issues
 
 | Issue | Workaround |
 |---|---|
 | Chart series cannot be added after creation | Delete and recreate with all series |
 | No visual preview | Use `view text`/`annotated`/`stats`/`issues` for verification |
-| Formula cached values for new formulas | Cached value updates when opened in Excel/LibreOffice |
+| Formula cached values for new formulas | Run `scripts/recalc.py` — cached value updates when opened in Excel/LibreOffice afterwards |
 | Batch intermittent failure | Keep batches to 8-12 ops; retry failures individually |
 | Data bar default min/max invalid | Always specify explicit `--prop min=N --prop max=N` |
 | Cell protection requires sheet protection | `locked` only takes effect when sheet is protected |
 
 ---
 
-## 14. Dependencies
+## 16. Dependencies
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
 | `officecli` (PATH) | Primary Excel CLI | Required |
 | `pandas` | DataFrame analysis pipeline | Primary for transforms |
-| `openpyxl` | pandas Excel engine + fallback editing | Fallback support |
-| `python3` | Helper scripts | Optional fallback |
+| `openpyxl` | pandas Excel engine + fallback editing (L4) | Required for L3/L4 |
+| `python3` | Helper scripts (`scripts/*.py`) | Required for L3 |
 | `soffice` | Recalculation / PDF export | Optional fallback |
