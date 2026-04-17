@@ -18,6 +18,18 @@ Every interaction with an app begins with `get_app_state(app)`. The returned sta
 - Call `get_app_state` again after any action that changes the UI.
 - When the server returns `stale_warning`, re-call `get_app_state` before retrying — it is a signal, not a failure.
 
+### 🔍 Screenshot-before-guess (hard rule)
+
+If at any point you are **not 100% certain** of the current state — which tab is focused, whether a previous click landed, whether the page changed, which element index corresponds to the target — **stop and take a screenshot** via `get_app_state(app)` before the next action. Symptoms that demand an immediate state-read:
+
+- You catch yourself writing "maybe 342, or 357" — guessing indices.
+- A click was issued but you can't confirm its effect.
+- You navigated/switched apps and don't know what's foreground.
+- Two consecutive actions produced no visible progress.
+- You're about to type a long value without checking the cursor is in the right field.
+
+Rule: **never issue a second action into uncertainty**. The only correct next call is `get_app_state(app)`. This is cheap; infinite correction loops are not.
+
 ## Action classes (contract IDs from doc 21)
 
 | Class | Contract | Example |
@@ -69,6 +81,7 @@ result=error: <one-line reason>
 - Don't silently fall back to CDP if Computer Use is unavailable — report and stop.
 - Don't skip `get_app_state` because "you remember where the button is". Element indices drift with every state change.
 - Don't run two Computer Use actions against the same app without re-reading state in between if the previous action changed anything.
+- Don't resolve uncertainty by trying. "Let me click 342, if not, try 357" is forbidden — take a screenshot.
 
 ## Worked example
 

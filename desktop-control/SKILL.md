@@ -29,10 +29,13 @@ metadata:
 
 Unified skill for all UI automation. Chooses between CDP and Computer Use based on the target, and reports every action with a `path=` + `action_class=` transcript.
 
+> **This skill is already injected into your system prompt.** Do not run `sed`, `cat`, `head`, or `Read` to load it from disk. Guessing absolute paths like `/Users/*/.codex/skills/...` or `/Users/*/.cli-jaw-*/skills/...` wastes a turn and often targets a file that doesn't exist. If you need a specific reference file (e.g., `reference/computer-use.md`), use `cli-jaw skill read desktop-control <ref-name>`.
+
 ## When to use
 
 Trigger on any request that touches a visible UI:
 
+- **User message contains `$computer-use`** → **skip routing analysis**, jump straight to [`reference/computer-use.md`](reference/computer-use.md). Explicit user opt-in. If your CLI isn't codex, stop with `precondition failed: not codex`.
 - "open this URL / click this button / type in this field" → read [`reference/cdp.md`](reference/cdp.md)
 - "switch Chrome tab / open Finder / click System Settings" → read [`reference/computer-use.md`](reference/computer-use.md)
 - "click the thing inside this Canvas / WebGL / iframe" → read [`reference/vision-click.md`](reference/vision-click.md)
@@ -46,6 +49,7 @@ Trigger on any request that touches a visible UI:
 3. **Every action records an `action_class`.** Classes: `state-read`, `element-action`, `value-injection`, `keyboard-action`, `pointer-action`, `pointer-action+vision`.
 4. **Never fall back silently.** If the required path is unavailable, stop and report which precondition failed.
 5. **Never claim the cursor was visible.** Cursor overlay is best-effort in the current build.
+6. **🔍 When uncertain, take a screenshot FIRST.** If you ever find yourself guessing — "is that tab 342 or 357?", "did the click actually land?", "is this the right page?" — **stop** and re-ground via `get_app_state(app)` (Computer Use) or `cli-jaw browser snapshot` (CDP). Never chain actions through uncertainty. Guessing indices or URLs leads to infinite correction loops. If two consecutive actions produced ambiguous state, the **next call must be a state-read**, not another action.
 
 ## Preconditions (Computer Use path)
 

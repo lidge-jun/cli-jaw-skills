@@ -41,13 +41,14 @@ The routing table above maps to the `CU-XX` / `TX-XX` contracts defined in `devl
 
 ## Resolution order
 
+0. **Does the user's message contain `$computer-use`?** → **Computer Use**, no further analysis. Explicit user opt-in overrides the heuristics below. If your CLI isn't codex, stop with `precondition failed: not codex` instead of trying CDP.
 1. Can the target be addressed by `cli-jaw browser snapshot --interactive` ref? → **CDP**.
 2. Is the target a non-DOM web widget (Canvas, WebGL, iframe, Shadow DOM)? → **CDP+CU vision** (`cli-jaw browser vision-click`).
 3. Is the target outside any webpage (app window, menu bar, OS dialog)? → **Computer Use**.
 4. Are you reading a pixel coordinate the user gave verbatim? → **Computer Use** pointer-action.
 5. Do you need the DOM to locate the element but the user insists on a real cursor click? → **Hybrid**.
 
-If steps 1–5 all return no match, stop and report `needs boss follow-up: ambiguous target`.
+If steps 0–5 all return no match, stop and report `needs boss follow-up: ambiguous target`.
 
 ## Never do
 
