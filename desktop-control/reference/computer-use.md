@@ -30,6 +30,17 @@ If at any point you are **not 100% certain** of the current state — which tab 
 
 Rule: **never issue a second action into uncertainty**. The only correct next call is `get_app_state(app)`. This is cheap; infinite correction loops are not.
 
+### Recovery pattern (concrete)
+
+When you notice ambiguity mid-task, follow this exact sequence:
+
+1. `get_app_state(app)` — re-ground; note the real element_index of your target.
+2. Log `action_class=state-read` with a one-line note (`reason=disambiguation`).
+3. Re-issue the intended action using the *fresh* element_index.
+4. After that action, `get_app_state(app)` once more to confirm the effect.
+
+Never skip step 1 to "save a call." One extra state-read always beats one wrong click.
+
 ## Action classes (contract IDs from doc 21)
 
 | Class | Contract | Example |
