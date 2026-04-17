@@ -388,6 +388,32 @@
             "status": "active",
             "version": "1.0.0"
         },
+        "desktop-control": {
+            "name": "Desktop Control",
+            "name_ko": "데스크톱 컨트롤",
+            "name_en": "Desktop Control",
+            "emoji": "🖥️",
+            "category": "automation",
+            "description": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI + macOS 필수.",
+            "desc_ko": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI + macOS 필수.",
+            "desc_en": "Unified CDP + Computer Use automation. Routes DOM to cli-jaw browser, desktop apps to mcp__computer_use__, hybrid to both. Requires Codex CLI + macOS.",
+            "requires": {
+                "bins": [
+                    "cli-jaw"
+                ],
+                "system": [
+                    "macOS",
+                    "Google Chrome"
+                ]
+            },
+            "install": null,
+            "canonical_id": "desktop-control",
+            "aliases": [],
+            "workflow": "interactive",
+            "provider": "n/a",
+            "status": "active",
+            "version": "1.0.0"
+        },
         "vision-click": {
             "name": "Vision Click",
             "name_ko": "Vision Click",
