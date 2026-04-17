@@ -88,9 +88,9 @@ result=ok
 
 ## Related skills
 
-- `browser` — CDP command reference (this skill replaces its coverage).
-- `vision-click` — fallback click for Canvas / iframe targets. Call site is covered here in `reference/vision-click.md`.
+- `browser` — CDP command reference (this skill supersedes its coverage).
 - `screen-capture` — generic macOS screenshot / webcam / video recording (unchanged).
+- `vision-click` — **no longer auto-active**. Absorbed as a tactic in `reference/vision-click.md`. If you need the low-level recipe (NDJSON parsing, DPR correction), run `cli-jaw skill install vision-click`.
 
 ## Common failures and the only correct responses
 

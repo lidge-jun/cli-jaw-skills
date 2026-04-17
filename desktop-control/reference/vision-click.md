@@ -66,4 +66,10 @@ result=ok
 
 ## Why this lives inside desktop-control
 
-`vision-click` is **one specific tactic** inside the broader "how do I reach a UI target" problem. Keeping it here (and in the `vision-click` skill for CDP implementation details) means Control can route to it without the prompt having to learn a second skill from scratch.
+`vision-click` is **one specific tactic** inside the broader "how do I reach a UI target" problem. Routing lives here; the `cli-jaw browser vision-click` command encapsulates the low-level recipe (NDJSON parsing, DPR correction, cost/latency) so you almost never need it.
+
+If you do need the low-level recipe (e.g., you're building a new tool that emulates vision-click), the `vision-click` skill is still available as a reference skill — opt in with:
+
+```bash
+cli-jaw skill install vision-click
+```
