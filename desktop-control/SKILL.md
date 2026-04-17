@@ -37,6 +37,7 @@ Trigger on any request that touches a visible UI:
 - "switch Chrome tab / open Finder / click System Settings" → read [`reference/computer-use.md`](reference/computer-use.md)
 - "click the thing inside this Canvas / WebGL / iframe" → read [`reference/vision-click.md`](reference/vision-click.md)
 - Not sure which path → read [`reference/intent-routing.md`](reference/intent-routing.md) FIRST
+- Want a real end-to-end example → read [`reference/control-workflow.md`](reference/control-workflow.md)
 
 ## Absolute rules
 

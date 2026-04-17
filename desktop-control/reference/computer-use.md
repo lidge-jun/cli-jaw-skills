@@ -70,6 +70,10 @@ result=error: <one-line reason>
 - Don't skip `get_app_state` because "you remember where the button is". Element indices drift with every state change.
 - Don't run two Computer Use actions against the same app without re-reading state in between if the previous action changed anything.
 
+## Worked example
+
+See [`reference/control-workflow.md`](control-workflow.md) for a full Chrome → web-app trace that demonstrates state-first, element_index targeting, stale recovery, and the CDP speed switch in sequence.
+
 ## After-action report (for boss)
 
 When a task ends, summarize under `CU-09 transcript-summary`: the path chosen, the action classes used, any stale warnings encountered, and the final result.
