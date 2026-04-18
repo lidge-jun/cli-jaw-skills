@@ -84,7 +84,8 @@ result=error: <one-line reason>
 - Dialog or menu the page can't reach → Computer Use.
 - "Press ⌘W" / global shortcut → Computer Use keyboard-action.
 - Raw pixel from the user ("click 812, 514") → Computer Use pointer-action.
-- Canvas / iframe with no DOM ref → Computer Use pointer-action+vision (read `reference/vision-click.md`).
+- Canvas / iframe with no DOM ref, visible in screenshot → Computer Use pointer-action `click(x, y)` directly from screenshot coordinates.
+- Canvas / iframe not visible, need text description to find → Computer Use pointer-action+vision (legacy, see `reference/vision-click.md`).
 
 ## Never do
 

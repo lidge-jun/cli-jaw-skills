@@ -67,7 +67,7 @@ result=error: <one-line reason>
 
 ## Failure modes
 
-- **No ref found** for target → escalate to `vision-click` (see `reference/vision-click.md`). Don't silently skip.
+- **No ref found** for target → if visible in `get_app_state` screenshot, use Computer Use `click(x, y)` pointer-action. Otherwise report the gap.
 - **Navigation drift** between snapshot and click → re-snapshot and retry once; if still off, report.
 - **CDP session died mid-task** → report `precondition failed: cdp session terminated` and stop.
 
@@ -75,4 +75,4 @@ result=error: <one-line reason>
 
 - Don't use `curl`/`wget` to "read a page" — always CDP.
 - Don't open a visible window just to inspect logs — use the Web UI debug console.
-- Don't try coordinate-based click when a ref exists — only vision-click (fallback).
+- Don't try coordinate-based click when a ref exists — use the ref.

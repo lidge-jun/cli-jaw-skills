@@ -101,9 +101,36 @@ result=ok
 | Rule | When | What |
 |---|---|---|
 | State first | Every app interaction start | `get_app_state(app)` before anything else |
-| element_index | Targeting a UI element | `click(element_index=N)` / `set_value(element_index=N)` — never `type_text(app)` |
+| Screenshot-visible but not in tree | Map labels, canvas text, custom renders | `click(x, y)` pointer-action **immediately** from screenshot coords |
+| element_index | Target IS in the element tree | `click(element_index=N)` / `set_value(element_index=N)` — never `type_text(app)` |
 | Stale recovery | `stale_warning=yes` or element miss | Re-call `get_app_state`, get fresh indices, retry |
 | CDP preference | Target has web DOM | Switch to `cli-jaw browser` for 10× speed |
+
+### Pattern 5 — pointer-action (screenshot-visible, not in element tree)
+
+Map labels, canvas objects, and custom-rendered UI text are visible in the `get_app_state` screenshot but absent from the element tree. Click them by coordinates directly.
+
+```
+# 1. Read state — screenshot shows "스타벅스" label on Naver map
+get_app_state(app="Google Chrome")
+
+# 2. Target is NOT in element tree → use screenshot coordinates
+click(app="Google Chrome", x=719, y=388)
+
+# 3. Verify
+get_app_state(app="Google Chrome")
+# → Starbucks detail panel opened ✅
+```
+
+Decision flow:
+```
+get_app_state(app)
+  ↓
+Target visible in screenshot?
+  ├── YES + in element tree  → element_index click
+  ├── YES + NOT in tree      → click(x, y) immediately
+  └── NO                     → scroll/zoom/search, then re-read
+```
 
 ## Applying this outside Chrome
 

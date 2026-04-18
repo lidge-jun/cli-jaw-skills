@@ -1,17 +1,12 @@
-# Vision-click integration
+# Vision-click integration (legacy)
 
-Fallback for targets the DOM can't reach: Canvas, WebGL, iframe without cross-origin access, Shadow DOM, any pixel-only UI. This is a *vision* step sandwiched inside the Hybrid or Computer Use path — it does not replace either.
+> **Preferred approach**: If the target is visible in the `get_app_state` screenshot, use `click(x, y)` pointer-action directly from the screenshot coordinates. This is faster and works on all CLIs. The `cli-jaw browser vision-click` command below is **Codex-only and legacy** — kept for reference only.
 
-## When to use (decision order)
+## Decision order
 
-1. Did `cli-jaw browser snapshot --interactive` return a ref for the target?
-   - Yes → use it with CDP `click`. Do NOT use vision-click.
-2. Is the target **inside a visible Chrome tab**?
-   - Yes → use `cli-jaw browser vision-click "<description>"` (CDP screenshot + AI coords + CDP click).
-3. Is the target **outside Chrome** (desktop app) and you need to describe it rather than give coordinates?
-   - Yes → take a Computer Use screenshot via `screen-capture`, feed to vision model, then `click(x, y)` via Computer Use pointer-action.
-
-Never call vision-click as the first attempt — ref-based click is faster, cheaper, and audit-friendly.
+1. Did `cli-jaw browser snapshot --interactive` return a ref? → CDP `click`.
+2. Is the target visible in the `get_app_state` screenshot? → **`click(x, y)` pointer-action directly.** (Preferred for map labels, canvas text, custom renders.)
+3. Only if the target is NOT visible and must be described by text → `cli-jaw browser vision-click` (Codex-only, legacy).
 
 ## CDP vision-click (inside Chrome)
 
