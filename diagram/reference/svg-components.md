@@ -13,17 +13,62 @@ Before finalizing any SVG, verify:
 
 ## Font Calibration (Geist Sans)
 
-SVG `<text>` never auto-wraps. Each character ≈ 8px wide at 14px, ≈ 6.5px at 12px.
+SVG `<text>` never auto-wraps. Character widths differ by script:
 
-| Text example | Chars | Weight | Size | Approx width |
+| Script | Approx width at 14px | Approx width at 12px |
+|--------|---------------------|---------------------|
+| Latin (A-Z, a-z, 0-9) | ~8px/char | ~6.5px/char |
+| **CJK (한글, 漢字, かな)** | **~13px/char** | **~10px/char** |
+
+| Text example | Chars | Script | Size | Approx width |
 |---|---|---|---|---|
-| Authentication Service | 22 | 500 | 14px | ~176px |
-| Background Processor | 20 | 500 | 14px | ~160px |
-| Detects incoming tokens | 22 | 400 | 12px | ~143px |
-| forwards request | 16 | 400 | 12px | ~104px |
+| Authentication Service | 22 | Latin | 14px | ~176px |
+| Background Processor | 20 | Latin | 14px | ~160px |
+| 스크린샷에 보이면 즉시 좌표 | 13 | CJK | 14px | ~169px |
+| 규칙 있는데 안 지킴 | 9 | CJK | 12px | ~90px |
 
 Before placing text in a box: does `text_width + 2×padding` fit the container?
+For mixed CJK+Latin: estimate each character individually.
 If subtitle needs wrapping (`<tspan>`), it's too long — shorten it.
+
+## Box Internal Padding (mandatory)
+
+Every `<text>` inside a `<rect>` must respect internal padding (10px):
+- `text-anchor="start"`: `text_x = rect_x + 10`
+- `text-anchor="middle"`: `text_x = rect_x + rect_width / 2`
+- Right bound: `text_x + text_width < rect_x + rect_width - 10`
+- Top bound: `text_y ≥ rect_y + 16`
+
+```svg
+<!-- ✅ Correct: text starts 10px inside the box -->
+<rect x="40" y="200" width="600" height="40" rx="8" />
+<text x="50" y="224" dominant-baseline="central" font-size="12">Label</text>
+
+<!-- ❌ Wrong: text starts at box edge -->
+<rect x="40" y="200" width="600" height="40" rx="8" />
+<text x="40" y="224">Label</text>
+```
+
+## Vertical Card List
+
+For stacked card layouts (file lists, issue lists, changelog entries):
+- All cards: **same `x`, same `width`** — no exceptions
+- Standard values: `x=40, width=600, height=40, gap=10`
+- Each card: `y = start_y + (height + gap) × index`
+
+```svg
+<rect class="node c-cyan-bg" x="40" y="200" width="600" height="40" rx="8" />
+<text class="label c-cyan-text" x="50" y="224"
+  dominant-baseline="central" font-size="12">Card 1 content</text>
+
+<rect class="node c-cyan-bg" x="40" y="250" width="600" height="40" rx="8" />
+<text class="label c-cyan-text" x="50" y="274"
+  dominant-baseline="central" font-size="12">Card 2 content</text>
+
+<rect class="node c-pink-bg" x="40" y="300" width="600" height="40" rx="8" />
+<text class="label c-pink-text" x="50" y="324"
+  dominant-baseline="central" font-size="12">Card 3 (different color = different category)</text>
+```
 
 ## Style Rules
 
@@ -110,7 +155,7 @@ If subtitle needs wrapping (`<tspan>`), it's too long — shorten it.
 
 Spacing: 60px between nodes (48px node + 12px gap + arrow). Max 4-5 nodes per flowchart.
 
-### Comparison (Side-by-Side)
+### Comparison (Side-by-Side) — fixed coordinates, not suggestions
 ```svg
 <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg"
   role="img" aria-labelledby="cmp-title cmp-desc">
