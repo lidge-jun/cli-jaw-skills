@@ -2903,19 +2903,6 @@
             "install": null,
             "version": "1.0.0"
         },
-        "research-worker": {
-            "name": "Research Worker Skill",
-            "name_ko": "Research Worker Skill",
-            "name_en": "Research Worker Skill",
-            "emoji": "🔬",
-            "category": "devtools",
-            "description": "Read-only investigation agent. Search, read, and produce structured reports — other agents use these to make decisions.",
-            "desc_ko": "Read-only investigation agent. Search, read, and produce structured reports — other agents use these to make decisions.",
-            "desc_en": "Read-only investigation agent. Search, read, and produce structured reports — other agents use these to make decisions.",
-            "requires": null,
-            "install": null,
-            "version": "1.0.0"
-        },
         "returns-reverse-logistics": {
             "name": "Returns & Reverse Logistics",
             "name_ko": "Returns & Reverse Logistics",
