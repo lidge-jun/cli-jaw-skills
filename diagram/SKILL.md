@@ -103,7 +103,7 @@ Rules:
 - viewBox width MUST be 680 (matches container width — do NOT change)
 - Height varies by content: last element bottom + 40px padding
 - Every SVG MUST have `role="img"` + `<title>` + `<desc>`
-- Use classes from the design system (`.node`, `.connector`, `.label`, etc.)
+- Use classes from the design system (`.node`, `.connector`, `.label`, `.label-start`, etc.) — `.label` forces `text-anchor: middle` (centered text only); for left-aligned text use `.label-start` or just the color class
 - Colors: use CSS classes, not inline fill/stroke colors
 - Text: `font-family` inherited from host (do NOT set explicit fonts)
 

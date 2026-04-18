@@ -40,13 +40,20 @@ Every `<text>` inside a `<rect>` must respect internal padding (10px):
 - Top bound: `text_y ≥ rect_y + 16`
 
 ```svg
-<!-- ✅ Correct: text starts 10px inside the box -->
-<rect x="40" y="200" width="600" height="40" rx="8" />
-<text x="50" y="224" dominant-baseline="central" font-size="12">Label</text>
+<!-- ✅ Correct: left-aligned text starts 10px inside the box (no .label class) -->
+<rect class="node c-cyan-bg" x="40" y="200" width="600" height="40" rx="8" />
+<text class="c-cyan-text" x="50" y="224"
+  dominant-baseline="central" font-size="12">Label</text>
 
-<!-- ❌ Wrong: text starts at box edge -->
-<rect x="40" y="200" width="600" height="40" rx="8" />
-<text x="40" y="224">Label</text>
+<!-- ✅ Correct: centered text uses .label class at box center -->
+<rect class="node c-cyan-bg" x="40" y="200" width="600" height="40" rx="8" />
+<text class="label c-cyan-text" x="340" y="224"
+  dominant-baseline="central" font-size="12">Centered label</text>
+
+<!-- ❌ Wrong: .label class at x=50 → text-anchor:middle centers at x=50, left half overflows -->
+<rect class="node c-cyan-bg" x="40" y="200" width="600" height="40" rx="8" />
+<text class="label c-cyan-text" x="50" y="224"
+  dominant-baseline="central" font-size="12">This text overflows left</text>
 ```
 
 ## Vertical Card List
@@ -56,17 +63,19 @@ For stacked card layouts (file lists, issue lists, changelog entries):
 - Standard values: `x=40, width=600, height=40, gap=10`
 - Each card: `y = start_y + (height + gap) × index`
 
+⚠️ Do NOT use `.label` class here — it forces `text-anchor: middle`, which centers text at the x coordinate and causes left overflow. Use only the color class.
+
 ```svg
 <rect class="node c-cyan-bg" x="40" y="200" width="600" height="40" rx="8" />
-<text class="label c-cyan-text" x="50" y="224"
+<text class="c-cyan-text" x="50" y="224"
   dominant-baseline="central" font-size="12">Card 1 content</text>
 
 <rect class="node c-cyan-bg" x="40" y="250" width="600" height="40" rx="8" />
-<text class="label c-cyan-text" x="50" y="274"
+<text class="c-cyan-text" x="50" y="274"
   dominant-baseline="central" font-size="12">Card 2 content</text>
 
 <rect class="node c-pink-bg" x="40" y="300" width="600" height="40" rx="8" />
-<text class="label c-pink-text" x="50" y="324"
+<text class="c-pink-text" x="50" y="324"
   dominant-baseline="central" font-size="12">Card 3 (different color = different category)</text>
 ```
 
@@ -78,6 +87,7 @@ For stacked card layouts (file lists, issue lists, changelog entries):
 - **Text vertical alignment**: every `<text>` inside a box needs `dominant-baseline="central"`
 - **Font sizes**: 14px (node labels, `.label`) and 12px (subtitles) only
 - **No rotated text**
+- **`.label` class** = `text-anchor: middle` + `dominant-baseline: central` + `font-size: 14px`. Use for **centered** node labels only. For **left-aligned** text (card lists, left-start layouts), do NOT use `.label` — use only the color class (e.g., `c-cyan-text`) and set `dominant-baseline` and `font-size` inline.
 
 ## Primitives
 
