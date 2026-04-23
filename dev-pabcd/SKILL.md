@@ -97,3 +97,26 @@ State returns to IDLE automatically.
 1. One phase per response. Present work, then wait for user approval at P, A, B gates.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
+
+## Shared Plan (`.shared_plan.md`)
+
+When P completes, `.shared_plan.md` is written to the project root. Treat it as the single source of truth for the approved plan.
+
+- In A and B, every `cli-jaw dispatch` task MUST reference this file so workers can read the plan in their isolated directories.
+- Example: `cli-jaw dispatch --agent "Backend" --task "Read .shared_plan.md first. Then audit: ..."`.
+
+## Pitfalls (반드시 피해야 할 행동)
+
+### Delegation Trap
+- B phase: **Boss writes all code**. Workers are READ-ONLY verifiers.
+- ⛔ Forbidden dispatch: `"implement the feature"`, `"write the code"`, `"create the file"`.
+- ✅ Allowed dispatch: `"verify src/x.ts compiles"`, `"check integration of Y"`, `"report DONE or NEEDS_FIX"`.
+
+### Context Drift
+- If a worker says *"I'll proceed based on my assumption of the plan"* → STOP. Re-dispatch with explicit `.shared_plan.md` reference.
+- Never let workers reconstruct the plan from a short task description.
+
+### Phase Skip
+- A (audit) is never "unnecessary". Even trivial plans can hit integration issues. Audit first.
+- B verification is never "skippable". Untested code is not "done".
+- The orchestrator does not enforce these gates today — YOU do.
