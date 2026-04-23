@@ -98,12 +98,13 @@ State returns to IDLE automatically.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
 
-## Shared Plan (`.shared_plan.md`)
+## Shared Plan (auto-injected)
 
-When P completes, `.shared_plan.md` is written to the project root. Treat it as the single source of truth for the approved plan.
+When P completes, the plan is saved to the **worklog `## Plan` section** (single source of truth) and kept in `ctx.plan`. No project-root file is created.
 
-- In A and B, every `cli-jaw dispatch` task MUST reference this file so workers can read the plan in their isolated directories.
-- Example: `cli-jaw dispatch --agent "Backend" --task "Read .shared_plan.md first. Then audit: ..."`.
+- In A and B, the orchestrator **auto-injects the full plan body** at the top of every `cli-jaw dispatch` task under `## Approved Plan`.
+- Workers never read a plan file. Your task body should contain only the actual audit/verify instruction — the plan is prepended for you.
+- Example: `cli-jaw dispatch --agent "Backend" --task "Audit: verify the imports in ..."` — no "read the plan" line needed.
 
 ## Pitfalls (반드시 피해야 할 행동)
 
@@ -113,7 +114,7 @@ When P completes, `.shared_plan.md` is written to the project root. Treat it as 
 - ✅ Allowed dispatch: `"verify src/x.ts compiles"`, `"check integration of Y"`, `"report DONE or NEEDS_FIX"`.
 
 ### Context Drift
-- If a worker says *"I'll proceed based on my assumption of the plan"* → STOP. Re-dispatch with explicit `.shared_plan.md` reference.
+- If a worker says *"I'll proceed based on my assumption of the plan"* → STOP. Verify the dispatch went through `/api/orchestrate/dispatch` (only that path auto-injects the plan).
 - Never let workers reconstruct the plan from a short task description.
 
 ### Phase Skip
