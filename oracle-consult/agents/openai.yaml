@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oracle Consult"
+  short_description: "Use Oracle CLI safely for second-model repo reviews."
+  default_prompt: "Use Oracle to dry-run and prepare a second-model consult for the selected files."
