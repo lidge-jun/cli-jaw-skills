@@ -23,14 +23,19 @@ metadata:
 
 # Browser Control
 
-Control Chrome browser via `cli-jaw browser` commands.
-Uses ref-based snapshots to identify page elements, then click/type by ref ID.
+Control Chrome through `cli-jaw browser` commands.
+Use ref-based snapshots to identify page elements, then click/type by ref ID.
+
+This skill follows the newer `30_browser` workflow shape, adapted for the
+server-backed `cli-jaw browser` runtime. Commands that are not implemented in
+the current `cli-jaw` runtime are separated under **Planned Runtime Delta** and
+must not be used as current commands.
 
 ## Prerequisites
 
-- cli-jaw server must be running (`cli-jaw serve`)
-- Google Chrome must be installed
-- playwright-core must be installed (`npm i playwright-core`)
+- `cli-jaw serve` must be running.
+- Google Chrome must be installed.
+- `playwright-core` must be installed in the `cli-jaw` project.
 
 ## Quick Start
 
@@ -39,74 +44,110 @@ cli-jaw browser start --agent                  # Automation session (headless, n
 cli-jaw browser start                          # Interactive browser (manual only)
 cli-jaw browser start --headless               # Manual headless mode (server/CI/WSL)
 cli-jaw browser navigate "https://example.com" # Go to URL
-cli-jaw browser snapshot                        # Get page structure with ref IDs
-cli-jaw browser click e3                        # Click ref e3
-cli-jaw browser type e5 "hello"                 # Type into ref e5
-cli-jaw browser screenshot                      # Save screenshot
+cli-jaw browser snapshot --interactive         # Interactive elements with ref IDs
+cli-jaw browser click e3                       # Click ref e3
+cli-jaw browser type e5 "hello" --submit       # Type + Enter
+cli-jaw browser screenshot                     # Save screenshot path
 ```
 
 ## Core Workflow
 
-> **Always follow this pattern:**
-> 1. `snapshot` → See page structure + ref IDs
-> 2. `click`/`type`/`press` → Interact using ref
-> 3. `snapshot` → Verify result → Repeat
+Always follow this pattern:
 
-## Commands
+```text
+snapshot --interactive -> act by ref or key -> snapshot -> verify
+```
+
+Use a fresh snapshot after navigation, reload, tab changes, or any action that
+substantially changes the page. Ref IDs belong to the latest usable snapshot and
+can go stale.
+
+## Current Commands
+
+These commands are implemented in the current `cli-jaw browser` runtime.
 
 ### Browser Management
 
 ```bash
-cli-jaw browser start [--port <auto>] [--headless] [--agent]  # Start Chrome
-cli-jaw browser stop                 # Stop Chrome
-cli-jaw browser status               # Connection status
+cli-jaw browser start [--port <auto>] [--headless] [--agent]
+cli-jaw browser stop
+cli-jaw browser status
+cli-jaw browser reset [--force]
 ```
 
-- `--agent` enables automated sessions — forces headless to avoid popping a visible browser window.
+- `--agent` enables an automated headless session.
 - Plain `browser start` is for user-requested interactive browsing.
+- `reset` clears the browser profile and screenshots; use only when the user
+  explicitly wants a reset or you have confirmed it.
 
 ### Observe
 
 ```bash
-cli-jaw browser snapshot                # Ref snapshot (all elements)
-cli-jaw browser snapshot --interactive  # Interactive elements only (buttons, links, inputs)
-cli-jaw browser screenshot              # Current viewport
-cli-jaw browser screenshot --full-page  # Full page
-cli-jaw browser screenshot --ref e5     # Specific ref element only
-cli-jaw browser text                    # Page text content
-cli-jaw browser text --format html      # HTML source
+cli-jaw browser snapshot
+cli-jaw browser snapshot --interactive
+cli-jaw browser snapshot --interactive --max-nodes 30 --json
+cli-jaw browser screenshot
+cli-jaw browser screenshot --full-page
+cli-jaw browser screenshot --ref e5
+cli-jaw browser screenshot --json
+cli-jaw browser screenshot --clip 0 0 320 180 --json
+cli-jaw browser text
+cli-jaw browser text --format html
+cli-jaw browser get-dom --selector ".card" --max-chars 2000 --json
+cli-jaw browser console --json --limit 20
+cli-jaw browser network --json --limit 20
 ```
 
 ### Snapshot Output Example
 
-```
+```text
 e1   link       "Gmail"
 e2   link       "Images"
-e3   textbox    "Search"           ← To type here: type e3 "query"
-e4   button     "Google Search"    ← To click: click e4
+e3   textbox    "Search"           <- To type here: type e3 "query"
+e4   button     "Google Search"    <- To click: click e4
 e5   button     "I'm Feeling Lucky"
 ```
 
 ### Act
 
 ```bash
-cli-jaw browser click e3              # Click element
-cli-jaw browser type e3 "hello"       # Type text
-cli-jaw browser type e3 "hello" --submit  # Type + press Enter
-cli-jaw browser press Enter           # Press key
+cli-jaw browser click e3
+cli-jaw browser click e3 --double
+cli-jaw browser click e3 --right
+cli-jaw browser type e3 "hello"
+cli-jaw browser type e3 "hello" --submit
+cli-jaw browser press Enter
 cli-jaw browser press Escape
 cli-jaw browser press Tab
-cli-jaw browser hover e5              # Mouse hover
+cli-jaw browser hover e5
+cli-jaw browser mouse-click 400 300
+cli-jaw browser mouse-click 400 300 --double
+cli-jaw browser select e7 "option1"
+cli-jaw browser drag e3 e5
+cli-jaw browser move-mouse 400 300
+cli-jaw browser mouse-down
+cli-jaw browser mouse-up --right
 ```
 
-### Navigate
+### Navigate and Inspect
 
 ```bash
-cli-jaw browser navigate "https://example.com"  # Go to URL
-cli-jaw browser open "https://example.com"       # Open in new tab
-cli-jaw browser tabs                             # List tabs
-cli-jaw browser evaluate "document.title"        # Execute JS
+cli-jaw browser navigate "https://example.com"
+cli-jaw browser open "https://example.com"
+cli-jaw browser tabs
+cli-jaw browser tabs --json
+cli-jaw browser active-tab --json
+cli-jaw browser tab-switch 2
+cli-jaw browser reload
+cli-jaw browser resize 1440 900
+cli-jaw browser scroll --x 0 --y 1000
+cli-jaw browser wait-for-selector ".toast-success" --timeout 30000
+cli-jaw browser wait-for-text "Dashboard" --timeout 30000
+cli-jaw browser evaluate "document.title"
 ```
+
+`evaluate` is a top-level browser diagnostic command. Do not expose arbitrary
+user-provided JavaScript through higher-level vendor workflows such as web-ai.
 
 ## Common Workflows
 
@@ -116,10 +157,8 @@ cli-jaw browser evaluate "document.title"        # Execute JS
 cli-jaw browser start --agent
 cli-jaw browser navigate "https://www.google.com"
 cli-jaw browser snapshot --interactive
-# → e3 textbox "Search"
 cli-jaw browser type e3 "search query" --submit
 cli-jaw browser snapshot --interactive
-# Click desired result link
 cli-jaw browser click e7
 ```
 
@@ -127,80 +166,98 @@ cli-jaw browser click e7
 
 ```bash
 cli-jaw browser snapshot --interactive
-# → e1 textbox "Name", e2 textbox "Email", e3 button "Submit"
 cli-jaw browser type e1 "John Doe"
 cli-jaw browser type e2 "john@example.com"
 cli-jaw browser click e3
-cli-jaw browser snapshot  # Verify result
+cli-jaw browser snapshot
 ```
 
 ### Read Page Content
 
 ```bash
 cli-jaw browser navigate "https://news.ycombinator.com"
-cli-jaw browser text | head -100  # First 100 lines
-# Or structured:
-cli-jaw browser snapshot  # Element list with roles
+cli-jaw browser text
+cli-jaw browser text --format html
+cli-jaw browser snapshot --interactive
 ```
 
-## macOS Alternatives (No Server Required)
+## Planned Runtime Delta
 
-These work without cli-jaw server using native macOS tools:
+The copied `30_browser` reference documents a richer command surface. These are
+planned `cli-jaw browser` parity targets, not current commands unless the runtime
+has been upgraded in a later PRD.
+
+### Observe and Diagnostics
 
 ```bash
-# Screenshot
-screencapture -x ~/screenshot.png
-screencapture -R 0,0,1280,720 ~/region.png
-
-# Open URL
-open "https://example.com"
-open -a "Google Chrome" "https://example.com"
-
-# Current tab URL
-osascript -e 'tell app "Chrome" to URL of active tab of front window'
-
-# Tab list
-osascript -e 'tell app "Chrome" to get {title, URL} of every tab of front window'
-
-# Execute JavaScript
-osascript -e 'tell app "Chrome" to execute front window'\''s active tab javascript "document.title"'
-
-# Coordinate-based clicks (requires: brew install cliclick)
-cliclick c:500,300
-cliclick t:"text input"
+cli-jaw browser console --clear --reload --duration 3000
+cli-jaw browser network --reload --duration 1000
+cli-jaw browser wait 2000
 ```
 
-## Headless Mode (Server/CI/WSL)
+### Actions
 
 ```bash
-cli-jaw browser start --headless               # CLI flag
-cli-jaw browser start --agent                  # Agent automation (forces headless)
-CHROME_HEADLESS=1 cli-jaw browser start         # Env var
+cli-jaw browser resize 0 0 --fullscreen
+cli-jaw browser scroll down
+cli-jaw browser scroll up --amount 1000
 ```
 
-Use for GUI-less environments (WSL, SSH, Docker, CI). `--headless=new` (Chrome 112+) preserves full browser functionality.
+### Navigation and Sync
+
+`wait-for <ref>` is deprecated in the reference design because refs are
+snapshot-scoped. Prefer selector/text waits.
+
+## Recovery Strategy
+
+If something goes wrong, stop and inspect state before the next action.
+
+1. `snapshot` fails -> take `screenshot` for visual inspection.
+2. Ref not found -> re-run `snapshot --interactive`; refs can go stale.
+3. Async UI not ready -> use `wait-for-selector` or `wait-for-text`.
+4. CDP connection fails -> report the exact error, then use `status`; only
+   stop/start when that is the selected recovery path.
+5. Chrome/profile is truly stuck -> ask before `reset` unless the user already
+   requested destructive reset.
+6. DOM ref unavailable -> use the `vision-click` skill only after confirming no
+   usable ref exists.
+
+## Environment Variables
+
+| Variable | Description |
+| --- | --- |
+| `CHROME_HEADLESS=1` | Enable headless mode for manual starts. |
+| `CHROME_NO_SANDBOX=1` | Disable Chrome sandbox for Docker/CI only. |
+
+The default CDP port is derived from the `cli-jaw` server port. Use
+`cli-jaw browser start --port <port>` only when you need an explicit override.
+
+## Headless Mode
+
+```bash
+cli-jaw browser start --headless
+cli-jaw browser start --agent
+CHROME_HEADLESS=1 cli-jaw browser start
+```
+
+Use `--agent` for automation. It avoids popping a visible browser window.
 
 ## Troubleshooting
 
-| 증상                               | 원인                                | 해결                                              |
-| ---------------------------------- | ----------------------------------- | ------------------------------------------------- |
-| CDP 연결 거부                      | Chrome이 이미 기본 프로필로 실행 중 | 모든 Chrome 종료 후 재시도, 또는 `browser reset`  |
-| Windows에서 테스트 브라우저만 열림 | Chrome 싱글턴이 launch 흡수         | 자동화는 `browser start --agent`, 수동은 기존 Chrome 완전 종료 후 `browser start` |
-| Headless에서 CDP 안 열림           | `--headless` 미지정                 | `--headless` 플래그 추가                          |
-| 포트 충돌                          | 다른 프로세스가 CDP 포트 점유       | `--port <다른포트>` 지정                          |
-| 서버 재시작 후 연결 안 됨          | 이전 Chrome이 여전히 포트 점유      | `browser start`가 자동 재사용 (readiness 확인 후) |
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| CDP connection refused | Chrome not started or wrong port | `cli-jaw browser status`, then start with the expected port |
+| Windows only opens test browser | Chrome singleton absorbed launch | Close all Chrome windows, then use `start --agent` |
+| Headless CDP not opening | headless not requested in GUI-less env | Add `--headless` or use `--agent` |
+| Port conflict | another process owns the CDP port | choose a different `--port` |
+| Snapshot too large | page has many nodes | planned: `--max-nodes`; current: use `--interactive` |
 
 ## Notes
 
-- Ref IDs reset on navigation — re-run `snapshot` after `navigate`.
-- `--interactive` shows only clickable/typeable elements (shorter output).
+- Ref IDs are short-lived and should be treated as latest-snapshot scoped.
+- Always re-run `snapshot --interactive` after navigation or major page changes.
+- Prefer `--interactive` for token budget.
 - Screenshots save to `~/.cli-jaw/screenshots/`.
-- Default CDP port is auto-derived from server port (server_port + 5783).
-- If CDP already responds on the auto-derived port, `start` reuses the existing instance.
-- `CHROME_NO_SANDBOX=1` — disable sandbox (Docker/CI).
-- `CHROME_HEADLESS=1` — enable headless mode.
-
-## Non-DOM Elements
-
-If `snapshot` returns **no ref** for your target (Canvas, iframe, Shadow DOM, etc.),
-use the **vision-click** skill (Codex only). See `skills_ref/vision-click/SKILL.md`.
+- `start --agent` should be the default for agent automation.
+- Non-DOM elements such as Canvas, WebGL, cross-origin iframes, and custom UI
+  should use the `vision-click` skill only as an explicit fallback.
