@@ -151,6 +151,12 @@ user-provided JavaScript through higher-level vendor workflows such as web-ai.
 
 ## Common Workflows
 
+### AI Web Workflows
+
+For ChatGPT web-ai workflows, use the `web-ai` skill. The browser skill owns
+primitive page control; `web-ai` owns Oracle-style question rendering, active-tab
+safety, and response baseline handling.
+
 ### Web Search
 
 ```bash
