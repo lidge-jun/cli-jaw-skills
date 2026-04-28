@@ -14,6 +14,9 @@ metadata:
 Click non-DOM elements by screenshot analysis.
 Uses `codex exec -i` for vision-based coordinate extraction.
 
+Vision click is an explicit fallback, not the default browser automation path.
+Always try `cli-jaw browser snapshot --interactive` and ref-based actions first.
+
 ## Quick Start (One Command — Phase 2)
 
 ```bash
@@ -24,8 +27,10 @@ cli-jaw browser vision-click "Submit button"
 
 With options:
 ```bash
-cli-jaw browser vision-click "Login" --double          # double-click
-cli-jaw browser vision-click "Menu" --provider codex   # explicit provider
+cli-jaw browser vision-click "Login" --double
+cli-jaw browser vision-click "Menu" --provider codex
+cli-jaw browser vision-click "Map pin" --clip 300 120 640 480 --verify-before-click
+cli-jaw browser vision-click "Toolbar item" --region top-bar --prepare-stable
 ```
 
 ## Prerequisites
@@ -34,7 +39,15 @@ cli-jaw browser vision-click "Menu" --provider codex   # explicit provider
 
 ## When to Use
 
-Fallback when `cli-jaw browser snapshot` returns no ref for target (canvas, iframes, Shadow DOM, WebGL, SVG, overlays). Always try `snapshot` first.
+Fallback only when all are true:
+
+- `cli-jaw browser snapshot --interactive` returns no usable ref for the target
+- the target is visible in a screenshot
+- the user task explicitly requires a non-DOM click
+
+Good fits: canvas, iframes, Shadow DOM, WebGL, SVG, maps, overlays.
+
+Do not use as the normal ChatGPT/web-ai query-send-poll path.
 
 ## Manual Workflow (Phase 1)
 
@@ -86,6 +99,19 @@ curl -X POST http://localhost:3457/api/browser/act \
   -d '{"kind":"mouse-click","x":640,"y":400,"doubleClick":true}'
 ```
 
+## Guardrail Options
+
+```bash
+--prepare-stable        wait briefly for layout/network calm before screenshot
+--clip x y w h          analyze a CSS-pixel screenshot sub-region
+--region top-bar        named clip preset: left-panel | center-map | top-bar
+--verify-before-click   refuse click when the target is not plausible anymore
+```
+
+`--provider codex` is the only supported provider in this slice. Codex CLI live
+smoke tests are manual only; CI uses fixtures for parsing, DPR, clip offset,
+and verify-before-click behavior.
+
 ## Parsing Codex Response
 
 Codex `--json` outputs NDJSON. Look for `item.type === "agent_message"`:
@@ -109,3 +135,5 @@ for (const line of lines) {
 - Cost: ~$0.005-0.01 per call (~18K input tokens)
 - Complex UIs may need confidence check + retry
 - DPR auto-correction included (Phase 2)
+- Never depend on live Codex vision in CI
+- Never use for CAPTCHA or anti-bot bypass
