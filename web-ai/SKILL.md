@@ -112,6 +112,10 @@ Current:
 - inline prompt
 - ChatGPT file upload
 - ChatGPT model switching: instant / thinking / pro
+  - 2026-04-30 headed UI note: the visible opener may be the bottom composer
+    `button.__composer-pill[aria-haspopup="menu"]` labeled Instant/Thinking/Pro,
+    while the older top `model-switcher-dropdown-button` can be absent. Do not
+    click generic "Pro" by role/name because the profile menu can also match.
 - render/status/send/poll/query/watch/watchers/sessions/capabilities/notifications/stop
 - long-running watcher startup recovery and channel delivery loop
 - observed capability schemas with fail-closed unobserved tools
