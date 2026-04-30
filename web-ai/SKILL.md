@@ -11,7 +11,9 @@ instead of calling a model API directly.
 ## Safe Defaults
 
 - Render before sending.
-- Use `--inline-only` for every `send` or `query`.
+- Use `--inline-only` only when the user explicitly wants pasted inline context.
+  Oracle-style source context should normally be packaged as an uploaded
+  markdown attachment.
 - Do not upload files with `--file` unless explicitly requested. For source
   context, use the Oracle-style context packaging flags first.
 - Do not switch models.
@@ -57,7 +59,8 @@ cli-jaw browser web-ai render --vendor chatgpt --prompt "..."
 cli-jaw browser web-ai context-dry-run --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts" --files-report
 cli-jaw browser web-ai context-render --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts"
 cli-jaw browser web-ai status --vendor chatgpt
-cli-jaw browser web-ai query --vendor chatgpt --inline-only --prompt "..." --context-from-files "src/foo.ts"
+cli-jaw browser web-ai query --vendor chatgpt --prompt "..." --context-from-files "src/foo.ts"
+cli-jaw browser web-ai query --vendor chatgpt --inline-only --allow-copy-markdown-fallback --prompt "..."
 cli-jaw browser web-ai poll --vendor chatgpt --timeout 600
 cli-jaw browser web-ai capabilities --vendor chatgpt
 cli-jaw browser web-ai notifications --vendor chatgpt
@@ -75,12 +78,16 @@ Rules:
 - `--context-from-files` may be repeated and accepts files, directories, and globs.
 - `--context-exclude` may be repeated and accepts glob excludes.
 - `--context-file` accepts a newline or JSON list of include/exclude patterns.
+- default source-context transport is upload: write one markdown context package
+  and attach it in the ChatGPT composer.
+- `--inline-only` or `--context-transport inline` forces the old pasted
+  composer path.
 - `--max-input` sets the model input-token preflight budget.
 - `--max-file-size` defaults to 1 MB per file.
 - `context-dry-run --json` omits `composerText` unless `--full` is passed.
-- `context-render` prints the full browser composer payload.
-- `send/query` with context packaging must fail before browser mutation if the
-  inline package exceeds token or inline character budget.
+- `context-render` prints the context package attachment body by default.
+- `send/query` with context packaging must fail before browser mutation if token
+  budget is exceeded, or if inline transport exceeds the inline character budget.
 
 Example:
 
