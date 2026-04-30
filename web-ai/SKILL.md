@@ -1,6 +1,6 @@
 ---
 name: web-ai
-description: "Oracle-style browser web-ai workflow for ChatGPT first slice in cli-jaw."
+description: "Structured browser web-ai workflow for ChatGPT, Gemini, and Grok in cli-jaw."
 ---
 
 # Web AI
@@ -12,10 +12,10 @@ instead of calling a model API directly.
 
 - Render before sending.
 - Use `--inline-only` only when the user explicitly wants pasted inline context.
-  Oracle-style source context should normally be packaged as an uploaded
+  Source context should normally be packaged as an uploaded
   markdown attachment.
 - Do not upload files with `--file` unless explicitly requested. For source
-  context, use the Oracle-style context packaging flags first.
+  context, use the context packaging flags first.
 - Do not switch models.
 - Do not expose arbitrary `evaluate` through web-ai.
 - For live ChatGPT/Gemini observation or smoke tests, do not use headless Chrome.
@@ -26,7 +26,7 @@ instead of calling a model API directly.
 
 ## Prompt Shape
 
-Build an Oracle-style question envelope:
+Build a structured question envelope:
 
 ```text
 [SYSTEM]
@@ -69,7 +69,7 @@ cli-jaw browser web-ai stop --vendor chatgpt
 
 ## Context Packaging
 
-Use this when the user asks for Oracle-style max context / current context
+Use this when the user asks for max context / current context
 packaging before browser submission.
 
 Rules:
@@ -151,7 +151,7 @@ Current:
 - ChatGPT
 - Gemini / Deep Think
 - inline prompt
-- Oracle-style context packaging dry-run/render and inline send/query preflight
+- structured context packaging dry-run/render and inline send/query preflight
 - ChatGPT file upload
 - ChatGPT model switching: instant / thinking / pro
   - 2026-04-30 headed UI note: the visible opener may be the bottom composer
