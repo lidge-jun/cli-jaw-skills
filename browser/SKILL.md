@@ -157,6 +157,32 @@ For ChatGPT web-ai workflows, use the `web-ai` skill. The browser skill owns
 primitive page control; `web-ai` owns structured question rendering, active-tab
 safety, and response baseline handling.
 
+### Standalone agbrowse Alternative
+
+When the user explicitly wants to drive a **single Chrome instance** (for
+example: keep one logged-in profile open, avoid running both `cli-jaw serve`
+and a second CDP session), the same browser commands are available through
+the standalone `agbrowse` CLI (`npm install -g agbrowse`). The flag surface is
+identical; only the binary prefix changes.
+
+| `cli-jaw browser` form | `agbrowse` form |
+| --- | --- |
+| `cli-jaw browser start --agent` | `agbrowse start` |
+| `cli-jaw browser status` | `agbrowse status` |
+| `cli-jaw browser navigate "<url>"` | `agbrowse navigate "<url>"` |
+| `cli-jaw browser snapshot --interactive` | `agbrowse snapshot --interactive` |
+| `cli-jaw browser click e3` | `agbrowse click e3` |
+| `cli-jaw browser type e5 "hello" --submit` | `agbrowse type e5 "hello" --submit` |
+| `cli-jaw browser screenshot` | `agbrowse screenshot` |
+| `cli-jaw browser tabs` | `agbrowse tabs` |
+| `cli-jaw browser stop` | `agbrowse stop` |
+
+Only switch when the user explicitly asks for the standalone path. Do not run
+`cli-jaw browser` and `agbrowse` against the same `--port` simultaneously —
+the second start will reuse the first CDP and the persisted state files can
+collide. For the web-ai layer, see the corresponding `Standalone agbrowse
+Alternative` section in the `web-ai` skill.
+
 ### Web Search
 
 ```bash

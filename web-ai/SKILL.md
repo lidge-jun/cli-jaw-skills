@@ -61,11 +61,59 @@ cli-jaw browser web-ai context-render --vendor chatgpt --prompt "..." --context-
 cli-jaw browser web-ai status --vendor chatgpt
 cli-jaw browser web-ai query --vendor chatgpt --prompt "..." --context-from-files "src/foo.ts"
 cli-jaw browser web-ai query --vendor chatgpt --inline-only --allow-copy-markdown-fallback --prompt "..."
-cli-jaw browser web-ai poll --vendor chatgpt --timeout 600
+cli-jaw browser web-ai poll --vendor chatgpt --timeout 1200
 cli-jaw browser web-ai capabilities --vendor chatgpt
 cli-jaw browser web-ai notifications --vendor chatgpt
 cli-jaw browser web-ai stop --vendor chatgpt
 ```
+
+## Polling Timeouts
+
+`web-ai poll`, `web-ai query`, and `web-ai watch` accept `--timeout <seconds>`.
+When omitted, the runtime uses these defaults so heavy reasoning models
+(ChatGPT Pro/Heavy, Gemini Deep Think) have room to finish:
+
+| Vendor | Default `--timeout` | Roughly |
+| --- | ---: | --- |
+| ChatGPT | 1200 | 20 minutes |
+| Gemini | 1200 | 20 minutes |
+| Grok | 600 | 10 minutes |
+
+Pass `--timeout 1800` (30 min) or higher for unusually long Pro/Deep Think
+runs. The provider tab and the cli-jaw browser Chrome process stay open
+across a poll timeout — only the polling loop gives up.
+
+## Grok context packaging is fail-closed
+
+`cli-jaw browser web-ai send/query --vendor grok` with `--context-from-files`
+/ `--context-file` / `--context-transport upload` throws with
+`stage: 'grok-context-pack-not-allowed'`. Pass `--allow-grok-context-pack`
+to override deliberately. When the override is used, the runtime emits a
+`grok-context-pack-not-recommended` warning. Grok prefers inline prompts
+plus an optional single `--file` upload; ChatGPT or Gemini handle context
+packages more reliably.
+
+## Standalone agbrowse Alternative
+
+When the user asks to drive a **single Chrome instance** (for example to
+keep their own logged-in profile open and not run two CDP sessions), the
+same web-ai workflow is available through the standalone `agbrowse` CLI
+(`npm install -g agbrowse`). The flags and prompt envelope shape are
+identical; only the binary prefix changes.
+
+| `cli-jaw browser` form | `agbrowse` form |
+| --- | --- |
+| `cli-jaw browser start` | `agbrowse start` |
+| `cli-jaw browser status` | `agbrowse status` |
+| `cli-jaw browser snapshot --interactive` | `agbrowse snapshot --interactive` |
+| `cli-jaw browser web-ai render ...` | `agbrowse web-ai render ...` |
+| `cli-jaw browser web-ai query --vendor chatgpt ...` | `agbrowse web-ai query --vendor chatgpt ...` |
+| `cli-jaw browser web-ai poll --vendor chatgpt --timeout 1200` | `agbrowse web-ai poll --vendor chatgpt --timeout 1200` |
+
+Only switch when the user explicitly asks for the standalone path. The
+two runtimes share defaults (ChatGPT/Gemini 1200s, Grok 600s) and the
+same `[INSTRUCTIONS]` prompt block, so behavior stays consistent. Do not
+run both against the same `--port` at the same time.
 
 ## Context Packaging
 
