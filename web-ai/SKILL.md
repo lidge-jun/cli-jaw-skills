@@ -12,7 +12,8 @@ instead of calling a model API directly.
 
 - Render before sending.
 - Use `--inline-only` for every `send` or `query`.
-- Do not upload files.
+- Do not upload files with `--file` unless explicitly requested. For source
+  context, use the Oracle-style context packaging flags first.
 - Do not switch models.
 - Do not expose arbitrary `evaluate` through web-ai.
 - For live ChatGPT/Gemini observation or smoke tests, do not use headless Chrome.
@@ -53,12 +54,45 @@ Build an Oracle-style question envelope:
 
 ```bash
 cli-jaw browser web-ai render --vendor chatgpt --prompt "..."
+cli-jaw browser web-ai context-dry-run --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts" --files-report
+cli-jaw browser web-ai context-render --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts"
 cli-jaw browser web-ai status --vendor chatgpt
-cli-jaw browser web-ai query --vendor chatgpt --inline-only --prompt "..."
+cli-jaw browser web-ai query --vendor chatgpt --inline-only --prompt "..." --context-from-files "src/foo.ts"
 cli-jaw browser web-ai poll --vendor chatgpt --timeout 600
 cli-jaw browser web-ai capabilities --vendor chatgpt
 cli-jaw browser web-ai notifications --vendor chatgpt
 cli-jaw browser web-ai stop --vendor chatgpt
+```
+
+## Context Packaging
+
+Use this when the user asks for Oracle-style max context / current context
+packaging before browser submission.
+
+Rules:
+
+- `--file` still means live browser upload. Do not use it for source context.
+- `--context-from-files` may be repeated and accepts files, directories, and globs.
+- `--context-exclude` may be repeated and accepts glob excludes.
+- `--context-file` accepts a newline or JSON list of include/exclude patterns.
+- `--max-input` sets the model input-token preflight budget.
+- `--max-file-size` defaults to 1 MB per file.
+- `context-dry-run --json` omits `composerText` unless `--full` is passed.
+- `context-render` prints the full browser composer payload.
+- `send/query` with context packaging must fail before browser mutation if the
+  inline package exceeds token or inline character budget.
+
+Example:
+
+```bash
+cli-jaw browser web-ai context-dry-run \
+  --vendor chatgpt \
+  --model pro \
+  --prompt "review current context" \
+  --context-from-files "src/browser/web-ai/**/*.ts" \
+  --context-exclude "**/*.test.ts" \
+  --files-report \
+  --json
 ```
 
 ## Browser Execution Policy
@@ -110,6 +144,7 @@ Current:
 - ChatGPT
 - Gemini / Deep Think
 - inline prompt
+- Oracle-style context packaging dry-run/render and inline send/query preflight
 - ChatGPT file upload
 - ChatGPT model switching: instant / thinking / pro
   - 2026-04-30 headed UI note: the visible opener may be the bottom composer
