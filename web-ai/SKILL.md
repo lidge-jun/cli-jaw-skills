@@ -5,8 +5,8 @@ description: "Oracle-style browser web-ai workflow for ChatGPT first slice in cl
 
 # Web AI
 
-Use this skill when the task is to ask an AI website through `cli-jaw browser`
-instead of calling a model API directly. PRD32 first slice supports ChatGPT only.
+Use this skill when the task is to ask an AI website through browser control
+instead of calling a model API directly.
 
 ## Safe Defaults
 
@@ -15,6 +15,9 @@ instead of calling a model API directly. PRD32 first slice supports ChatGPT only
 - Do not upload files.
 - Do not switch models.
 - Do not expose arbitrary `evaluate` through web-ai.
+- For live ChatGPT/Gemini observation or smoke tests, do not use headless Chrome.
+  Use a headed, user-visible 30_browser/CDP session so account gates, Cloudflare,
+  tool drawers, upload pickers, and model menus match the real frontend.
 - Use `vision-click` only as an explicit fallback when DOM/snapshot cannot see a
   visible UI target.
 
@@ -53,10 +56,22 @@ cli-jaw browser web-ai render --vendor chatgpt --prompt "..."
 cli-jaw browser web-ai status --vendor chatgpt
 cli-jaw browser web-ai query --vendor chatgpt --inline-only --prompt "..."
 cli-jaw browser web-ai poll --vendor chatgpt --timeout 600
+cli-jaw browser web-ai capabilities --vendor chatgpt
+cli-jaw browser web-ai notifications --vendor chatgpt
 cli-jaw browser web-ai stop --vendor chatgpt
 ```
 
 ## Browser Execution Policy
+
+Live web-ai execution policy:
+
+```text
+headed Chrome required
+headless forbidden
+Codex Cloud out of scope
+observed frontend capability -> schema row -> verified mutation
+not observed -> fail closed
+```
 
 Use the 30_browser-derived loop:
 
@@ -93,14 +108,18 @@ after the saved baseline.
 Current:
 
 - ChatGPT
+- Gemini / Deep Think
 - inline prompt
-- render/status/send/poll/query/stop
+- ChatGPT file upload
+- ChatGPT model switching: instant / thinking / pro
+- render/status/send/poll/query/watch/watchers/sessions/capabilities/notifications/stop
+- long-running watcher startup recovery and channel delivery loop
+- observed capability schemas with fail-closed unobserved tools
 
 Future:
 
 - Grok
-- Gemini / Deep Think
 - Claude
-- file upload
-- model switching
-- thinking-time selection
+- ChatGPT web search and image generation tool runtime after headed frontend observation
+- Gemini model picker and image generation runtime after headed frontend observation
+- Web UI watcher dashboard
