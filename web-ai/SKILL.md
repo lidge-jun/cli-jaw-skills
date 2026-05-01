@@ -83,6 +83,35 @@ Pass `--timeout 1800` (30 min) or higher for unusually long Pro/Deep Think
 runs. The provider tab and the cli-jaw browser Chrome process stay open
 across a poll timeout — only the polling loop gives up.
 
+## Error taxonomy
+
+Failures from `cli-jaw browser web-ai *` carry a typed JSON envelope with
+`errorCode`, `stage`, `retryHint`, `vendor`, `mutationAllowed`,
+`selectorsTried`, and optional `evidence`. HTTP responses
+(`/api/browser/web-ai/*` 5xx bodies) and CLI `--json` output share the
+same shape via `WebAiError.toJSON()`. Initial code list (full catalog in
+agbrowse `devlog/03_phase2_errors.md`):
+
+- `cdp.unreachable`, `cdp.target-mismatch`
+- `provider.composer-not-visible`, `provider.model-mismatch`,
+  `provider.attachment-preflight`, `provider.attachment-evidence-missing`,
+  `provider.commit-not-verified`, `provider.poll-timeout`,
+  `provider.runtime-disabled`
+- `capability.unsupported`
+- `context.over-budget`, `context.symlink-rejected`
+- `grok.context-pack-not-allowed`
+- `internal.unhandled`
+
+Existing cli-jaw error classes map to typed codes via
+`fromCliJawStructuredError`:
+
+- `WrongTargetError` → `cdp.target-mismatch` (preserves
+  `expectedTargetId` / `actualTargetId` in `evidence`).
+- `BrowserCapabilityError` → `capability.unsupported` (preserves
+  `capabilityId` / `ownerPrd`).
+- `ProviderRuntimeDisabledError` → `provider.runtime-disabled` (preserves
+  `vendor` / `stage`).
+
 ## Grok context packaging is fail-closed
 
 `cli-jaw browser web-ai send/query --vendor grok` with `--context-from-files`
