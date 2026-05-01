@@ -83,6 +83,19 @@ Pass `--timeout 1800` (30 min) or higher for unusually long Pro/Deep Think
 runs. The provider tab and the cli-jaw browser Chrome process stay open
 across a poll timeout — only the polling loop gives up.
 
+## Runtime capabilities
+
+`cli-jaw browser web-ai status --vendor <v> --json` now embeds a
+`capabilities[]` array sourced from `src/browser/web-ai/capability-registry.ts`.
+Each row carries `{ providerId, capabilityId, family, status, frontendStatus,
+mutationAllowed, activationPath, activeStateSignals, failureStage }`.
+Scope to a single capability with `--probe <capabilityId>`.
+
+`cli-jaw browser web-ai capabilities` continues to expose the registry
+directly (with `--family` / `--frontend-status` filters). agbrowse mirrors
+the same hyphenated capability ID convention via its much smaller probe
+runtime in `web-ai/capability.mjs`.
+
 ## Error taxonomy
 
 Failures from `cli-jaw browser web-ai *` carry a typed JSON envelope with
