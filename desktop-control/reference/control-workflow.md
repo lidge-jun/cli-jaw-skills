@@ -17,7 +17,7 @@ result=ok (47 elements, focused tab: open.spotify.com)
 
 The returned state gives you element indices. Without this call, you have nothing to target.
 
-## Pattern 2 — element_index over type_text
+## Pattern 2 — element_index over focus-only typing
 
 **Wrong:**
 ```
@@ -41,7 +41,7 @@ stale_warning=no
 result=ok
 ```
 
-`type_text(app)` fires keystrokes at whatever has focus — fragile. `set_value(element_index)` targets a specific element from the last state read — deterministic.
+`type_text(app, text)` fires keystrokes at whatever has focus — fragile unless the latest state proves the cursor is in the intended field. `set_value(app, element_index, value)` targets a specific element from the last state read — deterministic.
 
 ## Pattern 3 — Stale warning → re-read → retry
 
@@ -100,9 +100,9 @@ result=ok
 
 | Rule | When | What |
 |---|---|---|
-| State first | Every app interaction start | `get_app_state(app)` before anything else |
+| State first | First Computer Use interaction each assistant turn | `get_app_state(app)` before anything else |
 | Screenshot-visible but not in tree | Map labels, canvas text, custom renders | `click(x, y)` pointer-action **immediately** from screenshot coords |
-| element_index | Target IS in the element tree | `click(element_index=N)` / `set_value(element_index=N)` — never `type_text(app)` |
+| element_index | Target IS in the element tree | Prefer `click(element_index=N)` / `set_value(element_index=N)`; use `type_text(app, text)` only after focus verification |
 | Stale recovery | `stale_warning=yes` or element miss | Re-call `get_app_state`, get fresh indices, retry |
 | CDP preference | Target has web DOM | Switch to `cli-jaw browser` for 10× speed |
 
@@ -136,6 +136,6 @@ Target visible in screenshot?
 
 Same four beats everywhere:
 1. `get_app_state(app)` first.
-2. Target an `element_index` with `set_value` / `click`. Never `type_text(app)`.
+2. Target an `element_index` with `set_value` / `click`. Use `type_text(app, text)` only when focus was verified in the latest state.
 3. On stale warning, re-read state and retry.
 4. If the target exposes web DOM (any Electron/CEF app included), swap to `cli-jaw browser` refs for speed.
