@@ -29,42 +29,42 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: 6 rainbow stripes (evenly distributed)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=0cm --prop width=34cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=3.4cm --prop width=34cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=6.8cm --prop width=34cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-green' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=10.2cm --prop width=34cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-blue' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLUE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=13.6cm --prop width=34cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stripe-purple' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=17cm --prop width=34cm --prop height=2cm
@@ -102,42 +102,42 @@ officecli set "$OUTPUT" '/slide[2]' --prop transition=morph
 # Compress all stripes to top (thin header bar)
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop opacity=1 \
   --prop x=0cm --prop y=0cm --prop width=34cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=1 \
   --prop x=0cm --prop y=0.5cm --prop width=34cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=1 \
   --prop x=0cm --prop y=1cm --prop width=34cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-green' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop opacity=1 \
   --prop x=0cm --prop y=1.5cm --prop width=34cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-blue' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLUE \
   --prop opacity=1 \
   --prop x=0cm --prop y=2cm --prop width=34cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!stripe-purple' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop opacity=1 \
   --prop x=0cm --prop y=2.5cm --prop width=34cm --prop height=0.5cm
@@ -175,42 +175,42 @@ officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 # Stripes become card backgrounds (paired: red+orange, yellow+green, blue+purple)
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop opacity=0.12 \
   --prop x=2cm --prop y=5cm --prop width=9cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=0.12 \
   --prop x=2cm --prop y=5cm --prop width=9cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=0.12 \
   --prop x=12.5cm --prop y=5cm --prop width=9cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-green' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop opacity=0.12 \
   --prop x=12.5cm --prop y=5cm --prop width=9cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-blue' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLUE \
   --prop opacity=0.12 \
   --prop x=23cm --prop y=5cm --prop width=9cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!stripe-purple' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop opacity=0.12 \
   --prop x=23cm --prop y=5cm --prop width=9cm --prop height=10cm
@@ -337,42 +337,42 @@ officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 # Blue stripe expands as large background, others retreat to edges
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop opacity=1 \
   --prop x=0cm --prop y=0cm --prop width=34cm --prop height=0.3cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=1 \
   --prop x=0cm --prop y=0.3cm --prop width=34cm --prop height=0.3cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=1 \
   --prop x=0cm --prop y=0.6cm --prop width=34cm --prop height=0.3cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-green' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop opacity=0.3 \
   --prop x=0cm --prop y=5cm --prop width=34cm --prop height=8cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-blue' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLUE \
   --prop opacity=0.3 \
   --prop x=0cm --prop y=5cm --prop width=34cm --prop height=8cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!stripe-purple' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop opacity=1 \
   --prop x=0cm --prop y=18.5cm --prop width=34cm --prop height=0.3cm
@@ -421,42 +421,42 @@ officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 # All stripes gather at bottom (inverted rainbow footer)
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=12cm --prop width=34cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=13.2cm --prop width=34cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=14.4cm --prop width=34cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-green' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=15.6cm --prop width=34cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-blue' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLUE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=16.8cm --prop width=34cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!stripe-purple' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop opacity=0.85 \
   --prop x=0cm --prop y=18cm --prop width=34cm --prop height=1.05cm

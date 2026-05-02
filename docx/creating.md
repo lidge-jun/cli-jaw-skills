@@ -105,14 +105,14 @@ officecli add report.docx /styles --type style --prop name="Heading 1" --prop id
 officecli add report.docx /styles --type style --prop name="Heading 2" --prop id=Heading2 --prop type=paragraph --prop font=Calibri --prop size=13pt --prop bold=true --prop color=2E75B6 --prop spaceBefore=18pt --prop spaceAfter=6pt --prop keepNext=true
 
 # Header with company name (default — body pages only)
-officecli add report.docx / --type header --prop text="Acme Corporation" --prop type=default --prop font=Calibri --prop size=9pt --prop color=888888 --prop alignment=right
+officecli add report.docx / --type header --prop text="Acme Corporation" --prop type=default --prop font=Calibri --prop size=9pt --prop color=888888 --prop align=right
 
 # Step 1: Empty footer for cover page — adding type=first auto-enables differentFirstPage
 # NOTE: Do NOT use `set / --prop differentFirstPage=true` — UNSUPPORTED on current CLI version
 officecli add report.docx / --type footer --prop type=first --prop text=""
 
 # Step 2: Default footer with static "Page " text (--prop field=page is SILENTLY IGNORED — do not use)
-officecli add report.docx / --type footer --prop text="Page " --prop type=default --prop alignment=center --prop size=9pt --prop font=Calibri
+officecli add report.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 
 # Step 3: REQUIRED — inject PAGE field via raw-set (footer[2] = default when first-page footer also exists)
 officecli raw-set report.docx "/footer[2]" \
@@ -133,7 +133,7 @@ officecli add report.docx / --type watermark --prop text=DRAFT --prop color=C0C0
 #   6. Date
 #   7. Bottom accent bar + contact / version info
 #
-# Always set alignment=center and explicit font sizes on every cover element.
+# Always set align=center and explicit font sizes on every cover element.
 # Use shading bars to fill visual space and avoid large blank areas.
 
 # Top color accent bar
@@ -142,29 +142,29 @@ officecli add report.docx /body --type paragraph --prop text="" --prop shd=1F386
 officecli add report.docx /body --type paragraph --prop text="" --prop spaceBefore=36pt --prop spaceAfter=0pt
 
 # Company / project name (element 2)
-officecli add report.docx /body --type paragraph --prop text="Acme Corporation" --prop alignment=center --prop size=14pt --prop color=1F4E79 --prop spaceAfter=6pt
+officecli add report.docx /body --type paragraph --prop text="Acme Corporation" --prop align=center --prop size=14pt --prop color=1F4E79 --prop spaceAfter=6pt
 
 # Main title (element 3) — 28-32pt
-officecli add report.docx /body --type paragraph --prop text="Q4 Business Report" --prop alignment=center --prop size=30pt --prop bold=true --prop color=1F4E79 --prop spaceAfter=12pt
+officecli add report.docx /body --type paragraph --prop text="Q4 Business Report" --prop align=center --prop size=30pt --prop bold=true --prop color=1F4E79 --prop spaceAfter=12pt
 
 # Subtitle / document type (element 4) — 18-20pt
-officecli add report.docx /body --type paragraph --prop text="Fiscal Year 2025 — Annual Performance Review" --prop alignment=center --prop size=18pt --prop color=4472C4 --prop spaceAfter=36pt
+officecli add report.docx /body --type paragraph --prop text="Fiscal Year 2025 — Annual Performance Review" --prop align=center --prop size=18pt --prop color=4472C4 --prop spaceAfter=36pt
 
 # Mid accent bar (visual separator)
 officecli add report.docx /body --type paragraph --prop text="" --prop shd=4472C4 --prop spaceBefore=0pt --prop spaceAfter=24pt --prop size=8pt
 
 # Author / department (element 5)
-officecli add report.docx /body --type paragraph --prop text="Prepared by: Team Alpha  |  Finance & Strategy Division" --prop alignment=center --prop size=11pt --prop color=444444 --prop spaceAfter=8pt
+officecli add report.docx /body --type paragraph --prop text="Prepared by: Team Alpha  |  Finance & Strategy Division" --prop align=center --prop size=11pt --prop color=444444 --prop spaceAfter=8pt
 
 # Date (element 6)
-officecli add report.docx /body --type paragraph --prop text="March 2026" --prop alignment=center --prop size=11pt --prop color=444444 --prop spaceAfter=8pt
+officecli add report.docx /body --type paragraph --prop text="March 2026" --prop align=center --prop size=11pt --prop color=444444 --prop spaceAfter=8pt
 
 # Version / confidentiality notice
-officecli add report.docx /body --type paragraph --prop text="Version 1.0  |  CONFIDENTIAL" --prop alignment=center --prop size=9pt --prop color=888888 --prop spaceAfter=36pt
+officecli add report.docx /body --type paragraph --prop text="Version 1.0  |  CONFIDENTIAL" --prop align=center --prop size=9pt --prop color=888888 --prop spaceAfter=36pt
 
 # Bottom accent bar + contact info (element 7)
 officecli add report.docx /body --type paragraph --prop text="" --prop shd=1F3864 --prop spaceBefore=0pt --prop spaceAfter=6pt --prop size=12pt
-officecli add report.docx /body --type paragraph --prop text="contact@acmecorp.com  |  www.acmecorp.com" --prop alignment=center --prop size=9pt --prop color=888888 --prop spaceAfter=0pt
+officecli add report.docx /body --type paragraph --prop text="contact@acmecorp.com  |  www.acmecorp.com" --prop align=center --prop size=9pt --prop color=888888 --prop spaceAfter=0pt
 
 officecli add report.docx /body --type pagebreak
 
@@ -233,20 +233,20 @@ A common issue is a cover page where the title block ends near the top or middle
 ```bash
 # Abstract excerpt shaded block
 officecli add doc.docx /body --type paragraph --prop text="" --prop shd=EBF3FB --prop size=4pt --prop spaceBefore=0pt --prop spaceAfter=0pt
-officecli add doc.docx /body --type paragraph --prop text="ABSTRACT" --prop alignment=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=10pt --prop spaceAfter=6pt --prop shd=EBF3FB
-officecli add doc.docx /body --type paragraph --prop text="This document presents..." --prop alignment=center --prop font=Calibri --prop size=10pt --prop italic=true --prop color=444444 --prop spaceBefore=0pt --prop spaceAfter=10pt --prop shd=EBF3FB --prop leftIndent=720 --prop rightIndent=720
+officecli add doc.docx /body --type paragraph --prop text="ABSTRACT" --prop align=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=10pt --prop spaceAfter=6pt --prop shd=EBF3FB
+officecli add doc.docx /body --type paragraph --prop text="This document presents..." --prop align=center --prop font=Calibri --prop size=10pt --prop italic=true --prop color=444444 --prop spaceBefore=0pt --prop spaceAfter=10pt --prop shd=EBF3FB --prop leftIndent=720 --prop rightIndent=720
 officecli add doc.docx /body --type paragraph --prop text="" --prop shd=EBF3FB --prop size=4pt --prop spaceBefore=0pt --prop spaceAfter=24pt
 ```
 
 **Option B — Document Scope Statement** (for policy, proposal, formal reports):
 ```bash
-officecli add doc.docx /body --type paragraph --prop text="DOCUMENT SCOPE" --prop alignment=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=888888 --prop spaceBefore=36pt --prop spaceAfter=6pt
-officecli add doc.docx /body --type paragraph --prop text="This document applies to all employees of Acme Corporation and covers Q4 2025 fiscal year results." --prop alignment=center --prop font=Calibri --prop size=10pt --prop color=555555 --prop spaceAfter=8pt --prop leftIndent=720 --prop rightIndent=720
+officecli add doc.docx /body --type paragraph --prop text="DOCUMENT SCOPE" --prop align=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=888888 --prop spaceBefore=36pt --prop spaceAfter=6pt
+officecli add doc.docx /body --type paragraph --prop text="This document applies to all employees of Acme Corporation and covers Q4 2025 fiscal year results." --prop align=center --prop font=Calibri --prop size=10pt --prop color=555555 --prop spaceAfter=8pt --prop leftIndent=720 --prop rightIndent=720
 ```
 
 **Option C — Key Highlights List** (for annual reports, proposals):
 ```bash
-officecli add doc.docx /body --type paragraph --prop text="KEY HIGHLIGHTS" --prop alignment=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=36pt --prop spaceAfter=8pt
+officecli add doc.docx /body --type paragraph --prop text="KEY HIGHLIGHTS" --prop align=center --prop font=Calibri --prop size=9pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=36pt --prop spaceAfter=8pt
 officecli add doc.docx /body --type paragraph --prop text="Revenue grew 25% year-over-year" --prop listStyle=bullet --prop font=Calibri --prop size=10pt --prop color=333333 --prop spaceAfter=4pt
 officecli add doc.docx /body --type paragraph --prop text="Customer retention reached 94%" --prop listStyle=bullet --prop font=Calibri --prop size=10pt --prop color=333333 --prop spaceAfter=4pt
 officecli add doc.docx /body --type paragraph --prop text="Three new markets launched" --prop listStyle=bullet --prop font=Calibri --prop size=10pt --prop color=333333 --prop spaceAfter=24pt
@@ -266,7 +266,7 @@ officecli add doc.docx /body --type paragraph --prop text="" --prop shd=4472C4 -
 ```
 
 #### Cover Alignment Rule
-Every cover page paragraph **must** use `--prop alignment=center` (or `alignment=left` for left-aligned corporate style). Never leave cover text at default paragraph alignment.
+Every cover page paragraph **must** use `--prop align=center` (or `--prop align=left` for left-aligned corporate style). Never leave cover text at default paragraph alignment.
 
 #### Pitfall: `pbdr` Schema Errors on Cover Elements
 If you use paragraph borders (`--prop pbdr.all=...`) on cover elements and validation fails, remove the offending border:
@@ -288,13 +288,13 @@ officecli create letter.docx
 officecli set letter.docx / --prop pageWidth=12240 --prop pageHeight=15840 --prop marginTop=1440 --prop marginBottom=1440 --prop marginLeft=1440 --prop marginRight=1440
 
 # Date
-officecli add letter.docx /body --type paragraph --prop text="March 27, 2026" --prop alignment=right --prop spaceAfter=24pt
+officecli add letter.docx /body --type paragraph --prop text="March 27, 2026" --prop align=right --prop spaceAfter=24pt
 
 # Sender address (right-aligned)
-officecli add letter.docx /body --type paragraph --prop text="Jane Smith" --prop alignment=right
-officecli add letter.docx /body --type paragraph --prop text="Acme Corporation" --prop alignment=right
-officecli add letter.docx /body --type paragraph --prop text="123 Business Ave, Suite 400" --prop alignment=right
-officecli add letter.docx /body --type paragraph --prop text="New York, NY 10001" --prop alignment=right --prop spaceAfter=24pt
+officecli add letter.docx /body --type paragraph --prop text="Jane Smith" --prop align=right
+officecli add letter.docx /body --type paragraph --prop text="Acme Corporation" --prop align=right
+officecli add letter.docx /body --type paragraph --prop text="123 Business Ave, Suite 400" --prop align=right
+officecli add letter.docx /body --type paragraph --prop text="New York, NY 10001" --prop align=right --prop spaceAfter=24pt
 
 # Recipient address
 officecli add letter.docx /body --type paragraph --prop text="John Doe" --prop spaceAfter=0pt
@@ -341,10 +341,10 @@ officecli add paper.docx /styles --type style --prop name="Abstract" --prop id=A
 officecli add paper.docx /styles --type style --prop name="Block Quote" --prop id=BlockQuote --prop type=paragraph --prop basedOn=Normal --prop font=Georgia --prop size=11 --prop italic=true --prop color=555555 --prop leftIndent=720 --prop rightIndent=720 --prop spaceBefore=12pt --prop spaceAfter=12pt
 
 # Title page
-officecli add paper.docx /body --type paragraph --prop text="On the Convergence Properties of Iterative Gradient Methods" --prop alignment=center --prop font=Calibri --prop size=18pt --prop bold=true --prop spaceBefore=72pt --prop spaceAfter=24pt
+officecli add paper.docx /body --type paragraph --prop text="On the Convergence Properties of Iterative Gradient Methods" --prop align=center --prop font=Calibri --prop size=18pt --prop bold=true --prop spaceBefore=72pt --prop spaceAfter=24pt
 
-officecli add paper.docx /body --type paragraph --prop text="A. Researcher, B. Scientist" --prop alignment=center --prop size=12pt --prop spaceAfter=6pt
-officecli add paper.docx /body --type paragraph --prop text="Department of Mathematics, University of Example" --prop alignment=center --prop size=11pt --prop italic=true --prop spaceAfter=24pt
+officecli add paper.docx /body --type paragraph --prop text="A. Researcher, B. Scientist" --prop align=center --prop size=12pt --prop spaceAfter=6pt
+officecli add paper.docx /body --type paragraph --prop text="Department of Mathematics, University of Example" --prop align=center --prop size=11pt --prop italic=true --prop spaceAfter=24pt
 
 # Section break after title page
 officecli add paper.docx /body --type section --prop type=nextPage
@@ -353,7 +353,7 @@ officecli add paper.docx /body --type section --prop type=nextPage
 officecli add paper.docx / --type footer --prop type=first --prop text=""
 
 # Step 2: Default footer (--prop field=page is SILENTLY IGNORED — add static text only here)
-officecli add paper.docx / --type footer --prop text="Page " --prop type=default --prop alignment=center --prop size=9pt
+officecli add paper.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 
 # Step 3: REQUIRED — inject PAGE field via raw-set
 officecli raw-set paper.docx "/footer[2]" \
@@ -427,7 +427,7 @@ officecli add doc.docx /body --type paragraph --prop text="Chapter 1" --prop sty
 
 ```bash
 # Styled paragraph
-officecli add doc.docx /body --type paragraph --prop text="Important notice" --prop bold=true --prop color=FF0000 --prop alignment=center
+officecli add doc.docx /body --type paragraph --prop text="Important notice" --prop bold=true --prop color=FF0000 --prop align=center
 
 # Paragraph with spacing
 officecli add doc.docx /body --type paragraph --prop text="Body text here" --prop spaceBefore=12pt --prop spaceAfter=6pt --prop lineSpacing=1.15x
@@ -753,14 +753,14 @@ officecli set doc.docx "/footnote[1]" --prop text="Updated source reference"
 
 ```bash
 # Default header
-officecli add doc.docx / --type header --prop text="Acme Corporation" --prop type=default --prop font=Calibri --prop size=9pt --prop color=888888 --prop alignment=right
+officecli add doc.docx / --type header --prop text="Acme Corporation" --prop type=default --prop font=Calibri --prop size=9pt --prop color=888888 --prop align=right
 
 # First page header (different from default)
-officecli add doc.docx / --type header --prop text="CONFIDENTIAL" --prop type=first --prop bold=true --prop color=FF0000 --prop alignment=center
+officecli add doc.docx / --type header --prop text="CONFIDENTIAL" --prop type=first --prop bold=true --prop color=FF0000 --prop align=center
 
 # Default footer with page number — requires 2-step pattern:
 # Step 1: Add footer with static "Page " text (--prop field=page is SILENTLY IGNORED)
-officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop alignment=center --prop size=9pt
+officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 # Step 2: REQUIRED — inject PAGE field via raw-set (footer[1] when no first-page footer)
 officecli raw-set doc.docx "/footer[1]" \
   --xpath "//w:p" \
@@ -781,7 +781,7 @@ To make the first page footer different from all other pages, add a `type=first`
 officecli add doc.docx / --type footer --prop type=first --prop text=""
 
 # Step 2: Add default footer with static "Page " text (field=page is SILENTLY IGNORED)
-officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop alignment=center --prop size=9pt
+officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 
 # Step 3: REQUIRED — inject PAGE field via raw-set (footer[2] = default when first-page footer exists)
 officecli raw-set doc.docx "/footer[2]" \
@@ -797,15 +797,15 @@ For corporate documents with a footer like "Acme Corporation | Confidential  · 
 ```bash
 # Single-line footer: text only (no page number)
 officecli add doc.docx / --type footer --prop type=default \
-  --prop text="Acme Corporation | Confidential" --prop alignment=left --prop size=9pt --prop font=Calibri
+  --prop text="Acme Corporation | Confidential" --prop align=left --prop size=9pt --prop font=Calibri
 
 # Two-line footer: company name on left, page number centered below
 # Line 1 — company name (left-aligned)
 officecli add doc.docx / --type footer --prop type=default \
-  --prop text="Acme Corporation | Confidential" --prop alignment=left --prop size=9pt --prop font=Calibri
+  --prop text="Acme Corporation | Confidential" --prop align=left --prop size=9pt --prop font=Calibri
 # Line 2 — add static "Page " text (field=page is SILENTLY IGNORED)
 officecli add doc.docx / --type footer --prop text="Page " \
-  --prop type=default --prop alignment=center --prop size=9pt --prop font=Calibri
+  --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 # REQUIRED: inject PAGE field into the last paragraph of footer[1]
 # Note: each add --type=default appends a paragraph to the same footer; use the correct XPath
 officecli raw-set doc.docx "/footer[1]" \
@@ -892,7 +892,7 @@ officecli add doc.docx "/body/p[1]" --type field --prop instruction=" DATE \\@ \
 officecli add doc.docx "/body/p[1]" --type field --prop fieldType=author
 
 # Field at body level (creates paragraph)
-officecli add doc.docx /body --type pagenum --prop alignment=center
+officecli add doc.docx /body --type pagenum --prop align=center
 ```
 
 ### Comments
@@ -1105,7 +1105,7 @@ officecli set doc.docx "/body/tbl[1]/tr[3]" --prop c1=Europe --prop c2='$3.1M' -
 ```bash
 officecli add doc.docx /body --type table --prop rows=4 --prop cols=4 --prop width=100% --prop style=TableGrid
 officecli set doc.docx "/body/tbl[1]/tr[1]" --prop c1=Category --prop c2=2024 --prop c3="" --prop c4=""
-officecli set doc.docx "/body/tbl[1]/tr[1]/tc[2]" --prop gridspan=3 --prop bold=true --prop shd=1F4E79 --prop color=FFFFFF --prop alignment=center
+officecli set doc.docx "/body/tbl[1]/tr[1]/tc[2]" --prop gridspan=3 --prop bold=true --prop shd=1F4E79 --prop color=FFFFFF --prop align=center
 officecli set doc.docx "/body/tbl[1]/tr[1]/tc[1]" --prop vmerge=restart --prop bold=true --prop shd=1F4E79 --prop color=FFFFFF --prop valign=center
 officecli set doc.docx "/body/tbl[1]/tr[2]" --prop c1="" --prop c2=Q1 --prop c3=Q2 --prop c4=Q3
 officecli set doc.docx "/body/tbl[1]/tr[2]/tc[1]" --prop vmerge=continue
@@ -1160,7 +1160,7 @@ officecli add doc.docx /body --type paragraph --prop text="Phone: +1 (212) 555-0
 
 # Bottom accent bar + legal notice
 officecli add doc.docx /body --type paragraph --prop text="" --prop shd=1F3864 --prop size=8pt --prop spaceBefore=0pt --prop spaceAfter=8pt
-officecli add doc.docx /body --type paragraph --prop text="© 2026 Acme Corporation. All rights reserved. This document is confidential and intended solely for the named recipients." --prop font=Calibri --prop size=9pt --prop color=888888 --prop alignment=center --prop spaceAfter=0pt
+officecli add doc.docx /body --type paragraph --prop text="© 2026 Acme Corporation. All rights reserved. This document is confidential and intended solely for the named recipients." --prop font=Calibri --prop size=9pt --prop color=888888 --prop align=center --prop spaceAfter=0pt
 ```
 
 ### Closing Pattern B: Minimal Closing Page (Letters, Memos, Short Reports)
@@ -1169,19 +1169,19 @@ When content naturally ends early, add a "Thank You" close plus contact informat
 
 ```bash
 # Closing statement
-officecli add doc.docx /body --type paragraph --prop text="Thank You" --prop alignment=center --prop font=Calibri --prop size=24pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=48pt --prop spaceAfter=16pt
+officecli add doc.docx /body --type paragraph --prop text="Thank You" --prop align=center --prop font=Calibri --prop size=24pt --prop bold=true --prop color=1F4E79 --prop spaceBefore=48pt --prop spaceAfter=16pt
 
 # Subtitle line
-officecli add doc.docx /body --type paragraph --prop text="We appreciate your time and look forward to the next steps." --prop alignment=center --prop font=Calibri --prop size=12pt --prop color=444444 --prop spaceAfter=36pt
+officecli add doc.docx /body --type paragraph --prop text="We appreciate your time and look forward to the next steps." --prop align=center --prop font=Calibri --prop size=12pt --prop color=444444 --prop spaceAfter=36pt
 
 # Accent divider
 officecli add doc.docx /body --type paragraph --prop text="" --prop shd=4472C4 --prop size=6pt --prop spaceBefore=0pt --prop spaceAfter=24pt
 
 # Contact block
-officecli add doc.docx /body --type paragraph --prop text="contact@acmecorp.com  |  www.acmecorp.com  |  +1 (212) 555-0100" --prop alignment=center --prop font=Calibri --prop size=10pt --prop color=666666 --prop spaceAfter=8pt
+officecli add doc.docx /body --type paragraph --prop text="contact@acmecorp.com  |  www.acmecorp.com  |  +1 (212) 555-0100" --prop align=center --prop font=Calibri --prop size=10pt --prop color=666666 --prop spaceAfter=8pt
 
 # Document version/date footer line
-officecli add doc.docx /body --type paragraph --prop text="Document Version 1.0  —  March 2026" --prop alignment=center --prop font=Calibri --prop size=9pt --prop color=AAAAAA --prop spaceAfter=0pt
+officecli add doc.docx /body --type paragraph --prop text="Document Version 1.0  —  March 2026" --prop align=center --prop font=Calibri --prop size=9pt --prop color=AAAAAA --prop spaceAfter=0pt
 ```
 
 ### Closing Pattern C: Appendix + Version History (Technical Spec / Formal Reports)
@@ -1206,7 +1206,7 @@ officecli set doc.docx "/body/tbl[last]/tr[4]" --prop c1="1.2" --prop c2="2026-0
 
 # Legal notice
 officecli add doc.docx /body --type paragraph --prop text="" --prop shd=1F3864 --prop size=8pt --prop spaceBefore=36pt --prop spaceAfter=8pt
-officecli add doc.docx /body --type paragraph --prop text="© 2026 Acme Corporation. Confidential. Do not distribute without written permission." --prop font=Calibri --prop size=9pt --prop color=888888 --prop alignment=center
+officecli add doc.docx /body --type paragraph --prop text="© 2026 Acme Corporation. Confidential. Do not distribute without written permission." --prop font=Calibri --prop size=9pt --prop color=888888 --prop align=center
 ```
 
 ### Pre-Delivery: Last-Page Density Check

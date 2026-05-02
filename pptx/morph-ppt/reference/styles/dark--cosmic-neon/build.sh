@@ -30,14 +30,14 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: neon glows
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bg-glow1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$PURPLE \
   --prop opacity=0.15 \
   --prop x=0cm --prop y=0cm --prop width=15cm --prop height=15cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bg-glow2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CYAN \
   --prop opacity=0.15 \
   --prop x=18cm --prop y=4cm --prop width=15cm --prop height=15cm
@@ -45,7 +45,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Scene actors: decorative elements
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ring' \
-  --prop preset=donut \
+  --prop geometry=donut \
   --prop fill=none \
   --prop line=$CYAN \
   --prop lineWidth=2 \
@@ -53,20 +53,20 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-top' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$PURPLE \
   --prop x=4cm --prop y=2cm --prop width=8cm --prop height=0.1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!star1' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$CYAN \
   --prop opacity=0.5 \
   --prop x=3cm --prop y=15cm --prop width=1cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!star2' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$PURPLE \
   --prop opacity=0.5 \
   --prop x=30cm --prop y=12cm --prop width=1.5cm --prop height=1.5cm
@@ -130,7 +130,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!pillar-1-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$CARD \
   --prop opacity=0.6 \
   --prop x=${OFFSCREEN} --prop y=3cm --prop width=9cm --prop height=11cm
@@ -157,7 +157,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!pillar-2-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$CARD \
   --prop opacity=0.6 \
   --prop x=${OFFSCREEN} --prop y=6cm --prop width=9cm --prop height=11cm
@@ -184,7 +184,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!pillar-3-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$CARD \
   --prop opacity=0.6 \
   --prop x=${OFFSCREEN} --prop y=9cm --prop width=9cm --prop height=11cm

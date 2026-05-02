@@ -26,38 +26,38 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: lines
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-h-top' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=0cm --prop y=1.5cm --prop width=20cm --prop height=0.05cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-h-mid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GRAY \
   --prop x=10cm --prop y=13cm --prop width=15cm --prop height=0.03cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-v-left' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=0cm --prop width=0.05cm --prop height=12cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-v-right' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GRAY \
   --prop x=30cm --prop y=11cm --prop width=0.03cm --prop height=8cm
 
 # Scene actors: dots
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-accent-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLACK \
   --prop x=28cm --prop y=15cm --prop width=1cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-accent-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GRAY \
   --prop x=31cm --prop y=16cm --prop width=0.8cm --prop height=0.8cm
 

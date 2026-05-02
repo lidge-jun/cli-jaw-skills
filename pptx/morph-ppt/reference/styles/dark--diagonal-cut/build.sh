@@ -29,56 +29,56 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: diagonal slashes
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!slash-orange' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=0.9 \
   --prop x=0cm --prop y=2cm --prop width=30cm --prop height=6cm --prop rotation=35
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!slash-white' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$WHITE \
   --prop opacity=0.15 \
   --prop x=5cm --prop y=8cm --prop width=25cm --prop height=4cm --prop rotation=-30
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!slash-yellow' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$YELLOW \
   --prop opacity=0.85 \
   --prop x=18cm --prop y=12cm --prop width=20cm --prop height=3cm --prop rotation=40
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!slash-gray' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GRAY \
   --prop opacity=0.7 \
   --prop x=0cm --prop y=10cm --prop width=28cm --prop height=5cm --prop rotation=-35
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!cut-line-1' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$ORANGE \
   --prop opacity=1.0 \
   --prop x=0cm --prop y=6cm --prop width=34cm --prop height=0.15cm --prop rotation=30
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!cut-line-2' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$WHITE \
   --prop opacity=0.3 \
   --prop x=2cm --prop y=14cm --prop width=34cm --prop height=0.1cm --prop rotation=-25
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-orange' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$ORANGE \
   --prop opacity=0.9 \
   --prop x=29cm --prop y=1cm --prop width=3cm --prop height=3cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-yellow' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$YELLOW \
   --prop opacity=0.8 \
   --prop x=1.2cm --prop y=15cm --prop width=2cm --prop height=2cm

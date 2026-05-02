@@ -23,7 +23,7 @@ officecli add slides.pptx /slide[N] --type shape --prop text="02" \
 
 # Step 2: Left decorative bar (optional) -- decorative, bottom layer
 officecli add slides.pptx /slide[N] --type shape \
-  --prop preset=rect --prop fill=FFFFFF --prop opacity=0.2 \
+  --prop geometry=rect --prop fill=FFFFFF --prop opacity=0.2 \
   --prop x=0cm --prop y=7cm --prop width=6cm --prop height=0.4cm --prop line=none
 
 # Step 3: Title text -- added last, automatically on top, y recommend 7-10cm
@@ -132,7 +132,7 @@ officecli add slides.pptx /slide[N] --type connector \
 
 # Node 1 (i=0) x=2cm
 officecli add slides.pptx /slide[N] --type shape \
-  --prop preset=ellipse --prop fill=1E2761 \
+  --prop geometry=ellipse --prop fill=1E2761 \
   --prop x=2cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text="Q1" \
   --prop x=2cm --prop y=8.5cm --prop width=3cm --prop height=3cm \
@@ -141,7 +141,7 @@ officecli add slides.pptx /slide[N] --type shape --prop text="Q1" \
 
 # Node 2 (i=1) x=10.96cm
 officecli add slides.pptx /slide[N] --type shape \
-  --prop preset=ellipse --prop fill=CADCFC \
+  --prop geometry=ellipse --prop fill=CADCFC \
   --prop x=10.96cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text="Q2" \
   --prop x=10.96cm --prop y=8.5cm --prop width=3cm --prop height=3cm \
@@ -150,7 +150,7 @@ officecli add slides.pptx /slide[N] --type shape --prop text="Q2" \
 
 # Node 3 (i=2) x=19.91cm
 officecli add slides.pptx /slide[N] --type shape \
-  --prop preset=ellipse --prop fill=1E2761 \
+  --prop geometry=ellipse --prop fill=1E2761 \
   --prop x=19.91cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text="Q3" \
   --prop x=19.91cm --prop y=8.5cm --prop width=3cm --prop height=3cm \
@@ -159,7 +159,7 @@ officecli add slides.pptx /slide[N] --type shape --prop text="Q3" \
 
 # Node 4 (i=3) x=28.87cm
 officecli add slides.pptx /slide[N] --type shape \
-  --prop preset=ellipse --prop fill=CADCFC \
+  --prop geometry=ellipse --prop fill=CADCFC \
   --prop x=28.87cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text="Q4" \
   --prop x=28.87cm --prop y=8.5cm --prop width=3cm --prop height=3cm \

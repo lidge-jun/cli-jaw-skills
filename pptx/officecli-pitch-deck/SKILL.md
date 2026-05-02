@@ -264,7 +264,7 @@ See [creating.md](creating.md) Section H for the full list with workarounds. Key
 | Stat values wrap at 60pt in 7cm width | **HARD RULE:** Max 4 chars for `$X.YM` patterns (wide `$`+`.` glyphs); max 5 chars for other values. Use 44-48pt or C.2 (3-stat, 9cm) for longer |
 | Doughnut chart `colors` parameter may not apply | CLI accepts without error but PowerPoint renders default colors. No workaround. Verify via screenshot |
 | Empty table cell `c1=""` causes validation error | Use `c1=" "` (space character) instead of empty string |
-| Connector arrows may not all render in batch | Add connectors in separate batch after shapes; **immediately screenshot to verify each connector is visible** (CLI reports success even when rendering fails); if still missing, add one at a time or use `--type shape --prop preset=rightArrow` as a reliable fallback |
+| Connector arrows may not all render in batch | Add connectors in separate batch after shapes; **immediately screenshot to verify each connector is visible** (CLI reports success even when rendering fails); if still missing, add one at a time or use `--type shape --prop geometry=rightArrow` as a reliable fallback |
 | Empty series values (gaps) not supported | Use `0` for missing data points; produces zero-height bars |
 | Background covers text | In batch, background shapes are added before text shapes. Adding bg shapes AFTER text results in bg covering text completely (higher z-order). Always: bg → text, never text → bg |
 

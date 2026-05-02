@@ -31,55 +31,55 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: organic shapes
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!leaf-brown' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BROWN \
   --prop opacity=0.3 \
   --prop x=1.2cm --prop y=1cm --prop width=6cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!leaf-sage' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$SAGE \
   --prop opacity=0.25 \
   --prop x=25cm --prop y=12cm --prop width=8cm --prop height=6cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stone-terra' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$TERRA \
   --prop opacity=0.2 \
   --prop x=27cm --prop y=0.8cm --prop width=5cm --prop height=4cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!stone-sand' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$SAND \
   --prop opacity=0.3 \
   --prop x=0.8cm --prop y=13cm --prop width=7cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!seed-forest' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$FOREST \
   --prop x=30cm --prop y=8cm --prop width=3cm --prop height=2.5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!seed-cream' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CREAM \
   --prop opacity=0.5 \
   --prop x=3cm --prop y=8cm --prop width=2cm --prop height=2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!pebble-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BROWN \
   --prop opacity=0.4 \
   --prop x=15cm --prop y=16cm --prop width=1.5cm --prop height=1.2cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!pebble-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$SAGE \
   --prop opacity=0.35 \
   --prop x=22cm --prop y=1.5cm --prop width=1.8cm --prop height=1.5cm
@@ -343,9 +343,9 @@ officecli add "$OUTPUT" '/' --from '/slide[2]'
 officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 
 # Move scene actors to create pillar card backgrounds
-officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop preset=roundRect --prop x=1.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
-officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop preset=roundRect --prop x=12.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
-officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop preset=roundRect --prop x=23.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
+officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop geometry=roundRect --prop x=1.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
+officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop geometry=roundRect --prop x=12.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
+officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop geometry=roundRect --prop x=23.2cm --prop y=5cm --prop width=9.5cm --prop height=13cm --prop opacity=0.12
 officecli set "$OUTPUT" '/slide[3]/shape[4]' --prop x=${OFFSCREEN} --prop width=0.1cm --prop height=0.1cm
 officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop x=${OFFSCREEN} --prop width=0.1cm --prop height=0.1cm
 officecli set "$OUTPUT" '/slide[3]/shape[6]' --prop x=${OFFSCREEN} --prop width=0.1cm --prop height=0.1cm
@@ -380,9 +380,9 @@ officecli add "$OUTPUT" '/' --from '/slide[3]'
 officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 
 # Move scene actors
-officecli set "$OUTPUT" '/slide[4]/shape[1]' --prop preset=ellipse --prop x=1.2cm --prop y=2cm --prop width=14cm --prop height=12cm --prop opacity=0.4
-officecli set "$OUTPUT" '/slide[4]/shape[2]' --prop preset=ellipse --prop x=18cm --prop y=1cm --prop width=15cm --prop height=10cm --prop opacity=0.35
-officecli set "$OUTPUT" '/slide[4]/shape[3]' --prop preset=roundRect --prop x=20cm --prop y=12cm --prop width=12cm --prop height=6.5cm --prop opacity=0.25
+officecli set "$OUTPUT" '/slide[4]/shape[1]' --prop geometry=ellipse --prop x=1.2cm --prop y=2cm --prop width=14cm --prop height=12cm --prop opacity=0.4
+officecli set "$OUTPUT" '/slide[4]/shape[2]' --prop geometry=ellipse --prop x=18cm --prop y=1cm --prop width=15cm --prop height=10cm --prop opacity=0.35
+officecli set "$OUTPUT" '/slide[4]/shape[3]' --prop geometry=roundRect --prop x=20cm --prop y=12cm --prop width=12cm --prop height=6.5cm --prop opacity=0.25
 officecli set "$OUTPUT" '/slide[4]/shape[4]' --prop x=30cm --prop y=16cm --prop width=3cm --prop height=2.5cm --prop opacity=0.2
 officecli set "$OUTPUT" '/slide[4]/shape[5]' --prop x=1.2cm --prop y=15cm --prop width=2.5cm --prop height=2cm
 officecli set "$OUTPUT" '/slide[4]/shape[6]' --prop x=5cm --prop y=16cm --prop width=1.5cm --prop height=1.5cm
@@ -424,10 +424,10 @@ officecli add "$OUTPUT" '/' --from '/slide[4]'
 officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 
 # Move scene actors
-officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop preset=ellipse --prop x=26cm --prop y=2cm --prop width=6cm --prop height=5cm --prop opacity=0.3
-officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop preset=ellipse --prop x=1.2cm --prop y=13cm --prop width=8cm --prop height=5.5cm --prop opacity=0.25
-officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop preset=roundRect --prop x=2cm --prop y=1cm --prop width=5cm --prop height=4cm --prop opacity=0.2
-officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop preset=roundRect --prop x=20cm --prop y=14cm --prop width=7cm --prop height=4.5cm --prop opacity=0.3
+officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop geometry=ellipse --prop x=26cm --prop y=2cm --prop width=6cm --prop height=5cm --prop opacity=0.3
+officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop geometry=ellipse --prop x=1.2cm --prop y=13cm --prop width=8cm --prop height=5.5cm --prop opacity=0.25
+officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop geometry=roundRect --prop x=2cm --prop y=1cm --prop width=5cm --prop height=4cm --prop opacity=0.2
+officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop geometry=roundRect --prop x=20cm --prop y=14cm --prop width=7cm --prop height=4.5cm --prop opacity=0.3
 officecli set "$OUTPUT" '/slide[5]/shape[5]' --prop x=30cm --prop y=14cm --prop width=3cm --prop height=2.5cm
 officecli set "$OUTPUT" '/slide[5]/shape[6]' --prop x=28cm --prop y=8cm --prop width=2cm --prop height=2cm
 officecli set "$OUTPUT" '/slide[5]/shape[7]' --prop x=8cm --prop y=1cm --prop width=1.5cm --prop height=1.2cm

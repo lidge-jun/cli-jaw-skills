@@ -32,7 +32,7 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: 6 watercolor ellipses
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.08 \
   --prop line=none \
@@ -40,7 +40,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$ORANGE \
   --prop opacity=0.06 \
   --prop line=none \
@@ -48,7 +48,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$PURPLE \
   --prop opacity=0.10 \
   --prop line=none \
@@ -56,7 +56,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop opacity=0.05 \
   --prop line=none \
@@ -64,7 +64,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$PEACH \
   --prop opacity=0.12 \
   --prop line=none \
@@ -72,7 +72,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!wash-6' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.07 \
   --prop line=none \

@@ -40,42 +40,42 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!frame-gold' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GOLD \
   --prop opacity=0.15 \
   --prop x=24cm --prop y=1cm --prop width=8cm --prop height=6cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!frame-navy' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$NAVY \
   --prop opacity=0.3 \
   --prop x=1.2cm --prop y=12cm --prop width=10cm --prop height=6cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!accent-gold' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GOLD \
   --prop opacity=0.2 \
   --prop x=28cm --prop y=14cm --prop width=3cm --prop height=3cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!accent-steel' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$STEEL \
   --prop opacity=0.15 \
   --prop x=1.5cm --prop y=1cm --prop width=4cm --prop height=4cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-gold' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GOLD \
   --prop opacity=0.6 \
   --prop x=26cm --prop y=8cm --prop width=1.5cm --prop height=1.5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-white' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$WHITE \
   --prop opacity=0.3 \
   --prop x=5cm --prop y=15cm --prop width=1cm --prop height=1cm
@@ -217,9 +217,9 @@ officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 # Move scene actors
 officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop x=4cm --prop y=2.5cm --prop width=26cm
 officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop x=12.5cm --prop y=5cm --prop height=12cm
-officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop preset=roundRect --prop x=2cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12
-officecli set "$OUTPUT" '/slide[3]/shape[4]' --prop preset=roundRect --prop x=12.8cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12
-officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop preset=roundRect --prop x=23.5cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12 --prop fill=$NAVY2
+officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop geometry=roundRect --prop x=2cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12
+officecli set "$OUTPUT" '/slide[3]/shape[4]' --prop geometry=roundRect --prop x=12.8cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12
+officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop geometry=roundRect --prop x=23.5cm --prop y=5.5cm --prop width=9cm --prop height=11cm --prop opacity=0.12 --prop fill=$NAVY2
 officecli set "$OUTPUT" '/slide[3]/shape[6]' --prop x=30cm --prop y=1cm --prop width=2cm --prop height=2cm
 officecli set "$OUTPUT" '/slide[3]/shape[7]' --prop x=1.2cm --prop y=2cm --prop width=1cm --prop height=1cm
 officecli set "$OUTPUT" '/slide[3]/shape[8]' --prop x=16cm --prop y=2cm --prop width=0.6cm --prop height=0.6cm
@@ -250,8 +250,8 @@ officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 # Move scene actors
 officecli set "$OUTPUT" '/slide[4]/shape[1]' --prop x=1.2cm --prop y=17cm --prop width=32cm
 officecli set "$OUTPUT" '/slide[4]/shape[2]' --prop x=22cm --prop y=1cm --prop height=17cm
-officecli set "$OUTPUT" '/slide[4]/shape[3]' --prop preset=roundRect --prop x=1.2cm --prop y=3.5cm --prop width=13cm --prop height=12cm --prop opacity=0.45 --prop fill=$GOLD
-officecli set "$OUTPUT" '/slide[4]/shape[4]' --prop preset=roundRect --prop x=15.5cm --prop y=3.5cm --prop width=8cm --prop height=8cm --prop opacity=0.35 --prop fill=$NAVY
+officecli set "$OUTPUT" '/slide[4]/shape[3]' --prop geometry=roundRect --prop x=1.2cm --prop y=3.5cm --prop width=13cm --prop height=12cm --prop opacity=0.45 --prop fill=$GOLD
+officecli set "$OUTPUT" '/slide[4]/shape[4]' --prop geometry=roundRect --prop x=15.5cm --prop y=3.5cm --prop width=8cm --prop height=8cm --prop opacity=0.35 --prop fill=$NAVY
 officecli set "$OUTPUT" '/slide[4]/shape[5]' --prop x=28cm --prop y=12cm --prop width=4cm --prop height=4cm --prop opacity=0.25
 officecli set "$OUTPUT" '/slide[4]/shape[6]' --prop x=25cm --prop y=4cm --prop width=3cm --prop height=3cm --prop opacity=0.15
 officecli set "$OUTPUT" '/slide[4]/shape[7]' --prop x=30cm --prop y=2cm
@@ -283,9 +283,9 @@ officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 # Move scene actors
 officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop x=10cm --prop y=12.5cm --prop width=14cm
 officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop x=16.9cm --prop y=1cm --prop height=10cm
-officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop preset=roundRect --prop x=2cm --prop y=13cm --prop width=6cm --prop height=4cm --prop opacity=0.15 --prop fill=$GOLD
-officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop preset=roundRect --prop x=25cm --prop y=1cm --prop width=7cm --prop height=6cm --prop opacity=0.3 --prop fill=$NAVY
-officecli set "$OUTPUT" '/slide[5]/shape[5]' --prop preset=ellipse --prop x=30cm --prop y=15cm --prop width=2.5cm --prop height=2.5cm --prop opacity=0.2 --prop fill=$GOLD
+officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop geometry=roundRect --prop x=2cm --prop y=13cm --prop width=6cm --prop height=4cm --prop opacity=0.15 --prop fill=$GOLD
+officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop geometry=roundRect --prop x=25cm --prop y=1cm --prop width=7cm --prop height=6cm --prop opacity=0.3 --prop fill=$NAVY
+officecli set "$OUTPUT" '/slide[5]/shape[5]' --prop geometry=ellipse --prop x=30cm --prop y=15cm --prop width=2.5cm --prop height=2.5cm --prop opacity=0.2 --prop fill=$GOLD
 officecli set "$OUTPUT" '/slide[5]/shape[6]' --prop x=1cm --prop y=14cm --prop width=3cm --prop height=3cm --prop opacity=0.15
 officecli set "$OUTPUT" '/slide[5]/shape[7]' --prop x=8cm --prop y=16cm
 officecli set "$OUTPUT" '/slide[5]/shape[8]' --prop x=26cm --prop y=10cm

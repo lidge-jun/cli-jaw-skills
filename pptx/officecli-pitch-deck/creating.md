@@ -336,7 +336,7 @@ Spine: connector at y=10cm, full width. 4 milestones (3x3cm circles) at x=4, 12,
 
 Add the spine connector first:
 ```bash
-officecli add deck.pptx "/slide[N]" --type connector --prop preset=straight --prop startX=2cm --prop startY=10cm --prop endX=32cm --prop endY=10cm --prop line=$SECONDARY --prop lineWidth=2pt
+officecli add deck.pptx "/slide[N]" --type connector --prop shape=straight --prop startX=2cm --prop startY=10cm --prop endX=32cm --prop endY=10cm --prop line=$SECONDARY --prop lineWidth=2pt
 ```
 
 ### C.11 Avatar Grid
@@ -621,7 +621,7 @@ Add all shapes BEFORE connectors. Title = shape[1], flow shapes start at shape[2
 
 ```bash
 officecli add deck.pptx "/slide[N]" --type connector \
-  --prop preset=elbow --prop startShape=2 --prop endShape=3 \
+  --prop shape=elbow --prop startShape=2 --prop endShape=3 \
   --prop line=1A73E8 --prop lineWidth=2pt --prop tailEnd=triangle
 ```
 

@@ -112,7 +112,7 @@ officecli add paper.docx /styles --type style --prop id=Heading2 --prop name="He
 officecli add paper.docx /styles --type style --prop id=Heading3 --prop name="Heading 3" --prop type=paragraph --prop font="Times New Roman" --prop size=12 --prop bold=true --prop italic=true --prop spaceBefore=240 --prop spaceAfter=80 --prop keepNext=true
 
 # Create custom styles (only if needed per Feature Selection Table)
-officecli add paper.docx /styles --type style --prop id=AbstractTitle --prop name="Abstract Title" --prop basedOn=Normal --prop font="Times New Roman" --prop size=14 --prop bold=true --prop alignment=center
+officecli add paper.docx /styles --type style --prop id=AbstractTitle --prop name="Abstract Title" --prop basedOn=Normal --prop font="Times New Roman" --prop size=14 --prop bold=true --prop align=center
 # AbstractTitle is a separate style (not Heading1) to prevent the abstract from appearing
 # in the TOC. If you use Heading1 for "Abstract", it will be listed in the Table of Contents
 # alongside body sections.
@@ -211,7 +211,7 @@ officecli add paper.docx /body --type section --prop type=nextPage --prop orient
 # Title (large, bold, centered — 20-24pt)
 officecli add paper.docx /body --type paragraph \
   --prop text="Deep Learning Approaches to Gene Expression Prediction" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=22 \
+  --prop align=center --prop font="Times New Roman" --prop size=22 \
   --prop bold=true --prop spaceBefore=72pt --prop spaceAfter=18pt
 # NOTE: spaceBefore=72pt uses point units (72pt ≈ 1 inch of top padding).
 # Other style examples use raw twip values (e.g. spaceBefore=360 = 18pt). Both accepted.
@@ -219,43 +219,43 @@ officecli add paper.docx /body --type paragraph \
 # Authors
 officecli add paper.docx /body --type paragraph \
   --prop text="Alice Chen, Bob Martinez" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=12 --prop spaceAfter=6pt
+  --prop align=center --prop font="Times New Roman" --prop size=12 --prop spaceAfter=6pt
 
 # Affiliation
 officecli add paper.docx /body --type paragraph \
   --prop text="Department of Computer Science, Stanford University" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=12 --prop spaceAfter=6pt
+  --prop align=center --prop font="Times New Roman" --prop size=12 --prop spaceAfter=6pt
 
 # Contact email
 officecli add paper.docx /body --type paragraph \
   --prop text="Contact: alice.chen@stanford.edu" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=18pt
+  --prop align=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=18pt
 
 # Advisor (if applicable)
 officecli add paper.docx /body --type paragraph \
   --prop text="Advisor: Prof. Jane Smith" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=6pt
+  --prop align=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=6pt
 
 # Submission info
 officecli add paper.docx /body --type paragraph \
   --prop text="Submitted to: NeurIPS 2026 Workshop on Computational Biology" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=6pt
+  --prop align=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=6pt
 
 # Date
 officecli add paper.docx /body --type paragraph \
   --prop text="April 2026" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=24pt
+  --prop align=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=24pt
 
 # Abstract excerpt (2-3 sentences to fill the cover — omit if content is already dense)
 officecli add paper.docx /body --type paragraph \
   --prop text="Abstract: This paper presents a transformer-based architecture for predicting gene expression levels from DNA sequence. We achieve state-of-the-art performance on the ENCODE benchmark, demonstrating 12% improvement over prior methods." \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 \
+  --prop align=center --prop font="Times New Roman" --prop size=11 \
   --prop italic=true --prop spaceBefore=12pt --prop spaceAfter=18pt
 
 # Keywords
 officecli add paper.docx /body --type paragraph \
   --prop text="Keywords: gene expression, deep learning, transformer, computational biology, DNA sequence" \
-  --prop alignment=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=0pt
+  --prop align=center --prop font="Times New Roman" --prop size=11 --prop spaceAfter=0pt
 
 officecli add paper.docx /body --type pagebreak   # or section break for white paper
 ```
@@ -358,7 +358,7 @@ officecli add paper.docx /body --type equation --prop "formula=O(n \log n)"
 
 # Step 2: equation number paragraph immediately after (right-aligned, no top spacing)
 officecli add paper.docx /body --type paragraph --prop text="(1)" \
-  --prop alignment=right --prop size=11 --prop spaceBefore=0 --prop spaceAfter=6
+  --prop align=right --prop size=11 --prop spaceBefore=0 --prop spaceAfter=6
 ```
 
 **Manual equation numbering — Plan B: 3-column table (recommended for precise alignment):**
@@ -384,8 +384,8 @@ officecli set paper.docx '/body/tbl[N]/tr[1]/tc[3]' --prop width=1188
 officecli add paper.docx '/body/tbl[N]/tr[1]/tc[2]/p[1]' --type equation --prop "formula=E = mc^2" --prop mode=inline
 
 # Step 4: Add number to right column, right-aligned
-officecli set paper.docx '/body/tbl[N]/tr[1]/tc[3]' --prop alignment=right
-officecli add paper.docx '/body/tbl[N]/tr[1]/tc[3]/p[1]' --type paragraph --prop text="(1)" --prop alignment=right --prop size=11
+officecli set paper.docx '/body/tbl[N]/tr[1]/tc[3]' --prop align=right
+officecli add paper.docx '/body/tbl[N]/tr[1]/tc[3]/p[1]' --type paragraph --prop text="(1)" --prop align=right --prop size=11
 
 # Step 5: Hide table borders
 officecli set paper.docx '/body/tbl[N]' --prop border.all="none"
@@ -452,7 +452,7 @@ For table building blocks (header rows, cell styling, merging), see [docx creati
 officecli add paper.docx /body --type paragraph --prop text="Table 1. Participant Demographics" --prop style=Caption --prop spaceAfter=6pt
 
 # Step 2: Table
-officecli add paper.docx /body --type table --prop rows=5 --prop cols=4 --prop style=TableGrid --prop alignment=center --prop width=100%
+officecli add paper.docx /body --type table --prop rows=5 --prop cols=4 --prop style=TableGrid --prop align=center --prop width=100%
 officecli set paper.docx '/body/tbl[1]/tr[1]' --prop c1="Variable" --prop c2="Mean" --prop c3="SD" --prop c4="N" --prop header=true
 # Style each header cell individually (row set does NOT support bold/shd/color)
 officecli set paper.docx '/body/tbl[1]/tr[1]/tc[1]' --prop bold=true --prop shd=2E4057 --prop color=FFFFFF
@@ -467,7 +467,7 @@ officecli set paper.docx '/body/tbl[1]' --prop border.all="single;4;CCCCCC;0"
 # Figure placeholder paragraph (describes where the image goes)
 officecli add paper.docx /body --type paragraph \
   --prop text="[Figure 1: CRISPR construct design — insert image here]" \
-  --prop italic=true --prop alignment=center --prop size=10
+  --prop italic=true --prop align=center --prop size=10
 
 # Figure legend paragraph
 officecli add paper.docx /body --type paragraph \
@@ -475,7 +475,7 @@ officecli add paper.docx /body --type paragraph \
   --prop style=Caption --prop spaceBefore=6
 ```
 
-Use `italic=true --prop alignment=center` for the placeholder so it is visually distinct from body text. The Figure legend uses the `Caption` style (10pt italic, defined in B.2).
+Use `italic=true --prop align=center` for the placeholder so it is visually distinct from body text. The Figure legend uses the `Caption` style (10pt italic, defined in B.2).
 
 ### D.5 Bibliography
 
@@ -501,7 +501,7 @@ officecli add paper.docx /body --type paragraph --prop text="[1] Haldane, F. D. 
 
 ```bash
 # Simple footer with centered page number
-officecli add paper.docx / --type footer --prop alignment=center
+officecli add paper.docx / --type footer --prop align=center
 officecli add paper.docx '/footer[1]/p[1]' --type field --prop fieldType=page --prop size=10
 ```
 
@@ -515,12 +515,12 @@ Running headers are expected in academic papers (APA, IEEE, journal submissions,
 # Academic running header — shortened title, right-aligned (all pages)
 officecli add paper.docx / --type header \
   --prop text="Deep Learning for Gene Expression Prediction" \
-  --prop alignment=right --prop size=9 --prop color=444444
+  --prop align=right --prop size=9 --prop color=444444
 
 # Alternative: Author name on all pages (common in APA manuscripts)
 officecli add paper.docx / --type header \
   --prop text="Chen & Martinez (2026)" \
-  --prop alignment=right --prop size=9 --prop color=444444
+  --prop align=right --prop size=9 --prop color=444444
 ```
 
 **Odd/Even page headers (formal journal format):**
@@ -534,19 +534,19 @@ officecli set paper.docx / --prop differentOddEven=true
 # Step 2: Odd-page header (right-aligned — displays shortened paper title)
 officecli add paper.docx / --type header --prop type=default \
   --prop text="Short Title Here" \
-  --prop alignment=right --prop size=9
+  --prop align=right --prop size=9
 
 # Step 3: Even-page header (left-aligned — displays author name(s))
 officecli add paper.docx / --type header --prop type=even \
   --prop text="Author Names" \
-  --prop alignment=left --prop size=9
+  --prop align=left --prop size=9
 ```
 
 > **Note:** `type=default` sets the odd-page (right-hand) header. `type=even` sets the even-page (left-hand) header. Only use odd/even headers when the journal explicitly requires mirrored pages.
 
 > **White paper / corporate report header:**
 > ```bash
-> officecli add paper.docx / --type header --prop text="Organization Name | DOC-ID-001" --prop alignment=right --prop size=9 --prop color=888888
+> officecli add paper.docx / --type header --prop text="Organization Name | DOC-ID-001" --prop align=right --prop size=9 --prop color=888888
 > ```
 
 **Cover page page number — known CLI limitation:**

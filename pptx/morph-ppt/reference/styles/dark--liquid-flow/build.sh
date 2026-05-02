@@ -32,7 +32,7 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: large fluid blobs (4 main blobs)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.35 \
   --prop rotation=15 \
@@ -40,7 +40,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.28 \
   --prop rotation=25 \
@@ -48,7 +48,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.32 \
   --prop rotation=18 \
@@ -56,7 +56,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.38 \
   --prop rotation=22 \
@@ -65,7 +65,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Scene actors: additional blob (hidden initially, appears in slide 3 & 5)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=8cm --prop height=11cm
@@ -73,7 +73,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Scene actors: small droplets (3 droplets)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.55 \
   --prop rotation=12 \
@@ -81,7 +81,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.58 \
   --prop rotation=28 \
@@ -89,7 +89,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.52 \
   --prop rotation=35 \
@@ -128,7 +128,7 @@ officecli set "$OUTPUT" '/slide[2]' --prop transition=morph
 # Move blobs (rotated and moved)
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.40 \
   --prop rotation=45 \
@@ -136,7 +136,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.33 \
   --prop rotation=52 \
@@ -144,7 +144,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.36 \
   --prop rotation=48 \
@@ -152,7 +152,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.42 \
   --prop rotation=58 \
@@ -160,7 +160,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=8cm --prop height=11cm
@@ -168,7 +168,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 # Move droplets
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.60 \
   --prop rotation=38 \
@@ -176,7 +176,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.56 \
   --prop rotation=55 \
@@ -184,7 +184,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.54 \
   --prop rotation=62 \
@@ -223,7 +223,7 @@ officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 # Move blobs (further transformed)
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.30 \
   --prop rotation=70 \
@@ -231,7 +231,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.35 \
   --prop rotation=78 \
@@ -239,7 +239,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.28 \
   --prop rotation=65 \
@@ -247,7 +247,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.38 \
   --prop rotation=82 \
@@ -256,7 +256,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 # Show blob-5 on slide 3
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.32 \
   --prop rotation=72 \
@@ -265,7 +265,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 # Move droplets (only 2 visible)
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.58 \
   --prop rotation=68 \
@@ -273,7 +273,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.56 \
   --prop rotation=85 \
@@ -281,7 +281,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=3.8cm --prop height=2.6cm
@@ -369,7 +369,7 @@ officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 # Move blobs (new positions)
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.35 \
   --prop rotation=95 \
@@ -377,7 +377,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.30 \
   --prop rotation=105 \
@@ -385,7 +385,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.40 \
   --prop rotation=92 \
@@ -393,7 +393,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.33 \
   --prop rotation=110 \
@@ -402,7 +402,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 # Hide blob-5 on slide 4
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=8cm --prop height=11cm
@@ -410,7 +410,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 # Move droplets (all 3 visible again)
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.58 \
   --prop rotation=100 \
@@ -418,7 +418,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.60 \
   --prop rotation=88 \
@@ -426,7 +426,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.55 \
   --prop rotation=115 \
@@ -485,7 +485,7 @@ officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 # Move blobs (data visualization feel)
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.32 \
   --prop rotation=135 \
@@ -493,7 +493,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.38 \
   --prop rotation=125 \
@@ -501,7 +501,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.35 \
   --prop rotation=118 \
@@ -509,7 +509,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.28 \
   --prop rotation=142 \
@@ -518,7 +518,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 # Show blob-5 again on slide 5
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.40 \
   --prop rotation=130 \
@@ -527,7 +527,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 # Move droplets (only 2 visible)
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.58 \
   --prop rotation=138 \
@@ -535,7 +535,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.56 \
   --prop rotation=122 \
@@ -543,7 +543,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=2.8cm --prop height=3.6cm
@@ -613,7 +613,7 @@ officecli set "$OUTPUT" '/slide[6]' --prop transition=morph
 # Move blobs (return to center, calmer)
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!blob-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.30 \
   --prop rotation=155 \
@@ -621,7 +621,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!blob-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.35 \
   --prop rotation=165 \
@@ -629,7 +629,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!blob-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CORAL \
   --prop opacity=0.28 \
   --prop rotation=148 \
@@ -637,7 +637,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!blob-4' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$EBLUE \
   --prop opacity=0.38 \
   --prop rotation=172 \
@@ -646,7 +646,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 # Hide blob-5 on slide 6
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!blob-5' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.01 \
   --prop x=${OFFSCREEN} --prop y=0cm --prop width=11cm --prop height=8cm
@@ -654,7 +654,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 # Move droplets (all 3 visible)
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!drop-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$AMBER \
   --prop opacity=0.60 \
   --prop rotation=160 \
@@ -662,7 +662,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!drop-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$MINT \
   --prop opacity=0.55 \
   --prop rotation=150 \
@@ -670,7 +670,7 @@ officecli add "$OUTPUT" '/slide[6]' --type shape \
 
 officecli add "$OUTPUT" '/slide[6]' --type shape \
   --prop 'name=!!drop-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$VIOLET \
   --prop opacity=0.58 \
   --prop rotation=178 \

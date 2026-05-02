@@ -321,7 +321,7 @@ officecli query doc.docx 'paragraph[style=Heading1]'            # By style
 officecli query doc.docx 'p:contains("quarterly")'              # By text content
 officecli query doc.docx 'p:empty'                              # Empty paragraphs
 officecli query doc.docx 'image:no-alt'                         # Images without alt text
-officecli query doc.docx 'p[alignment=center] > r[bold=true]'   # Compound selectors
+officecli query doc.docx 'p[align=center] > r[bold=true]'      # Compound selectors
 officecli query doc.docx 'paragraph[size>=24pt]'                # By size
 officecli query doc.docx 'field[fieldType!=page]'               # Fields by type
 ```
@@ -337,7 +337,7 @@ officecli query doc.docx 'field[fieldType!=page]'               # Fields by type
 officecli add doc.docx / --type footer --prop type=first --prop text=""
 
 # Step 2. Default footer with static "Page " text
-officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop alignment=center --prop size=9pt --prop font=Calibri
+officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 
 # Step 3. Inject PAGE field via raw-set (footer[2] = default when first-page footer also exists)
 officecli raw-set doc.docx "/footer[2]" \

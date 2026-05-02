@@ -42,7 +42,7 @@ dots() {
   for i in 1 2 3 4 5 6; do
     local x="${xs[$((i-1))]}"
     local fill; [ "$i" -eq "$cur" ] && fill=$DARK || fill="C8DDED"
-    a "$path" --prop preset=ellipse \
+    a "$path" --prop geometry=ellipse \
       --prop x="${x}cm" --prop y=18.35cm \
       --prop width=0.38cm --prop height=0.38cm \
       --prop fill=$fill --prop line=none
@@ -52,7 +52,7 @@ dots() {
 # ── Common top-bar for "left content" slides ──────────────
 top_left() {
   local path=$1 counter=$2
-  a "$path" --prop 'name=!!pill-bg' --prop preset=roundRect \
+  a "$path" --prop 'name=!!pill-bg' --prop geometry=roundRect \
     --prop x=1cm --prop y=0.42cm --prop width=4.3cm --prop height=0.82cm \
     --prop fill=$PILL --prop line=none
   a "$path" --prop 'name=!!top-label' --prop text="Your Project" \
@@ -74,7 +74,7 @@ top_left() {
 # ── Common top-bar for "right content" slides ─────────────
 top_right() {
   local path=$1 counter=$2
-  a "$path" --prop 'name=!!pill-bg' --prop preset=roundRect \
+  a "$path" --prop 'name=!!pill-bg' --prop geometry=roundRect \
     --prop x=15.8cm --prop y=0.42cm --prop width=4.3cm --prop height=0.82cm \
     --prop fill=$PILL --prop line=none
   a "$path" --prop 'name=!!top-label' --prop text="Your Project" \
@@ -107,7 +107,7 @@ footer() {
 # ── Star badge (circle + star icon) ───────────────────────
 star_badge() {
   local path=$1 x=$2 y=$3 sz=$4
-  a "$path" --prop 'name=!!star-circle' --prop preset=ellipse \
+  a "$path" --prop 'name=!!star-circle' --prop geometry=ellipse \
     --prop x="${x}cm" --prop y="${y}cm" \
     --prop width="${sz}cm" --prop height="${sz}cm" \
     --prop fill=$YLW_LT --prop line=none
@@ -121,10 +121,10 @@ star_badge() {
 # ── Card with left accent bar ──────────────────────────────
 card() {
   local path=$1 x=$2 y=$3 w=$4 h=$5 num=$6 title=$7 desc=$8
-  a "$path" --prop preset=roundRect \
+  a "$path" --prop geometry=roundRect \
     --prop x="${x}cm" --prop y="${y}cm" --prop width="${w}cm" --prop height="${h}cm" \
     --prop fill=$CARD --prop line=$CARD_B --prop lineWidth=0.5pt
-  a "$path" --prop preset=rect \
+  a "$path" --prop geometry=rect \
     --prop x="${x}cm" --prop y="${y}cm" --prop width=0.28cm --prop height="${h}cm" \
     --prop fill=$YELLOW --prop line=none
   a "$path" --prop text="$num" \
@@ -151,12 +151,12 @@ echo "  S1: Title..."
 sl --prop background=$WHITE
 
 # Panel RIGHT (morph anchor)
-a '/slide[1]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[1]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=20.87cm --prop y=0cm --prop width=13cm --prop height=19.1cm \
   --prop fill=$PANEL --prop line=none
 
 # Image — roundRect, floats LEFT past panel edge (+2.37cm)
-a '/slide[1]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[1]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=18.5cm --prop y=2.5cm --prop width=15cm --prop height=14.1cm \
   --prop fill=$IMG1 --prop line=none \
@@ -182,7 +182,7 @@ a '/slide[1]' --prop text="Lorem ipsum dolor sit amet, consectetur adipiscing\ne
   --prop size=10.5 --prop color=$GRAY --prop fill=none --prop line=none --prop lineSpacing=1.55
 
 # CTA button (rounded)
-a '/slide[1]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[1]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="Get Started  →" \
   --prop x=1cm --prop y=13.3cm --prop width=5.8cm --prop height=1.35cm \
   --prop size=10.5 --prop bold=true --prop color=$WHITE \
@@ -220,11 +220,11 @@ dots   '/slide[1]' 1
 echo "  S2: Offerings..."
 sl --prop background=$WHITE
 
-a '/slide[2]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[2]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=0cm --prop y=0cm --prop width=13cm --prop height=19.1cm \
   --prop fill=$PANEL --prop line=none
 
-a '/slide[2]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[2]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=0.5cm --prop y=2.5cm --prop width=15cm --prop height=14.1cm \
   --prop fill=$IMG1 --prop line=none \
@@ -268,7 +268,7 @@ a '/slide[2]' --prop 'name=!!stat2-lbl' --prop text="Awards Won" \
   --prop x=21.5cm --prop y=17.85cm --prop width=5cm --prop height=0.6cm \
   --prop size=8 --prop color=$LGRAY --prop fill=none --prop line=none
 
-a '/slide[2]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[2]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="Explore More  →" \
   --prop x=27.5cm --prop y=17.0cm --prop width=5.5cm --prop height=1.35cm \
   --prop size=10 --prop bold=true --prop color=$WHITE \
@@ -284,11 +284,11 @@ dots   '/slide[2]' 2
 echo "  S3: Vision & Mission..."
 sl --prop background=$WHITE
 
-a '/slide[3]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[3]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=20.87cm --prop y=0cm --prop width=13cm --prop height=19.1cm \
   --prop fill=$PANEL --prop line=none
 
-a '/slide[3]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[3]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=18.5cm --prop y=2.5cm --prop width=15cm --prop height=14.1cm \
   --prop fill=$IMG1 --prop line=none \
@@ -307,7 +307,7 @@ c '/slide[3]' --prop 'name=!!title-accent' \
   --prop line=$YELLOW --prop lineWidth=2.5pt
 
 # Vision block with left accent
-a '/slide[3]' --prop preset=rect \
+a '/slide[3]' --prop geometry=rect \
   --prop x=1cm --prop y=8.8cm --prop width=0.28cm --prop height=3.5cm \
   --prop fill=$YELLOW --prop line=none
 
@@ -320,7 +320,7 @@ a '/slide[3]' --prop text="To be the leading architectural firm that transforms\
   --prop size=10.5 --prop color=$GRAY --prop fill=none --prop line=none --prop lineSpacing=1.5
 
 # Mission block with left accent
-a '/slide[3]' --prop preset=rect \
+a '/slide[3]' --prop geometry=rect \
   --prop x=1cm --prop y=13.0cm --prop width=0.28cm --prop height=3.5cm \
   --prop fill=$YELLOW --prop line=none
 
@@ -351,11 +351,11 @@ dots   '/slide[3]' 3
 echo "  S4: Foundations..."
 sl --prop background=$WHITE
 
-a '/slide[4]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[4]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=0cm --prop y=0cm --prop width=13cm --prop height=19.1cm \
   --prop fill=$PANEL --prop line=none
 
-a '/slide[4]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[4]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=0.5cm --prop y=2.5cm --prop width=15cm --prop height=14.1cm \
   --prop fill=$IMG1 --prop line=none \
@@ -401,11 +401,11 @@ dots   '/slide[4]' 4
 echo "  S5: Detailing..."
 sl --prop background=$WHITE
 
-a '/slide[5]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[5]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=20.87cm --prop y=0cm --prop width=13cm --prop height=19.1cm \
   --prop fill=$PANEL --prop line=none
 
-a '/slide[5]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[5]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=18.5cm --prop y=2.5cm --prop width=15cm --prop height=14.1cm \
   --prop fill=$IMG1 --prop line=none \
@@ -451,19 +451,19 @@ echo "  S6: Closing..."
 sl --prop background=$DARK
 
 # Full dark panel (morph from right-side panel)
-a '/slide[6]' --prop 'name=!!bg-panel' --prop preset=rect \
+a '/slide[6]' --prop 'name=!!bg-panel' --prop geometry=rect \
   --prop x=0cm --prop y=0cm --prop width=33.9cm --prop height=19.1cm \
   --prop fill=$DARK --prop line=none
 
 # Image — right half (roundRect, subtle dark bg)
-a '/slide[6]' --prop 'name=!!hero-img' --prop preset=roundRect \
+a '/slide[6]' --prop 'name=!!hero-img' --prop geometry=roundRect \
   --prop text="[ Architecture Image ]" \
   --prop x=16.5cm --prop y=2.5cm --prop width=16.9cm --prop height=14.1cm \
   --prop fill=234055 --prop line=none \
   --prop color=3A6070 --prop size=13 --prop align=center --prop valign=center
 
 # Top bar
-a '/slide[6]' --prop 'name=!!pill-bg' --prop preset=roundRect \
+a '/slide[6]' --prop 'name=!!pill-bg' --prop geometry=roundRect \
   --prop x=1cm --prop y=0.42cm --prop width=4.3cm --prop height=0.82cm \
   --prop fill=243545 --prop line=none
 a '/slide[6]' --prop 'name=!!top-label' --prop text="Your Project" \
@@ -482,7 +482,7 @@ c '/slide[6]' --prop 'name=!!top-line' \
   --prop line=2A3D4D --prop lineWidth=0.5pt
 
 # Star badge (dark slide version)
-a '/slide[6]' --prop 'name=!!star-circle' --prop preset=ellipse \
+a '/slide[6]' --prop 'name=!!star-circle' --prop geometry=ellipse \
   --prop x=1cm --prop y=3.8cm --prop width=2.3cm --prop height=2.3cm \
   --prop fill=2A3D4D --prop line=none
 a '/slide[6]' --prop 'name=!!deco-star' --prop text="✦" \
@@ -505,7 +505,7 @@ a '/slide[6]' --prop text="Explore the full scope of our architectural expertise
   --prop size=10.5 --prop color=$PANEL --prop fill=none --prop line=none --prop lineSpacing=1.55
 
 # CTA button (yellow on dark)
-a '/slide[6]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[6]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="View Full Plan  →" \
   --prop x=1cm --prop y=14.8cm --prop width=6.5cm --prop height=1.35cm \
   --prop size=10.5 --prop bold=true --prop color=$DARK \

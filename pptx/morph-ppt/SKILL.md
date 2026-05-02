@@ -219,10 +219,10 @@ run("officecli", "set", OUTPUT, "/slide[1]", "--prop", "background=1A1A2E")
 
 # Scene actors (!!scene-* prefix = decoration, persists entire deck)
 run("officecli", "add", OUTPUT, "/slide[1]", "--type", "shape",
-    "--prop", "name=!!scene-ring", "--prop", "preset=ellipse", "--prop", "fill=E94560",
+    "--prop", "name=!!scene-ring", "--prop", "geometry=ellipse", "--prop", "fill=E94560",
     "--prop", "opacity=0.3", "--prop", "x=5cm", "--prop", "y=3cm", "--prop", "width=8cm", "--prop", "height=8cm")
 run("officecli", "add", OUTPUT, "/slide[1]", "--type", "shape",
-    "--prop", "name=!!scene-dot", "--prop", "preset=ellipse", "--prop", "fill=0F3460",
+    "--prop", "name=!!scene-dot", "--prop", "geometry=ellipse", "--prop", "fill=0F3460",
     "--prop", "x=28cm", "--prop", "y=15cm", "--prop", "width=1cm", "--prop", "height=1cm")
 
 # Content shapes (#s1- prefix, will be ghosted on next slide)

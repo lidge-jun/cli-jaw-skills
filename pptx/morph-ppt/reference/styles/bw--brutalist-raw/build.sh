@@ -23,7 +23,7 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: geometric shapes with thick borders and violent positioning
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!border-box' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$WHITE \
   --prop line=$BLACK \
   --prop lineWidth=3pt \
@@ -31,19 +31,19 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!block-solid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=3cm --prop y=13cm --prop width=5cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!accent-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=10cm --prop y=15cm --prop width=3cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-heavy' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=6cm --prop y=11cm --prop width=20cm --prop height=0.15cm
 
@@ -81,7 +81,7 @@ officecli set "$OUTPUT" '/slide[2]' --prop transition=morph
 # Scene actors: violent position shifts (12cm+ moves)
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!border-box' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=none \
   --prop line=$BLACK \
   --prop lineWidth=3pt \
@@ -89,26 +89,26 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!block-solid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=25cm --prop y=2cm --prop width=5cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!accent-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=28cm --prop y=12cm --prop width=3cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!line-heavy' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=13cm --prop width=20cm --prop height=0.15cm
 
 # Add diagonal line (new in slide 2)
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!line-diag' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop rotation=35 \
   --prop x=18cm --prop y=8cm --prop width=15cm --prop height=0.08cm
@@ -136,7 +136,7 @@ officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 # Scene actors: structural frames
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!border-box' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$WHITE \
   --prop line=$BLACK \
   --prop lineWidth=3pt \
@@ -144,25 +144,25 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!block-solid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=28cm --prop y=8cm --prop width=5cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!accent-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=2cm --prop y=16cm --prop width=3cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!line-heavy' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=4.5cm --prop width=20cm --prop height=0.15cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!line-diag' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop rotation=0 \
   --prop x=25cm --prop y=2cm --prop width=15cm --prop height=0.08cm
@@ -220,7 +220,7 @@ officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 # Scene actors: asymmetric layout
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!border-box' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=none \
   --prop line=$BLACK \
   --prop lineWidth=3pt \
@@ -228,25 +228,25 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!block-solid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=15cm --prop width=5cm --prop height=3cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!accent-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=15cm --prop y=10.5cm --prop width=1cm --prop height=3cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!line-heavy' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=9.5cm --prop width=20cm --prop height=0.15cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!line-diag' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop rotation=145 \
   --prop x=20cm --prop y=1cm --prop width=15cm --prop height=0.08cm
@@ -337,7 +337,7 @@ officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 # Scene actors: scattered edges with dramatic final positions
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!border-box' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$WHITE \
   --prop line=$BLACK \
   --prop lineWidth=3pt \
@@ -345,25 +345,25 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!block-solid' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=2cm --prop y=1cm --prop width=5cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!accent-red' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=30cm --prop y=17cm --prop width=3cm --prop height=1cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!line-heavy' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop x=3cm --prop y=12cm --prop width=20cm --prop height=0.15cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!line-diag' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$BLACK \
   --prop rotation=35 \
   --prop x=10cm --prop y=2cm --prop width=15cm --prop height=0.08cm

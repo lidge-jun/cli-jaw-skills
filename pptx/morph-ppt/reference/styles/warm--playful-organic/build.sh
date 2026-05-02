@@ -30,39 +30,39 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: organic shapes that morph
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!blob-main' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$C_ORANGE \
   --prop opacity=0.15 \
   --prop x=18cm --prop y=5cm --prop width=20cm --prop height=15cm --prop rotation=15
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-orange' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$C_ORANGE \
   --prop x=0cm --prop y=12cm --prop width=12cm --prop height=12cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-yellow' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$C_YELLOW \
   --prop x=26cm --prop y=0cm --prop width=8cm --prop height=8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-teal' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$C_TEAL \
   --prop x=6cm --prop y=4cm --prop width=3cm --prop height=0.6cm --prop rotation=-20
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!tri-dark' \
-  --prop preset=triangle \
+  --prop geometry=triangle \
   --prop fill=$C_DARK \
   --prop opacity=0.8 \
   --prop x=30cm --prop y=15cm --prop width=3cm --prop height=3cm --prop rotation=45
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!accent-star' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$C_YELLOW \
   --prop x=10cm --prop y=16cm --prop width=2cm --prop height=2cm --prop rotation=10
 
@@ -110,7 +110,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 for i in 1 2 3; do
   officecli add "$OUTPUT" '/slide[1]' --type shape \
     --prop "name=#s3-pillar-bg-$i" \
-    --prop preset=roundRect \
+    --prop geometry=roundRect \
     --prop fill=$C_DARK \
     --prop opacity=0.05 \
     --prop x=$OFFSCREEN --prop y=4cm --prop width=8cm --prop height=12cm
@@ -253,7 +253,7 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[2]' --prop transition=morph
 
 # Morph scene actors - dark background
-officecli set "$OUTPUT" '/slide[2]/shape[5]' --prop preset=rect --prop x=0cm --prop y=0cm --prop width=45cm --prop height=30cm --prop rotation=0 --prop opacity=1
+officecli set "$OUTPUT" '/slide[2]/shape[5]' --prop geometry=rect --prop x=0cm --prop y=0cm --prop width=45cm --prop height=30cm --prop rotation=0 --prop opacity=1
 officecli set "$OUTPUT" '/slide[2]/shape[1]' --prop x=0cm --prop y=12cm --prop width=10cm --prop height=10cm --prop rotation=45 --prop opacity=0.3
 officecli set "$OUTPUT" '/slide[2]/shape[2]' --prop x=28cm --prop y=2cm --prop width=8cm --prop height=8cm --prop opacity=0.5
 officecli set "$OUTPUT" '/slide[2]/shape[3]' --prop x=5cm --prop y=0cm --prop width=12cm --prop height=12cm --prop opacity=0.2
@@ -274,7 +274,7 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 
 # Morph scene actors
-officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop preset=triangle --prop x=28cm --prop y=0cm --prop width=8cm --prop height=8cm --prop rotation=180 --prop opacity=0.1
+officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop geometry=triangle --prop x=28cm --prop y=0cm --prop width=8cm --prop height=8cm --prop rotation=180 --prop opacity=0.1
 officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop x=2cm --prop y=2cm --prop width=30cm --prop height=15cm --prop rotation=0 --prop opacity=0.05
 officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop x=0cm --prop y=0cm --prop width=15cm --prop height=15cm --prop opacity=0.1
 officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop x=25cm --prop y=14cm --prop width=12cm --prop height=12cm --prop opacity=0.1
@@ -334,8 +334,8 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 
 # Morph scene actors - split 50/50
-officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop preset=rect --prop fill=$C_TEAL --prop x=0cm --prop y=0cm --prop width=16.9cm --prop height=19.05cm --prop opacity=1
-officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop preset=rect --prop x=16.9cm --prop y=0cm --prop width=17cm --prop height=19.05cm --prop rotation=0 --prop opacity=1
+officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop geometry=rect --prop fill=$C_TEAL --prop x=0cm --prop y=0cm --prop width=16.9cm --prop height=19.05cm --prop opacity=1
+officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop geometry=rect --prop x=16.9cm --prop y=0cm --prop width=17cm --prop height=19.05cm --prop rotation=0 --prop opacity=1
 officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop x=14cm --prop y=16cm --prop width=6cm --prop height=6cm --prop opacity=0.3
 officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop x=16.9cm --prop y=0cm --prop width=0.4cm --prop height=19cm --prop rotation=0 --prop fill=$TEXT_LIGHT
 officecli set "$OUTPUT" '/slide[5]/shape[5]' --prop x=2cm --prop y=2cm --prop width=3cm --prop height=3cm --prop rotation=180 --prop opacity=0.3
@@ -361,11 +361,11 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[6]' --prop transition=morph
 
 # Morph scene actors - back to warm/inviting
-officecli set "$OUTPUT" '/slide[6]/shape[1]' --prop preset=roundRect --prop fill=$C_YELLOW --prop x=6.9cm --prop y=4cm --prop width=20cm --prop height=11cm --prop rotation=0 --prop opacity=0.2
-officecli set "$OUTPUT" '/slide[6]/shape[2]' --prop preset=ellipse --prop fill=$C_ORANGE --prop x=28cm --prop y=12cm --prop width=10cm --prop height=10cm --prop rotation=0 --prop opacity=0.8
+officecli set "$OUTPUT" '/slide[6]/shape[1]' --prop geometry=roundRect --prop fill=$C_YELLOW --prop x=6.9cm --prop y=4cm --prop width=20cm --prop height=11cm --prop rotation=0 --prop opacity=0.2
+officecli set "$OUTPUT" '/slide[6]/shape[2]' --prop geometry=ellipse --prop fill=$C_ORANGE --prop x=28cm --prop y=12cm --prop width=10cm --prop height=10cm --prop rotation=0 --prop opacity=0.8
 officecli set "$OUTPUT" '/slide[6]/shape[3]' --prop x=0cm --prop y=0cm --prop width=8cm --prop height=8cm --prop opacity=0.8
 officecli set "$OUTPUT" '/slide[6]/shape[4]' --prop x=20cm --prop y=15cm --prop width=6cm --prop height=0.6cm --prop fill=$C_TEAL --prop rotation=-10
-officecli set "$OUTPUT" '/slide[6]/shape[5]' --prop preset=triangle --prop x=5cm --prop y=15cm --prop width=4cm --prop height=4cm --prop rotation=45 --prop opacity=0.5
+officecli set "$OUTPUT" '/slide[6]/shape[5]' --prop geometry=triangle --prop x=5cm --prop y=15cm --prop width=4cm --prop height=4cm --prop rotation=45 --prop opacity=0.5
 officecli set "$OUTPUT" '/slide[6]/shape[6]' --prop x=16cm --prop y=3cm --prop width=3cm --prop height=3cm --prop rotation=45 --prop opacity=1
 
 # Hide previous content

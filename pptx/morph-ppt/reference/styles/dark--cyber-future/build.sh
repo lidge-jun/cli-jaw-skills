@@ -29,7 +29,7 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: background elements
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bg-orb' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CYAN \
   --prop opacity=0.08 \
   --prop x=0cm --prop y=0cm --prop width=20cm --prop height=20cm
@@ -54,13 +54,13 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$TEAL \
   --prop x=5cm --prop y=10cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CYAN \
   --prop x=30cm --prop y=15cm --prop width=1cm --prop height=1cm
 
@@ -119,7 +119,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 3 pillar content actors (hidden initially)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!p1-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GRAY \
   --prop opacity=0.4 \
   --prop x=${OFFSCREEN} --prop y=4.5cm --prop width=9cm --prop height=11cm
@@ -155,7 +155,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!p2-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GRAY \
   --prop opacity=0.4 \
   --prop x=${OFFSCREEN} --prop y=4.5cm --prop width=9cm --prop height=11cm
@@ -191,7 +191,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!p3-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GRAY \
   --prop opacity=0.4 \
   --prop x=${OFFSCREEN} --prop y=4.5cm --prop width=9cm --prop height=11cm
@@ -291,7 +291,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!cta-btn' \
   --prop text="EXPLORE 2050" \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop font="Montserrat" \
   --prop size=18 \
   --prop bold=true \

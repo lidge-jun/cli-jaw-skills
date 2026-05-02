@@ -31,7 +31,7 @@ sl() { officecli add "$F" /    --type slide      "${@}"; }
 
 # circle: path name x y diameter fill [text]
 circ() {
-  a "$1" --prop "name=$2" --prop preset=ellipse \
+  a "$1" --prop "name=$2" --prop shape=ellipse \
     --prop x="${3}cm" --prop y="${4}cm" \
     --prop width="${5}cm" --prop height="${5}cm" \
     --prop fill=$6 --prop line=none \
@@ -41,7 +41,7 @@ circ() {
 
 # circle with green ring border
 circ_ring() {
-  a "$1" --prop "name=$2" --prop preset=ellipse \
+  a "$1" --prop "name=$2" --prop geometry=ellipse \
     --prop x="${3}cm" --prop y="${4}cm" \
     --prop width="${5}cm" --prop height="${5}cm" \
     --prop fill=$6 --prop line=$GREEN --prop lineWidth=3pt \
@@ -51,7 +51,7 @@ circ_ring() {
 
 # thin vertical left bar
 left_bar() {
-  a "$1" --prop 'name=!!left-bar' --prop preset=rect \
+  a "$1" --prop 'name=!!left-bar' --prop geometry=rect \
     --prop x=0.65cm --prop y="${2}cm" \
     --prop width=0.18cm --prop height="${3}cm" \
     --prop fill=$GREEN --prop line=none
@@ -67,7 +67,7 @@ snum() {
 
 # small green dot accent
 gdot() {
-  a "$1" --prop 'name=!!accent-dot' --prop preset=ellipse \
+  a "$1" --prop 'name=!!accent-dot' --prop geometry=ellipse \
     --prop x="${2}cm" --prop y="${3}cm" \
     --prop width=0.5cm --prop height=0.5cm \
     --prop fill=$GREEN --prop line=none
@@ -75,7 +75,7 @@ gdot() {
 
 # green pill tag
 pill() {
-  a "$1" --prop preset=roundRect \
+  a "$1" --prop geometry=roundRect \
     --prop text="$2" \
     --prop x="${3}cm" --prop y="${4}cm" \
     --prop width="${5}cm" --prop height=0.75cm \
@@ -87,7 +87,7 @@ pill() {
 # dark stat card
 stat_card() {
   # path x y w label value
-  a "$1" --prop preset=roundRect \
+  a "$1" --prop geometry=roundRect \
     --prop x="${2}cm" --prop y="${3}cm" \
     --prop width="${4}cm" --prop height=3cm \
     --prop fill=$D2 --prop line=none
@@ -120,7 +120,7 @@ sl --prop background=$BG
 circ '/slide[1]' '!!circ-a' 18.5 0 21.0 $C_LEAF "[ Image ]"
 
 # Small green ring overlay on hero
-a '/slide[1]' --prop preset=ellipse \
+a '/slide[1]' --prop geometry=ellipse \
   --prop x=21cm --prop y=1cm --prop width=14cm --prop height=14cm \
   --prop fill=none --prop line=$GREEN --prop lineWidth=1.5pt --prop lineOpacity=0.3
 
@@ -150,7 +150,7 @@ a '/slide[1]' --prop text="We help brands grow through digital innovation,\ncrea
   --prop fill=none --prop line=none --prop lineSpacing=1.5
 
 # Green CTA button
-a '/slide[1]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[1]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="Submit  →" \
   --prop x=1.6cm --prop y=15.0cm --prop width=5.5cm --prop height=1.3cm \
   --prop size=10.5 --prop bold=true --prop color=$BG \
@@ -180,7 +180,7 @@ sl --prop background=$BG --prop transition=morph
 circ '/slide[2]' '!!circ-a' 1.5 3.0 15.0 $D3 ""
 
 # Thin green ring on circle
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=2cm --prop y=3.5cm --prop width=14cm --prop height=14cm \
   --prop fill=none --prop line=$GREEN --prop lineWidth=1pt --prop lineOpacity=0.25
 
@@ -195,7 +195,7 @@ a '/slide[2]' --prop text="Content." \
   --prop fill=none --prop line=none
 
 # Menu items (right side)
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=19.5cm --prop y=4.8cm --prop width=0.45cm --prop height=0.45cm \
   --prop fill=$GREEN --prop line=none
 a '/slide[2]' --prop text="01" \
@@ -205,7 +205,7 @@ a '/slide[2]' --prop text="The Incredible" \
   --prop x=22.5cm --prop y=4.55cm --prop width=11cm --prop height=1cm \
   --prop size=18 --prop color=$WHITE --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=19.5cm --prop y=6.6cm --prop width=0.45cm --prop height=0.45cm \
   --prop fill=$MGRAY --prop line=none
 a '/slide[2]' --prop text="02" \
@@ -215,7 +215,7 @@ a '/slide[2]' --prop text="Agency Summary" \
   --prop x=22.5cm --prop y=6.35cm --prop width=11cm --prop height=1cm \
   --prop size=18 --prop color=$LGRAY --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=19.5cm --prop y=8.4cm --prop width=0.45cm --prop height=0.45cm \
   --prop fill=$MGRAY --prop line=none
 a '/slide[2]' --prop text="03" \
@@ -225,7 +225,7 @@ a '/slide[2]' --prop text="Digital Creative" \
   --prop x=22.5cm --prop y=8.15cm --prop width=11cm --prop height=1cm \
   --prop size=18 --prop color=$LGRAY --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=19.5cm --prop y=10.2cm --prop width=0.45cm --prop height=0.45cm \
   --prop fill=$MGRAY --prop line=none
 a '/slide[2]' --prop text="04" \
@@ -235,7 +235,7 @@ a '/slide[2]' --prop text="Marketplace" \
   --prop x=22.5cm --prop y=9.95cm --prop width=11cm --prop height=1cm \
   --prop size=18 --prop color=$LGRAY --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[2]' --prop preset=ellipse \
+a '/slide[2]' --prop geometry=ellipse \
   --prop x=19.5cm --prop y=12.0cm --prop width=0.45cm --prop height=0.45cm \
   --prop fill=$MGRAY --prop line=none
 a '/slide[2]' --prop text="05" \
@@ -266,7 +266,7 @@ circ_ring '/slide[3]' '!!circ-b' 7.5 5.0 9.5 $C_PERS "[ Image ]"
 circ '/slide[3]' '!!circ-c' 9.5 1.5 4.0 $GREEN_D ""
 
 # Small green dot on accent circle
-a '/slide[3]' --prop preset=ellipse \
+a '/slide[3]' --prop geometry=ellipse \
   --prop x=11cm --prop y=2.5cm --prop width=1cm --prop height=1cm \
   --prop fill=$GREEN --prop line=none
 
@@ -315,7 +315,7 @@ a '/slide[4]' --prop text="Innovation Marketing\nSolution." \
 
 # ── Stat 1: $37M ──
 # Green highlight background
-a '/slide[4]' --prop preset=roundRect \
+a '/slide[4]' --prop geometry=roundRect \
   --prop x=1.6cm --prop y=8.3cm --prop width=6.5cm --prop height=2.5cm \
   --prop fill=$GREEN --prop line=none
 a '/slide[4]' --prop text='$37M' \
@@ -329,10 +329,10 @@ a '/slide[4]' --prop text="Mobile App\nDevelopment" \
   --prop fill=none --prop line=none --prop lineSpacing=1.3
 
 # Progress bar 1
-a '/slide[4]' --prop preset=rect \
+a '/slide[4]' --prop geometry=rect \
   --prop x=8.5cm --prop y=11.1cm --prop width=12cm --prop height=0.4cm \
   --prop fill=$MGRAY --prop line=none
-a '/slide[4]' --prop preset=rect \
+a '/slide[4]' --prop geometry=rect \
   --prop x=8.5cm --prop y=11.1cm --prop width=9.5cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 a '/slide[4]' --prop text="79%" \
@@ -340,7 +340,7 @@ a '/slide[4]' --prop text="79%" \
   --prop size=9.5 --prop color=$GREEN --prop fill=none --prop line=none
 
 # ── Stat 2: +87% ──
-a '/slide[4]' --prop preset=roundRect \
+a '/slide[4]' --prop geometry=roundRect \
   --prop x=1.6cm --prop y=12.0cm --prop width=6.5cm --prop height=2.5cm \
   --prop fill=$D3 --prop line=$GREEN --prop lineWidth=1.5pt
 a '/slide[4]' --prop text="+87%" \
@@ -354,10 +354,10 @@ a '/slide[4]' --prop text="Digital\nMarketing" \
   --prop fill=none --prop line=none --prop lineSpacing=1.3
 
 # Progress bar 2
-a '/slide[4]' --prop preset=rect \
+a '/slide[4]' --prop geometry=rect \
   --prop x=8.5cm --prop y=14.8cm --prop width=12cm --prop height=0.4cm \
   --prop fill=$MGRAY --prop line=none
-a '/slide[4]' --prop preset=rect \
+a '/slide[4]' --prop geometry=rect \
   --prop x=8.5cm --prop y=14.8cm --prop width=10.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 a '/slide[4]' --prop text="87%" \
@@ -368,7 +368,7 @@ a '/slide[4]' --prop text="87%" \
 pill '/slide[4]' "App Development" 1.6 16.5 5.5
 pill '/slide[4]' "Digital Strategy" 7.5 16.5 5.5
 
-a '/slide[4]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[4]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="View Report  →" \
   --prop x=13.5cm --prop y=16.5cm --prop width=5.5cm --prop height=1.2cm \
   --prop size=10 --prop bold=true --prop color=$BG \
@@ -393,7 +393,7 @@ circ '/slide[5]' '!!circ-b' 5.5 2.0 9.5 $D4 "[ Investor ]"
 # Third circle (front-left)
 circ '/slide[5]' '!!circ-c' 0.5 7.5 8.0 $D2 "[ Support ]"
 # Fourth circle (small, green-tinted)
-a '/slide[5]' --prop preset=ellipse \
+a '/slide[5]' --prop geometry=ellipse \
   --prop x=8.5cm --prop y=7.5cm --prop width=6.5cm --prop height=6.5cm \
   --prop fill=$GREEN_D --prop line=none \
   --prop text="[ Analysis ]" --prop color=$WHITE --prop size=10 \
@@ -413,7 +413,7 @@ a '/slide[5]' --prop text="Analysis" \
   --prop size=11 --prop bold=true --prop color=$GREEN --prop fill=none --prop line=none
 
 # Small green dot on top circle
-a '/slide[5]' --prop preset=ellipse \
+a '/slide[5]' --prop geometry=ellipse \
   --prop x=9.8cm --prop y=2.8cm --prop width=1.0cm --prop height=1.0cm \
   --prop fill=$GREEN --prop line=none
 
@@ -427,7 +427,7 @@ a '/slide[5]' --prop text="Connecting investors, support networks and data\nanal
   --prop x=17.5cm --prop y=13.2cm --prop width=15cm --prop height=2.2cm \
   --prop size=10.5 --prop color=$LGRAY --prop fill=none --prop line=none --prop lineSpacing=1.5
 
-a '/slide[5]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[5]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="Learn More  →" \
   --prop x=17.5cm --prop y=15.8cm --prop width=5.5cm --prop height=1.3cm \
   --prop size=10.5 --prop bold=true --prop color=$BG \
@@ -458,26 +458,26 @@ circ '/slide[6]' '!!circ-b' 8.0 5.5 11.5 $C_TEAL "[ Commercial Product ]"
 circ '/slide[6]' '!!circ-c' 15.5 6.5 11.5 $C_SKY "[ Sky Photography ]"
 
 # Green ring on middle circle
-a '/slide[6]' --prop preset=ellipse \
+a '/slide[6]' --prop geometry=ellipse \
   --prop x=8.2cm --prop y=5.7cm --prop width=11.1cm --prop height=11.1cm \
   --prop fill=none --prop line=$GREEN --prop lineWidth=2pt
 
 # Labels below circles
-a '/slide[6]' --prop preset=ellipse \
+a '/slide[6]' --prop geometry=ellipse \
   --prop x=1.8cm --prop y=17.1cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 a '/slide[6]' --prop text="Graphic Art Work" \
   --prop x=2.5cm --prop y=17.0cm --prop width=8cm --prop height=0.8cm \
   --prop size=10.5 --prop color=$WHITE --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[6]' --prop preset=ellipse \
+a '/slide[6]' --prop geometry=ellipse \
   --prop x=9.5cm --prop y=17.1cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$LGRAY --prop line=none
 a '/slide[6]' --prop text="Commercial Product" \
   --prop x=10.2cm --prop y=17.0cm --prop width=8cm --prop height=0.8cm \
   --prop size=10.5 --prop color=$LGRAY --prop fill=none --prop line=none --prop valign=center
 
-a '/slide[6]' --prop preset=ellipse \
+a '/slide[6]' --prop geometry=ellipse \
   --prop x=17.5cm --prop y=17.1cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$LGRAY --prop line=none
 a '/slide[6]' --prop text="Sky Photography" \
@@ -499,7 +499,7 @@ gdot '/slide[7]' 1.6 1.5
 circ '/slide[7]' '!!circ-a' 18.0 1.0 15.5 $C_ROOM "[ Interior Image ]"
 
 # Green ring on image
-a '/slide[7]' --prop preset=ellipse \
+a '/slide[7]' --prop geometry=ellipse \
   --prop x=18.3cm --prop y=1.3cm --prop width=14.9cm --prop height=14.9cm \
   --prop fill=none --prop line=$GREEN --prop lineWidth=2pt --prop lineOpacity=0.4
 
@@ -513,14 +513,14 @@ a '/slide[7]' --prop text="Ready to take your brand to the next level?\nLet's cr
   --prop x=1.6cm --prop y=10.0cm --prop width=15.5cm --prop height=2.5cm \
   --prop size=11 --prop color=$LGRAY --prop fill=none --prop line=none --prop lineSpacing=1.55
 
-a '/slide[7]' --prop 'name=!!cta-btn' --prop preset=roundRect \
+a '/slide[7]' --prop 'name=!!cta-btn' --prop geometry=roundRect \
   --prop text="Start a Project  →" \
   --prop x=1.6cm --prop y=13.0cm --prop width=7cm --prop height=1.4cm \
   --prop size=11 --prop bold=true --prop color=$BG \
   --prop fill=$GREEN --prop line=none --prop align=center --prop valign=center
 
 # 4 Stat boxes
-a '/slide[7]' --prop preset=roundRect \
+a '/slide[7]' --prop geometry=roundRect \
   --prop x=1.6cm --prop y=15.3cm --prop width=6.5cm --prop height=3.0cm \
   --prop fill=$D2 --prop line=none
 a '/slide[7]' --prop text="Receive Project" \
@@ -529,11 +529,11 @@ a '/slide[7]' --prop text="Receive Project" \
 a '/slide[7]' --prop text="200+ Delivered" \
   --prop x=1.6cm --prop y=16.4cm --prop width=6.5cm --prop height=0.9cm \
   --prop size=8 --prop color=$LGRAY --prop fill=none --prop line=none --prop align=center
-a '/slide[7]' --prop preset=ellipse \
+a '/slide[7]' --prop geometry=ellipse \
   --prop x=4.5cm --prop y=17.35cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 
-a '/slide[7]' --prop preset=roundRect \
+a '/slide[7]' --prop geometry=roundRect \
   --prop x=8.5cm --prop y=15.3cm --prop width=6.5cm --prop height=3.0cm \
   --prop fill=$D2 --prop line=none
 a '/slide[7]' --prop text="Build Portfolio" \
@@ -542,11 +542,11 @@ a '/slide[7]' --prop text="Build Portfolio" \
 a '/slide[7]' --prop text="50+ Case Studies" \
   --prop x=8.5cm --prop y=16.4cm --prop width=6.5cm --prop height=0.9cm \
   --prop size=8 --prop color=$LGRAY --prop fill=none --prop line=none --prop align=center
-a '/slide[7]' --prop preset=ellipse \
+a '/slide[7]' --prop geometry=ellipse \
   --prop x=11.4cm --prop y=17.35cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 
-a '/slide[7]' --prop preset=roundRect \
+a '/slide[7]' --prop geometry=roundRect \
   --prop x=15.4cm --prop y=15.3cm --prop width=6.5cm --prop height=3.0cm \
   --prop fill=$D2 --prop line=none
 a '/slide[7]' --prop text="Data Analysis" \
@@ -555,11 +555,11 @@ a '/slide[7]' --prop text="Data Analysis" \
 a '/slide[7]' --prop text="Real-time Insights" \
   --prop x=15.4cm --prop y=16.4cm --prop width=6.5cm --prop height=0.9cm \
   --prop size=8 --prop color=$LGRAY --prop fill=none --prop line=none --prop align=center
-a '/slide[7]' --prop preset=ellipse \
+a '/slide[7]' --prop geometry=ellipse \
   --prop x=18.3cm --prop y=17.35cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 
-a '/slide[7]' --prop preset=roundRect \
+a '/slide[7]' --prop geometry=roundRect \
   --prop x=22.3cm --prop y=15.3cm --prop width=6.5cm --prop height=3.0cm \
   --prop fill=$D2 --prop line=none
 a '/slide[7]' --prop text="List Subscriber" \
@@ -568,7 +568,7 @@ a '/slide[7]' --prop text="List Subscriber" \
 a '/slide[7]' --prop text="12k+ Subscribers" \
   --prop x=22.3cm --prop y=16.4cm --prop width=6.5cm --prop height=0.9cm \
   --prop size=8 --prop color=$LGRAY --prop fill=none --prop line=none --prop align=center
-a '/slide[7]' --prop preset=ellipse \
+a '/slide[7]' --prop geometry=ellipse \
   --prop x=25.2cm --prop y=17.35cm --prop width=0.4cm --prop height=0.4cm \
   --prop fill=$GREEN --prop line=none
 

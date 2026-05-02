@@ -30,39 +30,39 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors (8 shapes: shape[1-8])
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$RED \
   --prop opacity=0.08 \
   --prop x=24cm --prop y=8cm --prop width=8cm --prop height=8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$DARK \
   --prop opacity=0.05 \
   --prop x=3cm --prop y=12cm --prop width=5cm --prop height=5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!top-bar' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=0cm --prop y=0cm --prop width=33.87cm --prop height=0.8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bottom-bar' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=0cm --prop y=18.25cm --prop width=33.87cm --prop height=0.8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!left-accent' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=1cm --prop y=3cm --prop width=0.3cm --prop height=12cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!frame-border' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=none \
   --prop line=$DARK \
   --prop lineWidth=2pt \
@@ -70,13 +70,13 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bg-panel' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GRAY_BG \
   --prop x=0cm --prop y=0cm --prop width=0.1cm --prop height=0.1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$RED \
   --prop opacity=0.06 \
   --prop x=26cm --prop y=10cm --prop width=6cm --prop height=6cm
@@ -84,7 +84,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 1 content (11 shapes: shape[9-19])
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s1-label-bg' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=26cm --prop y=2cm --prop width=5cm --prop height=1.2cm
 
@@ -121,7 +121,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s1-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=3cm --prop y=11cm --prop width=12cm --prop height=0.1cm
 
@@ -147,13 +147,13 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s1-image-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GRAY_BG \
   --prop x=20cm --prop y=4cm --prop width=12cm --prop height=10cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s1-image-line' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=20cm --prop y=4cm --prop width=0.2cm --prop height=10cm
 
@@ -180,7 +180,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 2 content off-canvas (11 shapes: shape[20-30])
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-chapter-bg' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=$OFFSCREEN --prop y=1.5cm --prop width=3cm --prop height=0.8cm
 
@@ -196,14 +196,14 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-image-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$BG \
   --prop opacity=0.95 \
   --prop x=$OFFSCREEN --prop y=2.5cm --prop width=15cm --prop height=14cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-image-line' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=$OFFSCREEN --prop y=2.5cm --prop width=15cm --prop height=0.2cm
 
@@ -240,7 +240,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=$OFFSCREEN --prop y=7cm --prop width=6cm --prop height=0.1cm
 
@@ -311,26 +311,26 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s3-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=$OFFSCREEN --prop y=11cm --prop width=6cm --prop height=0.1cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s3-author-card' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$BG \
   --prop opacity=0.95 \
   --prop x=$OFFSCREEN --prop y=12.5cm --prop width=14cm --prop height=4cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s3-author-line' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=$OFFSCREEN --prop y=12.5cm --prop width=14cm --prop height=0.12cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s3-author-avatar' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$DARK \
   --prop x=$OFFSCREEN --prop y=13.5cm --prop width=1.5cm --prop height=1.5cm
 
@@ -397,7 +397,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s6-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$RED \
   --prop x=$OFFSCREEN --prop y=10.5cm --prop width=8cm --prop height=0.15cm
 

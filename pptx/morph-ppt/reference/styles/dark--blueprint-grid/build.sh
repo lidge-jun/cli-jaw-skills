@@ -87,21 +87,21 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Scene actors: dots
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=5.75cm --prop y=3.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=21.75cm --prop y=12.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=27.75cm --prop y=8.25cm --prop width=0.5cm --prop height=0.5cm
@@ -109,7 +109,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Scene actors: rings
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ring1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -118,7 +118,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ring2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -231,28 +231,28 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!dot1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=9.75cm --prop y=6.25cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!dot2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=29.75cm --prop y=15.25cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!dot3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=19.75cm --prop y=1.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!ring1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -261,7 +261,7 @@ officecli add "$OUTPUT" '/slide[2]' --type shape \
 
 officecli add "$OUTPUT" '/slide[2]' --type shape \
   --prop 'name=!!ring2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -364,28 +364,28 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!dot1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=10.75cm --prop y=8.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!dot2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=22.35cm --prop y=14.25cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!dot3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=32.75cm --prop y=3.15cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!ring1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -394,7 +394,7 @@ officecli add "$OUTPUT" '/slide[3]' --type shape \
 
 officecli add "$OUTPUT" '/slide[3]' --type shape \
   --prop 'name=!!ring2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -575,28 +575,28 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!dot1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=15.75cm --prop y=4.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!dot2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=25.75cm --prop y=14.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!dot3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=4.75cm --prop y=0.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!ring1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -605,7 +605,7 @@ officecli add "$OUTPUT" '/slide[4]' --type shape \
 
 officecli add "$OUTPUT" '/slide[4]' --type shape \
   --prop 'name=!!ring2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -788,28 +788,28 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!dot1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=6.75cm --prop y=2.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!dot2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=26.75cm --prop y=11.75cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!dot3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BLUE \
   --prop opacity=0.7 \
   --prop x=13.75cm --prop y=16.25cm --prop width=0.5cm --prop height=0.5cm
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!ring1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \
@@ -818,7 +818,7 @@ officecli add "$OUTPUT" '/slide[5]' --type shape \
 
 officecli add "$OUTPUT" '/slide[5]' --type shape \
   --prop 'name=!!ring2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$BG \
   --prop line=$WHITE \
   --prop lineWidth=0.75pt \

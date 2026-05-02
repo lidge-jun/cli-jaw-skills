@@ -30,28 +30,28 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: decorative elements
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-1' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop opacity=0.08 \
   --prop x=5cm --prop y=3cm --prop width=8cm --prop height=8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-2' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$DARK \
   --prop opacity=0.05 \
   --prop x=20cm --prop y=8cm --prop width=6cm --prop height=6cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!ellipse-3' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop opacity=0.06 \
   --prop x=8cm --prop y=12cm --prop width=4cm --prop height=4cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!bottom-line' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop x=10cm --prop y=17.5cm --prop width=14cm --prop height=0.05cm
 
@@ -79,7 +79,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s1-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop x=14cm --prop y=10.5cm --prop width=6cm --prop height=0.08cm
 
@@ -117,20 +117,20 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 2 content
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-card-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$WHITE \
   --prop opacity=0.95 \
   --prop x=$OFFSCREEN --prop y=2cm --prop width=16cm --prop height=15cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-card-line' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=2cm --prop width=16cm --prop height=0.15cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-image-circle' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GRAY_BG \
   --prop x=$OFFSCREEN --prop y=4cm --prop width=10cm --prop height=10cm
 
@@ -168,7 +168,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 2 features (left side)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-feat1-dot' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=5cm --prop width=0.4cm --prop height=0.4cm
 
@@ -184,7 +184,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-feat2-dot' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=7cm --prop width=0.4cm --prop height=0.4cm
 
@@ -200,7 +200,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-feat3-dot' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=9cm --prop width=0.4cm --prop height=0.4cm
 
@@ -217,7 +217,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 2 price (right side)
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s2-price-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=6cm --prop width=6cm --prop height=2cm
 
@@ -255,7 +255,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s3-divider' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=3.6cm --prop width=4cm --prop height=0.08cm
 
@@ -310,7 +310,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 # Slide 6 - CTA content
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s6-top-bg' \
-  --prop preset=rect \
+  --prop geometry=rect \
   --prop fill=$DARK \
   --prop x=$OFFSCREEN --prop y=0cm --prop width=33.87cm --prop height=10cm
 
@@ -347,7 +347,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=#s6-button-bg' \
-  --prop preset=roundRect \
+  --prop geometry=roundRect \
   --prop fill=$GREEN \
   --prop x=$OFFSCREEN --prop y=12cm --prop width=12cm --prop height=2.5cm
 

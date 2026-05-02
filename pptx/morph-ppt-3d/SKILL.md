@@ -289,7 +289,7 @@ officecli add deck.pptx '/slide[N]' --type notes --prop text="..."
 | Visual type            | Implementation                               |
 | ---------------------- | -------------------------------------------- |
 | Icon in colored circle | ellipse shape + centered text/number overlay |
-| Colored block          | `preset=roundRect` with fill                 |
+| Colored block          | `geometry=roundRect` with fill                 |
 | Large stat number      | `size=64, bold=true` with small label below  |
 | Chart                  | `--type chart` (column/pie/line)             |
 | Gradient background    | `background=COLOR1-COLOR2-180`               |

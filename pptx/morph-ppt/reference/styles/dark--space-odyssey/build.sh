@@ -40,42 +40,42 @@ officecli add "$OUTPUT" '/' --type slide --prop layout=blank --prop background=$
 # Scene actors: space elements
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!planet-main' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$PLANET \
   --prop opacity=0.3 \
   --prop x=24cm --prop y=8cm --prop width=12cm --prop height=12cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!glow-accent' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$GLOW \
   --prop opacity=0.08 \
   --prop x=21cm --prop y=5cm --prop width=18cm --prop height=18cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!star-1' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$GOLD \
   --prop opacity=0.6 \
   --prop x=5cm --prop y=3cm --prop width=0.8cm --prop height=0.8cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!star-2' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$WHITE \
   --prop opacity=0.5 \
   --prop x=8cm --prop y=7cm --prop width=0.6cm --prop height=0.6cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!star-3' \
-  --prop preset=star5 \
+  --prop geometry=star5 \
   --prop fill=$GOLD \
   --prop opacity=0.7 \
   --prop x=28cm --prop y=4cm --prop width=0.7cm --prop height=0.7cm
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!line-orbit' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop line=$BLUE \
   --prop lineWidth=0.15cm \
   --prop fill=none \
@@ -84,7 +84,7 @@ officecli add "$OUTPUT" '/slide[1]' --type shape \
 
 officecli add "$OUTPUT" '/slide[1]' --type shape \
   --prop 'name=!!dot-small' \
-  --prop preset=ellipse \
+  --prop geometry=ellipse \
   --prop fill=$CYAN \
   --prop opacity=0.8 \
   --prop x=3cm --prop y=15cm --prop width=0.4cm --prop height=0.4cm
@@ -517,13 +517,13 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[3]' --prop transition=morph
 
 # Morph scene actors - create card backgrounds
-officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop preset=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=2.5cm --prop y=5cm
-officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop preset=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=13cm --prop y=5cm
+officecli set "$OUTPUT" '/slide[3]/shape[1]' --prop geometry=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=2.5cm --prop y=5cm
+officecli set "$OUTPUT" '/slide[3]/shape[2]' --prop geometry=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=13cm --prop y=5cm
 officecli set "$OUTPUT" '/slide[3]/shape[3]' --prop x=24cm --prop y=12cm --prop width=0.6cm --prop height=0.6cm
 officecli set "$OUTPUT" '/slide[3]/shape[4]' --prop x=18cm --prop y=3cm --prop width=0.5cm --prop height=0.5cm
 officecli set "$OUTPUT" '/slide[3]/shape[5]' --prop x=30cm --prop y=8cm --prop width=0.7cm --prop height=0.7cm
 officecli set "$OUTPUT" '/slide[3]/shape[6]' --prop x=$OFFSCREEN --prop y=5cm
-officecli set "$OUTPUT" '/slide[3]/shape[7]' --prop preset=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=23.5cm --prop y=5cm
+officecli set "$OUTPUT" '/slide[3]/shape[7]' --prop geometry=roundRect --prop fill=2A4A6F --prop opacity=0.12 --prop width=8cm --prop height=11cm --prop x=23.5cm --prop y=5cm
 
 # Hide previous content, show slide 3 content
 officecli set "$OUTPUT" '/slide[3]/shape[8]' --prop x=$OFFSCREEN
@@ -550,13 +550,13 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[4]' --prop transition=morph
 
 # Morph scene actors - moon theme
-officecli set "$OUTPUT" '/slide[4]/shape[1]' --prop preset=ellipse --prop fill=$ORANGE --prop opacity=0.15 --prop width=14cm --prop height=14cm --prop x=20cm --prop y=6cm
-officecli set "$OUTPUT" '/slide[4]/shape[2]' --prop preset=ellipse --prop fill=$GOLD --prop opacity=0.05 --prop width=10cm --prop height=10cm --prop x=23cm --prop y=8cm
+officecli set "$OUTPUT" '/slide[4]/shape[1]' --prop geometry=ellipse --prop fill=$ORANGE --prop opacity=0.15 --prop width=14cm --prop height=14cm --prop x=20cm --prop y=6cm
+officecli set "$OUTPUT" '/slide[4]/shape[2]' --prop geometry=ellipse --prop fill=$GOLD --prop opacity=0.05 --prop width=10cm --prop height=10cm --prop x=23cm --prop y=8cm
 officecli set "$OUTPUT" '/slide[4]/shape[3]' --prop x=2cm --prop y=15cm
 officecli set "$OUTPUT" '/slide[4]/shape[4]' --prop x=31cm --prop y=3cm
 officecli set "$OUTPUT" '/slide[4]/shape[5]' --prop x=5cm --prop y=4cm
 officecli set "$OUTPUT" '/slide[4]/shape[6]' --prop x=$OFFSCREEN --prop y=10cm
-officecli set "$OUTPUT" '/slide[4]/shape[7]' --prop preset=ellipse --prop fill=$ORANGE --prop opacity=0.4 --prop width=1.2cm --prop height=1.2cm --prop x=2cm --prop y=2cm
+officecli set "$OUTPUT" '/slide[4]/shape[7]' --prop geometry=ellipse --prop fill=$ORANGE --prop opacity=0.4 --prop width=1.2cm --prop height=1.2cm --prop x=2cm --prop y=2cm
 
 # Hide previous content, show slide 4 content
 officecli set "$OUTPUT" '/slide[4]/shape[8]' --prop x=$OFFSCREEN
@@ -587,13 +587,13 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[5]' --prop transition=morph
 
 # Morph scene actors - station cards
-officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop preset=rect --prop fill=$CYAN --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=2cm --prop y=5.5cm
-officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop preset=rect --prop fill=$BLUE --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=12.5cm --prop y=5.5cm
+officecli set "$OUTPUT" '/slide[5]/shape[1]' --prop geometry=rect --prop fill=$CYAN --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=2cm --prop y=5.5cm
+officecli set "$OUTPUT" '/slide[5]/shape[2]' --prop geometry=rect --prop fill=$BLUE --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=12.5cm --prop y=5.5cm
 officecli set "$OUTPUT" '/slide[5]/shape[3]' --prop x=6cm --prop y=3cm
 officecli set "$OUTPUT" '/slide[5]/shape[4]' --prop x=15cm --prop y=17cm
 officecli set "$OUTPUT" '/slide[5]/shape[5]' --prop x=25cm --prop y=5cm
-officecli set "$OUTPUT" '/slide[5]/shape[6]' --prop preset=ellipse --prop fill=$CYAN --prop opacity=0.08 --prop line=none --prop width=8cm --prop height=8cm --prop x=14cm --prop y=6cm
-officecli set "$OUTPUT" '/slide[5]/shape[7]' --prop preset=rect --prop fill=5865F2 --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=23cm --prop y=5.5cm
+officecli set "$OUTPUT" '/slide[5]/shape[6]' --prop geometry=ellipse --prop fill=$CYAN --prop opacity=0.08 --prop line=none --prop width=8cm --prop height=8cm --prop x=14cm --prop y=6cm
+officecli set "$OUTPUT" '/slide[5]/shape[7]' --prop geometry=rect --prop fill=5865F2 --prop opacity=0.08 --prop width=9cm --prop height=10cm --prop x=23cm --prop y=5.5cm
 
 # Hide previous content, show slide 5 content
 officecli set "$OUTPUT" '/slide[5]/shape[8]' --prop x=$OFFSCREEN
@@ -634,13 +634,13 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[6]' --prop transition=morph
 
 # Morph scene actors - Mars theme
-officecli set "$OUTPUT" '/slide[6]/shape[1]' --prop preset=ellipse --prop fill=$RED --prop opacity=0.5 --prop width=18cm --prop height=18cm --prop x=18cm --prop y=2cm
-officecli set "$OUTPUT" '/slide[6]/shape[2]' --prop preset=ellipse --prop fill=$MARS_RED --prop opacity=0.2 --prop width=12cm --prop height=12cm --prop x=21cm --prop y=5cm
+officecli set "$OUTPUT" '/slide[6]/shape[1]' --prop geometry=ellipse --prop fill=$RED --prop opacity=0.5 --prop width=18cm --prop height=18cm --prop x=18cm --prop y=2cm
+officecli set "$OUTPUT" '/slide[6]/shape[2]' --prop geometry=ellipse --prop fill=$MARS_RED --prop opacity=0.2 --prop width=12cm --prop height=12cm --prop x=21cm --prop y=5cm
 officecli set "$OUTPUT" '/slide[6]/shape[3]' --prop fill=FFB74D --prop x=4cm --prop y=3cm --prop width=0.5cm --prop height=0.5cm
 officecli set "$OUTPUT" '/slide[6]/shape[4]' --prop fill=$WHITE --prop x=8cm --prop y=16cm --prop width=0.4cm --prop height=0.4cm
 officecli set "$OUTPUT" '/slide[6]/shape[5]' --prop fill=FF6B35 --prop x=12cm --prop y=2cm --prop width=0.6cm --prop height=0.6cm
 officecli set "$OUTPUT" '/slide[6]/shape[6]' --prop x=$OFFSCREEN --prop y=10cm
-officecli set "$OUTPUT" '/slide[6]/shape[7]' --prop preset=ellipse --prop fill=$MARS_ORANGE --prop opacity=0.15 --prop width=3cm --prop height=3cm --prop x=2cm --prop y=15cm
+officecli set "$OUTPUT" '/slide[6]/shape[7]' --prop geometry=ellipse --prop fill=$MARS_ORANGE --prop opacity=0.15 --prop width=3cm --prop height=3cm --prop x=2cm --prop y=15cm
 
 # Hide all previous content, show slide 6 content
 officecli set "$OUTPUT" '/slide[6]/shape[8]' --prop x=$OFFSCREEN
@@ -688,13 +688,13 @@ officecli add "$OUTPUT" '/' --from '/slide[1]'
 officecli set "$OUTPUT" '/slide[7]' --prop transition=morph
 
 # Morph scene actors - journey continues
-officecli set "$OUTPUT" '/slide[7]/shape[1]' --prop preset=ellipse --prop fill=$PLANET --prop opacity=0.2 --prop width=16cm --prop height=16cm --prop x=10cm --prop y=3cm
-officecli set "$OUTPUT" '/slide[7]/shape[2]' --prop preset=ellipse --prop fill=$PURPLE --prop opacity=0.12 --prop width=20cm --prop height=20cm --prop x=8cm --prop y=1cm
+officecli set "$OUTPUT" '/slide[7]/shape[1]' --prop geometry=ellipse --prop fill=$PLANET --prop opacity=0.2 --prop width=16cm --prop height=16cm --prop x=10cm --prop y=3cm
+officecli set "$OUTPUT" '/slide[7]/shape[2]' --prop geometry=ellipse --prop fill=$PURPLE --prop opacity=0.12 --prop width=20cm --prop height=20cm --prop x=8cm --prop y=1cm
 officecli set "$OUTPUT" '/slide[7]/shape[3]' --prop x=30cm --prop y=2cm --prop width=0.9cm --prop height=0.9cm
 officecli set "$OUTPUT" '/slide[7]/shape[4]' --prop x=3cm --prop y=5cm --prop width=0.7cm --prop height=0.7cm
 officecli set "$OUTPUT" '/slide[7]/shape[5]' --prop x=26cm --prop y=16cm --prop width=0.8cm --prop height=0.8cm
-officecli set "$OUTPUT" '/slide[7]/shape[6]' --prop preset=ellipse --prop fill=$PURPLE_DARK --prop opacity=0.08 --prop line=none --prop width=24cm --prop height=24cm --prop x=6cm --prop y=0cm
-officecli set "$OUTPUT" '/slide[7]/shape[7]' --prop preset=ellipse --prop fill=$LIGHT_BLUE --prop opacity=0.7 --prop width=0.5cm --prop height=0.5cm --prop x=16cm --prop y=9cm
+officecli set "$OUTPUT" '/slide[7]/shape[6]' --prop geometry=ellipse --prop fill=$PURPLE_DARK --prop opacity=0.08 --prop line=none --prop width=24cm --prop height=24cm --prop x=6cm --prop y=0cm
+officecli set "$OUTPUT" '/slide[7]/shape[7]' --prop geometry=ellipse --prop fill=$LIGHT_BLUE --prop opacity=0.7 --prop width=0.5cm --prop height=0.5cm --prop x=16cm --prop y=9cm
 
 # Hide all content except final message
 officecli set "$OUTPUT" '/slide[7]/shape[8]' --prop x=$OFFSCREEN

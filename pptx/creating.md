@@ -37,7 +37,7 @@ Use this guide when creating a new presentation with no template.
 **1. Icon in Colored Circle（最通用）**
 ```bash
 # 彩色圆形背景
-officecli add slides.pptx /slide[N] --type shape --prop preset=ellipse --prop fill=1E2761 --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop line=none
+officecli add slides.pptx /slide[N] --type shape --prop geometry=ellipse --prop fill=1E2761 --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop line=none
 # 中心文字（数字、emoji、字母均可）
 officecli add slides.pptx /slide[N] --type shape --prop text="01" --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop fill=none --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
 ```
@@ -45,7 +45,7 @@ officecli add slides.pptx /slide[N] --type shape --prop text="01" --prop x=2cm -
 **2. 色块强调区（filled rectangle/roundRect）**
 ```bash
 # 作为背景色块或分隔条
-officecli add slides.pptx /slide[N] --type shape --prop preset=roundRect --prop x=2cm --prop y=4cm --prop width=14cm --prop height=12cm --prop fill=E8EDF3 --prop line=CADCFC --prop lineWidth=1pt
+officecli add slides.pptx /slide[N] --type shape --prop geometry=roundRect --prop x=2cm --prop y=4cm --prop width=14cm --prop height=12cm --prop fill=E8EDF3 --prop line=CADCFC --prop lineWidth=1pt
 ```
 
 **3. 大字号统计数字（Stats callout）**
@@ -142,7 +142,7 @@ officecli add slides.pptx /slide[3] --type shape --prop text="Market Overview" -
 officecli add slides.pptx /slide[3] --type shape --prop "text=Our market position has strengthened significantly in Q4.\\n\\nThree key drivers:\\n  1. Product innovation\\n  2. Strategic partnerships\\n  3. Customer-first approach" --prop x=2cm --prop y=5cm --prop width=14cm --prop height=12cm --prop font=Calibri --prop size=16 --prop color=333333 --prop align=left --prop fill=none --prop lineSpacing=1.4x
 
 # Right column -- image or chart placeholder
-officecli add slides.pptx /slide[3] --type shape --prop preset=roundRect --prop x=18cm --prop y=5cm --prop width=14cm --prop height=12cm --prop fill=E8EDF3 --prop line=CADCFC --prop lineWidth=1pt
+officecli add slides.pptx /slide[3] --type shape --prop geometry=roundRect --prop x=18cm --prop y=5cm --prop width=14cm --prop height=12cm --prop fill=E8EDF3 --prop line=CADCFC --prop lineWidth=1pt
 
 # Or add an actual image:
 # officecli add slides.pptx /slide[3] --type picture --prop src=market-chart.png --prop x=18cm --prop y=5cm --prop width=14cm --prop height=12cm --prop alt="Market share chart"
@@ -190,12 +190,12 @@ officecli add slides.pptx / --type slide --prop layout=blank --prop background=F
 officecli add slides.pptx /slide[6] --type shape --prop text="Before & After" --prop x=2cm --prop y=1cm --prop width=29.87cm --prop height=2.5cm --prop font=Georgia --prop size=32 --prop bold=true --prop color=1E2761 --prop align=center --prop fill=none
 
 # Left card -- Before
-officecli add slides.pptx /slide[6] --type shape --prop preset=roundRect --prop x=2cm --prop y=4.5cm --prop width=14.5cm --prop height=13cm --prop fill=FFFFFF --prop line=E0E0E0 --prop lineWidth=1pt
+officecli add slides.pptx /slide[6] --type shape --prop geometry=roundRect --prop x=2cm --prop y=4.5cm --prop width=14.5cm --prop height=13cm --prop fill=FFFFFF --prop line=E0E0E0 --prop lineWidth=1pt
 officecli add slides.pptx /slide[6] --type shape --prop text="Before" --prop x=3cm --prop y=5cm --prop width=12.5cm --prop height=2cm --prop font=Georgia --prop size=24 --prop bold=true --prop color=B85042 --prop align=left --prop fill=none
 officecli add slides.pptx /slide[6] --type shape --prop "text=Manual data entry\\nFragmented workflows\\n48-hour turnaround\\nError rate: 12%" --prop x=3cm --prop y=7.5cm --prop width=12.5cm --prop height=9cm --prop font=Calibri --prop size=16 --prop color=555555 --prop list=bullet --prop align=left --prop fill=none --prop lineSpacing=1.6x
 
 # Right card -- After
-officecli add slides.pptx /slide[6] --type shape --prop preset=roundRect --prop x=17.5cm --prop y=4.5cm --prop width=14.5cm --prop height=13cm --prop fill=FFFFFF --prop line=E0E0E0 --prop lineWidth=1pt
+officecli add slides.pptx /slide[6] --type shape --prop geometry=roundRect --prop x=17.5cm --prop y=4.5cm --prop width=14.5cm --prop height=13cm --prop fill=FFFFFF --prop line=E0E0E0 --prop lineWidth=1pt
 officecli add slides.pptx /slide[6] --type shape --prop text="After" --prop x=18.5cm --prop y=5cm --prop width=12.5cm --prop height=2cm --prop font=Georgia --prop size=24 --prop bold=true --prop color=2C5F2D --prop align=left --prop fill=none
 officecli add slides.pptx /slide[6] --type shape --prop "text=Automated pipelines\\nUnified platform\\n4-hour turnaround\\nError rate: 0.3%" --prop x=18.5cm --prop y=7.5cm --prop width=12.5cm --prop height=9cm --prop font=Calibri --prop size=16 --prop color=555555 --prop list=bullet --prop align=left --prop fill=none --prop lineSpacing=1.6x
 ```
@@ -248,10 +248,10 @@ officecli add slides.pptx /slide[8] --type shape --prop "text=Questions? Reach o
 officecli add slides.pptx /slide[1] --type shape --prop text="Hello" --prop x=2cm --prop y=3cm --prop width=10cm --prop height=3cm
 
 # Styled shape with fill
-officecli add slides.pptx /slide[1] --type shape --prop text="Important" --prop x=5cm --prop y=5cm --prop width=15cm --prop height=3cm --prop fill=4472C4 --prop color=FFFFFF --prop size=24 --prop bold=true --prop align=center --prop preset=roundRect
+officecli add slides.pptx /slide[1] --type shape --prop text="Important" --prop x=5cm --prop y=5cm --prop width=15cm --prop height=3cm --prop fill=4472C4 --prop color=FFFFFF --prop size=24 --prop bold=true --prop align=center --prop geometry=roundRect
 
 # Shape without text (decorative)
-officecli add slides.pptx /slide[1] --type shape --prop preset=ellipse --prop fill=FF6600 --prop x=15cm --prop y=5cm --prop width=5cm --prop height=5cm
+officecli add slides.pptx /slide[1] --type shape --prop geometry=ellipse --prop fill=FF6600 --prop x=15cm --prop y=5cm --prop width=5cm --prop height=5cm
 
 # Gradient fill
 officecli add slides.pptx /slide[1] --type shape --prop text="Gradient Box" --prop x=2cm --prop y=2cm --prop width=10cm --prop height=5cm --prop gradient=4472C4-1A1A2E --prop color=FFFFFF
@@ -298,7 +298,7 @@ There is no dedicated `icon` element type. Build icons from a colored circle + c
 
 ```bash
 # Colored circle background
-officecli add slides.pptx /slide[1] --type shape --prop preset=ellipse --prop fill=1E2761 --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop line=none
+officecli add slides.pptx /slide[1] --type shape --prop geometry=ellipse --prop fill=1E2761 --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop line=none
 
 # Centered text overlay (emoji, number, or letter as icon)
 officecli add slides.pptx /slide[1] --type shape --prop text="01" --prop x=2cm --prop y=5cm --prop width=2.5cm --prop height=2.5cm --prop fill=none --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center --prop font=Calibri
@@ -612,7 +612,7 @@ officecli add slides.pptx /slide[1] --type connector --prop x=2cm --prop y=10cm 
 officecli add slides.pptx /slide[1] --type connector --prop x=5cm --prop y=8cm --prop width=10cm --prop height=0 --prop tailEnd=triangle --prop line=1E2761 --prop lineWidth=2pt
 
 # Curved connector between shapes
-officecli add slides.pptx /slide[1] --type connector --prop preset=curve --prop startShape=1 --prop endShape=2 --prop line=4472C4 --prop lineWidth=1.5pt
+officecli add slides.pptx /slide[1] --type connector --prop shape=curve --prop startShape=1 --prop endShape=2 --prop line=4472C4 --prop lineWidth=1.5pt
 
 # Dashed line
 officecli add slides.pptx /slide[1] --type connector --prop x=2cm --prop y=5cm --prop width=10cm --prop height=0 --prop lineDash=dash --prop line=999999
@@ -830,22 +830,22 @@ Horizontal timeline with milestone circles and alternating above/below labels.
 officecli add slides.pptx / --type slide --prop layout=blank --prop background=FFFFFF
 officecli add slides.pptx /slide[N] --type shape --prop text="Milestones & Roadmap" --prop x=2cm --prop y=1cm --prop width=29.87cm --prop height=2.5cm --prop font=Georgia --prop size=36 --prop bold=true --prop color=1E2761 --prop align=left --prop fill=none
 officecli add slides.pptx /slide[N] --type connector --prop x=2cm --prop y=10cm --prop width=29.87cm --prop height=0 --prop line=CADCFC --prop lineWidth=2pt
-officecli add slides.pptx /slide[N] --type shape --prop preset=ellipse --prop fill=1E2761 --prop x=4cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
+officecli add slides.pptx /slide[N] --type shape --prop geometry=ellipse --prop fill=1E2761 --prop x=4cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text=Q1 --prop x=4cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop fill=none --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
 officecli add slides.pptx /slide[N] --type shape --prop text="Product Launch" --prop x=2.5cm --prop y=5.5cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=14 --prop bold=true --prop color=1E2761 --prop align=center
 officecli add slides.pptx /slide[N] --type shape --prop text="iOS & Android app
 50K users target" --prop x=2.5cm --prop y=7cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=11 --prop color=8899BB --prop align=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=ellipse --prop fill=CADCFC --prop x=12cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
+officecli add slides.pptx /slide[N] --type shape --prop geometry=ellipse --prop fill=CADCFC --prop x=12cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text=Q2 --prop x=12cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop fill=none --prop color=1E2761 --prop size=16 --prop bold=true --prop align=center --prop valign=center
 officecli add slides.pptx /slide[N] --type shape --prop text="B2B Launch" --prop x=10.5cm --prop y=12cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=14 --prop bold=true --prop color=1E2761 --prop align=center
 officecli add slides.pptx /slide[N] --type shape --prop text="Enterprise platform
 10 pilot customers" --prop x=10.5cm --prop y=13.5cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=11 --prop color=8899BB --prop align=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=ellipse --prop fill=1E2761 --prop x=20cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
+officecli add slides.pptx /slide[N] --type shape --prop geometry=ellipse --prop fill=1E2761 --prop x=20cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text=Q3 --prop x=20cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop fill=none --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
 officecli add slides.pptx /slide[N] --type shape --prop text="Scale Phase" --prop x=18.5cm --prop y=5.5cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=14 --prop bold=true --prop color=1E2761 --prop align=center
 officecli add slides.pptx /slide[N] --type shape --prop text="500K users
 EU expansion" --prop x=18.5cm --prop y=7cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=11 --prop color=8899BB --prop align=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=ellipse --prop fill=CADCFC --prop x=28cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
+officecli add slides.pptx /slide[N] --type shape --prop geometry=ellipse --prop fill=CADCFC --prop x=28cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop line=none
 officecli add slides.pptx /slide[N] --type shape --prop text=Q4 --prop x=28cm --prop y=8.5cm --prop width=3cm --prop height=3cm --prop fill=none --prop color=1E2761 --prop size=16 --prop bold=true --prop align=center --prop valign=center
 officecli add slides.pptx /slide[N] --type shape --prop text=Profitability --prop x=26.5cm --prop y=12cm --prop width=6cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=14 --prop bold=true --prop color=1E2761 --prop align=center
 officecli add slides.pptx /slide[N] --type shape --prop text="2M users
@@ -867,11 +867,11 @@ Decreasing-width trapezoids stacked vertically with centered labels.
 ```bash
 officecli add slides.pptx / --type slide --prop layout=blank --prop background=FFFFFF
 officecli add slides.pptx /slide[N] --type shape --prop text="Conversion Funnel" --prop x=2cm --prop y=0.5cm --prop width=29.87cm --prop height=2.5cm --prop font=Georgia --prop size=36 --prop bold=true --prop color=1E2761 --prop align=left --prop fill=none
-officecli add slides.pptx /slide[N] --type shape --prop preset=trapezoid --prop text="Visitors: 48.2M" --prop x=4cm --prop y=3.5cm --prop width=26cm --prop height=2.5cm --prop fill=1E2761 --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=trapezoid --prop text="Product Views: 28.9M (60%)" --prop x=6.5cm --prop y=6.5cm --prop width=21cm --prop height=2.5cm --prop fill=2C5F2D --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=trapezoid --prop text="Add to Cart: 8.7M (18%)" --prop x=9cm --prop y=9.5cm --prop width=16cm --prop height=2.5cm --prop fill=97BC62 --prop color=2D2D2D --prop size=16 --prop bold=true --prop align=center --prop valign=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=trapezoid --prop text="Checkout: 3.5M (7.3%)" --prop x=11cm --prop y=12.5cm --prop width=12cm --prop height=2.5cm --prop fill=D4A843 --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
-officecli add slides.pptx /slide[N] --type shape --prop preset=trapezoid --prop text="Purchase: 2.2M (4.6%)" --prop x=13cm --prop y=15.5cm --prop width=8cm --prop height=2.5cm --prop fill=8B6B00 --prop color=FFFFFF --prop size=14 --prop bold=true --prop align=center --prop valign=center
+officecli add slides.pptx /slide[N] --type shape --prop geometry=trapezoid --prop text="Visitors: 48.2M" --prop x=4cm --prop y=3.5cm --prop width=26cm --prop height=2.5cm --prop fill=1E2761 --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
+officecli add slides.pptx /slide[N] --type shape --prop geometry=trapezoid --prop text="Product Views: 28.9M (60%)" --prop x=6.5cm --prop y=6.5cm --prop width=21cm --prop height=2.5cm --prop fill=2C5F2D --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
+officecli add slides.pptx /slide[N] --type shape --prop geometry=trapezoid --prop text="Add to Cart: 8.7M (18%)" --prop x=9cm --prop y=9.5cm --prop width=16cm --prop height=2.5cm --prop fill=97BC62 --prop color=2D2D2D --prop size=16 --prop bold=true --prop align=center --prop valign=center
+officecli add slides.pptx /slide[N] --type shape --prop geometry=trapezoid --prop text="Checkout: 3.5M (7.3%)" --prop x=11cm --prop y=12.5cm --prop width=12cm --prop height=2.5cm --prop fill=D4A843 --prop color=FFFFFF --prop size=16 --prop bold=true --prop align=center --prop valign=center
+officecli add slides.pptx /slide[N] --type shape --prop geometry=trapezoid --prop text="Purchase: 2.2M (4.6%)" --prop x=13cm --prop y=15.5cm --prop width=8cm --prop height=2.5cm --prop fill=8B6B00 --prop color=FFFFFF --prop size=14 --prop bold=true --prop align=center --prop valign=center
 officecli add slides.pptx /slide[N] --type shape --prop text="Drop-off Rates" --prop x=27cm --prop y=3.5cm --prop width=5cm --prop height=1.5cm --prop fill=none --prop font=Calibri --prop size=14 --prop bold=true --prop color=333333 --prop align=left
 officecli add slides.pptx /slide[N] --type shape --prop text=-40% --prop x=27cm --prop y=6.5cm --prop width=5cm --prop height=1cm --prop fill=none --prop font=Calibri --prop size=12 --prop color=B85042 --prop align=left
 officecli add slides.pptx /slide[N] --type shape --prop text=-70% --prop x=27cm --prop y=9.5cm --prop width=5cm --prop height=1cm --prop fill=none --prop font=Calibri --prop size=12 --prop color=B85042 --prop align=left
