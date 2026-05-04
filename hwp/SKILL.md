@@ -51,8 +51,8 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | New form field creation | Blocked | source prototype exists; Hancom verification not closed |
 | Diagnose binary .hwp support | Yes, experimental | `officecli hwp doctor --json` then inspect `officecli capabilities --json` |
 | Read/render .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `officecli view file.hwp svg --page 1 --json` |
-| Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; always write `--prop output=out.hwp` |
-| In-place .hwp overwrite | Blocked by policy | Use output copy; in-place requires future temp+verify+backup flow |
+| Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; prefer `--prop output=out.hwp` |
+| Safe in-place .hwp text replace | Yes, experimental | Only when `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`; use `--in-place --backup --verify` |
 | Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` when rhwp bridge is unavailable or operation is unsupported |
 
 ---
@@ -576,13 +576,15 @@ officecli view file.hwp fields --json
 officecli view file.hwp field --field-name 회사명 --json
 officecli set file.hwp /field --prop name=회사명 --prop value=리지 --prop output=out.hwp --json
 officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --prop output=out.hwp --json
+officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --in-place --backup --verify --json
 officecli set file.hwp /table/cell --prop section=0 --prop parent-para=3 --prop control=0 --prop cell=0 --prop value=오피스셀 --prop output=out.hwp --json
 ```
 
 Policy:
 
-- Never overwrite binary `.hwp` in place.
-- Always write mutation output to a new path with `--prop output=...`.
+- Prefer output mode for binary `.hwp` mutation: `--prop output=out.hwp`.
+- Use in-place mode only for `/text` replacement, only when explicitly requested, and only after `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`.
+- In-place mode must include `--in-place --backup --verify` and must not include `--prop output=...`.
 - Treat table-cell mutation as coordinate-based and experimental.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
@@ -681,7 +683,7 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 ## 17. Anti-Patterns (MUST AVOID)
 
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
-2. **No unguarded HWP binary overwrite** -- binary `.hwp` editing is experimental via rhwp; never in-place overwrite, always use `--prop output=...`, and fall back to HWPX conversion for unsupported operations
+2. **No unguarded HWP binary overwrite** -- binary `.hwp` editing is experimental via rhwp; prefer `--prop output=...`; only use safe in-place `/text` replacement when `safeInPlace.ready=true` and the command includes `--in-place --backup --verify`
 3. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
 4. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
 5. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
