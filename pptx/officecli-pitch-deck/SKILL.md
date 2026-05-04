@@ -1,5 +1,5 @@
 ---
-# officecli: v1.0.24
+# officecli: help-driven schema; verify with `officecli --help` and `officecli help pptx ... --json`
 name: officecli-pitch-deck
 description: "Use this skill when the user wants to create a pitch deck, investor presentation, product launch deck, sales presentation, or business proposal in PowerPoint format. Trigger on: 'pitch deck', 'investor deck', 'Series A deck', 'product launch presentation', 'sales deck', 'fundraising deck', 'startup pitch', 'business proposal slides', 'seed pitch', 'enterprise sales deck'. Output is always a single .pptx file. This skill does NOT use morph transitions -- for morph-animated presentations, use the morph-ppt skill instead."
 ---
@@ -290,8 +290,9 @@ After any `swap` or `move`, re-query the affected slide with `officecli get deck
 ## Help System
 
 ```bash
-officecli pptx set              # All settable elements and properties
-officecli pptx set shape        # Shape properties in detail
-officecli pptx add              # All addable element types
-officecli pptx view             # All view modes
+officecli --help
+officecli help pptx set              # All settable elements and properties
+officecli help pptx set shape --json # Shape properties in detail
+officecli help pptx add --json       # All addable element types
+officecli view --help                # All view modes
 ```

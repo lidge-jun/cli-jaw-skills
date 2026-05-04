@@ -1,5 +1,5 @@
 ---
-# officecli: v1.0.24
+# officecli: help-driven schema; verify with `officecli --help` and `officecli help xlsx ... --json`
 name: officecli-data-dashboard
 description: "Use this skill when the user wants to create a data dashboard, analytics dashboard, KPI dashboard, or executive summary from CSV/tabular data in Excel format. Trigger on: 'dashboard', 'KPI report', 'analytics summary', 'data visualization', 'CSV to Excel dashboard', 'executive dashboard', 'metrics dashboard'. Output is always a single .xlsx file."
 ---

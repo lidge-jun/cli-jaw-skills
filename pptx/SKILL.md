@@ -12,6 +12,8 @@ Primary tool: **officecli** (PATH) for ~80% of tasks (slide add/set/remove, vali
 Fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides). **Python scripts** (`scripts/*.py`) for unpack/repair/thumbnail/cleanup. See §3.
 Do NOT use this skill for Keynote, Google Slides API automation, or image generation.
 
+**OfficeCLI discovery rule:** use the installed CLI as the source of truth. Run `officecli --help` for workflows and `officecli help pptx ... --json` before inventing element/property names.
+
 ---
 
 ## 1. Quick Reference
@@ -221,7 +223,7 @@ Every slide needs a visual element — shape, chart, table, or picture. Text-onl
 
 ```bash
 # Shapes as content containers (cards, banners, blocks)
-officecli add deck.pptx '/slide[1]' --type shape --prop shape=roundRect \
+officecli add deck.pptx '/slide[1]' --type shape --prop geometry=roundRect \
   --prop fill=1E2761 --prop x=1cm --prop y=4cm --prop w=15cm --prop h=12cm
 
 # Tables for structured data
@@ -437,12 +439,13 @@ Always inspect help before inventing properties:
 
 ```bash
 officecli --help
-officecli pptx add slide       # exact property list
-officecli pptx add shape
-officecli pptx set slide
-officecli pptx set shape
-officecli pptx view            # all view modes
-officecli pptx query           # query selector syntax
+officecli help pptx
+officecli help pptx add slide --json       # exact property list
+officecli help pptx add shape --json
+officecli help pptx set slide --json
+officecli help pptx set shape --json
+officecli view --help                      # all view modes
+officecli help pptx query
 ```
 
 ---
@@ -520,7 +523,7 @@ Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, 
 |---------|-----------------|
 | Unquoted `[N]` in zsh | Always quote: `"/slide[1]"` or `'/slide[1]'` |
 | `--name "foo"` | Use `--prop name="foo"` — all attributes through `--prop` |
-| Guessing property names | Run `officecli pptx set shape` for exact names |
+| Guessing property names | Run `officecli help pptx set shape --json` for exact names |
 | Hex colors with `#` | Use `FF0000` not `#FF0000` |
 | `$` in `--prop text=` | Use single quotes: `'$15M'` |
 | `view text` misses tables | Use `view annotated` for full text |
@@ -531,6 +534,7 @@ Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, 
 | **`officecli open` as background shell** | Run foreground — returns immediately, daemon runs in bg automatically. Background shell spawn creates zombies |
 | **Batch JSON `'X' is an invalid start of a value`** | Shell syntax leaked. Use heredoc: `cat <<'EOF' \| officecli batch FILE.pptx` |
 | **Picking colors/fonts blindly** | Read `references/design-system.md` (20 palettes, 8 font pairings) BEFORE picking. See §3 |
+| **Using old `officecli pptx set shape` syntax** | Use `officecli help pptx set shape --json`; schema help now lives under `officecli help <format> ...` |
 
 ---
 

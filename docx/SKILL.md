@@ -13,6 +13,8 @@ Fallback: **Python OOXML scripts** (`scripts/*.py`) for what officecli cannot do
 
 **DOCX only.** Do NOT use this skill for PDFs, spreadsheets, HWPX, Google Docs, or any other format.
 
+**OfficeCLI discovery rule:** before guessing paths, element names, or properties, ask the installed CLI. Use `officecli --help` for workflow entry points and `officecli help docx ... --json` for machine-readable schema.
+
 ---
 
 ## 1. Quick Decision
@@ -256,18 +258,22 @@ Always confirm syntax from help before guessing:
 
 ```bash
 officecli --help
-officecli docx add
-officecli docx set
-officecli docx query --help
+officecli help docx
+officecli help docx add
+officecli help docx set
+officecli help docx query
+officecli help docx add paragraph --json
+officecli help docx set run --json
 ```
 
 Drill into a specific area:
 
 ```bash
-officecli docx add paragraph
-officecli docx add picture
-officecli docx set run
-officecli docx set style
+officecli help docx add paragraph
+officecli help docx add picture
+officecli help docx set run
+officecli help docx set style
+officecli help all --jsonl | grep '"format":"docx"'
 ```
 
 | Binary | Path | Notes |
@@ -391,7 +397,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | Pitfall | Correct Approach |
 |---------|-----------------|
 | `--name "foo"` | Use `--prop name="foo"` -- all attributes go through `--prop` |
-| Guessing property names | Run `officecli docx set paragraph` to see exact names |
+| Guessing property names | Run `officecli help docx set paragraph --json` to see exact names |
 | `\n` in shell strings | Use `\\n` for newlines in `--prop text="line1\\nline2"` |
 | Modifying an open file | Close the file in Word first |
 | Hex colors with `#` | Use `FF0000` not `#FF0000` -- no hash prefix |

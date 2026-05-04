@@ -8,9 +8,11 @@ description: "HWP/HWPX create, read, edit, review, template-fill, QA. Triggers: 
 > **Scope**: HWP/HWPX only. Do NOT reference or load skills for other formats
 > (DOCX, PPTX, XLSX, PDF). If the task involves a non-HWP format, stop and tell the user.
 
-Primary tool: **officecli** (on PATH — global install) for ~70% of tasks.
-Fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what officecli cannot cover — HWP binary reading, HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
+Primary tool: **officecli** (on PATH — global install) for HWPX work and experimental rhwp-backed binary HWP read/edit.
+Fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what officecli cannot cover — HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
 Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
+
+**OfficeCLI discovery rule:** run `officecli hwp doctor --json` and `officecli capabilities --json` before claiming binary `.hwp` support. Use `officecli hwp --json` for current rhwp recipes/policies and `officecli help <format> ... --json` for DOCX/XLSX/PPTX-style schema help.
 
 ---
 
@@ -47,7 +49,11 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | **Pattern-match editing** | Python (L4) | `scripts/hwpx_cli.py open` → pattern edit XML → `save` — see §16 |
 | **Visual QA** | Python (L3) | `scripts/contact_sheet.py` + subagent review with `reference/visual_qa_prompt.md` |
 | New form field creation | Blocked | source prototype exists; Hancom verification not closed |
-| Open .hwp (binary) | L3 only | `python3 scripts/hwp_reader.py` (read-only) or `scripts/hwp_convert.py IN.hwp OUT.hwpx` |
+| Diagnose binary .hwp support | Yes, experimental | `officecli hwp doctor --json` then inspect `officecli capabilities --json` |
+| Read/render .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `officecli view file.hwp svg --page 1 --json` |
+| Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; always write `--prop output=out.hwp` |
+| In-place .hwp overwrite | Blocked by policy | Use output copy; in-place requires future temp+verify+backup flow |
+| Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` when rhwp bridge is unavailable or operation is unsupported |
 
 ---
 
@@ -294,9 +300,11 @@ Always confirm syntax from help before guessing:
 
 ```bash
 officecli --help
-officecli hwpx add
-officecli hwpx set
-officecli hwpx view --help
+officecli hwp --json
+officecli hwp doctor --json
+officecli capabilities --json
+officecli view --help
+officecli set --help
 python3 scripts/hwpx_cli.py --help
 python3 scripts/build_hwpx.py --help
 ```
@@ -546,8 +554,37 @@ officecli set form.hwpx /table/fill --prop '성 명=홍길동'   # Step 3: fill
 
 ```bash
 file doc.hwpx   # "Zip archive" -> HWPX (ZIP + OWPML XML)
-file doc.hwp    # "HWP Document" -> HWP 5.0 (OLE2 binary, read-only)
+file doc.hwp    # "HWP Document" -> HWP 5.0 binary
 ```
+
+### Native HWP via rhwp Bridge (experimental)
+
+Before operating on binary `.hwp`, check runtime readiness:
+
+```bash
+officecli hwp doctor --json
+officecli capabilities --json
+officecli hwp --json
+```
+
+Supported claims are capability-gated. Current safe recipes include:
+
+```bash
+officecli view file.hwp text --json
+officecli view file.hwp svg --page 1 --json
+officecli view file.hwp fields --json
+officecli view file.hwp field --field-name 회사명 --json
+officecli set file.hwp /field --prop name=회사명 --prop value=리지 --prop output=out.hwp --json
+officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --prop output=out.hwp --json
+officecli set file.hwp /table/cell --prop section=0 --prop parent-para=3 --prop control=0 --prop cell=0 --prop value=오피스셀 --prop output=out.hwp --json
+```
+
+Policy:
+
+- Never overwrite binary `.hwp` in place.
+- Always write mutation output to a new path with `--prop output=...`.
+- Treat table-cell mutation as coordinate-based and experimental.
+- Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
 ### Conversion
 
@@ -555,7 +592,7 @@ file doc.hwp    # "HWP Document" -> HWP 5.0 (OLE2 binary, read-only)
 # Python fallback (H2Orestart-based)
 python3 scripts/hwp_convert.py input.hwp output.hwpx
 
-# Read-only HWP inspection (no conversion)
+# Legacy read-only HWP inspection (no conversion)
 python3 scripts/hwp_reader.py input.hwp
 ```
 
@@ -644,7 +681,7 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 ## 17. Anti-Patterns (MUST AVOID)
 
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
-2. **No direct HWP binary editing** -- HWP 5.0 (`.hwp`) is read-only; convert to HWPX first via `scripts/hwp_convert.py`
+2. **No unguarded HWP binary overwrite** -- binary `.hwp` editing is experimental via rhwp; never in-place overwrite, always use `--prop output=...`, and fall back to HWPX conversion for unsupported operations
 3. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
 4. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
 5. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
@@ -656,10 +693,10 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 
 | Tool | Purpose | Required? |
 |------|---------|-----------|
-| `officecli` (global) | Primary HWPX CLI | **Required** |
+| `officecli` (global) | Primary HWPX CLI + experimental rhwp-backed HWP bridge | **Required** |
 | `python3` | Fallback scripts (`scripts/*.py`) | **Required for L3/L4** |
 | `lxml` | XML processing for scripts/* | Required for L3/L4 (`pip install lxml`) |
-| `pyhwp` | HWP 5.0 binary reading | Required for HWP→HWPX |
+| `pyhwp` | Legacy HWP 5.0 binary reading/conversion fallback | Required for HWP→HWPX fallback |
 | `soffice` (LibreOffice) | PDF conversion + visual verification | Recommended |
 | `Java` (JAVA_HOME) | H2Orestart HWP conversion engine | For HWP→HWPX only |
 | `dotnet` | Build officecli from source | For builds only |
