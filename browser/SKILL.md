@@ -66,17 +66,32 @@ can go stale.
 
 These commands are implemented in the current `cli-jaw browser` runtime.
 
+## Support Labels
+
+| Surface | Label | Notes |
+| --- | --- | --- |
+| local `cli-jaw browser` primitives | ready | server-backed local Chrome/CDP only |
+| `doctor` and `cleanup-runtimes` | ready | dry-run by default; close requires `--force` |
+| dashboard visible/headless start split | ready | visible manual and headless agent modes are separate |
+| web-ai provider workflows | beta | use the `web-ai` skill and provider-specific gates |
+| external hosted/cloud CDP | deferred | do not claim remote browser hosting support |
+
 ### Browser Management
 
 ```bash
 cli-jaw browser start [--port <auto>] [--headless] [--agent]
 cli-jaw browser stop
 cli-jaw browser status
+cli-jaw browser doctor [--json]
+cli-jaw browser cleanup-runtimes [--json] [--close --force]
 cli-jaw browser reset [--force]
 ```
 
 - `--agent` enables an automated headless session.
 - Plain `browser start` is for user-requested interactive browsing.
+- `doctor` reports CDP/runtime ownership mismatch and orphan cleanup scope.
+- `cleanup-runtimes` is dry-run by default; it only closes durable jaw-owned
+  orphan runtime records when both `--close` and `--force` are supplied.
 - `reset` clears the browser profile and screenshots; use only when the user
   explicitly wants a reset or you have confirmed it.
 
@@ -274,11 +289,27 @@ CHROME_HEADLESS=1 cli-jaw browser start
 
 Use `--agent` for automation. It avoids popping a visible browser window.
 
+## Runtime Cleanup
+
+```bash
+cli-jaw browser doctor --json
+cli-jaw browser cleanup-runtimes
+cli-jaw browser cleanup-runtimes --close --force
+```
+
+`cleanup-runtimes` is intentionally conservative. It only acts on a durable
+`browser-runtime-owner.json` record written by jaw-owned Chrome launches, and
+the process command line must still match the recorded pid, CDP port, and
+profile. Chrome helper processes containing `--type=` are rejected. Never use
+general `ps` output as proof that a Chrome process is safe to close.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | CDP connection refused | Chrome not started or wrong port | `cli-jaw browser status`, then start with the expected port |
+| `running:false` with `owner:jaw-owned` | stale runtime metadata or dead CDP | `cli-jaw browser doctor`, then retry `browser start` |
+| old headless jaw Chrome remains | durable jaw-owned orphan candidate | `cli-jaw browser cleanup-runtimes` dry-run before `--close --force` |
 | Windows only opens test browser | Chrome singleton absorbed launch | Close all Chrome windows, then use `start --agent` |
 | Headless CDP not opening | headless not requested in GUI-less env | Add `--headless` or use `--agent` |
 | Port conflict | another process owns the CDP port | choose a different `--port` |

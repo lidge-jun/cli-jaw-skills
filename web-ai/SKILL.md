@@ -24,6 +24,16 @@ instead of calling a model API directly.
 - Use `vision-click` only as an explicit fallback when DOM/snapshot cannot see a
   visible UI target.
 
+## Support Labels
+
+| Surface | Label | Notes |
+| --- | --- | --- |
+| prompt render/context dry-run | ready | browser-free and deterministic |
+| ChatGPT/Gemini/Grok live send/poll/query | beta | depends on provider UI/account state |
+| ChatGPT semantic resolver and answer artifacts | ready in cli-jaw mirror | mirrors agbrowse Phase 16/17 contracts |
+| source audit flags | ready in cli-jaw mirror | `--require-source-audit` fails closed on missing inline sources |
+| hosted/cloud/external-CDP operation | deferred | do not claim hosted browser support |
+
 ## Prompt Shape
 
 Build a structured question envelope:
@@ -61,6 +71,7 @@ cli-jaw browser web-ai context-render --vendor chatgpt --prompt "..." --context-
 cli-jaw browser web-ai status --vendor chatgpt
 cli-jaw browser web-ai query --vendor chatgpt --prompt "..." --context-from-files "src/foo.ts"
 cli-jaw browser web-ai query --vendor chatgpt --inline-only --allow-copy-markdown-fallback --prompt "..."
+cli-jaw browser web-ai query --vendor grok --inline-only --require-source-audit --source-audit-scope "sources checked" --source-audit-date "2026-05-05" --prompt "..."
 cli-jaw browser web-ai poll --vendor chatgpt --timeout 1200
 cli-jaw browser web-ai capabilities --vendor chatgpt
 cli-jaw browser web-ai notifications --vendor chatgpt
@@ -95,6 +106,17 @@ Scope to a single capability with `--probe <capabilityId>`.
 directly (with `--family` / `--frontend-status` filters). agbrowse mirrors
 the same hyphenated capability ID convention via its much smaller probe
 runtime in `web-ai/capability.mjs`.
+
+Completed `poll`, `query`, and `watch` results may include:
+
+- `answerArtifact`: normalized capture metadata (`capturedBy`,
+  `exactnessScore`, text/markdown lengths, warnings).
+- `sourceAudit`: inline source coverage report when
+  `--require-source-audit` is enabled.
+
+Use `--require-source-audit` for research tasks where bottom-only provider
+source drawers are not enough. Pair absence/no-official-response claims with
+`--source-audit-scope` and `--source-audit-date`.
 
 ## Error taxonomy
 
