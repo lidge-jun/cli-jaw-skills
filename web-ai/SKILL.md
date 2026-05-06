@@ -94,6 +94,24 @@ Pass `--timeout 1800` (30 min) or higher for unusually long Pro/Deep Think
 runs. The provider tab and the cli-jaw browser Chrome process stay open
 across a poll timeout — only the polling loop gives up.
 
+## Tab pooling and lease contention
+
+Completed provider tabs are kept warm in a per-vendor pool so the next
+`send` reuses a tab instead of creating a new one. Defaults (overridable
+via env on the agbrowse side):
+
+| Setting | Default | Env Var |
+| --- | --- | --- |
+| TTL per pooled tab | 15 min | `AGBROWSE_PROVIDER_POOL_TTL` |
+| Warm tabs per `(owner,vendor,sessionType,origin,profile)` | 3 | `AGBROWSE_PROVIDER_POOL_MAX_PER_KEY` |
+| Global cap on warm provider tabs | 8 | `AGBROWSE_PROVIDER_POOL_GLOBAL_MAX` |
+
+If you hit `Target page... has been closed` while issuing a second
+Pro / Deep Think query while another is still polling, that is lease
+contention on the per-key cap. Pass `--new-tab` (or its alias
+`--parallel`) on the second call to bypass pool reuse and allocate a
+fresh provider tab.
+
 ## Runtime capabilities
 
 `cli-jaw browser web-ai status --vendor <v> --json` now embeds a
