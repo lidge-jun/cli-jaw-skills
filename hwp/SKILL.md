@@ -135,6 +135,28 @@ officecli covers most HWPX operations. For template assembly, direct XML editing
 | `scripts/text_extract.py` | Extract plain text from HWPX | `python3 scripts/text_extract.py INPUT.hwpx` |
 | `scripts/ooxml/pack.py` / `unpack.py` | ZIP atomicity helpers | Used internally by other scripts |
 
+### Fixed-Layout Exam Visual QA
+
+KICE-style exam sheets (`국어 영역`, `수학 영역`, two-column
+`<hp:colPr type="NEWSPAPER" colCount="2">`, dense question numbering) are
+fixed-layout documents. Treat visual fidelity as stricter than generic text
+mutation:
+
+1. **Do not insert QA/proof markers into the visible body**. Strings such as
+   `[CU TEMPLATE EDIT ...]`, `VISUAL QA`, or `edited via Hancom Office HWP UI`
+   inside the question body are visual hard failures.
+2. Capture before/after screenshots from Hancom Office HWP at the same zoom and
+   page position. Store proof in screenshot paths, logs, or sidecar evidence,
+   not in the document's first column, answer choices, header tables, or
+   floating title/page-number objects.
+3. If the requested edit changes exam content, replace only the intended anchor
+   text/run. Preserve column breaks, question numbering, answer-choice tab
+   layout, equations, and floating objects.
+4. For direct XML edits, strip all `<hp:linesegarray>` layout cache entries
+   before repacking so Hancom recalculates layout on open.
+5. Pass criteria: same page count, same two-column structure, no unexpected
+   body marker, no visible drift except the requested content change.
+
 ### Editing Escalation Ladder
 
 When officecli can't do the job, escalate in this order:
@@ -685,9 +707,10 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
 2. **No unguarded HWP binary overwrite** -- binary `.hwp` editing is experimental via rhwp; prefer `--prop output=...`; only use safe in-place `/text` replacement when `safeInPlace.ready=true` and the command includes `--in-place --backup --verify`
 3. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
-4. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
-5. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
-6. **Ignoring reference materials** — `reference/header-xml-guide.md`, `reference/section0-xml-guide.md`, and `reference/style_id_maps.md` are mandatory reading for custom XML work. See §3
+4. **No visible QA markers in fixed-layout exams** -- KICE-style documents fail visual QA if proof text is inserted into the question body; use screenshots or sidecar evidence.
+5. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
+6. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
+7. **Ignoring reference materials** — `reference/header-xml-guide.md`, `reference/section0-xml-guide.md`, and `reference/style_id_maps.md` are mandatory reading for custom XML work. See §3
 
 ---
 
