@@ -61,6 +61,9 @@ When the request has **unspecified technology or unclear scope**, clarify before
 
 If the user already specifies clear tech (e.g. "FastAPI로 REST API 만들어줘"), **skip this entirely**.
 
+For new Node backend source files, prefer `.ts` when the repo supports TypeScript or is greenfield. Inherit `dev` TypeScript strict-compatibility rules.
+If backend boundaries are unclear, read existing source-of-truth docs/logs first, then document routes, services, repositories, data stores, and runtime commands in the repo's existing SOT before broad implementation.
+
 ---
 
 ## 1. Architecture Decision

@@ -43,6 +43,14 @@ If the request has unclear scope or unspecified technology, clarify first:
 - Recommend one with project-specific reasoning
 - Confirm once, then proceed
 
+For broad changes or unfamiliar repositories, P phase MUST include:
+- Compact tree of the current repository shape
+- Detected repo conventions: docs, plans, architecture notes, source-of-truth logs, naming, tests
+- Whether existing `structure/`, `devlog/`, `docs/`, `plans/`, or equivalent logs were read and will be reused
+- Whether `structure/` or `devlog/` is proposed
+
+Do not create new project-level source-of-truth folders during B unless approved in P or explicitly requested by the user.
+
 Read project docs and dev skills first. Write a plan with two parts:
 - **Part 1**: Easy explanation — what will be built, in non-developer terms.
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
@@ -59,6 +67,10 @@ Spawn a worker to audit the plan (not code). The worker verifies:
 - All file paths and imports in the plan actually exist
 - Function signatures match real code
 - No integration risks
+- Existing source-of-truth docs/logs were read when present
+- No new `structure/`, `devlog/`, docs, or AGENTS files are introduced without user approval
+- New JS/TS files follow TypeScript preference rules unless the plan states why JS is required
+- New TypeScript is strict-compatible or limitations are stated
 
 Output worker JSON for the audit. Review results when they come back.
 - If FAIL → fix the plan → output worker JSON again to re-audit
@@ -68,6 +80,8 @@ Output worker JSON for the audit. Review results when they come back.
 
 ### B — Build
 Implement the plan. You write all code directly. Workers are read-only verifiers.
+
+Do not create `structure/` or `devlog/` unless approved in P or explicitly requested by the user.
 
 After implementing, output worker JSON for verification. The worker checks your code exists and integrates cleanly.
 - If NEEDS_FIX → you fix the issues → re-verify
@@ -98,13 +112,32 @@ State returns to IDLE automatically.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
 
+## Repository Root Contract
+
+Before writing a PABCD plan or dispatching an employee, determine the actual
+working repository root with `pwd -P` from the target repo.
+
+Every A/B phase `cli-jaw dispatch` task body MUST begin with:
+
+```text
+Project root: /absolute/path/to/current/repo
+```
+
+Rules:
+- `Project root` must be the current working repository, not `JAW_HOME`.
+- Never let workers infer the repo root from `~/.cli-jaw*`, `process.cwd()`, or an employee temp directory.
+- Resolve all relative repo paths (`src/...`, `tests/...`, `structure/...`, `skills_ref/...`) against `Project root`.
+- If `Project root` is unknown, STOP and ask before dispatching.
+
 ## Shared Plan (auto-injected)
 
 When P completes, the plan is saved to the **worklog `## Plan` section** (single source of truth) and kept in `ctx.plan`. No project-root file is created.
 
 - In A and B, the orchestrator **auto-injects the full plan body** at the top of every `cli-jaw dispatch` task under `## Approved Plan`.
 - Workers never read a plan file. Your task body should contain only the actual audit/verify instruction — the plan is prepended for you.
-- Example: `cli-jaw dispatch --agent "Backend" --task "Audit: verify the imports in ..."` — no "read the plan" line needed.
+- Example: `cli-jaw dispatch --agent "Backend" --task "Project root: /absolute/path/to/current/repo
+
+Audit: verify the imports in ..."` — no "read the plan" line needed.
 
 ## Pitfalls (반드시 피해야 할 행동)
 

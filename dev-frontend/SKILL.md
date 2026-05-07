@@ -36,6 +36,9 @@ When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 
 If the user already names a specific component, skip this step.
 Reference: [component.gallery/components](https://component.gallery/components/)
 
+For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component files when the repo supports TypeScript. Inherit `dev` TypeScript strict-compatibility rules.
+If frontend structure is unclear, read existing source-of-truth docs/logs first, then document pages, components, routes, state stores, and build commands in the repo's existing SOT before broad implementation.
+
 ---
 
 ## 1. Design Thinking

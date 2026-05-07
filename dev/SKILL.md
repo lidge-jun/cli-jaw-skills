@@ -44,6 +44,40 @@ One confirmation round: 2-3 options → 1 recommendation → confirm → move on
 
 ---
 
+## 0.5 Repository Convention Discovery
+
+Before broad changes, inspect existing project conventions:
+- Source layout: `src/`, `app/`, `packages/`, `frontend/`, `backend/`
+- Source-of-truth docs/logs: `structure/`, `docs/`, `architecture/`, `adr/`, `devlog/`, `plans/`, changelogs
+- Agent context: `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, tool-specific instruction files
+- JS/TS setup: `package.json`, `tsconfig*`, ESLint/Biome config, sibling file extensions
+- Existing naming, test, module, and phase-document patterns
+
+MUST follow existing conventions when they are clear.
+MUST read existing `structure/`, `devlog/`, or other source-of-truth logs before broad implementation.
+MUST NOT create `structure/`, `devlog/`, `AGENTS.md`, docs folders, or new tooling silently in an existing repo.
+
+If the repo is immature, undocumented, or inconsistent, propose a lightweight source-of-truth structure and ask for approval before creating it.
+
+### Broad Change Preview
+
+Before broad changes, show a compact tree and planned touch points.
+
+Broad change means any of:
+- Creates or reorganizes directories
+- Touches 5+ files
+- Spans frontend + backend or multiple top-level packages
+- Adds a new feature/module/service
+- Adds project documentation or source-of-truth structure
+
+Preview format:
+- Current signals: detected stack and docs/conventions found
+- Compact tree: max ~40 lines; omit `node_modules`, `dist`, `build`, `.git`
+- Planned edits: files/folders to create or modify
+- Convention decision: reuse existing structure, or ask before proposing new structure
+
+---
+
 ## 1. Modular Development
 
 Give every file, function, and class a single, clear responsibility.
@@ -163,6 +197,26 @@ Watch for these anti-patterns and fix immediately. For the full detection catalo
 ---
 
 ## 7. Type Safety & Static Analysis
+
+### 7.0 JS/TS Source File Default
+
+For new JavaScript/TypeScript source files, prefer TypeScript:
+- Use `.ts` for logic and `.tsx` for typed UI components when the project already supports TypeScript or is greenfield JS/TS.
+- Use `.js`/`.jsx` only when the repo is clearly JS-only, build/runtime constraints require JS, or the user asks for JS.
+- Do not introduce TypeScript tooling, convert existing JS, or change `tsconfig` without user approval.
+
+New TypeScript MUST be strict-compatible from the first patch:
+- No implicit `any`.
+- Explicit `any` requires a nearby justification comment.
+- Prefer `unknown` plus narrowing over `any`.
+- Type exported function parameters and return values.
+- Handle null/undefined deliberately.
+- Avoid code that only passes because `strict` is disabled.
+
+Verification:
+- Run the project's configured typecheck when available.
+- If TypeScript is present but no typecheck script exists, use the closest safe command such as `tsc --noEmit`.
+- If strict compatibility cannot be verified, state that explicitly.
 
 ### 7.1 Type Annotations
 
