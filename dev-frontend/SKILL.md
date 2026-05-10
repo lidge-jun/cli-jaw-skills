@@ -4,29 +4,57 @@ description: "Production-grade frontend with distinctive aesthetics. Detects sta
 license: Complete terms in LICENSE.txt
 ---
 
-# Dev-Frontend — Production-Grade Frontend Engineering
+# Dev-Frontend — Domain-Correct Frontend Engineering
 
-Build distinctive, production-grade interfaces that avoid generic "AI slop" aesthetics.
+Build distinctive, production-grade interfaces that fit the product domain, locale, interaction model, and real visual evidence.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
 ## Modular References
 
-| File                                  | When to Read                 | What It Covers                                                                  |
-| ------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| `references/core/aesthetics.md`       | **Always**                   | Design thinking, bold direction, typography, color, motion, spatial composition |
-| `references/core/anti-slop.md`        | **Always**                   | Banned patterns, forbidden fonts/colors/layouts, content quality rules          |
-| `references/core/motion.md`           | When motion/animation needed | CSS animations, Framer Motion, scroll-driven, View Transitions, spring physics  |
-| `references/core/iterative-design.md` | Multi-round design           | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques        |
-| `references/stacks/react.md`          | React projects               | Server Components, hooks, state, TanStack Query, shadcn/ui, performance         |
-| `references/stacks/nextjs.md`         | Next.js projects             | App Router, RSC, image optimization, data fetching, middleware                  |
-| `references/stacks/vanilla.md`        | HTML+CSS+JS (no framework)   | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement      |
-| `references/stacks/svelte.md`         | Svelte/SvelteKit projects    | Svelte conventions, reactivity, stores, SvelteKit routing                       |
+| File                                      | When to Read                         | What It Covers                                                                    |
+| ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- |
+| `references/core/anti-slop.md`            | **Always**                           | 2026 AI slop patterns, Korean slop, oversized text, fake assets, default UI smells |
+| `references/core/aesthetics.md`           | **Always**                           | Domain-correct visual direction, typography, color, composition                    |
+| `references/core/product-density.md`      | Apps, tools, dashboards              | Density profiles for landing, consumer app, SaaS, ops, finance, devtools          |
+| `references/core/asset-requirements.md`   | Any public/product/visual surface    | Required screenshots, images, diagrams, charts, generated bitmaps, or 3D assets   |
+| `references/core/visual-verification.md`  | **Always before delivery**           | Screenshot, viewport, text fit, state, asset, and motion verification              |
+| `references/core/korea-2026.md`           | Korean-first or Korea-facing UI      | Korean service patterns, CJK typography, formats, mobile flows                     |
+| `references/core/ux-writing-ko.md`        | Korean UI copy                       | Natural Korean labels, error messages, tone, spacing, punctuation                  |
+| `references/core/soft-3d-asset-gates.md`  | 3D/miniature/character-like visuals  | Toss-style soft 3D vs generic cute asset slop, domain gates                        |
+| `references/core/motion.md`               | Motion/animation needed              | CSS animations, Framer Motion, scroll-driven, View Transitions, domain gates       |
+| `references/core/iterative-design.md`     | Multi-round design                   | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques           |
+| `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
+| `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
+| `references/stacks/vanilla.md`            | HTML+CSS+JS (no framework)           | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement         |
+| `references/stacks/svelte.md`             | Svelte/SvelteKit projects            | Svelte conventions, reactivity, stores, SvelteKit routing                          |
 
-Read `aesthetics.md` + `anti-slop.md` first, then the relevant stack file.
+Start with `anti-slop.md`, `aesthetics.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
 
 ---
 
-## 0. Component Identification
+## 0. Frontend Routing
+
+Before designing or coding, classify the work:
+
+| Decision | Options | Why It Matters |
+| --- | --- | --- |
+| Product surface | landing, app, dashboard, AI tool, public service, education, game, creative | Sets density, typography scale, asset requirements |
+| Locale | Korean-first, global/i18n, English-only | Sets CJK typography, copy, date/number formats |
+| Density | campaign, consumer app, productivity, SaaS, ops, finance, developer console | Prevents landing-page composition inside repeated-work tools |
+| Asset need | none, screenshot, product photo, diagram, chart, illustration, soft 3D, game asset | Prevents asset-free gradient/card UI |
+| Soft 3D/character gate | not allowed, subtle, primary | Prevents generic cute 3D/mascot slop |
+| Motion intensity | static, feedback-only, expressive, cinematic | Prevents cinematic motion in utility workflows |
+
+Default rules:
+- For apps/tools/dashboards, build the actual working surface first, not a marketing hero.
+- For Korean-first work, read `korea-2026.md` and `ux-writing-ko.md`.
+- For any soft 3D miniature, mascot, chibi, toy-like object, or character-like asset, read `soft-3d-asset-gates.md`.
+- For product/brand/object/place/person pages, use concrete visual assets in the first viewport.
+- For finance, government, B2B, admin, auth, security, and developer tools, keep visual warmth restrained and subordinate to clarity.
+
+---
+
+## 1. Component Identification
 
 When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 거"):
 1. Suggest 2-3 candidate components: `<Name> — <what it looks/works like>`
@@ -41,52 +69,57 @@ If frontend structure is unclear, read existing source-of-truth docs/logs first,
 
 ---
 
-## 1. Design Thinking
+## 2. Design Thinking
 
-Before coding, commit to a bold aesthetic direction:
+Before coding, commit to a domain-correct direction:
 - **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick a strong direction — don't default to "clean and modern." Choose from: brutally minimal, maximalist, retro-futuristic, luxury/refined, editorial/magazine, brutalist/raw, art deco, cyberpunk, organic/biomorphic, etc.
+- **Surface**: Is this a working tool, dashboard, public service, AI workflow, game, landing page, or editorial surface?
+- **Tone**: Pick a specific direction. For product tools this often means quiet, dense, trustworthy, and fast rather than loud.
 - **Constraints**: Framework, performance budget, accessibility requirements.
 - **Signature**: What ONE thing will make this unforgettable?
 
-Intentionality over intensity. Bold maximalism and refined minimalism both work — commit fully to the chosen direction.
+Intentionality over intensity. Bold maximalism, refined minimalism, dense utility, and friendly consumer UI can all work when they match the domain.
 
 ---
 
-## 2. Baseline Configuration
+## 3. Baseline Configuration
 
 Adjust these dials based on what's being built. Present to user if unclear.
 
 | Dial             | Default | Range | Meaning                              |
 | ---------------- | :-----: | :---: | ------------------------------------ |
-| DESIGN_VARIANCE  |    8    | 1-10  | 1=symmetric grids, 10=asymmetric art |
-| MOTION_INTENSITY |    6    | 1-10  | 1=static, 10=cinematic choreography  |
-| VISUAL_DENSITY   |    4    | 1-10  | 1=art gallery airy, 10=cockpit dense |
+| DESIGN_VARIANCE  |    5    | 1-10  | 1=symmetric utility, 10=asymmetric art |
+| MOTION_INTENSITY |    4    | 1-10  | 1=static, 10=cinematic choreography    |
+| VISUAL_DENSITY   |    5    | 1-10  | 1=art gallery airy, 10=cockpit dense   |
 
 Adapt dynamically based on user requests. Dashboard → density up. Portfolio → variance up. Data tool → motion down.
+Korean app/tool surfaces usually need higher density and clearer hierarchy, not oversized hero text.
 
 ---
 
-## 3. Implementation
+## 4. Implementation
 
 Read `references/core/aesthetics.md` for full guidelines. Summary:
 
-- **Typography**: Use Geist, Outfit, Satoshi, Cabinet Grotesk, or other characterful typefaces — avoid Inter/Roboto/Arial.
+- **Typography**: Use domain-appropriate typography. For Korean-first UIs, prioritize CJK-safe stacks before Latin display fonts.
 - **Color**: Max 1 accent. Use neutral bases (Zinc/Slate) with singular high-contrast accent — avoid purple-on-white.
-- **Layout**: Break centered-card patterns. Use asymmetry, overlap, diagonal flow, generous negative space.
+- **Layout**: Match the product surface. Avoid centered-card/hero patterns in repeated-use tools.
 - **Motion**: See `references/core/motion.md`. One well-choreographed page load > 10 scattered effects.
-- **Backgrounds**: Create atmosphere — gradient meshes, noise textures, geometric patterns, layered transparencies.
+- **Assets**: Use screenshots, product images, diagrams, charts, illustrations, generated bitmaps, or soft 3D only when they add product meaning.
 
 ---
 
-## 4. Anti-Slop Enforcement
+## 5. Anti-Slop Enforcement
 
 Read `references/core/anti-slop.md` for full rules. Key standards:
 
-- Use characterful fonts (Geist, Outfit, Satoshi, Cabinet Grotesk) — Inter/Roboto/Arial/system-ui are banned
+- Treat unexamined default typography as a slop signal. Choose a domain-appropriate stack; Korean-first UI should use CJK-safe fonts and system fallbacks deliberately.
 - Use neutral or intentional color palettes — purple gradients on white are a slop signal
 - Use asymmetric or purposeful layouts — centered-everything reads as template
 - Vary card sizes, spans, and groupings — equal 3-card grids read as generic
+- Avoid oversized bold hero text inside tools, dashboards, admin, finance flows, and public services
+- Avoid asset-free UI: abstract blobs/gradients do not replace real visual evidence
+- Avoid generic soft 3D icon packs; soft 3D must be semantic, brand-consistent, and restrained
 - Use icons or descriptive text instead of emoji in code and UI
 - Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
 - Use realistic, specific names and brands in placeholder content
@@ -94,7 +127,7 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 
 ---
 
-## 5. Performance Guardrails
+## 6. Performance Guardrails
 
 - Animate `transform` and `opacity` only — layout properties (`top`, `left`, `width`, `height`) cause jank
 - Grain/noise filters → fixed pseudo-elements only, keep off scrolling containers
@@ -104,18 +137,25 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 
 ---
 
-## 6. Accessibility Baseline
+## 7. Accessibility Baseline
 
 - Semantic HTML (`<button>`, `<nav>`, `<main>`)
 - Keyboard navigation for all interactive elements
 - WCAG AA minimum (4.5:1 normal text, 3:1 large text)
 - Visible focus indicators (`focus-visible:ring-2`)
 - `prefers-reduced-motion` support
-- Touch targets ≥ 44×44px
+- Skip link or equivalent bypass for repeated navigation
+- Focus must not be hidden by sticky headers, sticky bottom bars, sheets, or overlays
+- Icon-only buttons need accessible names (`aria-label`, visible text, or labelled-by)
+- Charts, status messages, loading progress, and AI streaming states need screen-reader labels or live regions where appropriate
+- Do not encode meaning by color alone
+- Modals, menus, comboboxes, bottom sheets, and command palettes must have a complete keyboard path
+- Stress-test Korean long labels and screen-reader names; clipped Hangul is a failure
+- Pointer targets follow WCAG 2.2 AA target-size rules; 44×44px is a conservative product baseline, not the only legal minimum
 
 ---
 
-## 7. Custom Hook Patterns
+## 8. Custom Hook Patterns
 
 Extract reusable logic into custom hooks:
 
@@ -152,7 +192,7 @@ function useToggle(initial = false): [boolean, () => void] {
 
 ---
 
-## 8. React Performance Optimization
+## 9. React Performance Optimization
 
 ### Memoization Decision Tree
 
@@ -180,7 +220,7 @@ Split at route boundaries and heavy components (charts, editors, 3D). Keep above
 
 ---
 
-## 9. Form Handling
+## 10. Form Handling
 
 ### Controlled Form with Validation (Zod + Schema)
 
@@ -222,9 +262,9 @@ For complex forms (multi-step, dynamic fields), use `react-hook-form` + Zod reso
 
 ---
 
-## 10. Accessibility Quick-Wins
+## 11. Accessibility Quick-Wins
 
-Beyond the baseline (§6), add these interaction patterns:
+Beyond the baseline (§7), add these interaction patterns:
 
 ### Focus Management (Modal)
 
@@ -261,29 +301,35 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
 
 ---
 
-## 11. Pre-Flight Checklist
+## 12. Pre-Flight Checklist
 
 Before delivering:
-- [ ] Bold aesthetic direction chosen and committed
-- [ ] Anti-slop patterns enforced (§4)
+- [ ] Domain-correct direction chosen and committed
+- [ ] Product surface, locale, density, asset need, soft 3D gate, and motion intensity classified
+- [ ] Anti-slop patterns enforced (§5)
+- [ ] Oversized hero text avoided unless this is a true hero surface
+- [ ] Required assets are real, semantic, rendered, and not generic decoration
+- [ ] Korean-first UI follows CJK typography and Korean UX writing rules
+- [ ] Soft 3D/miniature/character assets pass domain and semantic gates
 - [ ] Mobile layout collapse guaranteed (`px-4`, `max-w-7xl mx-auto`)
 - [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
 - [ ] Loading, empty, and error states provided
 - [ ] `useEffect` animations have cleanup functions
-- [ ] Custom hooks tested independently (§7)
-- [ ] Memoization applied only where measured impact (§8)
-- [ ] Forms validate with schema and show field-level errors (§9)
-- [ ] Focus management on modals and popovers (§10)
+- [ ] Custom hooks tested independently (§8)
+- [ ] Memoization applied only where measured impact (§9)
+- [ ] Forms validate with schema and show field-level errors (§10)
+- [ ] Focus management on modals and popovers (§11)
+- [ ] Desktop/mobile/narrow screenshots checked for overlap, clipping, and asset rendering
 - [ ] Interactive components isolated as Client Components (if RSC)
 - [ ] Stack-specific rules followed (see `references/stacks/`)
 
 ---
 
-## 12. Backend Contract & Security Alignment
+## 13. Backend Contract & Security Alignment
 
 Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
 
-### 12.1 Contract Ownership
+### 13.1 Contract Ownership
 
 | Responsibility | Owner |
 |---------------|-------|
@@ -297,7 +343,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 2. If changed, update or add a contract test first (see `dev-testing` §3.5)
 3. Align frontend mocks/fixtures with backend golden examples
 
-### 12.2 Security Responsibilities
+### 13.2 Security Responsibilities
 
 | Control | Policy Owner | Implementation Owner |
 |---------|-------------|---------------------|
@@ -307,7 +353,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 | Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
 | Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
 
-### 12.3 Testing Integration
+### 13.3 Testing Integration
 
 - Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
 - Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5

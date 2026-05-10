@@ -1,13 +1,62 @@
 # React Stack — Development Rules
 
-Rules specific to React projects. Read `core/aesthetics.md` + `core/anti-slop.md` first.
+Rules specific to React projects. Read `core/aesthetics.md`, `core/anti-slop.md`, and `core/visual-verification.md` first.
 
 ---
 
+## Domain Routing
+
+Before choosing component libraries, read the core references that match the surface:
+
+- Korean-first UI → `korea-2026.md`, `ux-writing-ko.md`
+- Tool/dashboard → `product-density.md`
+- Visual/product surface → `asset-requirements.md`
+- Soft 3D/mascot/miniature visuals → `soft-3d-asset-gates.md`
+- Substantial UI change → `visual-verification.md`
+
+## Behavior-First Components
+
+Prefer proven behavior primitives for complex interactive components:
+
+- Radix / Headless UI for dialog, popover, menu, tabs, combobox-like behavior
+- shadcn/ui as source code scaffolding, not as a final visual design
+- Existing repo components before adding a new dependency
+
+Customize tokens, radius, shadows, density, and typography. Do not ship default shadcn visuals.
+
+## Korean Mobile Patterns
+
+React apps targeting Korean mobile flows should support:
+
+- bottom sheets for lightweight choices
+- full-screen funnels for complex steps
+- sticky bottom action bars
+- snackbar/toast for reversible confirmations
+- safe-area insets
+- `100dvh` instead of `100vh`
+- long Korean label stress tests
+
+## AI Tool States
+
+AI features must expose state clearly:
+
+- pending / queued
+- streaming or partial result
+- cancel
+- retry
+- undo or revert
+- source/provenance when applicable
+- permission boundary before sensitive actions
+- rate limit or failure recovery
+
+Do not hide AI uncertainty behind decorative gradients.
+
 ## Architecture
 
-### Server Components First (React 18+)
-Default to Server Components. Add `'use client'` ONLY when you need:
+### Server Components When Supported By The Framework
+Use Server Components only in Next App Router or another RSC-enabled framework. In Vite, SPA-only React, React Native Web, or client-only embeds, do not introduce RSC assumptions or `'use client'` boundaries.
+
+When the framework supports RSC, default non-interactive route content to Server Components. Add `'use client'` ONLY when you need:
 - Event handlers (`onClick`, `onChange`)
 - State (`useState`, `useReducer`)
 - Effects (`useEffect`)
@@ -39,7 +88,7 @@ function AddToCartButton({ productId }) {
 - If motion/interactivity needed, extract the interactive part as an **isolated leaf** Client Component
 
 ### Interactivity Isolation
-Any component using `useMotionValue`, `useTransform`, or perpetual animations MUST be extracted as a dedicated Client Component. Server Components render static layouts only.
+Any component using `useMotionValue`, `useTransform`, or perpetual animations MUST be extracted as a dedicated Client Component in RSC-enabled frameworks. Server Components render static layouts only.
 
 ---
 

@@ -4,15 +4,31 @@ Rules for meaningful, performant animation. One well-choreographed moment > 10 s
 
 ---
 
+## Domain Gates
+
+Motion intensity must match the product surface:
+
+| Surface | Default |
+| --- | --- |
+| Finance, gov, B2B, auth, payment, security | 1-3: feedback-only, low anxiety |
+| Dashboards, admin, ops, developer tools | 1-4: state transition only |
+| Consumer apps, education, community | 3-6: guided feedback and progress |
+| Landing, campaign, editorial | 5-8: expressive but still performant |
+| Games / interactive art | domain-specific |
+
+Avoid cinematic page loads for repeated-work tools. Motion should clarify state, not slow the task.
+
 ## MOTION_INTENSITY Levels
 
 | Level | Rules                                                                                                           |
 | :---: | --------------------------------------------------------------------------------------------------------------- |
 |  1-3  | No automatic animations. CSS `:hover` and `:active` only.                                                       |
-|  4-7  | `transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1)`. `animation-delay` cascades. `transform` + `opacity` only. |
+|  4-7  | Enumerate transition properties, usually `transform`, `opacity`, `background-color`, `border-color`, `box-shadow`. `animation-delay` cascades. |
 | 8-10  | Complex scroll-triggered reveals. Framer Motion hooks. NEVER `window.addEventListener('scroll')`.               |
 
 ---
+
+Never use `transition-all` as a default in Tailwind or CSS all-property transitions. Enumerate the properties so layout, width, height, and color changes do not animate accidentally.
 
 ## CSS-Only Patterns (Level 4-7)
 

@@ -1,13 +1,27 @@
-# Aesthetics — Deep Design Engineering Guide
+# Aesthetics — Domain-Correct Design Engineering Guide
 
 Comprehensive design rules for building distinctive frontends. The SKILL.md references this file — read it before any frontend work.
 
 ---
 
+## Domain First
+
+Do not start from "make it bold." Start from the surface:
+
+- Landing/campaign: expressive typography and strong media can be appropriate.
+- Product tools/dashboards/admin: task clarity, density, and repeatability matter more than spectacle.
+- Fintech/public/B2B: trust, predictability, and low anxiety matter more than novelty.
+- Education/community: warmth and guided visuals can help when they clarify the task.
+- Korean-first UI: read `korea-2026.md` before choosing type scale, copy, spacing, or assets.
+
+Hero-scale typography belongs to true hero surfaces. It is usually slop inside working tools.
+
 ## Typography
 
 ### Font Selection
-- **Display/Headlines**: `text-4xl md:text-6xl tracking-tighter leading-none`
+- **Campaign/landing display**: `clamp(2.5rem, 6vw, 5rem)` when the first viewport is truly a hero.
+- **Product/tool page title**: `clamp(1.5rem, 2vw, 2.25rem)`.
+- **Dashboard/panel heading**: `0.875rem-1.125rem`, clear weight, compact rhythm.
 - **Body**: `text-base text-gray-600 leading-relaxed max-w-[65ch]`
 - **Serif**: BANNED for Dashboard/Software UIs. OK for editorial/creative only.
 
@@ -17,7 +31,9 @@ Comprehensive design rules for building distinctive frontends. The SKILL.md refe
 | Modern Sans      | Geist, Outfit, Cabinet Grotesk, Satoshi, Clash Display      |
 | Premium Sans     | GT America, Neue Machina, Obviously, Reckless               |
 | Mono (data/code) | Geist Mono, JetBrains Mono, Fira Code                       |
-| CJK/Korean       | Pretendard, SUIT, Noto Sans KR (only if others unavailable) |
+| CJK/Korean       | Pretendard, SUIT, Noto Sans KR, Apple SD Gothic Neo |
+
+For Korean-first UI, choose CJK-safe fonts before Latin display fonts. Do not apply negative letter-spacing to Hangul by default.
 
 ### Variable Font Pairing
 Always pair a distinctive display font with a refined body font:
@@ -63,6 +79,7 @@ Use `clamp()` for responsive sizing:
 
 ### Layout Diversification
 - **ANTI-CENTER BIAS**: When DESIGN_VARIANCE > 4, centered Hero/H1 is BANNED.
+- **ANTI-HERO-IN-TOOLS**: Apps, dashboards, admin, finance flows, and developer tools should not start with landing-page hero composition.
 - Force: "Split Screen" (50/50), "Left-aligned content / Right asset", "Asymmetric white-space"
 - **Grid over Flex-Math**: NEVER `w-[calc(33%-1rem)]`. ALWAYS CSS Grid.
 - **NO 3-Column Card Layouts**: Generic "3 equal cards" is BANNED. Use 2-column zig-zag, asymmetric grid, or horizontal scroll.
@@ -80,7 +97,12 @@ Use `clamp()` for responsive sizing:
 
 ## Backgrounds & Visual Depth
 
-Don't default to solid colors. Create atmosphere:
+Don't default to empty decorative atmosphere. First decide whether the surface needs concrete assets:
+- Product/object/person/place pages need real or generated subject imagery.
+- Tools/dashboards need state previews, charts, tables, workflow screenshots, or diagrams.
+- Fintech/public/B2B can use restrained semantic visuals; decoration must not reduce trust.
+
+Atmospheric techniques are secondary:
 - **Gradient meshes**: Organic, lava-lamp-like animated color blobs
 - **Noise textures**: Subtle grain overlays on fixed pseudo-elements
 - **Geometric patterns**: SVG-based repeating patterns
@@ -117,10 +139,21 @@ LLMs generate "static successul states." You MUST implement full interaction cyc
 
 ## Image Rules
 
-1. **Real photography** → ONLY Unsplash/Pexels/Pixabay direct URLs with `?w=1920&q=80`
-2. **Conceptual/hero** → Write detailed image generation prompts
-3. **Avatars** → picsum.photos or SVG UI Avatars. NO generic egg/Lucide user icons.
-4. **Never invent fake image URLs**
+Use assets in this priority order:
+
+1. **Existing repo/design-system assets** → strongest fit for brand and provenance
+2. **User-provided or approved brand assets** → preserve original meaning and legal use
+3. **Generated local bitmap, SVG, diagram, chart, or screenshot** → create concrete visual evidence when no asset exists
+4. **Approved external CDN assets configured in the framework** → use only when allowed by project config
+5. **Temporary stock URLs** → prototypes only; label them as temporary and replace before production
+
+Asset quality gates:
+- Every meaningful image needs alt text that describes purpose, not file appearance.
+- Set intrinsic dimensions, aspect-ratio, or layout constraints before rendering.
+- Verify desktop, mobile, and narrow crops; the subject must not be clipped or hidden behind text.
+- Use framework image optimization when available (`next/image`, responsive `srcset`, lazy loading).
+- Track licensing/provenance for stock, generated, and third-party visuals.
+- Never invent fake image URLs or ship generic egg/Lucide user icons as real avatars.
 
 ---
 

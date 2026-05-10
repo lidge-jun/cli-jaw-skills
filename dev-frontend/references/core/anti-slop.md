@@ -5,17 +5,20 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 
 ---
 
-## Banned Fonts
-- Inter, Roboto, Arial, system-ui, -apple-system
-- Space Grotesk (overused as "anti-Inter" choice — still slop)
-- Any system default font
+## Typography Slop Signals
+- Unexamined default typography: browser defaults, framework defaults, or "Inter everywhere" without a reason
+- Latin-first font choices applied to Hangul without testing CJK rhythm, line-height, and fallback behavior
+- Space Grotesk used as the automatic "anti-Inter" choice
+- System stacks used as a shortcut instead of a deliberate product typography decision
 
-**Do instead**: Geist, Outfit, Cabinet Grotesk, Satoshi, Clash Display, GT America, Neue Machina
+**Allowed when intentional**: `system-ui`, `-apple-system`, Pretendard, SUIT, Noto Sans KR, Apple SD Gothic Neo, and other platform/CJK-safe fallbacks.
+
+**Do instead**: choose a domain-appropriate stack. For Korean-first UI, start with a CJK-safe product stack. For Latin-heavy display, consider Geist, Outfit, Cabinet Grotesk, Satoshi, Clash Display, GT America, or Neue Machina as accents.
 
 ---
 
 ## Typography Audit
-- **Browser defaults or Inter everywhere** → Replace with characterful fonts
+- **Browser defaults or Inter everywhere** → Replace with a deliberate stack that fits the product and locale
 - **Headlines lack presence** → Increase size, tighten letter-spacing, reduce line-height
 - **Body text too wide** → Limit to ~65ch. Increase line-height
 - **Only Regular (400) + Bold (700)** → Introduce Medium (500), SemiBold (600), or extremes (100 vs 900)
@@ -42,6 +45,7 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 
 ## Banned Layouts
 - Everything centered with uniform padding
+- Oversized bold hero text inside apps, tools, dashboards, admin, finance flows, or public services
 - 3 equal cards in a row (the "feature row" cliché)
 - Uniform rounded corners on every element (vary: tight on inner, soft on containers)
 - Centered hero with gradient background + Inter heading
@@ -56,6 +60,24 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 - Buttons not bottom-aligned in card groups → pin to bottom
 - Feature lists at different vertical positions → align across columns
 - Mathematical centering that looks optically wrong → adjust 1-2px
+
+## 2026 Product Slop
+- Asset-free pages: abstract gradients, blobs, and generic icons where a product/screenshot/diagram/chart is needed
+- Fake dashboards with random numbers and no decision value
+- Landing-page composition inside repeated-work tools
+- AI tool surfaces with no pending, cancel, retry, undo, provenance, or permission states
+- Trust-heavy domains using playful visuals without semantic purpose
+- Soft 3D miniatures copied from generic icon packs instead of a brand-consistent asset system
+- Giant centered Korean headlines used as decoration rather than hierarchy
+
+## Korean Slop
+- Translationese: "원활한 경험을 제공합니다", "혁신적인 솔루션", "처리가 완료되었습니다"
+- Bureaucratic labels where simple Korean works
+- Honorific overuse in everyday product actions
+- Korean text clipped inside fixed-width buttons
+- Negative letter-spacing blindly applied to Hangul
+- Cute visual assets treated as a Korean default rather than a domain decision
+- Childish copy in finance, public service, auth, payment, security, B2B, admin, or developer tools
 
 ---
 
@@ -104,6 +126,18 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 - Sun/moon dark mode toggle → dropdown, system preference, or settings
 - 4-column footer link farm → simplify
 - Accordion FAQ → side-by-side list, searchable help, progressive disclosure
+
+## Soft 3D / Character Asset Slop
+These are not banned by default, but they must pass `soft-3d-asset-gates.md`.
+
+Slop signals:
+- generic public 3D icon pack
+- random cute object unrelated to the product
+- inconsistent lighting, material, or perspective
+- low-polish AI output
+- decorative overload
+- asset competing with headline or CTA
+- heavy 3D scene with no product value
 
 ---
 

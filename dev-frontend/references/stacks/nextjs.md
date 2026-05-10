@@ -4,6 +4,30 @@ Extends `stacks/react.md` — read React rules first. These are Next.js-specific
 
 ---
 
+## Visual Assets
+
+Use Next image/media features when the surface needs concrete visuals:
+
+- product/place/person/object pages need a real or generated subject image in the first viewport
+- screenshots and workflow images should use `next/image` when practical
+- public pages need metadata and Open Graph images
+- generic gradient/mesh backgrounds do not replace required assets
+- soft 3D assets must pass `soft-3d-asset-gates.md`
+
+Check mobile framing; a hero asset that only works on desktop is not done.
+
+## Verification
+
+After substantial UI changes:
+
+- build the app
+- capture desktop and mobile screenshots
+- verify text fitting, asset rendering, and first viewport hierarchy
+- test loading/error/empty states
+- verify RSC/client boundaries for interactive pieces
+
+Report any unverified viewport or state explicitly.
+
 ## App Router (Default)
 
 ### File Conventions
@@ -158,14 +182,14 @@ export async function generateMetadata({ params }) {
 
 ---
 
-## Middleware
+## Proxy / Middleware By Version
 
 ```tsx
-// middleware.ts (root level)
+// Next.js 16+: proxy.ts (root level)
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Auth check, redirect, rewrite, etc.
   const token = request.cookies.get('token');
   if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
@@ -175,6 +199,11 @@ export function middleware(request: NextRequest) {
 
 export const config = { matcher: ['/dashboard/:path*'] };
 ```
+
+- Next.js 16+ calls this file convention **Proxy**. Use `proxy.ts` / `proxy.js` and export `proxy`.
+- Next.js 15 and earlier use `middleware.ts` / `middleware.js` and export `middleware`.
+- Prefer route handlers, redirects, and app-level auth checks unless request-bound proxy logic is required.
+- Keep only one root proxy/middleware file; split route-specific logic into imported modules.
 
 ---
 
