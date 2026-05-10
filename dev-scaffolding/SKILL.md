@@ -53,6 +53,26 @@ Jawdev devlog method:
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
+Jawdev phase document naming is mandatory:
+- Plan unit folder: `devlog/_plan/YYMMDD_slug/`
+- Inside the folder, durable phase documents MUST use zero-padded numeric prefixes.
+- Use:
+  - `00_overview.md`
+  - `01_phase1_<slug>.md`
+  - `02_phase2_<slug>.md`
+  - `03_phase3_<slug>.md`
+  - ...
+- The numeric prefix is the source of ordering.
+- Do not create new bare semantic phase files such as:
+  - `PLAN.md`
+  - `plan.md`
+  - `DIFF_PLAN.md`
+  - `PHASES.md`
+  - `RCA.md`
+- When adding a new phase document, scan sibling files and choose the next unused numeric prefix.
+- Keep `00_overview.md` as the index and file map for the plan folder.
+- Reserve `90_` and `99_` prefixes for audits, research notes, review logs, or appendices.
+
 Ask before creating:
 
 ```text
@@ -172,7 +192,8 @@ Principle: "flat until you can't" — start flat, sub-folder only when feature e
 | Python files        | snake_case + suffix   | `stock_price_tool.py`        |
 | Go files            | snake_case            | `stock_price.go`             |
 | Rust files          | snake_case            | `stock_price.rs`             |
-| devlog entries      | `YYMMDD_title/`       | `260303_scaffolding/`        |
+| devlog plan folders | `YYMMDD_slug/`        | `260510_jawdev_phase_doc_naming/` |
+| devlog phase docs   | `NN_phaseN_slug.md` with `00_overview.md` index | `01_phase1_skill_contract.md` |
 | Functions (JS/TS)   | camelCase             | `getStockPrice()`            |
 | Functions (Python)  | snake_case            | `get_stock_price()`          |
 | Functions (Go)      | PascalCase (exported) | `GetStockPrice()`            |

@@ -97,6 +97,7 @@ Give every file, function, and class a single, clear responsibility.
 - One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
 - Follow existing naming conventions in the project. Check sibling files before creating new ones.
 - New files must match the directory structure and naming patterns already in use.
+- For Jawdev/devlog `_plan/` and `_fin/` phase documents, the canonical numbered-prefix pattern (`00_overview.md`, `01_phase1_<slug>.md`, `02_phase2_<slug>.md`) takes priority over any legacy bare-name files such as `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, or `plan.md`.
 
 ---
 

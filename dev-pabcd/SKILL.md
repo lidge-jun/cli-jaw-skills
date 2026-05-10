@@ -55,6 +55,13 @@ Read project docs and dev skills first. Write a plan with two parts:
 - **Part 1**: Easy explanation — what will be built, in non-developer terms.
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
 
+If PABCD work creates or updates `devlog/` plan artifacts, the plan MUST list exact numbered Jawdev filenames:
+- `00_overview.md`
+- `01_phase1_<slug>.md`
+- `02_phase2_<slug>.md`
+
+Do not propose bare `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, or `plan.md` as new devlog phase files.
+
 Ask the user:
 1. "Any business logic I shouldn't decide alone?"
 2. "Does Part 1 match your intent?"
@@ -71,6 +78,7 @@ Spawn a worker to audit the plan (not code). The worker verifies:
 - No new `structure/`, `devlog/`, docs, or AGENTS files are introduced without user approval
 - New JS/TS files follow TypeScript preference rules unless the plan states why JS is required
 - New TypeScript is strict-compatible or limitations are stated
+- New devlog phase documents use the numbered Jawdev filename convention.
 
 Output worker JSON for the audit. Review results when they come back.
 - If FAIL → fix the plan → output worker JSON again to re-audit
