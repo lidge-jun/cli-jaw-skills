@@ -1,6 +1,7 @@
 ---
 name: dev-testing
 description: "Testing guide for orchestrated sub-agents. Covers strategy selection, backend/API harnesses, contract verification, Playwright E2E, CI pipelines, TDD enforcement, security scanning, and coverage gates. Inject when testing or regression verification is required."
+keywords: [connector-test, api-test, reminder-test, board-test]
 license: Complete terms in LICENSE.txt
 ---
 # Testing & QA

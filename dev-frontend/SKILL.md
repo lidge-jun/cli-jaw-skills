@@ -1,6 +1,7 @@
 ---
 name: dev-frontend
 description: "Production-grade frontend with distinctive aesthetics. Detects stack and applies specialized rules. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when role=frontend."
+keywords: [kanban-ui, reminder-ui, priority-matrix, dashboard-ui, notes-ui]
 license: Complete terms in LICENSE.txt
 ---
 

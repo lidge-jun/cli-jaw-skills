@@ -1,6 +1,7 @@
 ---
 name: dev
 description: "Common development guidelines for all orchestrated sub-agents. Enforces modular development, systematic debugging, verification-before-completion, change logging, and code quality standards. Always injected by orchestrator."
+keywords: [connector, dashboard]
 ---
 
 # Dev — Common Development Guidelines
