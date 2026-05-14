@@ -15,6 +15,8 @@ Do NOT use this skill for Word, HTML dashboards, or external database orchestrat
 
 **OfficeCLI discovery rule:** use `officecli --help` for workflow entry points and `officecli help xlsx ... --json` for exact workbook element/property schema. Do not rely on stale property names from memory.
 
+**Same-file execution rule:** run OfficeCLI commands against the same `.xlsx`/`.xlsm` sequentially. Do not run `officecli view`, `officecli validate`, `officecli query`, or `officecli get` in parallel against one package. If a file lock occurs, stop and report the exact command and path before making a copy or retrying.
+
 ---
 
 ## 1. Quick Decision
@@ -225,6 +227,8 @@ python3 scripts/recalc.py output.xlsx
 ```
 
 Skip none. `validate` catches structural errors; the PDF catches rendering issues (truncated CJK, broken charts, invisible text); `recalc.py` updates cached values for all formulas.
+
+Formula correctness requires recalculation evidence. If LibreOffice/Excel recalculation is unavailable, report formulas as structurally written but not runtime-verified.
 
 ---
 

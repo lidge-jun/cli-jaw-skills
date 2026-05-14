@@ -14,6 +14,8 @@ Do NOT use this skill for Keynote, Google Slides API automation, or image genera
 
 **OfficeCLI discovery rule:** use the installed CLI as the source of truth. Run `officecli --help` for workflows and `officecli help pptx ... --json` before inventing element/property names.
 
+**Same-file execution rule:** run OfficeCLI commands against the same `.pptx` sequentially. Do not run `officecli view`, `officecli validate`, `officecli query`, or `officecli get` in parallel against one package. If a file lock occurs, stop and report the exact command and path before making a copy or retrying.
+
 ---
 
 ## 1. Quick Reference
@@ -386,17 +388,20 @@ officecli validate output.pptx
 officecli view output.pptx issues
 officecli view output.pptx text | grep -iE 'xxxx|lorem|ipsum|placeholder|TODO|click to'
 officecli view output.pptx stats
-officecli check output.pptx
 ```
+
+Use `officecli validate` for OOXML/schema checks and `officecli view ... issues` for layout/content issue probes. Modern Microsoft chart extension XML can fail schema validation even when LibreOffice renders the deck; report that as "schema validation failed, LibreOffice render succeeded" rather than calling the file valid.
 
 ### Step 2 — Visual QA
 
 ```bash
 officecli view output.pptx html --browser
 
-# Alternative: thumbnail grid for quick scan
+# Thumbnail grid for quick scan: wrapper uses LibreOffice -> pdftoppm -> Pillow
 python3 scripts/thumbnail.py output.pptx grid.png
 ```
+
+LibreOffice PDF/PNG render is visual evidence, not a guarantee that Microsoft PowerPoint for Mac will render identically.
 
 **USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
 
@@ -579,7 +584,9 @@ See [recipes.md](./recipes.md) for 3 copy-paste repair patterns:
 cli-jaw fork auto-detects Korean and applies language tags + default fonts.
 
 ```bash
-officecli check deck.pptx    # catches CJK text overflow
+officecli validate deck.pptx
+officecli view deck.pptx issues
+officecli view deck.pptx stats
 ```
 
 ---

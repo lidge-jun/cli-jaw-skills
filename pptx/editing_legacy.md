@@ -35,7 +35,7 @@ When using an existing presentation as a template:
    - **Complete all structural changes before step 5**
 
 5. **Edit content**: Update text in each `slide{N}.xml`.
-   **Use subagents here if available** — slides are separate XML files, so subagents can edit in parallel.
+   **Use subagents here if available** — only after unpacking, and only for disjoint slide XML files. Do not run multiple `officecli` commands against the same `.pptx` in parallel.
 
 6. **Clean**: `python scripts/clean.py unpacked/`
 
@@ -112,7 +112,7 @@ Slide order is in `ppt/presentation.xml` → `<p:sldIdLst>`.
 
 ## Editing Content
 
-**Subagents:** If available, use them here (after completing step 4). Each slide is a separate XML file, so subagents can edit in parallel. In your prompt to subagents, include:
+**Subagents:** If available, use them here (after completing step 4). Each slide is a separate XML file after unpacking, so subagents can edit disjoint slide XML files in parallel. Do not run multiple `officecli` commands against the same `.pptx` package. In your prompt to subagents, include:
 - The slide file path(s) to edit
 - **"Use the Edit tool for all changes"**
 - The formatting rules and common pitfalls below

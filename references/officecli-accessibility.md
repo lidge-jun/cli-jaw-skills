@@ -137,6 +137,7 @@ officecli validate slides.pptx
 | Fix heading level (DOCX) | `officecli set file.docx '/body/p[5]' --prop style=Heading2` |
 | Check reading order (PPTX) | `officecli view file.pptx text` |
 | Fix reading order (PPTX) | `officecli move file.pptx '/slide[1]/shape[3]' --index 1` |
-| Layout check (PPTX) | `officecli check file.pptx --json` |
+| Layout/content issue probe (PPTX) | `officecli view file.pptx issues --json` |
+| PPTX statistics | `officecli view file.pptx stats --json` |
 | Contrast fix | `officecli set file '/path' --prop font.color=1A1A2E` |
 | Full validation | `officecli validate file` |

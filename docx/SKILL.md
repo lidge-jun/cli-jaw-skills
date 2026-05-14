@@ -15,6 +15,8 @@ Fallback: **Python OOXML scripts** (`scripts/*.py`) for what officecli cannot do
 
 **OfficeCLI discovery rule:** before guessing paths, element names, or properties, ask the installed CLI. Use `officecli --help` for workflow entry points and `officecli help docx ... --json` for machine-readable schema.
 
+**Same-file execution rule:** run OfficeCLI commands against the same `.docx` sequentially. Do not run `officecli view`, `officecli validate`, `officecli query`, or `officecli get` in parallel against one package. If a file lock occurs, stop and report the exact command and path before making a copy or retrying.
+
 ---
 
 ## 1. Quick Decision

@@ -14,6 +14,8 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 
 **OfficeCLI discovery rule:** run `officecli hwp doctor --json` and `officecli capabilities --json` before claiming binary `.hwp` support. Use `officecli hwp --json` for current rhwp recipes/policies and `officecli help <format> ... --json` for DOCX/XLSX/PPTX-style schema help.
 
+**Same-file execution rule:** run OfficeCLI commands against the same `.hwpx` or `.hwp` sequentially. Do not run `officecli view`, `officecli validate`, `officecli query`, or `officecli get` in parallel against one package. If a file lock occurs, stop and report the exact command and path before making a copy or retrying.
+
 ---
 
 ## 1. Quick Decision
@@ -53,9 +55,10 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | Create new .hwp (binary) | Yes, experimental | `officecli create file.hwp --json`; requires packaged `rhwp-field-bridge` or `OFFICECLI_RHWP_API_BIN` |
 | Read/render .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `officecli view file.hwp svg --page 1 --json` |
 | Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; prefer `--prop output=out.hwp` |
+| Edit .hwp/.hwpx table cell by rhwp coordinates | Yes, experimental | `officecli set file.hwp /table/cell ...`; `.hwpx` also routes through rhwp when mutation runtime is ready |
 | Export HWPX to .hwp | Yes, experimental | `officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json` |
 | Safe in-place .hwp text replace | Yes, experimental | Only when `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`; use `--in-place --backup --verify` |
-| Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` when rhwp bridge is unavailable or operation is unsupported |
+| Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` only when the requested native rhwp operation is not ready or not yet wired |
 
 ---
 
@@ -494,7 +497,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 |---------|-----------------|
 | `--props text=Hello` | `--prop text=Hello` -- singular `--prop` always |
 | `/body/p[1]` path | HWPX uses `/section[1]/p[1]` -- section-based, not body |
-| `.hwp` (binary) open | Run `officecli hwp doctor --json`; if ready, use native `.hwp` read/edit/create recipes. Convert to `.hwpx` only when the needed operation is unsupported |
+| `.hwp` (binary) open | Run `officecli hwp doctor --json`; if ready, use native `.hwp` read/edit/create recipes. Convert to `.hwpx` only when the requested native rhwp operation is not ready or not yet wired |
 | Unquoted `[N]` in shell | `"/section[1]/p[1]"` -- always quote paths |
 | fontsize omitted | `--prop fontsize=11` always -- prevents charPr 0 pollution |
 | `officecli view file.hwpx` (no mode) | Error. Must specify: `text`, `markdown`, `tables`, etc. |

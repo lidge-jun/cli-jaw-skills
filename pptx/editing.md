@@ -475,7 +475,7 @@ officecli add template.pptx /slide[2]/shape[1] --type paragraph --prop text="Rev
 
 ## Parallel Editing with Subagents
 
-Slides are independent elements. When editing multiple slides, use subagents for parallel execution.
+Slides are independent XML parts only after unpacking. Use subagents for parallel execution only on disjoint unpacked slide XML files or separate file copies. Do not run multiple `officecli` processes against the same `.pptx` package in parallel.
 
 **Provide each subagent with:**
 - The file path
@@ -484,17 +484,17 @@ Slides are independent elements. When editing multiple slides, use subagents for
 - Design guidelines (fonts, colors, spacing)
 
 ```
-Edit slides 3-5 in /path/to/template.pptx.
+Edit unpacked slide XML files slide3.xml-slide5.xml in /path/to/unpacked/ppt/slides/.
 
 Slide 3: Replace title with "Revenue Overview", update chart data to Q1=42,Q2=58,Q3=65,Q4=78
 Slide 4: Replace team member names and photos (see data below)
 Slide 5: Update table with new metrics (see data below)
 
 Style: font=Calibri, title size=32, body size=16, primary color=1E2761
-Use officecli set/add commands. Do NOT modify structural slide order.
+Use direct XML edits only in your assigned files. Do NOT modify structural slide order.
 ```
 
-**Important:** Only use subagents for content editing (step 4). All structural changes (step 3) must be done sequentially in the main thread first.
+**Important:** Only use subagents for unpacked content editing (step 4). All structural changes and all `officecli` commands against the package must be done sequentially in the main thread first.
 
 ---
 

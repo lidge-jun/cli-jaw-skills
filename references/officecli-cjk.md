@@ -152,7 +152,9 @@ officecli batch multilang.docx --commands '[
 officecli view document.docx text          # CJK characters display correctly
 officecli raw document.docx /document | grep -E 'rFonts|w:lang|eastAsia'
 officecli validate document.docx           # No structural errors
-officecli check slides.pptx                # No text overflow (PPTX only)
+officecli validate slides.pptx             # PPTX structural/schema check
+officecli view slides.pptx issues          # PPTX layout/content issue probe
+officecli view slides.pptx stats           # Font usage and document statistics
 ```
 
 **Pass criteria:**
@@ -171,6 +173,7 @@ officecli check slides.pptx                # No text overflow (PPTX only)
 | Check font tags | `officecli raw file /document \| grep rFonts` |
 | Check lang tags | `officecli raw file /document \| grep w:lang` |
 | Validate | `officecli validate file` |
+| PPTX issue probe | `officecli view slides.pptx issues` |
 | Multi-lang batch | `officecli batch file --commands '[...]'` |
 | PPTX CJK shape | `officecli set slides.pptx '/slide[1]/shape[1]' --prop font="Malgun Gothic"` |
 | XLSX CJK header | `officecli set data.xlsx '/Sheet1/A1:C1' --prop font.name="Malgun Gothic"` |
