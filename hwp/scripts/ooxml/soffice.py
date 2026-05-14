@@ -4,7 +4,7 @@ Provides a wrapper that handles sandboxed environments where AF_UNIX
 sockets may be blocked. Automatically detects and applies workarounds.
 
 Usage:
-    from ooxml.soffice import run_soffice
+    from ooxml_core.soffice import run_soffice
 
     result = run_soffice(["--headless", "--convert-to", "pdf", "input.docx"])
 """
