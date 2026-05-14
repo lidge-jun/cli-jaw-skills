@@ -72,5 +72,5 @@ Avoid `@ssabrojs/hwpxjs convert:hwp` — known to produce dummy HWPX with placeh
 | **2** | hwp-hwpx-parser | HWP+HWPX | Read-only parser |
 | **2** | olefile | HWP 5.0 | Low-level OLE access |
 | **3** | @ssabrojs/hwpxjs | HWPX+HWP conv | Node.js — HWP→HWPX conversion |
-| **3** | hwplib (Java) | HWP 5.0 | Only HWP binary R/W library |
+| **3** | hwplib (Java) | HWP 5.0 | Legacy Java binary R/W option; prefer OfficeCLI rhwp sidecars when capability-ready |
 | **3** | rhwp sidecars | HWP+HWPX | Experimental OfficeCLI bridge for binary `.hwp` create/read/render/mutate/export |

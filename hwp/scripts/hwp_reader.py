@@ -5,8 +5,11 @@ HWP 5.0 is an OLE Compound File containing streams like FileHeader,
 DocInfo, and BodyText/Section0..N. Text is UTF-16LE encoded, and
 body streams may be zlib-compressed.
 
-This script extracts text and basic structure. For full editing,
-upgrade to HWPX first (see SKILL.md Section 4).
+This script extracts text and basic structure as a legacy fallback.
+For create/edit/export, run `officecli hwp doctor --json` first and
+prefer native rhwp-backed OfficeCLI operations when the required
+capability is ready. Upgrade to HWPX only when the needed operation is
+unavailable or XML-level OWPML editing is required.
 
 Usage:
     python hwp_reader.py input.hwp                    # extract text

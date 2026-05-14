@@ -1,9 +1,14 @@
 # HWPX (OWPML) File Format Reference
 
-> **HWPX is the canonical format for all edits and saves.**
-> HWP 5.0 binary files should be upgraded to HWPX before editing.
-> Hancom does not provide HWPX→HWP reverse API; only HWP→HWPX is supported.
-> See: [HWPX→HWP API not available](https://forum.developer.hancom.com/t/hwpx-hwp-api/2606)
+> **HWPX remains the canonical format for direct XML/OWPML edits.**
+> For binary `.hwp`, run `officecli hwp doctor --json` and
+> `officecli capabilities --json` first, then use native rhwp-backed
+> OfficeCLI operations when the required capability is ready.
+> Upgrade `.hwp` to HWPX only when the needed operation is unavailable
+> or when XML-level OWPML editing is required.
+> Hancom's public API may not expose HWPX→HWP conversion, but this fork
+> supports experimental `officecli set input.hwpx /save-as-hwp --prop output=out.hwp`
+> through the packaged `rhwp-field-bridge`; verify the output before relying on it.
 
 ## 개요
 

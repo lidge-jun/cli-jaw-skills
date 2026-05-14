@@ -277,7 +277,7 @@ After reset, auto-active skills = `CODEX_ACTIVE` ∪ `OPENCLAW_ACTIVE` ∪ `cate
 | `doc-coauthoring`               | ✍️   | Document co-authoring workflow.                  | 1.0.0   |
 | `docx`                          | 📄   | .docx create/edit/read + visual verification.    | 1.0.0   |
 | `html2pptx`                     | 🔄   | HTML slides → native PowerPoint.                 | 1.0.0   |
-| `hwp`                           | 🇰🇷   | HWP/HWPX document create/read/edit/convert.      | 1.0.0   |
+| `hwp`                           | 🇰🇷   | HWP/HWPX create/read/edit via OfficeCLI + rhwp.  | 1.0.0   |
 | `linear`                        | 📐   | Linear issue/project/cycle management.           | 1.0.0   |
 | `notion`                        | 📝   | Notion page/DB CRUD via curl API.                | 1.0.0   |
 | `notion-knowledge-capture`      | 📚   | Conversation → Notion wiki/FAQ/HOW-TO.           | 1.0.0   |
