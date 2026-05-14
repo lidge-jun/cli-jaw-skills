@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -37,6 +38,27 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILLS_REF_DIR = SCRIPT_DIR.parent.parent  # ooxml_core lives here
+
+
+def _bootstrap_ooxml_paths() -> None:
+    candidates: list[Path] = [SKILLS_REF_DIR]
+    candidates.extend(parent / "skills_ref" for parent in SCRIPT_DIR.parents)
+    for env_name in ("CLI_JAW_HOME", "JAW_HOME"):
+        if env_value := os.environ.get(env_name):
+            candidates.append(Path(env_value).expanduser() / "skills_ref")
+    candidates.append(Path.home() / ".cli-jaw" / "skills_ref")
+
+    seen: set[Path] = set()
+    for root in candidates:
+        resolved = root.expanduser()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if (resolved / "ooxml_core").is_dir():
+            sys.path.insert(0, str(resolved))
+
+
+_bootstrap_ooxml_paths()
 
 
 # ---------------------------------------------------------------------------
