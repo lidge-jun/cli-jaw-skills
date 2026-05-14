@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,27 @@ TESTS_DIR = SKILL_DIR / "tests"
 FIXTURES_DIR = TESTS_DIR / "fixtures"
 EXPECTED_DIR = TESTS_DIR / "expected"
 CLI = SCRIPT_DIR / "pptx_cli.py"
+
+
+def _bootstrap_ooxml_paths() -> None:
+    candidates: list[Path] = [SKILLS_REF_DIR]
+    candidates.extend(parent / "skills_ref" for parent in SCRIPT_DIR.parents)
+    for env_name in ("CLI_JAW_HOME", "JAW_HOME"):
+        if env_value := os.environ.get(env_name):
+            candidates.append(Path(env_value).expanduser() / "skills_ref")
+    candidates.append(Path.home() / ".cli-jaw" / "skills_ref")
+
+    seen: set[Path] = set()
+    for root in candidates:
+        resolved = root.expanduser()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if (resolved / "ooxml_core").is_dir():
+            sys.path.insert(0, str(resolved))
+
+
+_bootstrap_ooxml_paths()
 
 # (command, args, expected_file, compare_mode)
 TEST_CASES: list[tuple[str, list[str], str, str]] = [
