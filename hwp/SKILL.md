@@ -50,8 +50,10 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | **Visual QA** | Python (L3) | `scripts/contact_sheet.py` + subagent review with `reference/visual_qa_prompt.md` |
 | New form field creation | Blocked | source prototype exists; Hancom verification not closed |
 | Diagnose binary .hwp support | Yes, experimental | `officecli hwp doctor --json` then inspect `officecli capabilities --json` |
+| Create new .hwp (binary) | Yes, experimental | `officecli create file.hwp --json`; requires packaged `rhwp-field-bridge` or `OFFICECLI_RHWP_API_BIN` |
 | Read/render .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `officecli view file.hwp svg --page 1 --json` |
 | Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; prefer `--prop output=out.hwp` |
+| Export HWPX to .hwp | Yes, experimental | `officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json` |
 | Safe in-place .hwp text replace | Yes, experimental | Only when `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`; use `--in-place --backup --verify` |
 | Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` when rhwp bridge is unavailable or operation is unsupported |
 
@@ -171,7 +173,7 @@ When officecli can't do the job, escalate in this order:
 **Escalation signals:**
 - officecli cannot add custom style → **L2** (raw-set header.xml) + read `reference/header-xml-guide.md`
 - Custom template overlay → **L3** (`scripts/build_hwpx.py`) + read `reference/style_id_maps.md`
-- **HWP binary** input → **L3** (`scripts/hwp_convert.py` first, then edit HWPX)
+- **HWP binary** input → check `officecli hwp doctor --json` first; use native rhwp-backed `officecli` operations when ready, otherwise **L3** (`scripts/hwp_convert.py`, then edit HWPX)
 - **Multi-file pattern match** (exam questions, regulations) → **L4** (see §16)
 - **Style ID lookup** → Read `reference/style_id_maps.md` FIRST
 
@@ -341,6 +343,7 @@ python3 scripts/build_hwpx.py --help
 officecli create doc.hwpx                                    # empty doc
 officecli create doc.hwpx --from-markdown input.md           # MD->HWPX (JUSTIFY default)
 officecli create doc.hwpx --from-markdown input.md --align left  # left-aligned
+officecli create doc.hwp --json                              # binary HWP via rhwp-field-bridge
 officecli merge template.hwpx out.hwpx --data '{"이름":"홍길동"}'  # template {{key}} replace
 officecli merge template.hwpx out.hwpx --data data.json           # JSON file data
 
@@ -491,7 +494,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 |---------|-----------------|
 | `--props text=Hello` | `--prop text=Hello` -- singular `--prop` always |
 | `/body/p[1]` path | HWPX uses `/section[1]/p[1]` -- section-based, not body |
-| `.hwp` (binary) open | Convert to `.hwpx` first (Hancom Office or `scripts/hwp_convert.py`) |
+| `.hwp` (binary) open | Run `officecli hwp doctor --json`; if ready, use native `.hwp` read/edit/create recipes. Convert to `.hwpx` only when the needed operation is unsupported |
 | Unquoted `[N]` in shell | `"/section[1]/p[1]"` -- always quote paths |
 | fontsize omitted | `--prop fontsize=11` always -- prevents charPr 0 pollution |
 | `officecli view file.hwpx` (no mode) | Error. Must specify: `text`, `markdown`, `tables`, etc. |
@@ -592,6 +595,7 @@ officecli hwp --json
 Supported claims are capability-gated. Current safe recipes include:
 
 ```bash
+officecli create file.hwp --json
 officecli view file.hwp text --json
 officecli view file.hwp svg --page 1 --json
 officecli view file.hwp fields --json
@@ -600,10 +604,13 @@ officecli set file.hwp /field --prop name=회사명 --prop value=리지 --prop o
 officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --prop output=out.hwp --json
 officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --in-place --backup --verify --json
 officecli set file.hwp /table/cell --prop section=0 --prop parent-para=3 --prop control=0 --prop cell=0 --prop value=오피스셀 --prop output=out.hwp --json
+officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json
 ```
 
 Policy:
 
+- Blank `.hwp` creation is native when `capabilities.formats.hwp.operations.create_blank.ready=true`.
+- HWPX → HWP export is native when `capabilities.formats.hwp.operations.save_as_hwp.ready=true`; always verify with readback/Hancom before production use.
 - Prefer output mode for binary `.hwp` mutation: `--prop output=out.hwp`.
 - Use in-place mode only for `/text` replacement, only when explicitly requested, and only after `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`.
 - In-place mode must include `--in-place --backup --verify` and must not include `--prop output=...`.

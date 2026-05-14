@@ -56,12 +56,12 @@ Avoid `@ssabrojs/hwpxjs convert:hwp` — known to produce dummy HWPX with placeh
 | **HWPX → PDF** | ✅ soffice+H2Orestart+Java | ✅ same | ✅ same |
 | **HWP read** | ✅ pyhwp | ✅ pyhwp | ✅ pyhwp |
 | **HWP → HWPX upgrade** | ✅ hwp2hwpx | ✅ same | ✅ same |
-| **HWP write (binary)** | ❌ | ❌ | ⚠️ COM only (pyhwpx) |
+| **HWP create/write (binary)** | ✅ experimental via officecli rhwp sidecars | ✅ experimental via officecli rhwp sidecars | ✅ experimental via officecli rhwp sidecars / ⚠️ COM optional |
 | **unpack/pack/validate** | ✅ pure Python | ✅ pure Python | ✅ pure Python |
 
 - Core editing pipeline (unpack→edit→pack) is pure Python, fully cross-platform
 - PDF conversion needs LibreOffice + H2Orestart + Java on all platforms
-- HWP binary write is Windows-only via COM. Use upgrade-first strategy instead
+- HWP binary create/edit/export is available through OfficeCLI's experimental rhwp sidecars when `officecli hwp doctor --json` reports `createBlankAvailable` / `mutationAvailable`. Use HWPX upgrade-first fallback only when the needed native operation is not ready.
 
 ## Library Tiers
 
@@ -73,3 +73,4 @@ Avoid `@ssabrojs/hwpxjs convert:hwp` — known to produce dummy HWPX with placeh
 | **2** | olefile | HWP 5.0 | Low-level OLE access |
 | **3** | @ssabrojs/hwpxjs | HWPX+HWP conv | Node.js — HWP→HWPX conversion |
 | **3** | hwplib (Java) | HWP 5.0 | Only HWP binary R/W library |
+| **3** | rhwp sidecars | HWP+HWPX | Experimental OfficeCLI bridge for binary `.hwp` create/read/render/mutate/export |
