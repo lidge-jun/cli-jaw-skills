@@ -15,6 +15,7 @@ Usage:
 
 import argparse
 import glob
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -30,7 +31,17 @@ sys.path.insert(0, str(SCRIPT_DIR))
 try:
     from ooxml_core.soffice import run_soffice
 except ImportError:
-    from ooxml.soffice import run_soffice
+    try:
+        from ooxml.soffice import run_soffice
+    except ImportError:
+        def run_soffice(args: list[str], **kwargs):
+            soffice = shutil.which("soffice")
+            if soffice is None:
+                raise FileNotFoundError(
+                    "soffice not found. Install LibreOffice (`brew install --cask libreoffice`) "
+                    "or provide ooxml_core.soffice/ooxml.soffice on PYTHONPATH."
+                )
+            return subprocess.run([soffice, *args], **kwargs)
 
 try:
     from PIL import Image

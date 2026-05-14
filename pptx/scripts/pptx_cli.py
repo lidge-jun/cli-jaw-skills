@@ -495,4 +495,13 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except ImportError as exc:
+        print(
+            "Error: missing OOXML helper package. Add ooxml_core or ooxml to PYTHONPATH, "
+            "or use officecli for this operation. Original import error: "
+            f"{exc}",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
