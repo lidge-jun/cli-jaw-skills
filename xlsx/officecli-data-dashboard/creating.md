@@ -19,7 +19,9 @@ Three non-negotiable principles:
 
 - **All KPI values are formulas**, never hardcoded numbers
 - **All charts use cell range references**, never inline data
-- **Dashboard is the active sheet on open**, formulas recalculate on open
+- **Dashboard is the active sheet on open**. Formulas should be present and
+  `fullCalcOnLoad` should be set when available, but cached values are not proof
+  of recalculation; run the formula/recalc QA path or record the app-open caveat.
 
 ### A.2 Analyze the Input Data (MANDATORY FIRST STEP)
 

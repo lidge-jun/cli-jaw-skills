@@ -328,8 +328,8 @@ officecli raw document.docx /document | grep -E 'rFonts|w:lang|eastAsia'
 # 3. Schema validation — no structural errors
 officecli validate document.docx
 
-# 4. Layout check (PPTX only) — no text overflow
-officecli check slides.pptx
+# 4. Layout/content issue scan (PPTX only)
+officecli view slides.pptx issues --json
 
 # 5. Visual verification (if available)
 # Open in LibreOffice/Word and confirm rendering

@@ -54,7 +54,10 @@ A single `.xlsx` file with:
 | Raw data | Sheet1 | Imported CSV with frozen headers, AutoFilter, column widths, conditional formatting |
 | Dashboard | Dashboard | KPI cards (formula-driven), sparklines, charts (cell-range-linked), preset styling |
 
-The Dashboard sheet is **active on open**. All formulas **recalculate on open**.
+The Dashboard sheet is **active on open**. Formulas are stored as formulas and
+`fullCalcOnLoad` should be set when available, but cached values are not proof
+that Excel has recalculated. Before delivery, verify formula existence and run a
+recalc/error check or record the exact spreadsheet app-open caveat.
 
 ---
 

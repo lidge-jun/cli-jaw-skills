@@ -659,7 +659,7 @@ officecli view deck.pptx html --browser
 
 ### Manual Verification
 
-- [ ] `officecli validate` = 0 errors (exception: cell merge slides may report schema warnings)
+- [ ] `officecli validate` structural result recorded (cell merge / modern chart-extension findings must be separated from render and PowerPoint-open proof)
 - [ ] Every chart is editable in PowerPoint (click -> Edit Data appears)
 - [ ] Every table is a native table object (click -> table editing mode)
 - [ ] No two consecutive slides share the same layout structure

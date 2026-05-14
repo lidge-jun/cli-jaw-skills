@@ -104,7 +104,9 @@ ALL values on statement sheets are formulas. The only hardcoded numbers are on t
 
 **Phase 4: QA** -- Run the QA checklist: validate, formula error scan, cross-sheet verification, balance check, cash reconciliation, chart data check.
 
-**Phase 5: Deliver** -- Deliver the `.xlsx` file. Note that formulas recalculate on open (fullCalcOnLoad is set).
+**Phase 5: Deliver** -- Deliver the `.xlsx` file only after formula existence,
+error checks, and recalculation caveats are recorded. `fullCalcOnLoad` should be
+set, but cached values are not proof that Excel has already recalculated.
 
 ---
 

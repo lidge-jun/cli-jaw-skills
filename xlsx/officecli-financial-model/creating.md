@@ -480,7 +480,10 @@ Reconciliation check must evaluate to TRUE: CF ending cash = BS cash for every p
 > - Sheet named `Income Statement` → reference as `'Income Statement'!B3`
 > - Sheet names without special characters (e.g., `Assumptions`) → no quotes needed
 >
-> Using `P&L!B3` without quotes causes `#NAME?` errors at runtime. These errors are NOT detectable by `officecli query` or `validate` — only visible in screenshots or when opening in Excel.
+> Using `P&L!B3` without quotes causes `#NAME?` errors at runtime. These errors
+> are not guaranteed to be caught by structural `officecli validate`. Run
+> `python3 skills_ref/xlsx/scripts/recalc.py model.xlsx /tmp/recalc.xlsx --check-errors`
+> or open in Excel/LibreOffice and record the result before delivery.
 
 > **⚠️ Sheet names with spaces in CLI path arguments (HARD RULE)**
 >

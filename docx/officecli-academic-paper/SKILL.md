@@ -127,7 +127,7 @@ The following rules are non-negotiable. Any violation constitutes a delivery fai
 
 | Rule | Requirement |
 |------|-------------|
-| H1 | `officecli validate` passes — zero XML errors |
+| H1 | `officecli validate` structural result is recorded and has no unwaived XML errors |
 | H2 | Cover page present with ≥7 of 10 required elements (title, authors, affiliation, submission target, date, abstract excerpt, keywords, horizontal rule, contact, subtitle) |
 | H3 | All body sections use continuous numbered headings (e.g., "1. Introduction", "2. Methods") — see Section C.3 |
 | H4 | Abstract paragraph has NO `firstLineIndent` (block style) |

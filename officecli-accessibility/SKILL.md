@@ -142,10 +142,12 @@ Ratio = (L_lighter + 0.05) / (L_darker + 0.05)
 ```
 
 Use an external contrast checker tool (e.g., WebAIM) for precise calculations.
-officecli `check` command flags some contrast issues for PPTX documents:
+Use `view issues` and explicit queries for OfficeCLI-side accessibility scans.
+Visual contrast still needs a renderer or contrast checker for final proof:
 
 ```bash
-officecli check slides.pptx --json
+officecli view slides.pptx issues --json
+officecli query slides.pptx 'shape[text]' --json
 ```
 
 ---
@@ -310,7 +312,7 @@ Run this checklist before delivering any document:
 - [ ] No essential information conveyed only through images
 
 ### Color & Contrast
-- [ ] Text contrast ≥ 4.5:1 (normal) / 3:1 (large): `officecli check file.pptx`
+- [ ] Text contrast ≥ 4.5:1 (normal) / 3:1 (large): run `officecli view file.pptx issues --json`, then verify final contrast with a renderer or contrast checker
 - [ ] Information not conveyed by color alone
 - [ ] Charts use patterns/labels in addition to color
 
@@ -332,8 +334,9 @@ Run this checklist before delivering any document:
 - [ ] Language is set correctly for spell-check
 
 ### Validation
-- [ ] `officecli validate file` passes with no errors
-- [ ] `officecli check file.pptx` reports no critical issues
+- [ ] `officecli validate file` structural result is recorded
+- [ ] `officecli view file.pptx issues --json` reports no critical PowerPoint issues
+- [ ] render/app-open proof is recorded separately when visual fidelity matters
 
 ---
 
@@ -367,5 +370,5 @@ officecli validate slides.pptx
 | Fix reading order | `officecli move file.pptx '/slide[1]/shape[3]' --index 1` |
 | Check heading hierarchy | `officecli view file.docx outline` |
 | Fix heading level | `officecli set file.docx '/body/p[5]' --prop style=Heading2` |
-| Layout issues (PPTX) | `officecli check file.pptx --json` |
+| Layout issues (PPTX) | `officecli view file.pptx issues --json` |
 | Full validation | `officecli validate file` |

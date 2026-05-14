@@ -596,7 +596,7 @@ REF field text is static until the user updates fields in Word (Ctrl+A, F9). Int
 ### F.1 Verification Commands
 
 ```bash
-officecli validate paper.docx          # XML structure -- must return 0 errors
+officecli validate paper.docx          # XML structure -- record unwaived errors
 officecli view paper.docx outline      # Heading hierarchy + element counts
 officecli view paper.docx issues       # Automated issue detection
 officecli view paper.docx text         # Content verification

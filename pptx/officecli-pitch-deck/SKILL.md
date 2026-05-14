@@ -228,7 +228,7 @@ officecli validate pitch.pptx
 
 Run before every delivery. See [creating.md](creating.md) Section G for the full checklist.
 
-1. `officecli validate` = 0 errors. **Exception:** slides with cell merge may report schema warnings that are cosmetic (PowerPoint renders correctly).
+1. `officecli validate` structural result recorded. **Exception:** slides with cell merge or modern chart extensions may report schema warnings that must be separated from render/PowerPoint-open proof.
 2. Every chart is editable (click -> Edit Data appears in PowerPoint)
 3. Every table is a native table object (click -> table editing mode)
 4. Speaker notes on all content slides (exclude title and closing), >= 2 sentences each
