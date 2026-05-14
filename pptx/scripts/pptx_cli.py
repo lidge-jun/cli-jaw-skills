@@ -282,7 +282,17 @@ def cmd_export_pdf(args: argparse.Namespace) -> int:
     try:
         from ooxml_core.soffice import run_soffice
     except ImportError:
-        from ooxml.soffice import run_soffice
+        try:
+            from ooxml.soffice import run_soffice
+        except ImportError:
+            def run_soffice(args: list[str], **kwargs):
+                soffice = shutil.which("soffice")
+                if soffice is None:
+                    raise FileNotFoundError(
+                        "soffice not found. Install LibreOffice (`brew install --cask libreoffice`) "
+                        "or provide ooxml_core.soffice/ooxml.soffice on PYTHONPATH."
+                    )
+                return subprocess.run([soffice, *args], **kwargs)
 
     src = Path(args.input).resolve()
     dst = Path(args.output).resolve()

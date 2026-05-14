@@ -327,8 +327,12 @@ def create_notes_reuse_conflict() -> None:
 
 
 def _validate_json(path: Path) -> dict:
+    sys.path.insert(0, str((Path(__file__).resolve().parent.parent.parent)))
     sys.path.insert(0, str((Path(__file__).resolve().parent.parent / "scripts" / "ooxml").parent))
-    from ooxml.validate import validate
+    try:
+        from ooxml_core.validate import validate
+    except ImportError:
+        from ooxml.validate import validate
 
     return validate(str(path))
 

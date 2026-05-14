@@ -477,6 +477,7 @@ def cmd_accept_changes(args: argparse.Namespace) -> int:
 
 def cmd_merge_runs(args: argparse.Namespace) -> int:
     """Merge adjacent runs with identical formatting."""
+    sys.path.insert(0, str(SKILLS_REF_DIR))
     sys.path.insert(0, str(SCRIPT_DIR))
     from ooxml.merge_runs import merge_adjacent_runs
     result = merge_adjacent_runs(args.path)
