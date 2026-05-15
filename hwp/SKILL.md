@@ -640,6 +640,83 @@ Policy:
 - If pinned/latest `rhwp` exposes a native HWP primitive that OfficeCLI has not wired yet, report it as an OfficeCLI capability/wiring gap, not as proof that native HWP cannot do it.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
+### Binary .hwp Structured Creation Pattern
+
+Use this pattern when the user asks for a complex native `.hwp` from scratch. Do not build the body by repeatedly inserting long text into the same paragraph/offset. Long Korean text can be reflowed by the rhwp readback provider, which can make safe-save semantic-delta checks fail even when a temp output was written. Repeated same-position insertion also produces one crowded run instead of a structured document.
+
+Create structure first, then fill it:
+
+1. Run `officecli hwp doctor --json` and `officecli capabilities --json`; continue only when the required native `.hwp` operations are ready.
+2. Create the blank `.hwp`.
+3. Add enough paragraphs with `native-op insert-paragraph`.
+4. Insert short text chunks into explicit paragraph indexes with `add /text --type paragraph`.
+5. Create tables at known paragraph positions with `native-op create-table`.
+6. Discover table coordinates with `view tables --include-empty`.
+7. Fill cells with `/table/cell` using the discovered `section`, `parent-para`, `control`, `cell`, and `cell-para`.
+8. Apply formatting with `native-op apply-char-format` / `apply-para-format`.
+9. Verify with `view text`, `view tables`, and a PDF/app-open render.
+
+Example:
+
+```bash
+officecli create complex.hwp --json
+
+officecli set complex.hwp /native-op \
+  --prop op=insert-paragraph \
+  --prop paragraph=0 \
+  --prop output=01_para.hwp \
+  --json
+
+officecli add 01_para.hwp /text \
+  --type paragraph \
+  --prop paragraph=0 \
+  --prop offset=0 \
+  --prop value="복합 HWP 생성 보고서" \
+  --prop output=02_title.hwp \
+  --json
+
+officecli set 02_title.hwp /native-op \
+  --prop op=create-table \
+  --prop paragraph=11 \
+  --prop offset=0 \
+  --prop rows=5 \
+  --prop cols=4 \
+  --prop output=03_table.hwp \
+  --json
+
+officecli view 03_table.hwp tables \
+  --max-parent-para 20 \
+  --max-control 4 \
+  --max-cell 20 \
+  --include-empty \
+  --json
+
+officecli set 03_table.hwp /table/cell \
+  --prop section=0 \
+  --prop parent-para=12 \
+  --prop control=0 \
+  --prop cell=0 \
+  --prop cell-para=0 \
+  --prop value="항목" \
+  --prop output=04_cell.hwp \
+  --json
+
+officecli set 04_cell.hwp /native-op \
+  --prop op=apply-char-format \
+  --prop paragraph=0 \
+  --prop start=0 \
+  --prop end=12 \
+  --prop props-json='{"bold":true,"fontSize":2200}' \
+  --prop output=05_style.hwp \
+  --json
+
+officecli view 05_style.hwp text --json
+officecli view 05_style.hwp tables --include-empty --json
+officecli view 05_style.hwp pdf --out preview.pdf --json
+```
+
+Debug rule: if an insert fails with `semantic-delta` after a long single string, do not loosen safe-save and do not switch to HWPX. Split the body into shorter visible chunks, write each chunk to an explicit paragraph, then verify anchors and table cells from the output copy.
+
 ### Conversion
 
 ```bash
