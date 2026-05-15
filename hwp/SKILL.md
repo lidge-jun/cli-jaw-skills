@@ -53,9 +53,11 @@ Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 
 | New form field creation | Blocked | source prototype exists; Hancom verification not closed |
 | Diagnose binary .hwp support | Yes, experimental | `officecli hwp doctor --json` then inspect `officecli capabilities --json` |
 | Create new .hwp (binary) | Yes, experimental | `officecli create file.hwp --json`; requires packaged `rhwp-field-bridge` or `OFFICECLI_RHWP_API_BIN` |
-| Read/render .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `officecli view file.hwp svg --page 1 --json` |
+| Read/render/export .hwp (binary) | Yes, experimental | `officecli view file.hwp text --json`; `svg`, `png`, `pdf`, `markdown`, `thumbnail`, `info`, `diagnostics`, `dump`, `pages` are capability-gated |
 | Edit simple .hwp text/fields | Yes, experimental | Use `officecli hwp --json` recipes; prefer `--prop output=out.hwp` |
+| Insert new .hwp body text | Yes, experimental | `officecli add file.hwp /text --type paragraph --prop value=본문 --prop output=out.hwp --json`; requires `insert_text.ready=true` |
 | Edit .hwp/.hwpx table cell by rhwp coordinates | Yes, experimental | `officecli set file.hwp /table/cell ...`; `.hwpx` also routes through rhwp when mutation runtime is ready |
+| Use native rhwp API not yet modeled as a high-level command | Yes, experimental | `officecli view file.hwp native --op get-style-list --json`; `officecli set file.hwp /native-op --prop op=split-paragraph --prop output=out.hwp --json` |
 | Export HWPX to .hwp | Yes, experimental | `officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json` |
 | Safe in-place .hwp text replace | Yes, experimental | Only when `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`; use `--in-place --backup --verify` |
 | Convert .hwp to .hwpx | Fallback | `scripts/hwp_convert.py IN.hwp OUT.hwpx` only when the requested native rhwp operation is not ready or not yet wired |
@@ -601,23 +603,41 @@ Supported claims are capability-gated. Current safe recipes include:
 officecli create file.hwp --json
 officecli view file.hwp text --json
 officecli view file.hwp svg --page 1 --json
+officecli view file.hwp png --page 1 --out /tmp/hwp-png --json
+officecli view file.hwp pdf --page 1 --out out.pdf --json
+officecli view file.hwp markdown --json
+officecli view file.hwp thumbnail --out thumb.png --json
+officecli view file.hwp info --json
+officecli view file.hwp diagnostics --json
+officecli view file.hwp dump --json
+officecli view file.hwp pages --page 1 --json
 officecli view file.hwp fields --json
 officecli view file.hwp field --field-name 회사명 --json
+officecli view file.hwp table-cell --section 0 --parent-para 3 --control 0 --cell 0 --cell-para 0 --json
+officecli view file.hwp tables --section 0 --json
+officecli view file.hwp native --op get-style-list --json
 officecli set file.hwp /field --prop name=회사명 --prop value=리지 --prop output=out.hwp --json
+officecli add file.hwp /text --type paragraph --prop value=새본문 --prop output=out.hwp --json
 officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --prop output=out.hwp --json
 officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --in-place --backup --verify --json
 officecli set file.hwp /table/cell --prop section=0 --prop parent-para=3 --prop control=0 --prop cell=0 --prop value=오피스셀 --prop output=out.hwp --json
+officecli set file.hwp /convert-to-editable --prop output=editable.hwp --json
+officecli set file.hwp /native-op --prop op=split-paragraph --prop paragraph=0 --prop offset=5 --prop output=out.hwp --json
 officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json
 ```
 
 Policy:
 
 - Blank `.hwp` creation is native when `capabilities.formats.hwp.operations.create_blank.ready=true`.
+- Body text insertion is native when `capabilities.formats.hwp.operations.insert_text.ready=true`; use a separate output path and inspect the returned safe-save transaction.
+- PDF/PNG/markdown/thumbnail/info/diagnostics/dump/page exports are native when the matching `export_pdf`, `render_png`, `export_markdown`, `thumbnail`, `document_info`, `diagnostics`, `dump_controls`, or `dump_pages` capability is ready.
+- `native-op` is a generic rhwp escape hatch for pinned native primitives such as paragraph split/merge/delete, table structure operations, header/footer text, footnotes, pictures, shapes, equations, styles, formatting, numbering, and page-hide. Use it only with explicit operation props and output-first mutation.
 - HWPX → HWP export is native when `capabilities.formats.hwp.operations.save_as_hwp.ready=true`; always verify with readback/Hancom before production use.
 - Prefer output mode for binary `.hwp` mutation: `--prop output=out.hwp`.
 - Use in-place mode only for `/text` replacement, only when explicitly requested, and only after `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`.
 - In-place mode must include `--in-place --backup --verify` and must not include `--prop output=...`.
 - Treat table-cell mutation as coordinate-based and experimental.
+- If pinned/latest `rhwp` exposes a native HWP primitive that OfficeCLI has not wired yet, report it as an OfficeCLI capability/wiring gap, not as proof that native HWP cannot do it.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
 ### Conversion
@@ -716,11 +736,12 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 
 1. **No equations in math exams = broken output** -- KICE docs require `<hp:equation>` elements
 2. **No unguarded HWP binary overwrite** -- binary `.hwp` editing is experimental via rhwp; prefer `--prop output=...`; only use safe in-place `/text` replacement when `safeInPlace.ready=true` and the command includes `--in-place --backup --verify`
-3. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
-4. **No visible QA markers in fixed-layout exams** -- KICE-style documents fail visual QA if proof text is inserted into the question body; use screenshots or sidecar evidence.
-5. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
-6. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
-7. **Ignoring reference materials** — `reference/header-xml-guide.md`, `reference/section0-xml-guide.md`, and `reference/style_id_maps.md` are mandatory reading for custom XML work. See §3
+3. **No fake HWPX fallback when rhwp has a native HWP primitive** -- if OfficeCLI lacks the route, say the route is not wired/capability-gated yet and stop for approval.
+4. **No XML editing without lineseg strip** -- stale cache causes overlapping text. Use `scripts/hwpx_cli.py` (auto-strips) or apply the regex in §16
+5. **No visible QA markers in fixed-layout exams** -- KICE-style documents fail visual QA if proof text is inserted into the question body; use screenshots or sidecar evidence.
+6. **No cross-format skill loading** -- this skill is `.hwp`/`.hwpx` only
+7. **Rebuilding styles that exist in template** — when user provides a source .hwpx, `cp` first and read `reference/style_id_maps.md`. See §2
+8. **Ignoring reference materials** — `reference/header-xml-guide.md`, `reference/section0-xml-guide.md`, and `reference/style_id_maps.md` are mandatory reading for custom XML work. See §3
 
 ---
 
