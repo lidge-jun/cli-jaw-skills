@@ -291,6 +291,13 @@ Current:
     DOM fallback, open the model pill and select
     `[data-testid="model-switcher-gpt-5-5-pro-thinking-effort"]`; do not click
     generic "Pro" by role/name because the profile menu can also match.
+- Gemini model switching: flash-lite / flash / pro
+  - 2026-05-19 headed UI note: the Gemini picker currently exposes visible
+    versioned labels such as `3.1 Flash-Lite`, `3 Flash`, and `3.1 Pro`, but
+    workflow commands must use stable aliases (`flash-lite`, `flash`, `pro`).
+    The runtime normalizes future `3.n` labels generically and keeps legacy
+    `fast` as `flash-lite`, while `thinking` maps to `pro`. Deep Think remains
+    a separate tool/mode request, not the plain `--model` alias.
 - render/status/send/poll/query/watch/watchers/sessions/capabilities/notifications/stop
 - long-running watcher startup recovery and channel delivery loop
 - observed capability schemas with fail-closed unobserved tools
@@ -300,5 +307,5 @@ Future:
 - Grok
 - Claude
 - ChatGPT web search and image generation tool runtime after headed frontend observation
-- Gemini model picker and image generation runtime after headed frontend observation
+- Gemini image generation runtime after headed frontend observation
 - Web UI watcher dashboard
