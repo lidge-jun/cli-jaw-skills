@@ -12,8 +12,9 @@ instead of calling a model API directly.
 
 - Render before sending.
 - Use `--inline-only` only when the user explicitly wants pasted inline context.
-  Source context should normally be packaged as an uploaded
-  markdown attachment.
+  Source context should normally be packaged with `--context-from-files` /
+  `--context-file`; upload transport creates one `.zip` archive attachment
+  containing `CONTEXT_PACKAGE.md` plus the selected source files.
 - Do not upload files with `--file` unless explicitly requested. For source
   context, use the context packaging flags first.
 - Do not switch models.
@@ -208,14 +209,16 @@ Rules:
 - `--context-from-files` may be repeated and accepts files, directories, and globs.
 - `--context-exclude` may be repeated and accepts glob excludes.
 - `--context-file` accepts a newline or JSON list of include/exclude patterns.
-- default source-context transport is upload: write one markdown context package
-  and attach it in the ChatGPT composer.
+- default source-context transport is upload: write one `.zip` archive context
+  package and attach it in the ChatGPT/Gemini composer. Do not create a
+  temporary `.txt`/`.md` file yourself for source context.
 - `--inline-only` or `--context-transport inline` forces the old pasted
   composer path.
 - `--max-input` sets the model input-token preflight budget.
 - `--max-file-size` defaults to 1 MB per file.
 - `context-dry-run --json` omits `composerText` unless `--full` is passed.
-- `context-render` prints the context package attachment body by default.
+- `context-render` prints the `CONTEXT_PACKAGE.md` body that will be placed
+  inside the `.zip` archive by live upload transport.
 - `send/query` with context packaging must fail before browser mutation if token
   budget is exceeded, or if inline transport exceeds the inline character budget.
 
