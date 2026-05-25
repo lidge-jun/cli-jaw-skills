@@ -235,9 +235,14 @@ Formula correctness requires recalculation evidence. If LibreOffice/Excel recalc
 ## 7. Prerequisite Check
 
 ```bash
-which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
-which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+# Required
 python3 -c "import pandas, openpyxl" || echo "MISSING: pip install pandas openpyxl"
+
+# On-demand: LibreOffice (auto-install when PDF/recalc needed)
+which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion or recalculation is needed"
+
+# On-demand: OfficeCLI (install from forked repo when L1/L2 needed)
+which officecli >/dev/null 2>&1 || echo "INFO: OfficeCLI not installed — install on-demand: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
 ```
 
 ## 8. Tool Discovery

@@ -317,8 +317,12 @@ soffice --headless --convert-to pdf --outdir /tmp output.hwpx
 ## 8. Prerequisite Check
 
 ```bash
-which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
-which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+# On-demand: OfficeCLI + rhwp (required for most HWP operations)
+which officecli >/dev/null 2>&1 || echo "WARN: OfficeCLI not installed — most HWP operations require it. Install: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+
+# On-demand: LibreOffice (auto-install when PDF conversion needed)
+which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion is needed"
+
 python3 -c "import lxml; import pyhwp" 2>/dev/null || echo "OPTIONAL: pip install lxml pyhwp (for Python fallbacks)"
 echo "JAVA_HOME=$JAVA_HOME (required for H2Orestart HWP→HWPX conversion)"
 ```

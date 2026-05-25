@@ -434,8 +434,14 @@ Fix with `officecli set`, rerun QA. **Do not declare success until you've comple
 ## 8. Prerequisite Check
 
 ```bash
-which officecli || echo "MISSING: install officecli first — see https://officecli.ai"
-which soffice || echo "OPTIONAL: install LibreOffice for PDF verification"
+# Required
+python3 -c "import pptx" || echo "MISSING: pip install python-pptx"
+
+# On-demand: LibreOffice (auto-install when PDF/thumbnail needed)
+which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion or thumbnails are needed"
+
+# On-demand: OfficeCLI (install from forked repo when L1/L2 needed)
+which officecli >/dev/null 2>&1 || echo "INFO: OfficeCLI not installed — install on-demand: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
 ```
 
 ## 9. Tool Discovery
