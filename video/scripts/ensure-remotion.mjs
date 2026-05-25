@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { existsSync, mkdirSync, copyFileSync, lstatSync, symlinkSync, unlinkSync } from "node:fs";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { homedir } from "node:os";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_DIR = resolve(__dirname, "..", "remotion-project");
+const SHARED_DIR = join(homedir(), ".jaw-shared", "remotion");
+const SHARED_MODULES = join(SHARED_DIR, "node_modules");
+const LOCAL_MODULES = join(PROJECT_DIR, "node_modules");
 
 function isDisabled() {
   const raw = String(process.env.REMOTION_RUNTIME_BOOTSTRAP ?? "1").trim().toLowerCase();
@@ -28,20 +32,47 @@ function run(cmd, args, opts = {}) {
   }
 }
 
+function ensureSharedModules() {
+  mkdirSync(SHARED_DIR, { recursive: true });
+
+  const sharedPkg = join(SHARED_DIR, "package.json");
+  const localPkg = join(PROJECT_DIR, "package.json");
+  copyFileSync(localPkg, sharedPkg);
+
+  const pnpmConfig = join(PROJECT_DIR, ".npmrc");
+  if (existsSync(pnpmConfig)) copyFileSync(pnpmConfig, join(SHARED_DIR, ".npmrc"));
+
+  console.log("[Remotion bootstrap] installing to shared location ~/.jaw-shared/remotion ...");
+  const install = run("pnpm", ["install"], { cwd: SHARED_DIR, stdio: "inherit" });
+  if (!install.ok) {
+    console.error("[Remotion bootstrap] pnpm install failed at shared location");
+    process.exit(1);
+  }
+}
+
+function ensureSymlink() {
+  if (existsSync(LOCAL_MODULES)) {
+    const stat = lstatSync(LOCAL_MODULES);
+    if (stat.isSymbolicLink()) return;
+    console.log("[Remotion bootstrap] removing local node_modules in favor of shared symlink...");
+    execFileSync("rm", ["-rf", LOCAL_MODULES]);
+  }
+  symlinkSync(SHARED_MODULES, LOCAL_MODULES);
+  console.log("[Remotion bootstrap] symlinked node_modules → ~/.jaw-shared/remotion/node_modules");
+}
+
 if (isDisabled()) {
   console.log("[Remotion bootstrap] skipped (REMOTION_RUNTIME_BOOTSTRAP disabled)");
   process.exit(0);
 }
 
-// Install deps if needed
-if (!existsSync(resolve(PROJECT_DIR, "node_modules"))) {
-  console.log("[Remotion bootstrap] installing dependencies...");
-  const install = run("pnpm", ["install"], { stdio: "inherit" });
-  if (!install.ok) {
-    console.error("[Remotion bootstrap] pnpm install failed");
-    process.exit(1);
-  }
+// Install to shared location if needed
+if (!existsSync(SHARED_MODULES)) {
+  ensureSharedModules();
 }
+
+// Ensure local symlink points to shared modules
+ensureSymlink();
 
 // Check local CLI
 const localCli = run("pnpm", ["exec", "remotion", "--help"]);
