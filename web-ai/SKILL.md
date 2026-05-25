@@ -79,6 +79,22 @@ cli-jaw browser web-ai notifications --vendor chatgpt
 cli-jaw browser web-ai stop --vendor chatgpt
 ```
 
+## Copy Markdown Fallback
+
+Use only when explicitly needed:
+
+```bash
+cli-jaw browser web-ai query \
+  --vendor chatgpt \
+  --inline-only \
+  --allow-copy-markdown-fallback \
+  --prompt "Return a markdown table."
+```
+
+The runtime intercepts the page's `navigator.clipboard.writeText/write` during
+the provider Copy button click. It does not read the OS clipboard. The flag is
+the explicit policy opt-in for CLI use; do not add `--unsafe-allow`.
+
 ## Polling Timeouts
 
 `web-ai poll`, `web-ai query`, and `web-ai watch` accept `--timeout <seconds>`.
