@@ -1,6 +1,6 @@
 ---
 name: memory
-description: "Persistent long-term memory across sessions. Search, read, and save durable knowledge."
+description: "Persistent long-term memory across sessions. Search, read, and save durable knowledge in the current instance; use dashboard memory only for explicit read-only cross-instance lookup."
 metadata:
   {
     "openclaw":
@@ -24,6 +24,14 @@ metadata:
 6. **Search broadly** — consider Korean/English variants, error codes, symbols, and filenames.
 7. **Use injected context** — a task snapshot may be in the prompt; still search when precision matters.
 
+## Scope: L1 vs L2
+
+- **L1 instance-local memory**: `cli-jaw memory search/read/save`; default path; current instance only; read/write.
+- **L2 dashboard memory**: `cli-jaw dashboard memory search/read/instances`; cross-instance federation; read-only.
+- Use L2 only when the user asks for dashboard memory, all instances, another instance/home, or cross-instance context.
+- Save stable facts only through L1 `cli-jaw memory save`.
+- Embedding search is optional and default OFF; do not assume it is enabled.
+
 ## Commands
 
 ### Search
@@ -33,6 +41,7 @@ cli-jaw memory search "keyword"
 cli-jaw memory search "user preference"
 cli-jaw memory search "auth login 401"
 cli-jaw memory search "launchd plist service"
+cli-jaw dashboard memory search "cross-instance topic"
 ```
 
 ### Read
