@@ -9,12 +9,13 @@ Use the Computer Use tools exposed by the active runtime. The current contract i
 | Tool | Use |
 |---|---|
 | `list_apps()` | Discover available/recent apps when the app name is unknown. |
-| `get_app_state(app)` | Start or refresh an app session; returns screenshot plus accessibility tree. Required before interaction each assistant turn. |
-| `click(app, element_index)` | Click an accessibility element from the latest state. |
-| `click(app, x, y)` | Click raw screenshot/screen coordinates. |
+| `get_app_state(app)` | Start or refresh an app session; returns screenshot plus accessibility tree. Required before interaction each assistant turn. `app` may be a display name, bundle identifier, or full app path. |
+| `click(app, element_index, click_count?, mouse_button?)` | Click an accessibility element from the latest state. |
+| `click(app, x, y, click_count?, mouse_button?)` | Click raw screenshot/screen coordinates. |
 | `drag(app, from_x, from_y, to_x, to_y)` | Drag by coordinates. |
 | `press_key(app, key)` | Send a key or key combination such as `Return`, `Tab`, or `super+c`. |
 | `scroll(app, element_index, direction, pages)` | Scroll a scrollable accessibility element. |
+| `select_text(app, element_index, text, selection?, prefix?, suffix?)` | Select exact text inside a text element, or place the cursor before/after it. Use prefix/suffix when the target text is not unique. |
 | `set_value(app, element_index, value)` | Set a specific editable accessibility element. |
 | `type_text(app, text)` | Type literal text into current focus. Use only after verifying focus. |
 | `perform_secondary_action(app, element_index, action)` | Invoke a secondary accessibility action exposed by an element. |
@@ -23,7 +24,7 @@ Use the Computer Use tools exposed by the active runtime. The current contract i
 
 - Platform: `macOS`.
 - The active agent runtime exposes the Computer Use tools listed above.
-- If the app name is not obvious, call `list_apps()` before `get_app_state(app)`.
+- If the app is not obvious, call `list_apps()` before `get_app_state(app)`.
 - TCC Accessibility and AppleEvents are granted to the controlling app.
 - In cli-jaw packaged installs, `/Applications/Jaw.app` and `/Applications/Codex Computer Use.app` may be required for TCC attribution. Treat missing bundles as setup failures when this path was explicitly requested.
 
@@ -65,7 +66,7 @@ Never skip step 1 to "save a call." One extra state-read always beats one wrong 
 | Class | Contract | Example |
 |---|---|---|
 | `state-read` | `CU-00` | `get_app_state("Finder")` |
-| `element-action` | `CU-01` | `click(element_index=730)` — element from last state |
+| `element-action` | `CU-01` | `click(element_index=730)`; `select_text(element_index=12, text="target")` — element from last state |
 | `value-injection` | `CU-02` | `set_value(element_index=12, value="search text")`; `type_text(text)` only after focus verification |
 | `keyboard-action` | `CU-03` | `press_key(key="super+Tab")` |
 | `pointer-action` | `CU-04` | `click(x=812, y=514)` — raw pixel |
@@ -105,6 +106,7 @@ result=error: <one-line reason>
 - Non-DOM target inside Chrome (tab bar, window controls) → Computer Use.
 - Dialog or menu the page can't reach → Computer Use.
 - "Press Command-W" / global shortcut → Computer Use keyboard-action.
+- Select or place the cursor within known text → Computer Use `select_text(...)` element-action, then re-read or inject text intentionally.
 - Raw pixel from the user ("click 812, 514") → Computer Use pointer-action.
 - Canvas / iframe with no DOM ref, visible in screenshot → Computer Use pointer-action `click(x, y)` directly from screenshot coordinates.
 - Canvas / iframe not visible, need text description to find → Computer Use pointer-action+vision (legacy, see `reference/vision-click.md`).
@@ -116,6 +118,7 @@ result=error: <one-line reason>
 - Don't skip `get_app_state` because "you remember where the button is". Element indices drift with every state change.
 - Don't run two Computer Use actions against the same app without re-reading state in between if the previous action changed anything.
 - Don't resolve uncertainty by trying. "Let me click 342, if not, try 357" is forbidden — take a screenshot.
+- Don't use keyboard shortcuts to select text when `select_text` can target the exact text in the latest accessibility tree.
 - Don't use `type_text(app, text)` as a shortcut for targeted form entry unless focus was verified in the latest state.
 
 ## Worked example

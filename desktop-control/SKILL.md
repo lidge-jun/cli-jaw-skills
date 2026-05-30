@@ -43,7 +43,7 @@ Trigger on any request that touches a visible UI:
 
 1. **Announce the path before acting.** First line of every task must be `path=cdp`, `path=computer-use`, or `path=cdp+cu`.
 2. **Computer Use always starts each assistant turn with `get_app_state(app)` before interacting with that app.** Re-call it on stale warnings, after actions that change UI state, and whenever confidence drops.
-3. **Every meaningful action records an `action_class`.** Classes: `state-read`, `element-action`, `value-injection`, `keyboard-action`, `pointer-action`, `pointer-action+vision`.
+3. **Every meaningful action records an `action_class`.** Classes: `state-read`, `element-action`, `value-injection`, `keyboard-action`, `pointer-action`, `pointer-action+vision`, `scroll-action`, `drag-action`, `secondary-action`.
 4. **Never fall back silently.** If the required path is unavailable, stop and report which precondition failed.
 5. **Never claim the cursor was visible.** Cursor overlay is best-effort in the current build.
 6. **When uncertain, take a screenshot FIRST.** If you ever find yourself guessing — "is that tab 342 or 357?", "did the click actually land?", "is this the right page?" — **stop** and re-ground via `get_app_state(app)` (Computer Use) or `cli-jaw browser snapshot` (CDP). Never chain actions through uncertainty. Guessing indices or URLs leads to infinite correction loops. If two consecutive actions produced ambiguous state, the **next call must be a state-read**, not another action.
@@ -51,8 +51,8 @@ Trigger on any request that touches a visible UI:
 ## Preconditions (Computer Use path)
 
 - macOS only.
-- Active agent runtime must expose Computer Use tools: `list_apps`, `get_app_state`, `click`, `drag`, `press_key`, `scroll`, `set_value`, `type_text`, and `perform_secondary_action`.
-- Start a session by selecting the app display name. Use `list_apps` if the app name is unknown.
+- Active agent runtime must expose Computer Use tools: `list_apps`, `get_app_state`, `click`, `drag`, `press_key`, `scroll`, `select_text`, `set_value`, `type_text`, and `perform_secondary_action`.
+- Start a session by selecting the app display name, bundle identifier, or full app path. Use `list_apps` if the app is unknown.
 - If packaged through cli-jaw, `/Applications/Jaw.app` and `/Applications/Codex Computer Use.app` may be required for TCC attribution. Missing app bundles are a setup issue, not a reason to silently switch paths.
 - TCC Accessibility and AppleEvents must be granted to the controlling app.
 
