@@ -102,7 +102,7 @@ See `references/core/api-design.md` for protocol-specific patterns.
 
 ---
 
-## 2. Layered Architecture (Always Follow)
+## 2. Layered Architecture (Default; Allow Serverless Handlers, Vertical Slices, and Small Scripts When Appropriate)
 
 ```
 Routes → Controllers → Services → Repositories → Database
@@ -121,29 +121,7 @@ Routes → Controllers → Services → Repositories → Database
 
 ### Repository Pattern (Interface Abstraction)
 
-Define repository interfaces so services depend on abstractions, not implementations:
-
-```typescript
-interface UserRepository {
-  findAll(filters?: UserFilters): Promise<User[]>
-  findById(id: string): Promise<User | null>
-  create(data: CreateUserDto): Promise<User>
-  update(id: string, data: UpdateUserDto): Promise<User>
-  delete(id: string): Promise<void>
-}
-
-// Concrete implementation — swap without touching services
-class PostgresUserRepository implements UserRepository {
-  async findById(id: string): Promise<User | null> {
-    const { data, error } = await db.from('users').select('*').eq('id', id).single()
-    if (error) throw new DatabaseError(error.message)
-    return data
-  }
-  // ...
-}
-```
-
-Benefits: testable (mock the interface), swappable (Postgres → Supabase → in-memory), single responsibility.
+Use repository interfaces so services depend on abstractions, enabling mocking and swapping implementations.
 
 ---
 
@@ -163,57 +141,18 @@ Use a centralized `AppError` class. Distinguish operational vs programmer errors
 
 ### Error Taxonomy (AppError Hierarchy)
 
-```typescript
-abstract class AppError extends Error {
-  abstract readonly statusCode: number
-  abstract readonly code: string
-  abstract readonly isOperational: boolean
-}
-
-class ValidationError extends AppError {
-  readonly statusCode = 400
-  readonly code = "VALIDATION_ERROR"
-  readonly isOperational = true
-}
-
-class NotFoundError extends AppError {
-  readonly statusCode = 404
-  readonly code = "NOT_FOUND"
-  readonly isOperational = true
-}
-
-class InternalError extends AppError {
-  readonly statusCode = 500
-  readonly code = "INTERNAL_ERROR"
-  readonly isOperational = false // programmer error — alert + investigate
-}
-```
+Create an AppError base class with statusCode, code, and isOperational properties. Extend for each error type (ValidationError, NotFoundError, etc.).
 
 ### Result Pattern (Preferred for TypeScript)
 
-Use value-based error handling instead of thrown exceptions for business logic:
-
-```typescript
-import { ok, err, Result } from "neverthrow"
-
-function parseUserId(input: string): Result<number, ValidationError> {
-  const id = parseInt(input, 10)
-  if (isNaN(id)) return err(new ValidationError("Invalid user ID"))
-  return ok(id)
-}
-
-// Caller MUST handle both paths — compiler enforces it
-const result = parseUserId(req.params.id)
-  .andThen(id => findUser(id))
-  .mapErr(e => toApiError(e))
-```
+Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain errors where explicit error handling improves clarity.
 
 | Library | When to Use |
 |---------|-------------|
 | **neverthrow** | Default choice — simple Rust-like `Result<T, E>` |
 | **Effect** | Complex domains needing full effect system |
 
-**Rule:** Use `Result` for business logic. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
+**Rule:** Use `Result` where recoverable/domain errors are first-class. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
 
 ---
 
@@ -237,22 +176,14 @@ Apply in this sequence (order matters):
 
 ## 5. API Response Contract
 
-Every endpoint must return a **stable envelope** that frontend clients can rely on:
-
-```typescript
-// Success envelope
-{ "success": true, "data": { ... }, "meta": { "requestId": "req_abc123", "pagination": { "page": 1, "pageSize": 20, "total": 142 } } }
-
-// Error envelope
-{ "success": false, "error": { "code": "VALIDATION_ERROR", "message": "Email is required", "details": [{ "field": "email", "rule": "required" }] }, "meta": { "requestId": "req_abc123" } }
-```
+API endpoints should use a **stable response envelope** unless the protocol (GraphQL, gRPC, SSE) defines its own.
 
 **Rules:**
 - `success` boolean at top level — never infer from HTTP status alone
 - `error.code` is machine-readable (UPPER_SNAKE), `error.message` is human-readable
 - `meta.requestId` on every response — enables cross-service tracing
 - Pagination uses cursor-based (`after`/`before`) for large datasets, offset-based (`page`/`pageSize`) for admin UIs
-- Nullability: explicitly return `null` for absent optional fields, never omit the key
+- Nullability: prefer consistent key presence; omit when sparse payloads are intentional
 - Timestamps: ISO 8601 UTC (`2024-01-15T09:30:00Z`), never Unix epoch in JSON
 - Money: integer cents + currency code, never floating point
 
@@ -275,7 +206,7 @@ user-service:profile:u_12345:v2
 - Use consistent hashing for cache keys — no random components
 - Namespace by service to prevent key collisions in shared Redis
 
-### TTL Selection
+### TTL Selection (Starting Guidance, Tune Based on Workload)
 
 | Data Type | TTL | Rationale |
 |-----------|-----|-----------|
@@ -330,22 +261,7 @@ Use OpenTelemetry for the three pillars of observability:
 4. **Never log PII, secrets, or full request bodies**
 5. Use OTel semantic conventions for field names
 
-```typescript
-import { trace, context } from '@opentelemetry/api';
-
-// Extract trace context from the active span (auto-injected by OTel middleware)
-const span = trace.getSpan(context.active());
-const traceId = span?.spanContext().traceId ?? 'no-trace';
-const spanId = span?.spanContext().spanId ?? 'no-span';
-
-logger.error("Payment failed", {
-  "error.type": "card_declined",
-  "payment.id": paymentId,
-  "user.id": userId,
-  "trace.id": traceId,
-  "span.id": spanId,
-})
-```
+Include traceId and spanId from OTel context in every structured log entry. Follow OTel semantic conventions for field names.
 
 See `references/core/observability.md` for auto-instrumentation setup, custom spans, and alerting.
 

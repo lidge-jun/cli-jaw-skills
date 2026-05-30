@@ -70,7 +70,7 @@ For EACH component boundary:
 Run once → analyze evidence → identify failing layer → investigate THAT layer
 ```
 
-Complete all 5 steps before proceeding to Phase 2.
+Work through these steps; skip only if clearly irrelevant to the problem at hand.
 
 ### Phase 2: Pattern Analysis
 
@@ -137,11 +137,11 @@ was likely skipped.
 | "Add multiple changes, run tests" | Can't isolate cause if multiple variables changed. Revert, change ONE thing. |
 | "It's probably X, let me fix that" | "Probably" without evidence = Phase 1 not done. Go back and trace it. |
 | "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause. Your "fix" hides the real bug. |
-| "One more fix attempt" (after 2+ failures) | 3+ failures = question the architecture, not symptoms. See escalation below. |
+| "One more fix attempt" (after repeated failures) | After repeated failures, pause and reassess architecture/assumptions. See escalation below. |
 | "It works on my machine" | Reproduce in the SAME environment as the failure. Local success proves nothing. |
 | "Let me add a try/catch around it" | Suppressing errors is not fixing them. Find WHY it throws. |
 
-**The 3-Strike Rule**: If 3 consecutive fix attempts fail, pause entirely.
+**Repeated Failure Rule**: After repeated failed fix attempts, pause entirely.
 Each fix revealing a new problem in a different place is a sign of
 **architectural issues**, not simple bugs. Discuss with the user before
 attempting more fixes.
@@ -172,117 +172,19 @@ Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 
 ### Scenario A: API Returns 500
 
-```
-Phase 1: Read server logs → find stack trace → identify failing line and function
-Phase 1: Reproduce with curl/httpie: exact endpoint, method, headers, body
-         $ curl -X POST http://localhost:3000/api/users \
-           -H "Content-Type: application/json" \
-           -d '{"email": "test@example.com"}'
-Phase 1: git log --oneline -5 on the affected route file
-Phase 1: Instrument boundaries:
-         - Controller: log req.body on entry
-         - Service: log input params + DB query params
-         - Repository: log query + result
-         → Run once → "Service receives userId=undefined because
-            controller destructures { userId } from empty body"
-
-Phase 2: Find a working POST endpoint → compare middleware chain
-         Working endpoint validates body with zod schema first.
-         Broken endpoint skips validation and destructures directly.
-
-Phase 3: "Missing input validation causes TypeError on undefined.
-          Controller destructures { userId } but client sends {}."
-         Test: send {} body → expect 400 (validation error), not 500.
-
-Phase 4: Write test:
-           it('returns 400 when required fields missing', async () => {
-             const res = await request(app).post('/api/users').send({});
-             expect(res.status).toBe(400);
-             expect(res.body.error).toMatch(/userId.*required/);
-           });
-         Add zod validation → test passes → check other routes for same gap.
-```
+Root cause pattern: Missing input validation lets undefined values propagate into business logic. Instrument controller/service/repository boundaries to find where the bad value enters. Compare with a working endpoint that validates input with a schema. Fix: add schema validation at the entry point, write a test that sends invalid input and expects 400.
 
 ### Scenario B: React Hydration Mismatch
 
-```
-Phase 1: Read browser console → "Text content does not match server-rendered HTML"
-Phase 1: Identify component: <ProfileHeader /> renders user's local time
-Phase 1: Check: does the component use Date.now(), new Date(), or window.*?
-         → Yes: new Date().toLocaleDateString() in server component
-
-Phase 2: Find a similar component that renders dates without hydration errors
-         → <PostTimestamp /> uses 'use client' + useEffect for client-only dates
-         Difference: ProfileHeader renders date on server; PostTimestamp defers.
-
-Phase 3: "Server renders at build time (UTC), client renders with user timezone.
-          Date formatting differs between UTC and Asia/Seoul → hydration mismatch."
-         Prediction: forcing UTC on both sides eliminates mismatch → confirmed.
-
-Phase 4: Move date formatting to a client component with 'use client' directive:
-           'use client';
-           export function LocalDate({ iso }: { iso: string }) {
-             const [display, setDisplay] = useState('');
-             useEffect(() => {
-               setDisplay(new Date(iso).toLocaleDateString());
-             }, [iso]);
-             return <time dateTime={iso}>{display}</time>;
-           }
-         Hydration warning gone → no regressions in other date components.
-```
+Root cause pattern: Server renders a value (e.g., date, locale string) that differs from client-side rendering due to environment differences (UTC vs. local timezone). Compare with components that defer environment-dependent rendering to useEffect. Fix: move environment-dependent formatting into a client component.
 
 ### Scenario C: N+1 Query Performance
 
-```
-Phase 1: Enable query logging (Prisma: DEBUG=prisma:query, Django: LOGGING)
-         Load page with 50 users → observe 51 queries in log (1 + 50)
-Phase 1: Trace: User.findAll() returns 50 users, then for each user,
-         user.getPosts() fires a separate SELECT. Classic N+1.
-
-Phase 2: Find a similar list endpoint that uses eager loading
-         → /api/teams uses { include: { members: true } } and runs 2 queries.
-         Difference: /api/users omits the include clause.
-
-Phase 3: "User.findAll() lazy-loads posts per user. 50 users = 50 extra
-          queries. Adding include/joinedload reduces to 2 queries."
-         Prediction: adding { include: { posts: true } } → query count ≤ 3.
-
-Phase 4: Write performance test:
-           it('loads users with posts in ≤5 queries', async () => {
-             const queryLog = captureQueries();
-             await getUsers({ limit: 50 });
-             expect(queryLog.count).toBeLessThanOrEqual(5);
-           });
-         Add eager loading → query count drops to 2 → verify response shape.
-```
+Root cause pattern: List endpoint lazy-loads related records per item (1 query + N queries). Enable query logging to count queries, then compare with an endpoint that uses eager loading. Fix: add include/joinedload, write a test asserting bounded query count.
 
 ### Scenario D: Flaky Test (Intermittent Failure)
 
-```
-Phase 1: Run test 20 times in isolation → passes 20/20
-         Run test in full suite → fails 3/20 times
-         → Failure depends on test execution order (shared state)
-Phase 1: Check test for: shared database state, global variables, time-dependent
-         logic, async operations without proper await, uncleared mocks
-         → Test reads from a database table that previous test writes to
-
-Phase 2: Find stable tests with similar DB patterns → all use beforeEach
-         with transaction rollback. Flaky test uses no setup/teardown.
-
-Phase 3: "Test relies on database state from previous test. Shared connection
-          pool doesn't reset between test files. When test-A runs first and
-          inserts a user, test-B's COUNT(*) assertion fails."
-
-Phase 4: Add proper isolation:
-           beforeEach(async () => {
-             await db.query('BEGIN');
-           });
-           afterEach(async () => {
-             await db.query('ROLLBACK');
-           });
-         Run 50 times in full suite → 0 failures.
-         Search for other tests missing beforeEach cleanup → fix 3 more.
-```
+Root cause pattern: Test passes in isolation but fails in suite due to shared mutable state (database rows, global variables, uncleared mocks). Compare with stable tests that use transaction rollback in beforeEach/afterEach. Fix: add proper test isolation, then search for other tests missing cleanup.
 
 ---
 
@@ -295,16 +197,16 @@ Phase 4: Add proper isolation:
 - You haven't checked recent changes (`git log`, `git diff`)
 - You haven't found working comparison code yet
 - The bug is in YOUR code (not a third-party library)
-- You've made fewer than 3 fix attempts
+- You still have untested approaches to try
 
 ### Escalate When:
 
-- **3+ fix attempts failed** — likely architectural; needs human judgment
+- **Repeated fix attempts failed** — likely architectural; needs human judgment
 - **Undocumented library behavior** — file an issue upstream, work around it
 - **Environment-specific** — requires access you don't have (prod DB, cloud IAM)
 - **Security-sensitive** — don't debug auth/crypto/payment alone; flag for human review
 - **Multi-team dependency** — bug is in another team's service or API contract
-- **Time-boxed**: you've spent >30 min on Phase 1 with zero progress
+- **Stalled**: if investigation stalls, reassess approach
 
 ### How to Escalate Well
 
@@ -320,7 +222,7 @@ and a **recommendation** for next steps.
 After resolving any bug that:
 - Was user/customer-impacting
 - Took >1 hour to diagnose
-- Involved 3+ failed fix attempts
+- Involved repeated failed fix attempts
 - Revealed a systemic issue (same bug class exists elsewhere)
 
 Fill out `references/postmortem-template.md` and include it in the PR or commit.
@@ -354,5 +256,5 @@ action item that prevents the same class of bug from recurring.
 
 When context is limited, preserve: (1) Core principle — no fixes without root cause,
 (2) 4 Phases — investigate → analyze → hypothesize → implement,
-(3) 3-Strike Rule — 3 failures = escalate, (4) one variable at a time,
+(3) Repeated Failure Rule — after repeated failures, reassess, (4) one variable at a time,
 (5) evidence over intuition, (6) failing test first.

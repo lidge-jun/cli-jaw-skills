@@ -5,7 +5,7 @@ keywords: [connector-test, api-test, reminder-test, board-test]
 license: Complete terms in LICENSE.txt
 ---
 # Testing & QA
-Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage).
+Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
 ---
 ## 1. Test Strategy
@@ -64,76 +64,11 @@ real deterministic dependency
 → manual stub / fake
 → framework mock as last resort
 ```
-### 2.3 Service Pattern — TypeScript
-```typescript
-import { describe, it, expect, vi } from 'vitest';
-import { UserService } from '../src/services/user.service';
-
-describe('UserService.create', () => {
-  it('normalizes input and creates the user', async () => {
-    const repo = { findByEmail: vi.fn().mockResolvedValue(null), create: vi.fn().mockResolvedValue({ id: 'u_1', email: 'alice@example.com' }) };
-    const service = new UserService({ repo });
-    const result = await service.create({ email: ' Alice@Example.com ', name: 'Alice' });
-    expect(repo.findByEmail).toHaveBeenCalledWith('alice@example.com');
-    expect(repo.create).toHaveBeenCalledWith({ email: 'alice@example.com', name: 'Alice' });
-    expect(result.id).toBe('u_1');
-  });
-});
-```
-### 2.4 Service Pattern — Python
-```python
-import pytest
-from unittest.mock import AsyncMock
-from app.services.user_service import UserService
-
-@pytest.mark.asyncio
-async def test_create_user_normalizes_input():
-    repo = AsyncMock(); repo.find_by_email.return_value = None; repo.create.return_value = {"id": "u_1", "email": "alice@example.com"}
-    service = UserService(repo=repo)
-    result = await service.create({"email": " Alice@Example.com ", "name": "Alice"})
-    repo.find_by_email.assert_awaited_once_with("alice@example.com")
-    assert result["id"] == "u_1"
-```
-### 2.5 API Pattern — TypeScript
-```typescript
-import request from 'supertest';
-
-it('returns a stable success envelope', async () => {
-  const response = await request(app).post('/api/users').send({ email: 'alice@example.com', name: 'Alice' });
-  expect(response.status).toBe(201);
-  expect(response.body).toMatchObject({ success: true, data: { email: 'alice@example.com' }, meta: expect.any(Object) });
-  expect(response.headers['x-request-id']).toBeTruthy();
-});
-```
-### 2.6 API Pattern — Python
-```python
-import pytest
-
-@pytest.mark.asyncio
-async def test_create_user_returns_success_envelope(client):
-    response = await client.post("/api/users", json={"email": "alice@example.com", "name": "Alice"})
-    body = response.json()
-    assert response.status_code == 201
-    assert body["success"] is True
-    assert body["data"]["email"] == "alice@example.com"
-    assert response.headers["x-request-id"]
-```
-### 2.7 Database Truth with Testcontainers
-Use a **real database** when verifying migrations, transactions, unique constraints, foreign keys, query translation, and performance-sensitive SQL.
-```typescript
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
-let pg: Awaited<ReturnType<PostgreSqlContainer['start']>>;
-beforeAll(async () => { pg = await new PostgreSqlContainer('postgres:16-alpine').start(); process.env.DATABASE_URL = pg.getConnectionUri(); });
-afterAll(async () => { await pg.stop(); });
-```
-```python
-from testcontainers.postgres import PostgresContainer
-@pytest.fixture(scope="session")
-def pg_url():
-    with PostgresContainer("postgres:16-alpine") as container:
-        yield container.get_connection_url()
-```
-### 2.8 Fixture / Seed Synchronization
+### 2.3 Service & API Patterns
+Mock dependencies at service boundaries. Use Supertest/httpx for route-level integration tests. Match response envelope shape from backend contracts.
+### 2.4 Database Truth with Testcontainers
+Use a **real database** when verifying migrations, transactions, unique constraints, foreign keys, query translation, and performance-sensitive SQL. Use Testcontainers for real DB truth in correctness-sensitive persistence tests. Start container in beforeAll/fixture setup, capture connection URI.
+### 2.5 Fixture / Seed Synchronization
 - Prefer builders / factories over copied JSON snapshots.
 - Keep shared contract examples in `fixtures/contracts/` or equivalent.
 - Seed data should expose **stable IDs** used by Playwright smoke flows.
@@ -163,17 +98,10 @@ PactV3 workflow:
 4. Pact file auto-writes to `pacts/` → publish to broker → provider verifies
 
 See `references/backend-testing.md` for full PactV3 example.
-### 3.4 Schema Verification — Python
-```python
-import schemathesis
-schema = schemathesis.openapi.from_path("openapi.yaml")
-@schema.parametrize(endpoint="/api/users", method="POST")
-def test_openapi_contract(case):
-    response = case.call_asgi(create_app(testing=True))
-    case.validate_response(response)
-```
+### 3.4 Schema Verification
+Use schema-based API testing (Schemathesis, Dredd) to verify OpenAPI contract compliance.
 ### 3.5 Rules
-- Contract tests are **mandatory** when frontend and backend are developed in parallel.
+- Contract tests are **strongly recommended** for parallel FE/BE, public APIs, and cross-team contracts.
 - E2E success does **not** replace provider verification.
 - Store golden examples near the contract, not inside one app only.
 - If the shape is intentionally breaking, update the contract first, then all consumers.
@@ -201,7 +129,7 @@ python scripts/with_server.py \
   -- python your_automation.py
 ```
 ## Reconnaissance-Then-Action Pattern
-1. `page.wait_for_load_state('networkidle')` → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
+1. Wait for app-ready signal (prefer explicit app-ready signals over networkidle) → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
 
 ## Best Practices
 - **Use bundled scripts as black boxes** — run `--help` first, invoke directly.
@@ -305,31 +233,7 @@ When an AI writes and reviews its own code, it carries the same assumptions into
 
 ### Regression Naming Convention
 
-Name tests after the bug they prevent:
-
-```typescript
-it('notification_settings is not undefined (BUG-R1 regression)', async () => {
-  const res = await GET(createTestRequest('/api/user/profile'));
-  const { json } = await parseResponse(res);
-  expect(json.data.notification_settings).toBeDefined();
-});
-```
-
-### Required Fields Contract
-
-Define the expected response contract and assert every field:
-
-```typescript
-const REQUIRED_FIELDS = ['id', 'email', 'name', 'notification_settings'];
-
-it('returns all required fields', async () => {
-  const res = await GET(createTestRequest('/api/user/profile'));
-  const { json } = await parseResponse(res);
-  for (const field of REQUIRED_FIELDS) {
-    expect(json.data).toHaveProperty(field);
-  }
-});
-```
+Name regression tests with BUG-R{N} convention. Assert all required fields with a loop.
 
 ### Sandbox-Mode API Testing
 
@@ -365,21 +269,8 @@ pip-audit --strict --desc
       p/typescript
       p/python
 ```
-### 7.4 Security Regressions — TypeScript & Python
-```typescript
-it('returns 401 without a bearer token', async () => {
-  const response = await request(app).get('/api/admin/users');
-  expect(response.status).toBe(401);
-  expect(response.body.error.code).toBe('AUTH_REQUIRED');
-});
-```
-```python
-@pytest.mark.asyncio
-async def test_admin_route_requires_auth(client):
-    response = await client.get("/api/admin/users")
-    assert response.status_code == 401
-    assert response.json()["error"]["code"] == "AUTH_REQUIRED"
-```
+### 7.4 Security Regressions
+Test missing auth (expect 401) and verify error.code matches contract for every auth-protected endpoint.
 ### 7.5 Rules
 - dependency audit in CI
 - Semgrep or equivalent SAST
@@ -388,9 +279,11 @@ async def test_admin_route_requires_auth(client):
 - a blocking rule for high / critical dependency findings
 ---
 ## 8. Coverage & Quality Gates
-### 8.1 Minimum Thresholds
-| Metric | Minimum | Ideal |
-|--------|---------|-------|
+### 8.1 Suggested Thresholds
+These are project/risk-based, not universal minimums. Adjust for your context.
+
+| Metric | Suggested Floor | Ideal |
+|--------|-----------------|-------|
 | Line coverage | 70% | 85%+ |
 | Branch coverage | 60% | 80%+ |
 | Function coverage | 80% | 90%+ |

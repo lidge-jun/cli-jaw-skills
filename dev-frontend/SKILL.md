@@ -58,9 +58,8 @@ Default rules:
 ## 1. Component Identification
 
 When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 거"):
-1. Suggest 2-3 candidate components: `<Name> — <what it looks/works like>`
-2. Recommend one with reasoning for this use case
-3. Confirm, then proceed
+1. Recommend the best-fit component with reasoning: `<Name> — <what it does, why it fits>`
+2. Confirm, then proceed
 
 If the user already names a specific component, skip this step.
 Reference: [component.gallery/components](https://component.gallery/components/)
@@ -156,153 +155,122 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 
 ---
 
-## 8. Custom Hook Patterns
+## 8. Custom Hooks
 
-Extract reusable logic into custom hooks:
+Create a custom hook only when it owns reusable behavior, not just because code is a few lines long.
 
-### useDebounce — Delay value updates
+Good hook candidates: subscription lifecycle, reusable async state machine, form-field behavior shared across components, media/query/observer integration, keyboard/focus behavior, external store wrapper.
 
-```typescript
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay)
-    return () => clearTimeout(timer)
-  }, [value, delay])
-  return debounced
-}
+Avoid hooks that are merely thin aliases for `useState`, `useToggle`, `useDebounce`, or one-off component logic unless the repo already standardizes them.
 
-// Usage: const debouncedQuery = useDebounce(searchQuery, 300)
-```
-
-### useToggle — Boolean state with flip
-
-```typescript
-function useToggle(initial = false): [boolean, () => void] {
-  const [value, setValue] = useState(initial)
-  const toggle = useCallback(() => setValue(v => !v), [])
-  return [value, toggle]
-}
-```
-
-### Hook Design Rules
-- Name with `use` prefix — React enforces this
-- Return `[value, actions]` tuple or `{ data, loading, error }` object
-- Handle cleanup in `useEffect` return — prevent memory leaks
-- Keep hooks focused — one concern per hook
+Hook rules:
+- The hook name describes behavior, not implementation
+- Inputs are explicit and stable; return shape is small
+- Side effects are justified by an external system; cleanup is correct
+- Dependencies are honest; use `useEffectEvent` for non-reactive callbacks inside Effects
+- Do not hide server state, router state, or form ownership inside a generic hook
 
 ---
 
-## 9. React Performance Optimization
+## 9. React Performance
 
-### Memoization Decision Tree
+Default performance strategy: keep components pure, keep state local, classify state ownership correctly, use server rendering/caching boundaries, split expensive client islands, measure before memoizing.
 
-| Situation | Tool | Example |
-|-----------|------|---------|
-| Expensive computation from props/state | `useMemo` | Sorting/filtering large arrays |
-| Callback passed to memoized child | `useCallback` | Event handlers for `React.memo` children |
-| Pure component with stable props | `React.memo` | List items, cards |
-| Frequent re-renders from context | Split contexts | Separate read-only from write contexts |
+| Tool | Use when |
+|------|----------|
+| `memo` | child render is expensive and props are stable |
+| `useMemo` | calculation is expensive or identity is required |
+| `useCallback` | callback identity is required by memoized child or external API |
+| `useTransition` | interaction should stay responsive while non-urgent work completes |
+| `useOptimistic` | mutation UX benefits from reversible optimistic state |
+| `Activity` | hidden UI should preserve state without active Effects |
+| `Suspense` | dynamic/async boundary needs isolated loading behavior |
 
-Skip memoization for cheap computations or components that render fast already — premature optimization adds complexity.
-
-### Code Splitting
-
-```typescript
-const HeavyChart = lazy(() => import('./HeavyChart'))
-
-// Wrap with Suspense + meaningful fallback
-<Suspense fallback={<ChartSkeleton />}>
-  <HeavyChart data={data} />
-</Suspense>
-```
-
-Split at route boundaries and heavy components (charts, editors, 3D). Keep above-the-fold content in the main bundle.
+If React Compiler is enabled, remove defensive memoization unless measurement or semantics justify it. Split at route boundaries and heavy components (charts, editors, 3D).
 
 ---
 
 ## 10. Form Handling
 
-### Controlled Form with Validation (Zod + Schema)
-
-```typescript
-const schema = z.object({
-  name: z.string().min(1, "Required").max(200),
-  email: z.string().email("Invalid email"),
-})
-
-function CreateForm() {
-  const [data, setData] = useState({ name: '', email: '' })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const result = schema.safeParse(data)
-    if (!result.success) {
-      setErrors(Object.fromEntries(
-        result.error.issues.map(i => [i.path[0], i.message])
-      ))
-      return
-    }
-    setErrors({})
-    submitToApi(result.data)
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input value={data.name}
-        onChange={e => setData(p => ({ ...p, name: e.target.value }))} />
-      {errors.name && <span role="alert">{errors.name}</span>}
-      {/* ... */}
-    </form>
-  )
-}
-```
-
-For complex forms (multi-step, dynamic fields), use `react-hook-form` + Zod resolver.
+For simple forms, use controlled components with schema validation (Zod). For complex forms (multi-step, dynamic fields), use `react-hook-form` + Zod resolver. Always show field-level errors with `role="alert"`.
 
 ---
 
 ## 11. Accessibility Quick-Wins
 
-Beyond the baseline (§7), add these interaction patterns:
-
-### Focus Management (Modal)
-
-```typescript
-function Modal({ isOpen, onClose, children }: ModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null)
-  const previousFocus = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    if (isOpen) {
-      previousFocus.current = document.activeElement as HTMLElement
-      modalRef.current?.focus()
-    } else {
-      previousFocus.current?.focus()
-    }
-  }, [isOpen])
-
-  if (!isOpen) return null
-  return (
-    <div ref={modalRef} role="dialog" aria-modal="true" tabIndex={-1}
-      onKeyDown={e => e.key === 'Escape' && onClose()}>
-      {children}
-    </div>
-  )
-}
-```
-
-### Keyboard Navigation Checklist
-- Arrow keys navigate lists and menus
-- Enter/Space activate buttons and links
-- Escape closes modals, dropdowns, popovers
+Beyond the baseline (§7):
+- Focus management: trap focus in modals, restore on close, handle Escape
+- Arrow keys navigate lists and menus; Enter/Space activate buttons and links
 - Tab order follows visual flow
 - `aria-expanded`, `aria-haspopup`, `aria-activedescendant` on composite widgets
+- Test with screen reader and keyboard-only navigation
 
 ---
 
-## 12. Pre-Flight Checklist
+## 12. 2026 Frontend Platform Rules
+
+Use this section when modernizing or creating React/Next/Vite frontends. Prefer project conventions first.
+
+### React 19.2+
+
+- **Activity**: Use `<Activity>` for state-preserving hidden UI (tabs, drawers, route shells). Do not use for security hiding or active subscriptions.
+- **useEffectEvent**: For non-reactive logic inside Effects that needs latest props/state without resubscribing. Never call during render or pass to children.
+- **Partial Pre-rendering**: Design pages as static shell + explicit dynamic holes + Suspense boundaries. No `Date.now()`, `Math.random()`, or request-specific data in the pre-rendered shell.
+- **React Compiler**: Do not cargo-cult `memo`/`useMemo`/`useCallback`. Measure first unless referential stability is semantically required.
+
+### Next.js 16
+
+- Turbopack is default. Do not add custom webpack config unless proven unsupported.
+- **Cache Components** (`cacheComponents: true`): dynamic rendering is default; cache only what you explicitly mark with `use cache` + `cacheLife` + `cacheTag`.
+- Never cache user/session-specific data without explicit user-scoped cache key.
+- Server Actions: validate input server-side, authorize against the resource, revalidate affected cache tags.
+
+### Modern CSS
+
+Prefer native CSS before JS layout observers or animation libraries:
+- **Container queries** for component-level responsive layout (not viewport)
+- **`:has()`** for parent/sibling state selection — keep selectors narrow
+- **CSS nesting** for modularity — keep shallow, avoid specificity tunnels
+- **Subgrid** when nested content must align to outer grid
+- **View Transitions** for meaningful state continuity — respect `prefers-reduced-motion`
+- **Modern units**: `dvh/svh/lvh` over `100vh`, logical properties over `left/right`
+- **Tailwind v4**: CSS-first configuration, use theme variables over hardcoded values
+
+### Build Tools
+
+- **Vite 7**: ESM-only, Node 20.19+/22.12+, baseline-widely-available target
+- **Rolldown**: experimental drop-in for Vite; pin versions, compare output before production
+- Do not introduce Webpack-era config unless the existing app is already Webpack-bound
+
+### State Classification
+
+Before adding state, classify it:
+
+| State type | Owner | Default tool |
+|---|---|---|
+| render-local UI | nearest component | `useState` / `useReducer` |
+| derived | render calculation | expression / `useMemo` if expensive |
+| form draft | form boundary | native form, React Hook Form, TanStack Form |
+| server/cache | server/cache layer | RSC, Next cache, TanStack Query, SWR |
+| URL/navigation | router | path params, search params |
+| global client UI | external store | Zustand, Jotai, context |
+| optimistic mutation | mutation boundary | `useOptimistic`, mutation library |
+| AI stream | conversation boundary | append-only message model + stream status |
+
+Rules: Do not store derived state just to sync with Effect. Do not put server state in Zustand. Do not put URL-shareable state only in component state. Keep optimistic state reversible.
+
+### shadcn/ui and AI-Assisted UI
+
+- Inspect existing installed components before adding new ones
+- Use project's `components.json`, aliases, tokens, and registry conventions
+- Do not hallucinate design-system components; verify against local source
+- Remove demo-only copy and unused variants
+
+For AI-native interfaces (chat, agent, copilot), design explicit states: empty → prompt ready → submitted → streaming → tool call → result → complete → feedback. Never fake streaming, citations, or tool calls.
+
+---
+
+## 13. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Domain-correct direction chosen and committed
@@ -312,12 +280,15 @@ Before delivering:
 - [ ] Required assets are real, semantic, rendered, and not generic decoration
 - [ ] Korean-first UI follows CJK typography and Korean UX writing rules
 - [ ] Soft 3D/miniature/character assets pass domain and semantic gates
-- [ ] Mobile layout collapse guaranteed (`px-4`, `max-w-7xl mx-auto`)
+- [ ] Mobile layout collapse guaranteed
 - [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
 - [ ] Loading, empty, and error states provided
-- [ ] `useEffect` animations have cleanup functions
-- [ ] Custom hooks tested independently (§8)
-- [ ] Memoization applied only where measured impact (§9)
+- [ ] State classified before adding store/Context/Effect/cache (§12)
+- [ ] Effects sync with external systems; derived state is not Effect-synced
+- [ ] Container queries considered before viewport-query or JS layout workarounds
+- [ ] View transitions respect reduced motion
+- [ ] shadcn components follow local registry and token conventions
+- [ ] AI UI states are honest: no fake streaming, citations, or tool calls
 - [ ] Forms validate with schema and show field-level errors (§10)
 - [ ] Focus management on modals and popovers (§11)
 - [ ] Desktop/mobile/narrow screenshots checked for overlap, clipping, and asset rendering
@@ -326,7 +297,7 @@ Before delivering:
 
 ---
 
-## 13. Backend Contract & Security Alignment
+## 14. Backend Contract & Security Alignment
 
 Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
 

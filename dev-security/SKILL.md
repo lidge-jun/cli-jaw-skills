@@ -78,33 +78,13 @@ Client-side validation improves UX only — it is never a security boundary.
 - Sanitize HTML only when rich text is explicitly allowed.
 - Re-validate on the server even when frontend uses the same schema.
 
-```ts
-import { z } from 'zod';
-
-export const RegisterInput = z.object({
-  email: z.string().email().max(320),
-  password: z.string().min(12).max(128),
-  displayName: z.string().trim().min(1).max(80),
-}).strict();
-```
-
-```python
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
-class RegisterInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-    email: EmailStr
-    password: str = Field(min_length=12, max_length=128)
-    display_name: str = Field(min_length=1, max_length=80)
-```
-
-For injection cases, rich text, serialization pitfalls, and output encoding edge cases, read `references/owasp-top10.md` A05 and `references/language-quirks.md`.
+Validate all input at trust boundaries with schema validation (Zod strict, Pydantic `extra="forbid"`, or equivalent). Reject unknown fields. For injection cases, rich text, and output encoding, read `references/owasp-top10.md` A05 and `references/language-quirks.md`.
 
 ## 2. Authentication Checklist
 
 Use this checklist for login, session, token, password reset, magic link, OAuth, and admin access:
 - [ ] Passwords hashed with `argon2id` or `bcrypt`; use MD5, SHA1, or raw SHA256 only for non-security hashing.
-- [ ] Access tokens expire in 15-60 minutes.
+- [ ] Access tokens are short-lived (a 15-60 minute window is typical; defer to org policy and threat model).
 - [ ] Refresh tokens rotate on use and support family invalidation after reuse detection.
 - [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; keep session tokens out of `localStorage`.
 - [ ] OAuth uses Authorization Code + PKCE; avoid implicit flow (deprecated, token-in-URL exposure).
@@ -167,26 +147,7 @@ This skill owns header policy values.
 - `X-Frame-Options: DENY` when CSP `frame-ancestors` is not sufficient for legacy support
 - `Cross-Origin-Opener-Policy` and `Cross-Origin-Resource-Policy` where required by the app
 
-```ts
-import helmet from 'helmet';
-
-app.disable('x-powered-by');
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", "https://api.example.com"],
-      frameAncestors: ["'none'"],
-      baseUri: ["'self'"],
-    },
-  },
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: false },
-}));
-```
+Apply these via the framework's standard header middleware (Helmet for Express, equivalents elsewhere). Exact directive values are environment-specific — CSP especially must be designed around the app's real script/style/asset/connect origins, not copied from a template.
 
 **Frontend touchpoints that must stay aligned**
 - CSP compliance: no inline scripts, no unsafe event handlers, no surprise third-party script injection.
@@ -203,14 +164,16 @@ Apply rate limiting per IP and, where available, per user, tenant, and credentia
 Return `429 Too Many Requests` with `Retry-After`.
 Log repeated abuse without logging secrets or raw PII.
 
-| Surface | Minimum Limit |
+Treat the limits below as risk-based starting defaults, not fixed gates — tune them to real traffic, abuse risk, and threat model.
+
+| Surface | Default starting limit |
 | --- | --- |
-| Login | 5 requests per minute per IP and account identifier |
-| Password reset request | 3 requests per hour per account identifier |
-| Registration | 10 requests per hour per IP |
-| MFA verification | 10 requests per 10 minutes per session |
-| Public API | 100 requests per minute per user or API key |
-| File upload start | 20 requests per hour per user |
+| Login | ~5 requests per minute per IP and account identifier |
+| Password reset request | ~3 requests per hour per account identifier |
+| Registration | ~10 requests per hour per IP |
+| MFA verification | ~10 requests per 10 minutes per session |
+| Public API | ~100 requests per minute per user or API key |
+| File upload start | ~20 requests per hour per user |
 | Webhook verification failures | Alert after burst anomalies and repeated signature failures |
 
 Rate limiting is not only for brute force.
@@ -219,22 +182,7 @@ Use it for enumeration, abuse, accidental loops, webhook replay storms, and AI-t
 ## 7. Static Analysis Integration
 
 Security claims are incomplete without automated checks.
-At minimum, wire the language-appropriate scanners into local development and CI.
-
-```bash
-# JavaScript / TypeScript
-npm audit --audit-level=high
-npx eslint .
-semgrep --config=auto .
-
-# Python
-pip-audit
-bandit -q -r .
-semgrep --config=auto .
-
-# Secrets
-gitleaks detect --source=. --no-git
-```
+At minimum, run the project-native SAST, dependency-audit, and secret-scan tools (e.g. `npm audit`/`pip-audit`, `semgrep`, `gitleaks`) in local development and CI. Use whatever the repo already standardizes on; exact commands belong in repo docs.
 
 For CI templates, pre-commit hooks, and tool-specific guidance, read `references/static-analysis.md`.
 For review gating, combine this with `dev-code-reviewer/SKILL.md` §§1-2.

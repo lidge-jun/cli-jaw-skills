@@ -7,18 +7,24 @@ Structured 5-phase development. Advance only with user approval.
 
 ## How It Works
 
-PABCD is a one-way loop — forward only.
+PABCD is a forward progression with Interview return.
 
 ```
 IDLE ──→ P ──→ A ──→ B ──→ C ──→ D ──→ IDLE
          │      │      │      │      │
         STOP   STOP   STOP   auto   auto
         wait   wait   wait
+         └──────┴──────┴──────┴──────┘
+                      ↓
+                 I (Interview)
+              context preserved
 ```
 
-To restart from any phase:
+You can return to Interview (I) from any phase to clarify requirements. Context (plan, audit status) is preserved.
+
+To restart from scratch:
 ```
-cli-jaw orchestrate reset   → returns to IDLE
+cli-jaw orchestrate reset   → returns to IDLE (context cleared)
 ```
 Then re-enter with `cli-jaw orchestrate P`.
 
@@ -26,7 +32,8 @@ Phases P, A, B require user approval before advancing. C and D proceed automatic
 
 Transition commands:
 ```
-cli-jaw orchestrate P       → enter Planning (from IDLE only)
+cli-jaw orchestrate I       → enter Interview (from any state, context preserved)
+cli-jaw orchestrate P       → enter Planning (from IDLE or I)
 cli-jaw orchestrate A       → enter Plan Audit (from P only)
 cli-jaw orchestrate B       → enter Build (from A only)
 cli-jaw orchestrate C       → enter Check (from B only)
@@ -51,20 +58,34 @@ For broad changes or unfamiliar repositories, P phase MUST include:
 
 Do not create new project-level source-of-truth folders during B unless approved in P or explicitly requested by the user.
 
-Read project docs and dev skills first. Write a plan with two parts:
+Read project docs and dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
+
+Write a plan with two parts:
 - **Part 1**: Easy explanation — what will be built, in non-developer terms.
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
 
-If PABCD work creates or updates `devlog/` plan artifacts, the plan MUST list exact numbered Jawdev filenames:
-- `00_overview.md`
-- `01_phase1_<slug>.md`
-- `02_phase2_<slug>.md`
+If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT ask questions in P.
 
-Do not propose bare `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, or `plan.md` as new devlog phase files.
+### Jawdev Document Numbering (decade ranges)
 
-Ask the user:
-1. "Any business logic I shouldn't decide alone?"
-2. "Does Part 1 match your intent?"
+Devlog plan artifacts use decade-range numbering to separate concerns:
+
+| Range | Purpose | Examples |
+|-------|---------|----------|
+| 00–09 | Research, specs, MOC (mandatory) | `00_plan.md`, `01_api-survey.md`, `02_competitor-analysis.md` |
+| 10–19 | Phase 1 | `10_phase1-auth-module.md`, `11_phase1-db-schema.md` |
+| 20–29 | Phase 2 | `20_phase2-frontend.md` |
+| 30–39 | Phase 3 | ... |
+
+Rules:
+- 00-range research is **mandatory** — always produce at least one research/spec doc before implementation phases.
+- Default: sequential within decade (`00`, `01`, `02`...).
+- Overflow (>10 docs in a range): use sub-index (`00_0_name.md`, `00_1_name.md`).
+- NEVER use bare filenames like `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`.
+
+Present to the user:
+1. Part 1 summary (≤5 sentences) + diagram + devlog file path
+2. "혼자 결정하면 안 되는 비즈니스 로직이 있나요?" and "이 방향이 맞습니까?"
 
 ⛔ Present the plan. Revise on feedback.
 When user approves → `cli-jaw orchestrate A`
@@ -150,9 +171,10 @@ Audit: verify the imports in ..."` — no "read the plan" line needed.
 ## Pitfalls (반드시 피해야 할 행동)
 
 ### Delegation Trap
-- B phase: **Boss writes all code**. Workers are READ-ONLY verifiers.
-- ⛔ Forbidden dispatch: `"implement the feature"`, `"write the code"`, `"create the file"`.
-- ✅ Allowed dispatch: `"verify src/x.ts compiles"`, `"check integration of Y"`, `"report DONE or NEEDS_FIX"`.
+- B phase: **Boss writes all code by default**. Workers are READ-ONLY verifiers.
+- 💡 To let a worker write, use `--mutable` (optionally `--scope`): `cli-jaw dispatch --agent "Name" --mutable --task "..."`.
+- ⛔ Without `--mutable`: `"implement the feature"`, `"write the code"`, `"create the file"` are forbidden.
+- ✅ Always allowed: `"verify src/x.ts compiles"`, `"check integration of Y"`, `"report DONE or NEEDS_FIX"`.
 
 ### Context Drift
 - If a worker says *"I'll proceed based on my assumption of the plan"* → STOP. Verify the dispatch went through `/api/orchestrate/dispatch` (only that path auto-injects the plan).

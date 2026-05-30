@@ -9,7 +9,7 @@ Rules for generating and auditing project structures. Create files directly foll
 
 ## 1. The Lidge Standard
 
-Three pillars every project must follow:
+Apply for new projects or when a repo has no clear structural convention of its own; defer to an existing mature convention when one is present (§2). Three pillars:
 
 1. **Screaming Architecture** — folder names reveal what the app does (`stock-price/`, `auth/`, `report/`)
 2. **Colocation** — related files live together (logic + test + schema in the same folder)
@@ -53,45 +53,15 @@ Jawdev devlog method:
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
-Jawdev phase document naming is mandatory:
+Jawdev phase document naming uses decade-range prefixes (see `dev-pabcd/SKILL.md` for the canonical table):
 - Plan unit folder: `devlog/_plan/YYMMDD_slug/`
-- Inside the folder, durable phase documents MUST use zero-padded numeric prefixes.
-- Use:
-  - `00_overview.md`
-  - `01_phase1_<slug>.md`
-  - `02_phase2_<slug>.md`
-  - `03_phase3_<slug>.md`
-  - ...
-- The numeric prefix is the source of ordering.
-- Do not create new bare semantic phase files such as:
-  - `PLAN.md`
-  - `plan.md`
-  - `DIFF_PLAN.md`
-  - `PHASES.md`
-  - `RCA.md`
-- When adding a new phase document, scan sibling files and choose the next unused numeric prefix.
-- Keep `00_overview.md` as the index and file map for the plan folder.
-- Reserve `90_` and `99_` prefixes for audits, research notes, review logs, or appendices.
+- `00–09` research/specs/MOC (mandatory before implementation), `10–19` Phase 1, `20–29` Phase 2, and so on.
+- Default sequential within a decade (`00`, `01`, `02`…); on overflow use a sub-index (`00_0_name.md`, `00_1_name.md`).
+- `00_*` (e.g. `00_plan.md` or `00_overview.md`) is the plan-folder index and file map.
+- The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
+- When adding a document, scan siblings and choose the next unused prefix in the correct decade.
 
-Ask before creating:
-
-```text
-I found no clear source-of-truth docs for the current architecture or work plans.
-
-Before I make broad changes, do you want me to create a lightweight Jawdev structure?
-
-Proposed:
-structure/
-  README.md
-  architecture.md
-  conventions.md
-devlog/
-  _plan/
-  _fin/
-
-Recommendation: yes, because <specific reason>.
-I will not create these folders unless you approve.
-```
+Before creating any `structure/`/`devlog/` folders, ask concisely: state that no source-of-truth docs were found, show the proposed tree, give a specific recommendation, and confirm you will not create them without approval.
 
 ## 2.2 Project Skeleton
 
@@ -99,36 +69,7 @@ For a new project, propose the source-of-truth structure in the plan.
 If the user explicitly asks for Lidge/Jawdev standard, create it.
 Otherwise ask once before adding `structure/` and `devlog/`.
 
-When creating an approved new project skeleton, use:
-
-```
-<project>/
-├── AGENTS.md                 # AI context: what this project does, tech stack, conventions
-├── README.md                 # Human overview, quick start, architecture summary
-├── .env.example              # Environment variable template (never commit .env)
-├── .gitignore                # Language-appropriate ignores
-├── devlog/
-│   ├── _plan/                # Active plans (move to _fin/ when complete)
-│   │   └── README.md
-│   ├── _fin/                 # Completed work in YYMMDD_title/ folders
-│   │   └── .gitkeep
-│   └── str_func/             # Module documentation (see §8)
-│       └── AGENTS.md         # str_func index + rules
-├── src/                      # Source code (feature-based layout)
-│   └── shared/               # Truly shared utilities only
-├── config/                   # Configuration files
-├── docs/                     # Design docs, specs, legal
-│   └── .gitkeep
-└── tests/                    # Integration / e2e tests
-    └── e2e/
-        └── .gitkeep
-```
-
-After skeleton, add language-specific files based on detection (§3):
-- Package manifest (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`)
-- Entry point (`src/index.ts`, `src/main.py`, `src/main.go`, `src/main.rs`)
-- Language config (`tsconfig.json`, `ruff.toml`, etc.)
-- Shared barrel (`src/shared/index.ts`, `src/shared/__init__.py`)
+When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and shared barrel from detection (§3). Defer exact layout to the framework's own generator when one exists.
 
 ## 3. Language Detection
 
@@ -181,7 +122,7 @@ When adding a new feature, create a folder under `src/` with these files:
 | Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = barrel)* |
 | Rust       | `kebab-case/` | `mod.rs`       | `name_test.rs` | `mod.rs`             |
 
-Principle: "flat until you can't" — start flat, sub-folder only when feature exceeds 10 files.
+Principle: "flat until you can't" — start flat, sub-folder only when a folder becomes hard to scan.
 
 ## 6. Naming Conventions
 
@@ -193,7 +134,7 @@ Principle: "flat until you can't" — start flat, sub-folder only when feature e
 | Go files            | snake_case            | `stock_price.go`             |
 | Rust files          | snake_case            | `stock_price.rs`             |
 | devlog plan folders | `YYMMDD_slug/`        | `260510_jawdev_phase_doc_naming/` |
-| devlog phase docs   | `NN_phaseN_slug.md` with `00_overview.md` index | `01_phase1_skill_contract.md` |
+| devlog phase docs   | decade-prefixed `NN_slug.md`, `00_*` is the index | `00_plan.md`, `10_phase1_skill_contract.md` |
 | Functions (JS/TS)   | camelCase             | `getStockPrice()`            |
 | Functions (Python)  | snake_case            | `get_stock_price()`          |
 | Functions (Go)      | PascalCase (exported) | `GetStockPrice()`            |
@@ -220,29 +161,25 @@ Use it when:
 
 When used:
 - One `.md` file per feature folder (e.g., `price.md`, `auth.md`)
-- Each document: **300–500 lines**
+- Keep each document concise, bounded, and task-oriented — not padded to a fixed length
 - Required sections: File Tree, Module Responsibility, Key Function Signatures, Dependencies, Dependents, Sync Checklist
 - Update the corresponding `.md` whenever a feature is added or modified
 - Template: `<SKILL_DIR>/assets/str_func_template.md`
 
-Do not generate 300-500 line feature docs by default for small or immature repos.
+Do not generate heavy feature docs by default for small or immature repos.
 Prefer lightweight `structure/architecture.md` and `structure/conventions.md` first.
 
 ## 9. Split Rules
 
-| Condition                | Action                                        |
-| ------------------------ | --------------------------------------------- |
-| File > 500 lines         | Split into focused modules within same folder |
-| Feature > 10 files       | Create sub-folders by responsibility          |
-| Different runtime needed | Split into `frontend/` + `backend/`           |
-| 3+ apps share code       | Extract to `shared/` or monorepo `packages/`  |
+Split smells (heuristics, not hard gates):
+
+| Condition                       | Action                                        |
+| ------------------------------- | --------------------------------------------- |
+| File grows past ~500 lines      | Split into focused modules within same folder |
+| Folder becomes hard to scan     | Create sub-folders by responsibility          |
+| Different runtime needed        | Split into `frontend/` + `backend/`           |
+| 3+ apps share code              | Extract to `shared/` or monorepo `packages/`  |
 
 ## 10. Audit
 
-Run the audit script to check structural compliance:
-
-```bash
-bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]
-```
-
-Checks 7 items: feature-based structure, colocation, barrel exports, devlog, .env safety, file length (<500 lines), AGENTS.md.
+Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, barrel exports, devlog presence, `.env` safety, file length, and AGENTS.md where those apply.

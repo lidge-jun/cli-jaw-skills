@@ -51,7 +51,7 @@ For large or frequently updated data sources:
 
 1. Use a **watermark column** (e.g., `updated_at`, `id`) to track the last processed record.
 2. Store the watermark after successful load. On failure, restart from the last saved watermark.
-3. Process in batches (1000-10000 rows), not all-at-once.
+3. Process in batches (tune based on source limits and memory), not all-at-once.
 4. Validate row counts: `loaded_rows` should equal `source_rows_since_watermark`.
 
 ### Schema Validation on Ingest
@@ -73,13 +73,6 @@ Before any transformation, validate incoming data:
 
 ### Layer Architecture
 
-```
-Raw / Staging        →    Transformation      →    Marts / Output
-(exact copy of            (cleaning, joins,         (business-ready
- source data,              deduplication,            aggregations,
- never modified)           type casting)             final tables)
-```
-
 **Rules:**
 - **Keep staging immutable.** Copy first, transform in a separate step — this enables replay and debugging.
 - **One transformation per step.** Don't combine cleaning + joining + aggregating in one function. Chain separate steps.
@@ -89,35 +82,12 @@ Raw / Staging        →    Transformation      →    Marts / Output
 
 When using dbt for transformations, follow the **staging → intermediate → mart** layer architecture:
 
-```
-models/
-├── staging/          # 1:1 with source tables, light cleaning only
-│   ├── stg_orders.sql
-│   └── stg_customers.sql
-├── intermediate/     # Business logic, joins, deduplication
-│   └── int_order_enriched.sql
-└── marts/            # Business-ready facts and dimensions
-    ├── fct_daily_revenue.sql
-    └── dim_customers.sql
-```
-
 **Rules:**
 - **Staging models**: rename, cast, filter NULLs — no joins, no business logic
 - **Intermediate models**: joins across staging, deduplication, business transforms
 - **Mart models**: aggregations, final business entities consumed by BI/analytics
-- Every model has a `schema.yml` with tests:
-
-```yaml
-models:
-  - name: stg_orders
-    columns:
-      - name: order_id
-        tests: [not_null, unique]
-      - name: amount
-        tests: [not_null]
-```
-
-- Run `dbt test` after every `dbt run` — treat test failures as pipeline failures
+- Every model has a `schema.yml` with tests (not_null, unique, relationships, custom SQL).
+- Run validation tests in CI and after significant changes — treat test failures as pipeline failures.
 - Use `dbt source freshness` to monitor upstream data staleness
 
 ### Error Handling in Pipelines
@@ -167,18 +137,7 @@ Use a **layered quality strategy** — different tools at different pipeline sta
 | **Transform** | dbt tests | Assert model-level quality (not_null, unique, relationships, custom SQL) |
 | **Production** | Soda / Monte Carlo | Real-time monitoring, anomaly detection, SLA enforcement |
 
-**Great Expectations pattern:**
-```python
-validator.expect_column_values_to_not_be_null("order_id")
-validator.expect_column_values_to_be_between("amount", min_value=0, max_value=1_000_000)
-validator.expect_column_distinct_values_to_be_in_set(
-    "status", ["pending", "confirmed", "shipped", "delivered"]
-)
-
-results = validator.validate()
-if not results.success:
-    raise DataQualityError(f"Validation failed: {results.statistics}")
-```
+Validate data dimensions: completeness, uniqueness, range, format, referential integrity, freshness.
 
 **Rule:** Run validation on every pipeline step — skipping "because the data looks fine" leads to silent downstream corruption.
 
@@ -186,27 +145,11 @@ if not results.success:
 
 For datasets shared between teams, define a contract:
 
-```yaml
-contract:
-  name: orders_data_contract
-  owner: data-team
-  version: "1.0"
-
-schema:
-  order_id:    { type: string, not_null: true, unique: true }
-  customer_id: { type: string, not_null: true }
-  amount:      { type: decimal, min: 0, max: 1000000 }
-  status:      { type: string, enum: [pending, confirmed, shipped, delivered] }
-  created_at:  { type: timestamp, not_null: true }
-
-sla:
-  freshness: max_delay_hours: 1
-  completeness: min_valid_percentage: 99.9
-
-consumers:
-  - analytics-team: "Daily dashboards"
-  - ml-team: "Churn prediction model"
-```
+A data contract must include:
+- **name**, **owner**, **version**
+- **schema**: column name, type, nullability, uniqueness, allowed values
+- **SLA**: freshness threshold, minimum completeness percentage
+- **consumers**: list of downstream teams/systems
 
 Changes to a contracted schema require **versioning and consumer notification**.
 
@@ -250,28 +193,23 @@ When analysis involves statistics:
 
 ### Batch vs. Streaming
 
-```
-Is real-time insight required (latency <1 minute)?
-├── YES → Streaming
-│   └── Need exactly-once semantics?
-│       ├── YES → Kafka + Flink / Spark Structured Streaming
-│       └── NO  → Kafka + consumer groups (simpler)
-└── NO → Batch
-    └── Daily data volume >1TB?
-        ├── YES → Distributed processing (Spark, Databricks)
-        └── NO  → Single-node processing (SQL, Python, dbt)
-```
+| Condition | Choose |
+|-----------|--------|
+| Real-time insight required (sub-minute latency) | Streaming (Kafka + Flink, Spark Structured Streaming, or Kafka Streams depending on complexity) |
+| Exactly-once semantics needed | Kafka transactional producers + Flink/Spark |
+| Latency >1 min acceptable, volume >1TB/day | Distributed batch (Spark, Databricks) |
+| Latency >1 min acceptable, volume <1TB/day | Single-node batch (SQL, Python, dbt) |
 
 **Default to batch.** Streaming adds significant complexity in error handling, state management, and debugging. Only use streaming when latency requirements genuinely demand it.
 
-### Streaming Decision Tiers
+### Streaming Decision Tiers (heuristic guidance)
 
 | Latency Requirement | Framework | Complexity |
 |---------------------|-----------|------------|
-| <100ms, complex stateful | Apache Flink | High (dedicated cluster) |
-| <1s, existing Spark infra | Spark Structured Streaming | Medium |
-| <1s, Kafka-centric | Kafka Streams (embedded library) | Low-Medium |
-| >1min acceptable | Batch with frequent scheduling | Low |
+| Sub-100ms, complex stateful | Apache Flink | High (dedicated cluster) |
+| Sub-second, existing Spark infra | Spark Structured Streaming | Medium |
+| Sub-second, Kafka-centric | Kafka Streams (embedded library) | Low-Medium |
+| Minutes acceptable | Batch with frequent scheduling | Low |
 
 **Kafka essentials for data engineers:**
 - Partition by expected throughput — avoid excessive partitions
@@ -316,27 +254,13 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 | **File format** | CSV, JSON, Excel | CSV, Parquet, Arrow-native | CSV, Parquet, JSON, S3 direct |
 
 **Decision rule:**
-```
-Data size?
-├── <100MB, interactive exploration → pandas
-├── >100MB, <10GB batch transforms → Polars
-├── SQL-first analytics, any size → DuckDB
-└── Blended workflow → Polars transforms → DuckDB aggregations
-```
 
-**Interop patterns:**
-```python
-# Polars → DuckDB (zero-copy via Arrow)
-import polars as pl
-import duckdb
-
-df = pl.scan_parquet("events/*.parquet").filter(pl.col("status") == "active").collect()
-result = duckdb.sql("SELECT user_id, COUNT(*) as cnt FROM df GROUP BY user_id ORDER BY cnt DESC LIMIT 10")
-
-# DuckDB → Polars
-arrow_table = duckdb.sql("SELECT * FROM 'data.parquet' WHERE amount > 100").arrow()
-df = pl.from_arrow(arrow_table)
-```
+| Data size / workflow | Recommended tool |
+|----------------------|------------------|
+| Small (<100MB), interactive exploration | pandas |
+| Medium (100MB-10GB), batch transforms | Polars |
+| SQL-first analytics, any size | DuckDB |
+| Blended workflow | Polars transforms, DuckDB aggregations (zero-copy via Arrow) |
 
 See `references/tools.md` for full patterns and code examples.
 

@@ -32,20 +32,7 @@ Before reviewing any code, verify:
 
 Before reading a single line of code, run automated tools on changed files:
 
-```bash
-# JavaScript/TypeScript
-npx eslint --format compact $(git diff --name-only --diff-filter=ACMR HEAD -- '*.ts' '*.tsx' '*.js' '*.jsx')
-npx tsc --noEmit                    # type check only
-npm audit --audit-level=high        # dependency vulnerabilities
-
-# Python
-ruff check $(git diff --name-only --diff-filter=ACMR HEAD -- '*.py')
-mypy src/                           # type check
-pip-audit                           # dependency vulnerabilities
-
-# Multi-language security scan
-semgrep --config=auto --severity=ERROR $(git diff --name-only --diff-filter=ACMR HEAD)
-```
+Run project-native linters, type checker, and tests before reviewing.
 
 **Pre-Scan Rules:**
 1. **Critical/error findings → block review.** Don't waste human review cycles on machine-detectable problems.
@@ -311,47 +298,7 @@ Push back when:
 
 ## 6. Sub-Agent Review Mode
 
-For large diffs (>500 lines) or multi-domain changes, use parallel sub-agent review:
-
-### When to Parallelize
-
-| Condition | Strategy |
-|-----------|----------|
-| Diff ≤200 lines, single domain | Single-agent review (this skill) |
-| Diff 200-500 lines, single domain | Single-agent, focus on hotspots |
-| Diff >500 lines | **Split and parallelize** |
-| Multi-domain (frontend + backend + infra) | **Parallelize by domain** |
-
-### Orchestration Protocol
-
-1. **Orchestrator** analyzes diff scope — identify domains, file groups, and review focus areas.
-
-2. **Spawn parallel review agents** using `task` tool with `agent_type: "code-review"`:
-   - **Security track** — auth changes, input handling, secrets, dependencies
-   - **Architecture track** — layer violations, coupling, abstraction fitness
-   - **Domain tracks** — frontend (apply `dev-frontend` constraints), backend (apply `dev-backend` patterns), data (apply `dev-data` patterns)
-
-3. **Each sub-agent receives:**
-   - Their file subset (use `git diff -- <paths>`)
-   - The review process from §1-5 of this skill
-   - Domain-specific skill reference if applicable
-   - Instruction to output structured findings: `{severity, file, line, category, issue, fix}`
-
-4. **Orchestrator collects and post-processes:**
-   - **Deduplicate** — merge findings on same file:line
-   - **Normalize severity** — align to Critical/High/Medium/Low
-   - **Resolve conflicts** — if agents disagree, escalate with both arguments
-   - **Present unified review** — sorted by severity, then by file
-
-### Cost Awareness
-
-| Diff Size | Agents | Justification |
-|-----------|--------|---------------|
-| <500 lines | 1 | Not worth parallelization overhead |
-| 500-1500 lines | 2-3 | Split by domain (frontend/backend/infra) |
-| >1500 lines | 3-5 | Full domain decomposition; consider if PR should be split instead |
-
-**Rule: If you need >5 review agents, the PR is too large.** Request the author split it.
+Parallelize review only when domain breadth exceeds one reviewer's context (e.g., frontend + backend + infra in a single diff, or when the diff spans too many unrelated domains for a single pass). Each sub-agent receives its file subset, the review process from sections 1-5, and outputs structured findings. The orchestrator deduplicates, normalizes severity, and presents a unified review.
 
 ### AI Tool Integration Awareness
 

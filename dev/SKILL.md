@@ -53,6 +53,7 @@ Before broad changes, inspect existing project conventions:
 - Agent context: `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, tool-specific instruction files
 - JS/TS setup: `package.json`, `tsconfig*`, ESLint/Biome config, sibling file extensions
 - Existing naming, test, module, and phase-document patterns
+- Devlog phase documents: decade-range Jawdev numbering (00-09 research, 10-19 phase 1, etc.) — see `dev-pabcd` skill
 
 MUST follow existing conventions when they are clear.
 MUST read existing `structure/`, `devlog/`, or other source-of-truth logs before broad implementation.
@@ -98,7 +99,7 @@ Give every file, function, and class a single, clear responsibility.
 - One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
 - Follow existing naming conventions in the project. Check sibling files before creating new ones.
 - New files must match the directory structure and naming patterns already in use.
-- For Jawdev/devlog `_plan/` and `_fin/` phase documents, the canonical numbered-prefix pattern (`00_overview.md`, `01_phase1_<slug>.md`, `02_phase2_<slug>.md`) takes priority over any legacy bare-name files such as `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, or `plan.md`.
+- For Jawdev/devlog phase documents, use decade-range numbering: 00-09 research/specs, 10-19 phase 1, 20-29 phase 2, etc. Never use bare filenames like `PLAN.md`, `PHASES.md`, or `RCA.md`. See `dev-pabcd` skill for full convention.
 
 ---
 
