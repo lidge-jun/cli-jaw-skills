@@ -26,6 +26,8 @@ jobs:
         with:
           python-version: "3.12"
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Validate static page
         run: |
           python3 scripts/validate_public_surface.py
