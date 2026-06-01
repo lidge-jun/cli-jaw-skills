@@ -1,327 +1,171 @@
-# Skills Reference
+<p align="center">
+  <strong>cli-jaw-skills</strong><br>
+  Reference skill library for cli-jaw agents.
+</p>
 
-CLI-JAW's skill system — 118 skills across 9 categories.
-
-**23 active** (auto-injected into every AI prompt) · **95 reference** (loaded on demand)
-
----
-
-## Where Skills Are Registered
-
-| Location                                      | Purpose                                                                | Format                        |
-| --------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------- |
-| `skills_ref/registry.json`                    | **Master registry** — metadata for all skills                          | JSON object keyed by skill ID |
-| `skills_ref/<id>/SKILL.md`                    | **Skill definition** — instructions the AI reads                       | Markdown                      |
-| `lib/mcp-sync.ts` → `OPENCLAW_ACTIVE`         | **Auto-activate list** — skills promoted to active on install/reset    | TypeScript `Set`              |
-| `lib/mcp-sync.ts` → `CODEX_ACTIVE`            | **Codex-origin active** — skills sourced from `~/.codex/skills/`       | TypeScript `Set`              |
-| `registry.json` → `category: "orchestration"` | **Auto-activate by category** — orchestration skills are always active | JSON field                    |
-
-### Runtime Directories
-
-| Directory                | Purpose                                                                 |
-| ------------------------ | ----------------------------------------------------------------------- |
-| `~/.cli-jaw/skills/`     | **Active skills** — injected into system prompt                         |
-| `~/.cli-jaw/skills_ref/` | **Reference skills** — AI reads on demand via `cli-jaw skill read <id>` |
+<p align="center">
+  <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml/badge.svg" alt="Pages"></a>
+  <img src="https://img.shields.io/badge/skills-221-111827" alt="221 skills">
+  <img src="https://img.shields.io/badge/reference_assets-41-2563eb" alt="41 skills with references">
+</p>
 
 ---
 
-## How to Add a New Skill
+# cli-jaw-skills
 
-### 1. Create the skill directory
+`cli-jaw-skills` is a public reference library of agent skills for `cli-jaw`.
+Each skill is a directory with a required `SKILL.md` and optional reference
+materials, scripts, templates, tests, or domain assets.
 
-```
-skills_ref/<your-skill-id>/
-├── SKILL.md          ← required (AI reads this)
-├── scripts/          ← optional (helper scripts)
-└── ...               ← optional (templates, configs)
-```
+The repo is designed as source material for the active `cli-jaw` skill system:
+installers and sync jobs can copy selected skills into runtime skill folders,
+while maintainers can review the full library in one place.
 
-### 2. Write `SKILL.md`
+## Public Surface
 
-Follow the format in `skills_ref/skill-creator/SKILL.md` for guidance. Key sections:
+| Surface | Status |
+|---------|--------|
+| Skill library | 221 top-level `SKILL.md` files |
+| Reference material | 41 skills include `reference/` or `references/` folders |
+| Helper scripts | 28 skills include `scripts/` folders |
+| Templates | 2 skills include `templates/` folders |
+| Office formats | `docx`, `pptx`, `xlsx`, and `hwp` skill families are present |
+| CI | Focused Python regression tests, skill count validation, known long-skill drift checks, docs drift checks |
+| GitHub Pages | `/docs/index.html` static landing page, ready for Pages deployment |
+| License | No root license file is currently declared |
 
-```markdown
-# Skill Name
+Remote signal:
 
-One-line description. Triggers: "keyword1", "keyword2".
-Covers: what it does. Do NOT use for: what it doesn't do.
+- Repository: `lidge-jun/cli-jaw-skills`, public, 4 stars, 0 forks.
+- Existing workflow: `Sync OfficeCLI Skills` has one recent success and one
+  recent failure from manual dispatch history.
+- GitHub Pages is not enabled yet (`GET /repos/lidge-jun/cli-jaw-skills/pages`
+  returns 404). The added Pages workflow deploys `/docs` after an authorized push.
 
----
+## Library Shape
 
-## Quick Reference
-(table of commands)
+The library spans agent operations, browser control, document generation,
+developer guides, frontend/backend/data/testing/security workflows, search,
+media, office files, cloud platforms, productivity systems, and language-specific
+engineering patterns.
 
-## Detailed Usage
-(step-by-step instructions)
+Representative families:
 
-## Rules
-(DO / DON'T lists)
-```
+| Family | Examples |
+|--------|----------|
+| Agent operations | `browser`, `desktop-control`, `web-ai`, `memory`, `telegram-send` |
+| Development guides | `dev`, `dev-frontend`, `dev-backend`, `dev-testing`, `dev-security` |
+| Office/document work | `docx`, `pptx`, `xlsx`, `hwp`, `pdf`, `pdf-vision` |
+| Cloud and web | `cloudflare-deploy`, `durable-objects`, `vercel-deploy`, `web-perf` |
+| Language patterns | `python-patterns`, `rust-patterns`, `golang-patterns`, `kotlin-patterns` |
+| Media and visuals | `imagegen`, `video`, `sora`, `canvas-design`, `diagram` |
+| Business workflows | `market-research`, `inventory-demand-planning`, `production-scheduling` |
 
-### 3. Register in `registry.json`
+## Skill Directory Contract
 
-Add an entry to `skills_ref/registry.json` → `skills` object:
+Minimum shape:
 
-```json
-{
-  "skills": {
-    "your-skill-id": {
-      "name": "Display Name",
-      "name_ko": "한국어 이름",
-      "name_en": "English Name",
-      "emoji": "🔧",
-      "category": "devtools",
-      "description": "Primary description (Korean or English)",
-      "desc_ko": "한국어 설명",
-      "desc_en": "English description",
-      "requires": {
-        "bins": ["required-cli-tool"],
-        "env": ["REQUIRED_API_KEY"]
-      },
-      "install": "npm install -g something",
-      "version": "1.0.0"
-    }
-  }
-}
-```
-
-#### Required fields
-
-| Field         | Type   | Description                                                                                                                     |
-| ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | string | Display name                                                                                                                    |
-| `emoji`       | string | Single emoji                                                                                                                    |
-| `category`    | string | One of: `automation`, `ai-media`, `communication`, `devtools`, `media`, `orchestration`, `productivity`, `smarthome`, `utility` |
-| `description` | string | Short description                                                                                                               |
-| `version`     | semver | Skill version (e.g. `"1.0.0"`)                                                                                                  |
-
-#### Optional fields
-
-| Field                 | Type     | Description                      |
-| --------------------- | -------- | -------------------------------- |
-| `name_ko` / `name_en` | string   | Localized names                  |
-| `desc_ko` / `desc_en` | string   | Localized descriptions           |
-| `requires.bins`       | string[] | Required CLI binaries            |
-| `requires.env`        | string[] | Required environment variables   |
-| `install`             | string   | Install command for dependencies |
-
-### 4. Make it auto-active (optional)
-
-To promote a skill to **always active** (injected into every prompt), pick one:
-
-**Option A — Add to `OPENCLAW_ACTIVE`** (most skills):
-
-```typescript
-// lib/mcp-sync.ts
-const OPENCLAW_ACTIVE = new Set([
-    'browser', 'notion', 'memory', /* ... */ 'your-skill-id',
-]);
+```text
+skill-id/
+  SKILL.md
 ```
 
-**Option B — Set `category: "orchestration"`** in registry.json:
+Expanded shape:
 
-Orchestration-category skills are auto-activated by the registry scanner at install/reset time. Use this for dev-guide skills that all agents need.
+```text
+skill-id/
+  SKILL.md
+  references/
+  scripts/
+  templates/
+  tests/
+```
 
-### 5. Verify
+`SKILL.md` files should stay focused. Large examples, templates, and background
+material belong in sibling folders so the runtime can load only the context a
+task needs.
+
+## Quickstart
+
+Clone the library:
 
 ```bash
-# Hard reset to test fresh install behavior
-jaw skill reset --hard
-
-# Check active count
-jaw doctor
-
-# Check if your skill appears
-jaw skill list
+git clone https://github.com/lidge-jun/cli-jaw-skills.git
+cd cli-jaw-skills
 ```
 
----
-
-## Skill Reset Behavior
-
-| Command                  | What it does                                                                                          |
-| ------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `jaw skill reset`        | **Soft reset** — restores registered skills to bundled defaults, preserves custom/unregistered skills |
-| `jaw skill reset --hard` | **Hard reset** — deletes everything, re-copies from bundle, re-activates defaults                     |
-
-After reset, auto-active skills = `CODEX_ACTIVE` ∪ `OPENCLAW_ACTIVE` ∪ `category:orchestration` = **23 skills**.
-
----
-
-## Categories
-
-### orchestration (10) — *auto-active*
-
-| Skill               |     | Description                                                                     | Version |
-| ------------------- | --- | ------------------------------------------------------------------------------- | ------- |
-| `dev`               | 🔧   | Common development guide. Modular dev, self-reference patterns, changelog.      | 1.1.0   |
-| `dev-backend`       | ⚙️   | Backend role guide. API design, architecture patterns, database optimization.   | 1.1.0   |
-| `dev-code-reviewer` | 🔍   | Code review guide. Pre-scan, quality thresholds, security/perf quick-checks.    | 1.1.0   |
-| `dev-data`          | 📊   | Data role guide. ETL pipelines, dbt, data quality, streaming decisions.          | 1.1.0   |
-| `dev-debugging`     | 🐛   | Systematic debugging. Root cause analysis, boundary instrumentation, postmortem. | 1.0.0   |
-| `dev-frontend`      | 🎨   | Frontend role guide. Unique UI/UX, component design, aesthetic standards.       | 1.0.0   |
-| `dev-pabcd`         | 🎯   | PABCD orchestration workflow with human checkpoints between phases.             | 2.0.0   |
-| `dev-scaffolding`   | 🏗️   | Project scaffolding following the Lidge Standard.                               | 1.0.0   |
-| `dev-security`      | 🛡️   | Security hardening. OWASP Top 10, auth, validation, secrets, supply chain.      | 1.0.0   |
-| `dev-testing`       | 🧪   | Testing guide. Strategy selection, backend/API harnesses, Playwright, CI gates. | 1.1.0   |
-
-### automation (3) — `browser`, `vision-click` are auto-active
-
-| Skill          |     | Description                                                      | Version |
-| -------------- | --- | ---------------------------------------------------------------- | ------- |
-| `browser`      | 🌐   | Chrome automation — snapshot, click, navigate, screenshot.       | 1.0.0   |
-| `vision-click` | 👁️   | Vision-based coordinate clicking. Screenshot → AI → pixel click. | 1.0.0   |
-| `web-routing`  | 🧭   | Routing guide for browser requests.                              | 1.0.0   |
-
-### media (1) — `video` is auto-active
-
-| Skill   |     | Description                                           | Version |
-| ------- | --- | ----------------------------------------------------- | ------- |
-| `video` | 🎬   | JSON-driven video generation pipeline using Remotion. | 0.1.0   |
-
-### ai-media (13)
-
-| Skill                        |     | Description                                               | Version |
-| ---------------------------- | --- | --------------------------------------------------------- | ------- |
-| `algorithmic-art`            | 🎨   | p5.js generative art. Algorithm-based visual artwork.     | 1.0.0   |
-| `atlas`                      | 🌍   | Control ChatGPT Atlas app (macOS).                        | 1.0.0   |
-| `canvas-design`              | 🖼️   | Create PNG/PDF visual designs via Canvas API.             | 1.0.0   |
-| `fal-image-edit`             | ✏️   | fal.ai AI image editing (style transfer, object removal). | 1.0.0   |
-| `hugging-face-cli`           | 🤗   | HF Hub CLI for model/dataset/space management.            | 1.0.0   |
-| `hugging-face-evaluation`    | 📊   | vLLM/lighteval model evaluation and benchmarks.           | 1.0.0   |
-| `hugging-face-model-trainer` | 🏋️   | TRL: SFT/DPO/GRPO model training.                         | 1.0.0   |
-| `imagegen`                   | 🖼️   | Generate/edit images via OpenAI Images API.               | 1.0.0   |
-| `nano-banana-pro`            | 🖼️   | Generate/edit images with Gemini 3 Pro.                   | 1.0.0   |
-| `sora`                       | 🎥   | Sora video generation. OpenAI API.                        | 1.0.0   |
-| `speech`                     | 🗣️   | OpenAI TTS voice synthesis.                               | 1.0.0   |
-| `theme-factory`              | 🎭   | Reusable themes for document/slide/HTML outputs.          | 1.0.0   |
-| `transcribe`                 | 🎤   | Whisper speech-to-text + speaker diarization.             | 1.0.0   |
-
-### communication (6) — `telegram-send` is auto-active
-
-| Skill                |     | Description                                       | Version |
-| -------------------- | --- | ------------------------------------------------- | ------- |
-| `email-draft-polish` | ✉️   | Email draft tone adjustment/formatting.           | 1.0.0   |
-| `gog`                | 🌐   | Gmail, Calendar, Drive, Sheets, Docs integration. | 1.0.0   |
-| `himalaya`           | 📧   | Terminal email read/write/reply/search.           | 1.0.0   |
-| `telegram-send`      | 📨   | Send voice/photo/document via Telegram.           | 1.0.0   |
-| `whatsapp`           | 💬   | WhatsApp message automation.                      | 1.0.0   |
-| `xurl`               | 🐦   | Tweet post/search/reply/DM/media upload.          | 1.0.0   |
-
-### devtools (55) — `github`, `openai-docs` are auto-active via `OPENCLAW_ACTIVE`
-
-| Skill                         |     | Description                                                | Version |
-| ----------------------------- | --- | ---------------------------------------------------------- | ------- |
-| `agents-sdk`                  | 🤖   | Cloudflare Workers AI Agents SDK.                          | 1.0.0   |
-| `api-design-reviewer`         | 📐   | REST API design review.                                    | 1.0.0   |
-| `apple-hig-skills`            | 🍎   | Apple HIG 14 guides.                                       | 1.0.0   |
-| `aws-skills`                  | ☁️   | AWS infrastructure automation (CDK/CloudFormation/Lambda). | 1.0.0   |
-| `brainstorming`               | 💡   | Pre-coding idea refinement → design document.              | 1.0.0   |
-| `changelog-generator`         | 📰   | git commit → changelog/release notes.                      | 1.0.0   |
-| `cloudflare-deploy`           | ☁️   | Deploy to Cloudflare Workers/Pages.                        | 1.0.0   |
-| `codebase-orientation`        | 🗺️   | Project entrypoint/module/build mapping.                   | 1.0.0   |
-| `config-file-explainer`       | ⚙️   | Config file structure/keys/defaults explanation.           | 1.0.0   |
-| `context-compression`         | 🗜️   | Context compression for long sessions.                     | 1.0.0   |
-| `data-structure-chooser`      | 🏗️   | Data structure tradeoff recommendations.                   | 1.0.0   |
-| `database-designer`           | 🗃️   | Schema design, normalization, index optimization.          | 1.0.0   |
-| `debugging-checklist`         | ✅   | Reproduce → isolate → log → verify debugging.              | 1.0.0   |
-| `debugging-helpers`           | 🐛   | Systematic debugging helpers.                              | 1.0.0   |
-| `deep-research`               | 🔬   | Multi-step research: search → analyze → summarize.         | 1.0.0   |
-| `dependency-install-helper`   | 📦   | Platform-specific dependency installation.                 | 1.0.0   |
-| `develop-web-game`            | 🎮   | Web game development + Playwright test loop.               | 1.0.0   |
-| `differential-review`         | 🔎   | Security-focused diff review.                              | 1.0.0   |
-| `dispatching-parallel-agents` | 🔀   | Parallel sub-agent dispatch patterns.                      | 1.0.0   |
-| `durable-objects`             | 💾   | Cloudflare Durable Objects (RPC+SQLite+WebSocket).         | 1.0.0   |
-| `error-message-explainer`     | 💬   | Error → cause + fix suggestions.                           | 1.0.0   |
-| `figma-implement-design`      | 🎨   | Figma designs to 1:1 code.                                 | 1.0.0   |
-| `git-worktrees`               | 🌲   | git worktree-based branch workflow.                        | 1.0.0   |
-| `github`                      | 🐙   | GitHub gh CLI: issues, PRs, CI, code review.               | 1.0.0   |
-| `insecure-defaults`           | 🔒   | Detect hardcoded secrets, weak crypto.                     | 1.0.0   |
-| `ios-simulator`               | 📱   | iOS Simulator control.                                     | 1.0.0   |
-| `jupyter-notebook`            | 📓   | .ipynb create/edit.                                        | 1.0.0   |
-| `linter-fix-guide`            | 🧹   | Lint rule explanation + minimal fix.                       | 1.0.0   |
-| `log-summarizer`              | 📄   | Log grouping + first failure ID.                           | 1.0.0   |
-| `mcp-builder`                 | 🔌   | Design/implement MCP servers.                              | 1.0.0   |
-| `modern-python`               | 🐍   | uv+ruff+ty+pytest Python best practices.                   | 1.0.0   |
-| `netlify-deploy`              | 🔺   | Deploy Netlify sites.                                      | 1.0.0   |
-| `openai-docs`                 | 📖   | OpenAI product/API official docs.                          | 1.0.0   |
-| `postgres`                    | 🐘   | PostgreSQL read-only queries.                              | 1.0.0   |
-| `property-based-testing`      | 🧪   | Multi-language property-based testing.                     | 1.0.0   |
-| `react-best-practices`        | ⚛️   | React patterns, performance, component design.             | 1.0.0   |
-| `receiving-code-review`       | 📩   | Code review feedback reception.                            | 1.0.0   |
-| `render-deploy`               | 🚀   | Deploy Render services.                                    | 1.0.0   |
-| `requesting-code-review`      | 📝   | Internal agent code review.                                | 1.0.0   |
-| `security-best-practices`     | 🛡️   | Language-specific security review.                         | 1.0.0   |
-| `security-ownership-map`      | 👥   | Codebase owner/bus-factor mapping.                         | 1.0.0   |
-| `security-threat-model`       | ⚠️   | Per-repo threat model (STRIDE/DREAD).                      | 1.0.0   |
-| `senior-architect`            | 🏛️   | ADR, pattern selection, dependency analysis.               | 1.0.0   |
-| `sentry`                      | 🐛   | Sentry issue/event lookup.                                 | 1.0.0   |
-| `skill-creator`               | 🏗️   | Auto-generate new SKILL.md.                                | 1.0.0   |
-| `static-analysis`             | 🔍   | CodeQL+Semgrep+SARIF static analysis.                      | 1.0.0   |
-| `tdd`                         | 🔴   | RED-GREEN-REFACTOR TDD cycle.                              | 1.0.0   |
-| `terraform`                   | 🏗️   | HashiCorp Terraform IaC.                                   | 1.0.0   |
-| `tmux`                        | 🧵   | tmux session remote control.                               | 1.0.0   |
-| `ui-design-system`            | 🎨   | Design tokens, color palettes, typography.                 | 1.0.0   |
-| `ux-researcher`               | 🔬   | User personas, journey mapping, usability testing.         | 1.0.0   |
-| `vercel-deploy`               | ▲   | Vercel project deployment.                                 | 1.0.0   |
-| `web-artifacts-builder`       | 🧱   | React/Tailwind web artifact creation.                      | 1.0.0   |
-| `web-perf`                    | ⚡   | Core Web Vitals audit via Lighthouse.                      | 1.0.0   |
-| `writing-plans`               | 📋   | Task decomposition with file paths/code.                   | 1.0.0   |
-
-### productivity (16) — `docx`, `hwp`, `notion`, `pptx`, `xlsx` are auto-active
-
-| Skill                           |     | Description                                      | Version |
-| ------------------------------- | --- | ------------------------------------------------ | ------- |
-| `apple-notes`                   | 🍎   | Apple Notes create/search (AppleScript).         | 1.0.0   |
-| `apple-reminders`               | 🔔   | Apple Reminders add/complete/list (AppleScript). | 1.0.0   |
-| `doc-coauthoring`               | ✍️   | Document co-authoring workflow.                  | 1.0.0   |
-| `docx`                          | 📄   | .docx create/edit/read + visual verification.    | 1.0.0   |
-| `html2pptx`                     | 🔄   | HTML slides → native PowerPoint.                 | 1.0.0   |
-| `hwp`                           | 🇰🇷   | HWP/HWPX create/read/edit via OfficeCLI + rhwp.  | 1.0.0   |
-| `linear`                        | 📐   | Linear issue/project/cycle management.           | 1.0.0   |
-| `notion`                        | 📝   | Notion page/DB CRUD via curl API.                | 1.0.0   |
-| `notion-knowledge-capture`      | 📚   | Conversation → Notion wiki/FAQ/HOW-TO.           | 1.0.0   |
-| `notion-meeting-intelligence`   | 📊   | Meeting prep (per-attendee context, agenda).     | 1.0.0   |
-| `notion-research-documentation` | 🔬   | Multi-source → Notion report synthesis.          | 1.0.0   |
-| `notion-spec-to-implementation` | 📋   | PRD/spec → implementation plan + tasks.          | 1.0.0   |
-| `obsidian`                      | 🗃️   | Obsidian vault note management.                  | 1.0.0   |
-| `pptx`                          | 📽️   | .pptx create/edit/analyze.                       | 1.0.0   |
-| `things-mac`                    | ✅   | Things 3 todo management (AppleScript).          | 1.0.0   |
-| `trello`                        | 📋   | Trello board/list/card management.               | 1.0.0   |
-
-### smarthome (2)
-
-| Skill            |     | Description                         | Version |
-| ---------------- | --- | ----------------------------------- | ------- |
-| `openhue`        | 💡   | Hue light/scene control.            | 1.0.0   |
-| `spotify-player` | 🎵   | Spotify play/pause/search/playlist. | 1.0.0   |
-
-### utility (12) — `memory`, `pdf`, `pdf-vision`, `screen-capture` are auto-active
-
-| Skill              |     | Description                                    | Version |
-| ------------------ | --- | ---------------------------------------------- | ------- |
-| `1password`        | 🔐   | 1Password CLI for password/OTP lookup.         | 1.0.0   |
-| `goplaces`         | 📍   | Google Places API search.                      | 1.0.0   |
-| `memory`           | 🧠   | Long-term memory across sessions.              | 1.0.0   |
-| `pdf`              | 📄   | PDF read/create/edit/review.                   | 1.0.0   |
-| `pdf-vision`       | 📄   | Hybrid PDF: image rendering + text extraction. | 1.0.0   |
-| `screen-capture`   | 📸   | macOS screenshot/webcam/recording.             | 1.0.0   |
-| `summarize`        | 📑   | Summarize URLs, YouTube, files to text.        | 1.0.0   |
-| `tts`              | 🔊   | macOS `say` command text-to-speech.            | 1.0.0   |
-| `video-downloader` | 🎬   | yt-dlp wrapper for media download.             | 1.0.0   |
-| `video-frames`     | 🎬   | Extract video frames/segments (ffmpeg).        | 1.0.0   |
-| `weather`          | 🌤️   | wttr.in weather/forecast lookup.               | 1.0.0   |
-| `xlsx`             | 📊   | .xlsx/.csv/.tsv create/edit/analyze.           | 1.0.0   |
-
----
-
-## Quick Commands
+Count skills:
 
 ```bash
-jaw skill list                  # List all active + reference skills
-jaw skill install <id>          # Promote a reference skill to active
-jaw skill uninstall <id>        # Demote an active skill to reference
-jaw skill read <id>             # Print SKILL.md contents
-jaw skill reset                 # Soft reset (restore registered, keep custom)
-jaw skill reset --hard          # Hard reset (delete all, re-copy from bundle)
+find . -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l
 ```
+
+Inspect a skill:
+
+```bash
+sed -n '1,160p' dev-frontend/SKILL.md
+find dev-frontend/references -maxdepth 2 -type f | sort
+```
+
+Run local validation for the public surface:
+
+```bash
+python3 -m pytest tests/test_dev_frontend_refresh.py -q
+python3 scripts/validate_public_surface.py
+git diff --check
+```
+
+## Validation Policy
+
+The public repo checks should prove four things:
+
+1. The stated skill count matches the filesystem.
+2. `SKILL.md` files are present where expected, and any new line-limit drift is
+   caught. The known long Office skills are tracked separately.
+3. Focused frontend regression tests continue to pass.
+4. README, Pages, and workflows do not drift from the real skill library.
+
+The added CI workflow validates those checks without publishing anything.
+
+The broader OfficeCLI CJK regression suite under `tests/test_cjk_regression.py`
+requires a compatible local `officecli` binary. In this environment that suite
+currently fails before exercising these documentation changes because the local
+OfficeCLI install is missing `System.Collections.NonGeneric` and has command
+shape drift for PPTX shape props.
+
+## OfficeCLI Sync
+
+`.github/workflows/sync-officecli-skills.yml` receives OfficeCLI sync events and
+copies OfficeCLI-derived materials into the `docx`, `pptx`, and `xlsx` skill
+families.
+
+That workflow can commit and push from GitHub Actions when triggered. This local
+work does not push changes; remote CI and Pages deployment require an authorized
+push.
+
+## Security Notes
+
+- Treat skills as executable instructions: review `SKILL.md` and helper scripts
+  before promoting a skill to active runtime use.
+- Keep secrets out of skill files. Use environment-variable placeholders and
+  user-level configuration.
+- Prefer small active skill sets. Reference skills should be loaded on demand,
+  not injected into every prompt.
+- Keep generated or downloaded assets inspectable and attributable.
+
+## Adding or Updating a Skill
+
+1. Create or update a top-level `skill-id/SKILL.md`.
+2. Move long supporting material into `references/`, `scripts/`, or `templates/`.
+3. Run the validation commands above.
+4. Update README and Pages counts if the public surface changes.
+5. For OfficeCLI-derived material, prefer the sync workflow rather than manual
+   copy-paste.
+
+## Maintainer Notes
+
+This repository is a public distribution surface, not just a scratch folder.
+Avoid stale counts, hidden credential assumptions, and broad active-by-default
+claims. Every public claim should be backed by a local validation command or
+the current GitHub repository state.

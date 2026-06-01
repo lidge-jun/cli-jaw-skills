@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cli-jaw-skills - Reference Skill Library</title>
+  <meta name="description" content="A public reference library of 221 cli-jaw agent skills with development guides, browser control, Office workflows, media, cloud, and productivity surfaces.">
+  <link rel="canonical" href="https://lidge-jun.github.io/cli-jaw-skills/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="cli-jaw-skills">
+  <meta property="og:description" content="221 reference skills for cli-jaw agents, with validation and GitHub Pages documentation.">
+  <meta property="og:image" content="./assets/social-preview.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="cli-jaw-skills">
+  <meta name="twitter:description" content="A public library of cli-jaw skills for browser control, dev guides, Office workflows, media, cloud, and more.">
+  <meta name="twitter:image" content="./assets/social-preview.svg">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c0f14;
+      --panel: #121821;
+      --panel-2: #17202c;
+      --ink: #f8fafc;
+      --muted: #a6b1c2;
+      --line: #293545;
+      --accent: #38bdf8;
+      --green: #34d399;
+      --orange: #f59e0b;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    header { position: sticky; top: 0; z-index: 10; background: rgba(12, 15, 20, .86); backdrop-filter: blur(18px); border-bottom: 1px solid var(--line); }
+    nav { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
+    .mark { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); color: #061018; font-size: 11px; }
+    .links { display: flex; gap: 18px; color: var(--muted); font-size: 14px; font-weight: 800; }
+    .hero { padding: 88px 0 54px; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 430px; gap: 56px; align-items: center; }
+    .eyebrow { color: var(--accent); font-size: 13px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 14px 0 18px; max-width: 720px; font-size: clamp(44px, 6vw, 78px); line-height: .94; letter-spacing: 0; }
+    .lead { max-width: 670px; color: var(--muted); font-size: 20px; line-height: 1.62; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); font-weight: 900; }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #061018; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 34px; }
+    .metric { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 16px; }
+    .metric strong { display: block; font-size: 30px; }
+    .metric span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .stack { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 16px; box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+    .stack h2 { margin: 4px 0 14px; font-size: 18px; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 13px; border: 1px solid var(--line); border-radius: 9px; margin-top: 10px; background: var(--panel-2); }
+    .row b { display: block; }
+    .row small { color: var(--muted); }
+    .pill { color: #061018; background: var(--green); border-radius: 999px; padding: 5px 9px; font-size: 12px; font-weight: 900; align-self: start; }
+    section { padding: 58px 0; }
+    h2 { margin: 0 0 18px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; }
+    .section-lead { color: var(--muted); max-width: 780px; line-height: 1.72; font-size: 17px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+    .panel { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 22px; }
+    .panel h3 { margin: 0 0 10px; }
+    .panel p, .panel li { color: var(--muted); line-height: 1.65; }
+    .wide { grid-column: span 2; }
+    pre { overflow: auto; margin: 0; padding: 20px; background: #070a0f; border: 1px solid var(--line); border-radius: 10px; color: #d7f3ff; line-height: 1.65; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 24px; border: 1px solid var(--line); display: block; overflow: hidden; border-radius: 10px; background: var(--panel); }
+    thead, tbody { display: table; width: 100%; table-layout: fixed; }
+    th, td { padding: 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: #d7f3ff; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; background: #0f1621; }
+    td { color: var(--muted); }
+    td:first-child { color: var(--ink); font-weight: 900; }
+    footer { padding: 36px 0 48px; border-top: 1px solid var(--line); color: var(--muted); }
+    @media (max-width: 880px) {
+      .shell { width: min(100% - 28px, 720px); }
+      nav { height: auto; padding: 14px 0; align-items: flex-start; }
+      .links { flex-wrap: wrap; justify-content: flex-end; gap: 10px 14px; }
+      .hero { padding: 54px 0 32px; }
+      .hero-grid, .grid { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: clamp(38px, 12vw, 56px); }
+      .lead { font-size: 17px; }
+      table { overflow-x: auto; }
+      thead, tbody { min-width: 720px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="shell" aria-label="Primary">
+      <a class="brand" href="#"><span class="mark">SKL</span><span>cli-jaw-skills</span></a>
+      <div class="links">
+        <a href="#library">Library</a>
+        <a href="#contract">Contract</a>
+        <a href="#verification">Verification</a>
+        <a href="https://github.com/lidge-jun/cli-jaw-skills">GitHub</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <div class="eyebrow">Reference skill library</div>
+          <h1>221 inspectable skills for cli-jaw agents.</h1>
+          <p class="lead">A public library of task-specific instructions, references, scripts, and templates for browser control, development workflows, Office files, media generation, cloud work, and agent operations.</p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/lidge-jun/cli-jaw-skills">Open repository</a>
+            <a class="button" href="https://github.com/lidge-jun/cli-jaw-skills/blob/main/README.md">Read README</a>
+          </div>
+          <div class="metrics" aria-label="Library metrics">
+            <div class="metric"><strong>221</strong><span>skills</span></div>
+            <div class="metric"><strong>41</strong><span>with references</span></div>
+            <div class="metric"><strong>28</strong><span>with scripts</span></div>
+            <div class="metric"><strong>2</strong><span>with templates</span></div>
+          </div>
+        </div>
+        <aside class="stack" aria-label="Skill family preview">
+          <h2>Skill families</h2>
+          <div class="row"><div><b>dev-frontend</b><small>Design, accessibility, visual verification</small></div><span class="pill">guide</span></div>
+          <div class="row"><div><b>browser + desktop-control</b><small>CDP and Computer Use workflow routing</small></div><span class="pill">control</span></div>
+          <div class="row"><div><b>docx / pptx / xlsx / hwp</b><small>Office and Korean document workflows</small></div><span class="pill">docs</span></div>
+          <div class="row"><div><b>imagegen + video</b><small>Visual and motion production skills</small></div><span class="pill">media</span></div>
+        </aside>
+      </div>
+    </section>
+    <section id="library">
+      <div class="shell">
+        <h2>A skill library, not one giant prompt.</h2>
+        <p class="section-lead">Each top-level directory owns one skill. Large examples and supporting material live beside the skill, so runtime systems can load only what a task actually needs.</p>
+        <table>
+          <thead><tr><th>Surface</th><th>Count or status</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Top-level SKILL.md</td><td>221</td><td>Task-specific agent instructions.</td></tr>
+            <tr><td>Reference folders</td><td>41 skills</td><td>Deeper guidance loaded on demand.</td></tr>
+            <tr><td>Script folders</td><td>28 skills</td><td>Reusable helpers and validators.</td></tr>
+            <tr><td>Template folders</td><td>2 skills</td><td>Starting points for generated artifacts.</td></tr>
+            <tr><td>Office families</td><td>docx, pptx, xlsx, hwp</td><td>Document, presentation, spreadsheet, and Korean office workflows.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section id="contract">
+      <div class="shell">
+        <h2>The contract is intentionally boring.</h2>
+        <div class="grid">
+          <div class="panel wide">
+            <h3>One skill, one directory.</h3>
+            <p>A skill starts with `SKILL.md`. Optional `references/`, `scripts/`, `templates/`, and `tests/` folders keep large supporting material out of the primary instruction file.</p>
+          </div>
+          <div class="panel">
+            <h3>Line-limit drift is tracked.</h3>
+            <p>Known long Office skills are explicitly tracked, and new unexpected `SKILL.md` line-limit drift fails validation.</p>
+          </div>
+          <div class="panel">
+            <h3>Secrets stay out.</h3>
+            <p>Skills should use placeholders and environment-variable names, not committed tokens or user credentials.</p>
+          </div>
+          <div class="panel wide">
+            <h3>OfficeCLI sync is explicit.</h3>
+            <p>The existing sync workflow copies OfficeCLI-derived materials into document skill families when triggered. Local documentation changes do not push or deploy by themselves.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="verification">
+      <div class="shell">
+        <h2>Counts and docs are verified from disk.</h2>
+        <p class="section-lead">The CI workflow runs focused Python regressions, validates the public skill count, tracks known long Office skills, and confirms README/Pages metadata before Pages upload.</p>
+        <pre><code>python3 -m pytest tests/test_dev_frontend_refresh.py -q
+python3 scripts/validate_public_surface.py
+git diff --check</code></pre>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="shell">cli-jaw-skills is a public reference library by lidge-jun. GitHub Pages is prepared for deployment from <code>/docs</code> after an authorized push.</div>
+  </footer>
+</body>
+</html>

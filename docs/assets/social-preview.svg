@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="cli-jaw-skills social preview">
+  <rect width="1200" height="630" fill="#0c0f14"/>
+  <rect x="80" y="80" width="1040" height="470" rx="30" fill="#121821" stroke="#293545" stroke-width="3"/>
+  <text x="130" y="170" fill="#38bdf8" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="6">REFERENCE SKILL LIBRARY</text>
+  <text x="130" y="285" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="900">cli-jaw-skills</text>
+  <text x="130" y="355" fill="#a6b1c2" font-family="Inter, Arial, sans-serif" font-size="34">221 inspectable skills for agent workflows.</text>
+  <g transform="translate(130 420)">
+    <rect width="125" height="54" rx="12" fill="#38bdf8"/>
+    <text x="62" y="36" text-anchor="middle" fill="#061018" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">221</text>
+    <rect x="145" width="125" height="54" rx="12" fill="#34d399"/>
+    <text x="207" y="36" text-anchor="middle" fill="#061018" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">41 refs</text>
+    <rect x="290" width="125" height="54" rx="12" fill="#f59e0b"/>
+    <text x="352" y="36" text-anchor="middle" fill="#061018" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">28 scripts</text>
+  </g>
+</svg>
