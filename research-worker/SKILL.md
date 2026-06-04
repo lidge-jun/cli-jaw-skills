@@ -1,7 +1,8 @@
 ---
 name: research-worker
 description: "Search guidance and output contract for the Research employee. Read-only codebase exploration, uncertainty reduction, structured reports."
-version: 1.0.0
+metadata:
+  version: "1.0.0"
 ---
 
 # Research Employee Skill

@@ -1,10 +1,8 @@
 ---
 name: notion
 description: Notion API for creating and managing pages, databases, and blocks.
-homepage: https://developers.notion.com
 metadata:
-  {
-    "openclaw":
+  { "homepage": "https://developers.notion.com", "openclaw":
       { "emoji": "📝", "requires": { "env": ["NOTION_API_KEY"] }, "primaryEnv": "NOTION_API_KEY" },
   }
 ---

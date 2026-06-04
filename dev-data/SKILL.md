@@ -1,7 +1,10 @@
 ---
 name: dev-data
 description: "Data engineering and analysis guide for orchestrated sub-agents. Data pipelines, ETL/ELT design, data quality validation, SQL optimization, and analysis patterns. Injected when role=data."
-keywords: [dashboard-db, sqlite, audit-log-schema, connector-data]
+metadata:
+  {
+    "keywords": ["dashboard-db", "sqlite", "audit-log-schema", "connector-data"]
+  }
 ---
 
 # Dev-Data — Data Engineering & Analysis Guide

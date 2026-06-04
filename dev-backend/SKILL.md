@@ -1,8 +1,11 @@
 ---
 name: dev-backend
 description: "Backend engineering guide for orchestrated sub-agents. Framework-agnostic API design, clean architecture, database optimization, security hardening, systematic debugging. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when role=backend."
-keywords: [connector-api, audit-log, board-store, reminders-store, notes-store, dashboard-api]
 license: Complete terms in LICENSE.txt
+metadata:
+  {
+    "keywords": ["connector-api", "audit-log", "board-store", "reminders-store", "notes-store", "dashboard-api"]
+  }
 ---
 
 # Dev-Backend — Production-Grade Backend Engineering

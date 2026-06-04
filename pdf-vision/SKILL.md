@@ -1,5 +1,5 @@
 ---
-name: pdf-expert
+name: pdf-vision
 description: >
   PDF RAG pipeline: text extraction + Apple Vision OCR + API embedding + cosine search.
   Triggers: "pdf 읽기", "pdf rag", "문서 검색", "pdf 분석", "pdf 청크", "pdf-expert", "pdf 임베딩"

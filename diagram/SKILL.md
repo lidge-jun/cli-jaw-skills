@@ -1,7 +1,8 @@
 ---
 name: diagram
 description: "SVG diagrams, charts, and interactive visualizations for chat UI"
-version: 1.1.0
+metadata:
+  version: "1.1.0"
 ---
 
 # Diagram Visualization Skill

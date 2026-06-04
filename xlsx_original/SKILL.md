@@ -1,5 +1,5 @@
 ---
-name: xlsx
+name: xlsx_original
 description: "Use this skill any time a spreadsheet file is the primary input or output (.xlsx, .xlsm, .csv, .tsv). This includes: creating, reading, editing, analyzing, or formatting spreadsheets; cleaning messy tabular data; converting between formats; and data visualization with charts. Also use for pandas-based data analysis when the deliverable is a spreadsheet. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration."
 license: Proprietary. LICENSE.txt has complete terms
 ---

@@ -5,6 +5,23 @@ description: "PABCD orchestration workflow. Structured 5-phase development with 
 
 Structured 5-phase development. Advance only with user approval.
 
+## Interview Trigger (MUST)
+
+When the user asks for an interview in any form — "인터뷰하자", "인터뷰 모드", "interview",
+"요구사항 정리", "스펙 정리해줘", "뭘 만들어야 하는지 정리", or any variation — you MUST
+immediately run:
+
+    cli-jaw orchestrate I
+
+Do NOT:
+- Ask clarifying questions in IDLE mode instead of entering Interview
+- Use the `/interview` slash command instead of `cli-jaw orchestrate I`
+- Skip Interview and go straight to P for unclear requests
+- Forget to run the command — actually execute it in Bash
+
+The `/interview` slash command is a user-facing shortcut that triggers the same transition.
+As the Boss agent, always use `cli-jaw orchestrate I` directly.
+
 ## How It Works
 
 PABCD is a forward progression with Interview return.
@@ -145,6 +162,13 @@ State returns to IDLE automatically.
 
 Before writing a PABCD plan or dispatching an employee, determine the actual
 working repository root with `pwd -P` from the target repo.
+
+If `Project root` is injected at the top of the system prompt, use that value directly.
+If it is NOT set, recommend the user configure it:
+- Manager UI → Project settings
+- CLI: `cli-jaw project add /path/to/repo`
+
+Setting project root prevents confusion between JAW_HOME (`~/.cli-jaw-*`) and the actual codebase.
 
 Every A/B phase `cli-jaw dispatch` task body MUST begin with:
 
