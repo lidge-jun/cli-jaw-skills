@@ -1,12 +1,12 @@
 ---
 name: dev-debugging
-description: "Systematic debugging methodology for all orchestrated sub-agents. 4-phase root cause analysis: investigate → analyze → hypothesize → implement. Injected when encountering errors or during debugging phase."
+description: "Systematic debugging methodology for all orchestrated sub-agents. 5-phase root cause analysis: architecture check → investigate → analyze → hypothesize → implement. Injected when encountering errors or during debugging phase."
 ---
 
 # Dev-Debugging — Systematic Root Cause Analysis
 
 This skill is the **thinking process** for fixing bugs. It enforces a structured
-4-phase methodology for every technical issue — test failures, runtime errors,
+5-phase methodology for every technical issue — test failures, runtime errors,
 build failures, performance regressions, integration bugs.
 
 **Boundary**: This skill covers how to reason about bugs. For test harness,
@@ -24,6 +24,7 @@ dev §2        = summary pointer to this skill (the overview)
 
 ## Core Principle
 
+Check if the problem is structural before debugging code.
 Complete root cause investigation before proposing any fix.
 If Phase 1 is not done, keep investigating.
 
@@ -37,7 +38,40 @@ If Phase 1 is not done, keep investigating.
 
 ---
 
-## The Four Phases
+## The Phases
+
+### Phase 0: Is This a Bug or a Design Problem?
+
+Before debugging code, ask: "Could this be a structural/design issue rather
+than a code bug?" Patching symptoms of architectural debt creates an endless
+stream of "bugs" that are really design consequences.
+
+**Decision Tree — escalate to architecture review if any apply:**
+
+| Signal | Interpretation |
+|--------|---------------|
+| Same class of bug recurring (3rd time fixing similar issue) | Design problem — add a constraint at the architecture level |
+| Bug spans multiple modules / crosses 2+ boundaries | Boundary/coupling issue — see `dev-architecture` |
+| Fix would require changing 3+ files simultaneously | Likely structural — single-responsibility violation |
+| Symptom appears far from cause (error in UI, root in DB layer) | Tracing/observability gap — instrument boundaries first |
+
+**If structural**: escalate to architecture review. Do not patch the symptom —
+the patch creates the next bug.
+
+**Symptom vs Root Cause Fix:**
+
+| Symptom | Likely Patch (wrong) | Root Cause Fix (right) |
+|---------|---------------------|----------------------|
+| Request timeout | Increase timeout to 30s | Add circuit breaker + fallback |
+| OOM crash | Increase container memory | Find and fix the memory leak |
+| N+1 query performance | Add a cache layer in front | Fix the query (eager load / join) |
+| Duplicate records | Add unique constraint + rescue | Fix the race condition that creates duplicates |
+| Flaky test | Add retry/skip annotation | Fix shared mutable state between tests |
+
+**If none of the above apply** — proceed to Phase 1 (it's a code bug, not a
+design problem).
+
+---
 
 ### Phase 1: Root Cause Investigation
 
@@ -235,6 +269,8 @@ action item that prevents the same class of bug from recurring.
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
+| `references/methodologies.md` | When choosing a debugging approach | Five Whys, bisection, differential diagnosis, subtraction, rubber duck, systematic logging |
+| `references/async-debugging.md` | When debugging concurrency issues | Race conditions, deadlocks, event loop blocking, promise/callback issues |
 | `references/tool-guides.md` | When you need stack-specific debugger commands | Node.js inspector, Python pdb/debugpy, Chrome DevTools, git bisect, database EXPLAIN |
 | `references/postmortem-template.md` | After resolving a significant incident | Blameless postmortem template with filled example |
 
@@ -254,7 +290,8 @@ action item that prevents the same class of bug from recurring.
 
 ## Compact Summary
 
-When context is limited, preserve: (1) Core principle — no fixes without root cause,
-(2) 4 Phases — investigate → analyze → hypothesize → implement,
-(3) Repeated Failure Rule — after repeated failures, reassess, (4) one variable at a time,
-(5) evidence over intuition, (6) failing test first.
+When context is limited, preserve: (1) Phase 0 — is it a bug or a design problem?,
+(2) Core principle — no fixes without root cause,
+(3) 5 Phases — architecture check → investigate → analyze → hypothesize → implement,
+(4) Repeated Failure Rule — after repeated failures, reassess, (5) one variable at a time,
+(6) evidence over intuition, (7) failing test first.

@@ -10,6 +10,15 @@ metadata:
 # Testing & QA
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
+
+## Modular References
+
+| File | When to Read | What It Covers |
+|------|-------------|----------------|
+| `references/edge-first-testing.md` | **Always** when writing tests | Edge-first principle, test order by change type, 11-class edge matrix |
+| `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
+| `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |
+
 ---
 ## 1. Test Strategy
 ### 1.1 Models

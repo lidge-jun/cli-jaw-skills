@@ -145,6 +145,25 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Z-index only for systemic layers (navbar, modal, overlay)
 - Memoize perpetual animations in isolated components
 
+### Browser Connection Limits
+
+| Protocol | Limit |
+|---|---|
+| HTTP/1.1 | 6 connections per domain (Chrome/Firefox) |
+| HTTP/2 | 1 TCP connection, 100 concurrent streams |
+| WebSocket | Shares the HTTP/1.1 connection pool |
+
+Rules:
+- Never open >2 SSE/WebSocket connections to the same origin from one page
+- Use connection multiplexing (single WebSocket with channel/topic routing) over multiple connections
+- If >6 parallel requests needed: use HTTP/2, batch API endpoints, or domain sharding (last resort)
+- Preflight OPTIONS requests count against the connection limit; consolidate CORS-heavy calls
+
+Banned:
+- Opening unbounded WebSocket connections per component instance
+- Polling from multiple components independently (centralize into one subscription, fan out via state)
+- Creating new SSE connections on every remount without cleanup
+
 ---
 
 ## 7. Accessibility Baseline
