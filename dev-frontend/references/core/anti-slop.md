@@ -27,6 +27,11 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 - **All-caps subheaders everywhere** → Try lowercase italic, sentence case, or small-caps
 - **Orphaned words** → Fix with `text-wrap: balance` or `text-wrap: pretty`
 - **Only safe weights (400/500/600)** → Go to extremes: 100-200 (thin) vs 800-900 (black)
+- **No `text-wrap` on any heading** → Apply `text-wrap: balance` globally to all h1-h6 (see `typography-wrapping.md`)
+- **No `max-width` in `ch` units on headings or paragraphs** → h1: 50ch, h2: 55ch, p: 65ch
+- **Heading breaks mid-phrase** → Review heading text at 390px, 768px, 1440px for balanced semantic breaks
+- **Single word on last line of a heading** → `text-wrap: balance` or revise copy length
+- **Body text lines exceeding 75 characters** → `max-width: 65ch` on paragraphs
 
 ---
 
@@ -69,6 +74,16 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 - Trust-heavy domains using playful visuals without semantic purpose
 - Soft 3D miniatures copied from generic icon packs instead of a brand-consistent asset system
 - Giant centered Korean headlines used as decoration rather than hierarchy
+
+## Banned Logo/Integration Section Patterns
+- Generic stroke icons (Lucide/Heroicons/Feather) used as brand logos → use actual brand SVGs from Simple Icons, SVGL, or press kits (see `brand-asset-sourcing.md`)
+- Individual hover effects on non-clickable logo walls → trust signals, not navigation. No per-item hover.
+- CSS Grid logo wall with orphan cells (1 logo alone on last row) → use flexbox `justify-content: center` or marquee
+- Static grid for 8+ logos → CSS marquee (infinite scroll, `translateX(-50%)`, duplicated track)
+- Fast marquee animation (<15s) → slow and steady (30-40s, `linear`) feels premium
+- Missing `prefers-reduced-motion` on logo marquee → mandatory accessibility
+- Logo marquee without edge fade → add `mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent)`
+- Colorful logos clashing with each other → uniform `filter: grayscale(1) brightness(0.7); opacity: 0.5`
 
 ## Korean Slop
 - Translationese: "원활한 경험을 제공합니다", "혁신적인 솔루션", "처리가 완료되었습니다"

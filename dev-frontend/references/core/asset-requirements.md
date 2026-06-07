@@ -24,6 +24,7 @@ Visual surfaces need real visual evidence. Abstract backgrounds, blobs, and gene
 - low-polish AI image
 - stock photo unrelated to the task
 - public 3D icon pack used without brand adaptation
+- integration/partner logo wall using generic icons instead of brand SVGs (see `brand-asset-sourcing.md`)
 
 ## Rules
 

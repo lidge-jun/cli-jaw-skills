@@ -50,6 +50,8 @@ Use `clamp()` for responsive sizing:
 --fluid-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
 ```
 
+For CSS text wrapping implementation (`text-wrap`, `ch` units), see `typography-wrapping.md`.
+
 ---
 
 ## Color & Theme

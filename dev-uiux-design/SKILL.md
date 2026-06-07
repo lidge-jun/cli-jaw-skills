@@ -1,0 +1,158 @@
+---
+name: dev-uiux-design
+description: "UI/UX intent discovery, design vocabulary, product personalities, UX state patterns, typography line break judgment, and logo trust section design. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic."
+keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections]
+---
+
+# UI/UX Design: Intent Discovery, Patterns & Product Vocabulary
+
+Use this skill when:
+- User's design direction is vague ("깔끔하게", "모던하게", "just make it look good")
+- Building onboarding, empty state, error state, or loading state UI
+- User references a product aesthetic ("Notion 느낌", "Linear처럼")
+- Starting a new design system or generating a color palette
+- Choosing layout patterns or navigation architecture
+
+Read this BEFORE `aesthetics.md` when the user cannot articulate a clear design direction.
+For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
+
+**Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
+
+## Modular References
+
+| File | When to Read | What It Covers |
+|------|-------------|----------------|
+| `references/design-isms.md` | User names a style/movement | 11 design movements with CSS signatures |
+| `references/product-personalities.md` | User references a product | 8 product DNA profiles with exact tokens |
+| `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
+| `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
+| `references/color-system.md` | Generating colors/palette | OKLCH-based palette generation, dark mode, accessibility |
+| `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, DESIGN.md |
+| `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
+| `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
+| `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, orphan prevention, `ch` units, Korean wrapping |
+| `references/logo-trust-sections.md` | Integration/partner/client logos | Marquee vs grid decision, anti-patterns, grayscale treatment, placement |
+
+---
+
+## 1. User Intent Discovery Protocol
+
+When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 5-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
+
+**Rules:**
+- Ask a maximum of 5 questions before proposing a concrete direction.
+- Use binary/ternary choices, not open-ended questions.
+- Reference known products — users recognize what they want faster than they articulate it.
+- If the diagram skill is available, offer: "참고로 스타일 비교를 다이어그램으로 보여드릴 수도 있어요."
+- If the user names a specific product reference, skip remaining steps and map directly via `references/product-personalities.md`.
+
+### Step 1 — Mood
+
+Ask: "전체적인 분위기가 어떤 느낌이면 좋을까요?" / "What overall feeling should the product have?"
+
+| Option | Signals | Product References |
+|--------|---------|-------------------|
+| 전문적/신뢰감 (Professional) | swiss, flat, restrained | Linear, Vercel, GitHub |
+| 따뜻한/친근한 (Warm/Friendly) | rounded, warm-neutrals, illustrations | Notion, Airbnb, Toss |
+| 고급스러운/세련된 (Premium) | generous-whitespace, thin-type, restrained-color | Apple, Stripe, Aesop |
+| 재미있는/활기찬 (Fun/Energetic) | bright-colors, playful-shapes, bold-type | Figma, Discord |
+| 대담한/독특한 (Bold/Distinctive) | brutalism, asymmetry, experimental | Gumroad, Nothing |
+
+### Step 2 — Lightness
+
+Ask: "밝은 화면이 좋으신가요, 어두운 화면이 좋으신가요?" / "Light or dark background?"
+
+| Option | CSS |
+|--------|-----|
+| 밝은 배경 (Light) | `bg-white text-gray-900` |
+| 어두운 배경 (Dark) | `bg-gray-950 text-gray-100` |
+| 둘 다 (Both / auto) | `prefers-color-scheme` aware |
+
+### Step 3 — Density
+
+Ask: "화면에 정보가 많이 보이는 게 좋으신가요, 여유롭게 보이는 게 좋으신가요?" / "Dense or spacious?"
+
+| Option | VISUAL_DENSITY | Tokens |
+|--------|---------------|--------|
+| 빽빽하게 (Dense) | 8–10 | `text-sm py-1 px-2 gap-1` |
+| 보통 (Normal) | 4–7 | `text-base py-3 px-4 gap-4` |
+| 여유롭게 (Spacious) | 1–3 | `text-lg py-8 px-8 gap-8` |
+
+### Step 4 — Shape
+
+Ask: "모서리가 각진 느낌이 좋으신가요, 둥근 느낌이 좋으신가요?" / "Sharp or rounded?"
+
+| Option | CSS | Signals |
+|--------|-----|---------|
+| 각진 (Sharp) | `rounded-none` / 0–2px | Vercel, brutalism, swiss |
+| 살짝 둥근 (Slightly rounded) | `rounded-md` / 6–8px | Linear, Notion, material |
+| 많이 둥근 (Very rounded) | `rounded-2xl` / 16–24px | Figma, iOS, Toss |
+
+### Step 5 — Reference
+
+Ask: "혹시 '이런 느낌이면 좋겠다' 하는 사이트나 앱이 있으신가요?" / "Any website or app that feels like what you want?"
+
+This single question often resolves all ambiguity. If the user names a product, map it via `references/product-personalities.md`.
+
+### Vague Request Disambiguation
+
+When the user gives feedback without specifics, translate:
+
+| User says | Action |
+|-----------|--------|
+| "더 좋게" / "make it better" | Ask: "레이아웃? 색상? 타이포? 여백?" — identify the dimension |
+| "더 전문적으로" / "more professional" | Increase whitespace, reduce color count to 2–3, tighten grid alignment |
+| "더 모던하게" / "more modern" | Negative letter-spacing on headings, offer dark mode, reduce radius to 8px |
+| "더 재미있게" / "more exciting" | Add one bold accent color, increase type contrast, add micro-animation on hover |
+| "너무 심심해" / "too boring" | Add asymmetric layout, introduce one unexpected element, vary section rhythm |
+| "너무 복잡해" / "too busy" | Reduce element count, increase whitespace, limit to 2 colors |
+
+---
+
+## 2. Korean Request Translation
+
+Map common Korean design descriptors to concrete tokens. When the user uses these words, translate before implementing.
+
+| Korean | Literal | CSS/Token Translation |
+|--------|---------|----------------------|
+| 깔끔하게 | cleanly | Generous whitespace (24-48px gaps), strict grid, max 2-3 colors, saturation < 60%, 1px borders or none, 4-8px radius, single font, no/subtle shadows |
+| 모던하게 | modern | Geometric sans-serif (Geist/Outfit), negative letter-spacing on headings, dark mode or high-contrast light, 8-16px radius, spring micro-interactions |
+| 고급스럽게 | luxurious | Very generous whitespace (48-96px padding), thin weights (300-400), serif for headings, low-saturation palette, slow animations (800ms+), 0-4px radius |
+| 심플하게 | simply | Max 3-4 element types per screen, 1-2 colors, single font, 2-3 size steps, hidden/minimal navigation, zero decoration |
+| 트렌디하게 | trendy | Glassmorphism, bento grid, gradient mesh, variable fonts — ask for a reference site |
+| 따뜻하게 | warmly | Warm hue range (stone/amber/orange), 12-20px radius, warm-tinted shadows rgba(180,140,100,0.1), serif or rounded sans |
+| 차가운 | cold/cool | Cool grays (slate/zinc), blue-tinted whites, geometric sans, thin weights, 0-8px radius |
+| 감성적으로 | emotionally | Editorial/lifestyle, serif display + sans body, muted/pastel colors, generous line-height, photography-heavy |
+
+**Clarifying questions per term:**
+- 깔끔: "Notion처럼 따뜻한 깔끔함인지, Vercel처럼 차가운 깔끔함인지요?"
+- 모던: "다크 모드 + 날카로움(Linear)인지, 화이트 + 미니멀(Vercel)인지요?"
+- 고급: "브랜드 고급감(Apple/Stripe)인지, 패션 럭셔리(Art Deco)인지요?"
+- 심플: "기능이 적은 건지, 기능은 많지만 화면이 심플해 보이길 원하는 건지요?"
+
+---
+
+## 3. Quick-Match Table
+
+Rapid lookup: user word → concrete starting point.
+
+| User (KO) | User (EN) | Start From | Dark? | Radius | Density | Font |
+|------------|-----------|------------|-------|--------|---------|------|
+| 깔끔하게 | Clean | Notion or Vercel | No | 8px | 4–7 | Geist / Pretendard |
+| 모던하게 | Modern | Linear or Vercel | Yes | 6px | 4–7 | Geist / Outfit |
+| 고급스럽게 | Premium | Apple or Stripe | Either | 0–4px | 1–3 | Satoshi / system thin-300 |
+| 심플하게 | Simple | Vercel | Either | 0px | 1–3 | Geist |
+| 따뜻하게 | Warm | Notion or Toss | No | 12px | 4–7 | Pretendard / Cabinet Grotesk |
+| 재미있게 | Fun | Figma | No | 16px+ | 4–7 | Custom grotesque |
+| 전문적으로 | Professional | Linear or GitHub | Either | 6px | 4–7 | Geist / Outfit |
+| 대담하게 | Bold | Neobrutalism | No | 0px | 4–7 | Black 900 |
+| 감성적으로 | Aesthetic | Editorial | No | 0–4px | 1–3 | Serif display |
+| 트렌디하게 | Trendy | Ask for reference | Either | 12px | 4–7 | Variable font |
+
+### Font Selection Guidelines
+
+- **Primary default**: Geist (modern SaaS, Vercel ecosystem)
+- **Korean-first**: Pretendard (한글 최적화, Toss/당근 등 국내 서비스 표준)
+- **Warm/editorial**: Outfit or Cabinet Grotesk
+- **Premium/luxury**: Satoshi or system thin weights
+- **NEVER default to Inter** — it is the #1 AI-generated UI tell. Use only when the user explicitly requests it or the project already uses it.

@@ -819,6 +819,19 @@
             "install": null,
             "version": "1.0.0"
         },
+        "dev-uiux-design": {
+            "name": "Dev UI/UX Design",
+            "name_ko": "Dev UI/UX 디자인",
+            "name_en": "Dev UI/UX Design",
+            "emoji": "🎯",
+            "category": "orchestration",
+            "description": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+            "desc_ko": "UI/UX 의도 발견, 디자인 어휘, 제품 성격, UX 상태 패턴. 디자인 방향이 모호하거나 온보딩/빈상태/에러상태 구현 시 사용.",
+            "desc_en": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+            "requires": null,
+            "install": null,
+            "version": "1.0.0"
+        },
         "dev-pabcd": {
             "name": "Dev PABCD",
             "name_ko": "Dev PABCD",

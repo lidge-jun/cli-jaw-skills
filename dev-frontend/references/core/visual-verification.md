@@ -32,6 +32,10 @@ For substantial UI changes:
 - clipped labels, especially Korean button text and dense table headers
 - missing images, broken external domains, blurry generated assets
 - unreadable focus rings, focus hidden under sticky headers/bottom bars
+- Hero headline renders balanced on desktop (1440px) AND mobile (390px) — no orphaned single word
+- Integration/partner logos use real brand SVGs, not generic stroke icons
+- Logo wall has no per-item hover effect and no orphan grid cells
+- CTA button labels do not break across lines at any viewport
 
 ## Tool Workflow
 

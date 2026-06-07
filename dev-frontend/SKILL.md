@@ -24,6 +24,10 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/soft-3d-asset-gates.md`  | 3D/miniature/character-like visuals  | Toss-style soft 3D vs generic cute asset slop, domain gates                        |
 | `references/core/motion.md`               | Motion/animation needed              | CSS animations, Framer Motion, scroll-driven, View Transitions, domain gates       |
 | `references/core/iterative-design.md`     | Multi-round design                   | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques           |
+| `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, `ch` units, rag control, heading line breaks          |
+| `references/core/logo-sections.md`        | Integration/partner logo display     | Marquee CSS, static grid, orphan cell fix, grayscale treatment, no individual hover |
+| `references/core/brand-asset-sourcing.md` | Brand logos in UI                    | Simple Icons/SVGL sourcing, AI agent strategy, placeholder hierarchy, legal guide  |
+| See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
 | `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
 | `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
 | `references/stacks/vanilla.md`            | HTML+CSS+JS (no framework)           | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement         |
@@ -52,6 +56,7 @@ Default rules:
 - For any soft 3D miniature, mascot, chibi, toy-like object, or character-like asset, read `soft-3d-asset-gates.md`.
 - For product/brand/object/place/person pages, use concrete visual assets in the first viewport.
 - For finance, government, B2B, admin, auth, security, and developer tools, keep visual warmth restrained and subordinate to clarity.
+- For text-heavy surfaces (landing, marketing, editorial, public service), apply typography wrapping defaults — see `typography-wrapping.md`. Dashboard table cells are excluded.
 
 ---
 
@@ -78,6 +83,9 @@ Before coding, commit to a domain-correct direction:
 - **Constraints**: Framework, performance budget, accessibility requirements.
 - **Signature**: What ONE thing will make this unforgettable?
 
+When user intent is vague ("깔끔하게", "모던하게", "just make it look good"), read the `dev-uiux-design` skill and run the User Intent Discovery Protocol before making routing decisions.
+If the user cannot answer these questions, use the `dev-uiux-design` skill's structured preference elicitation flow. Offer product references ("Notion 느낌? Linear 느낌?") and visual comparisons.
+
 Intentionality over intensity. Bold maximalism, refined minimalism, dense utility, and friendly consumer UI can all work when they match the domain.
 
 ---
@@ -101,7 +109,7 @@ Korean app/tool surfaces usually need higher density and clearer hierarchy, not 
 
 Read `references/core/aesthetics.md` for full guidelines. Summary:
 
-- **Typography**: Use domain-appropriate typography. For Korean-first UIs, prioritize CJK-safe stacks before Latin display fonts.
+- **Typography**: Use domain-appropriate typography. For Korean-first UIs, prioritize CJK-safe stacks before Latin display fonts. Apply `text-wrap: balance` on all headings and `text-wrap: pretty` on body text — see `typography-wrapping.md` for full rules.
 - **Color**: Max 1 accent. Use neutral bases (Zinc/Slate) with singular high-contrast accent — avoid purple-on-white.
 - **Layout**: Match the product surface. Avoid centered-card/hero patterns in repeated-use tools.
 - **Motion**: See `references/core/motion.md`. One well-choreographed page load > 10 scattered effects.
@@ -124,6 +132,8 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
 - Use realistic, specific names and brands in placeholder content
 - Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
+- Treat uncontrolled heading line breaks (orphaned single word, no `text-wrap`, no `max-width` in `ch`) as a slop signal — see `typography-wrapping.md`
+- Treat generic stroke icons as brand logo substitutes as a slop signal — use actual brand SVGs from Simple Icons, SVGL, or press kits. See `brand-asset-sourcing.md`
 
 ---
 
