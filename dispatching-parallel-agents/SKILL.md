@@ -7,6 +7,8 @@ description: Use when facing 2+ independent tasks that can be worked on without 
 
 Core principle: dispatch one agent per independent problem domain. Let them work concurrently.
 
+> ⚠️ **Cost awareness**: Parallel agents consume **significantly more tokens** than sequential approaches (often 10-15× more). Each agent loads its own full context. Use parallel dispatch only when the speed gain justifies the cost.
+
 ## When to Use
 
 - 3+ test files failing with different root causes
@@ -101,3 +103,40 @@ After agents return:
 2. Check for conflicts — did agents edit the same code?
 3. Run full suite — verify all fixes work together
 4. Spot-check — agents can make systematic errors
+
+## Advanced Patterns (2026)
+
+### Fan-Out / Fan-In (Scatter-Gather)
+
+Dispatch N agents for the same question with different strategies, then merge results:
+
+```
+Agent A: "Search codebase for usages of deprecated API"
+Agent B: "Search git history for when API was introduced"
+Agent C: "Search docs for migration guide"
+→ Merge: synthesize findings into migration plan
+```
+
+### DAG-Based Orchestration
+
+For tasks with partial dependencies, model as a directed acyclic graph:
+
+```
+Agent A (research) ──→ Agent C (implement)
+Agent B (design)   ──→ Agent C (implement)
+                       Agent C ──→ Agent D (verify)
+```
+
+### Inter-Agent Communication
+
+- **MCP (Model Context Protocol)**: Standard protocol for tool and resource access across agents
+- **A2A (Agent-to-Agent)**: Emerging protocol for cross-platform agent messaging
+- **Shared filesystem**: Simplest approach — agents write results to agreed-upon paths
+
+### Stop Conditions
+
+Always define stop conditions for parallel dispatches:
+- **Max runtime**: Kill agents that exceed time budget
+- **Budget cap**: Halt when cumulative token spend exceeds threshold
+- **Conflict detection**: Stop if two agents modify the same file
+- **Quality gate**: Verify each agent's output before accepting
