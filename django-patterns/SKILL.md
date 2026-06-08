@@ -219,3 +219,10 @@ Use `bulk_create()` and `bulk_update()` for batch data operations. See `referenc
 | Middleware | Request/response processing |
 
 For production applications, structure and organization matter more than concise code. Build for maintainability.
+
+## Django Version Notes (June 2026)
+
+**Current**: Django 6.0.6 (June 2026). Django 6.1 alpha released May 2026.
+- **Django 6.0**: Built-in background tasks, native CSP support, template partials, modernized email API
+- **Python**: Requires Python 3.12–3.14 (dropped 3.10/3.11)
+- **Key migration**: If upgrading from 5.x, review removed deprecations and new background task API
