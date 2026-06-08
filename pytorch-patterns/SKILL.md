@@ -393,3 +393,12 @@ torch.save(model.state_dict(), "model.pt")
 ```
 
 __Remember__: PyTorch code should be device-agnostic, reproducible, and memory-conscious. When in doubt, profile with `torch.profiler` and check GPU memory with `torch.cuda.memory_summary()`.
+
+## PyTorch Version Notes (June 2026)
+
+**Current**: PyTorch 2.12 (May 2026), PyTorch 2.13 in development.
+- **torch.compile**: Mature and recommended for production — up to 10× speedups via Inductor kernel fusion
+- **FlashAttention-4**: Available on Hopper (H100/H200) and Blackwell GPUs (1.2–3.2× over Triton)
+- **`torch.cuda.MemPool`**: Stable API for mixing CUDA allocators
+- **Intel XPU**: Production-ready `torch.compile` support on Intel GPUs
+- **Distributed**: Differentiable collectives for advanced distributed training
