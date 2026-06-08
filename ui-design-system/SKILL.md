@@ -9,6 +9,43 @@ description: "Design token generation, color palettes, typography scales, compon
 
 ## 1. Design Token Generation
 
+### Token Format: W3C DTCG (2025.10)
+
+Use the **W3C Design Token Community Group** format as the canonical interchange format for tokens:
+
+```json
+{
+  "color": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$value": "oklch(0.65 0.25 265)",
+        "$description": "Primary brand color"
+      }
+    }
+  }
+}
+```
+
+Key conventions:
+- `$type` declares the token type (color, dimension, fontFamily, fontWeight, etc.)
+- `$value` holds the resolved value
+- Group nesting replaces flat naming (e.g., `color.brand.primary` not `color-brand-primary`)
+- Use **Style Dictionary** (v4+) to transform DTCG tokens into platform outputs (CSS, iOS, Android, Figma)
+
+### Semantic Token Naming (Four-Part Hierarchy)
+
+Structure token names as: **category.concept.property.modifier**
+
+| Part | Examples |
+|------|----------|
+| Category | `color`, `space`, `font`, `border`, `shadow` |
+| Concept | `brand`, `neutral`, `feedback`, `surface` |
+| Property | `base`, `foreground`, `background`, `border` |
+| Modifier | `default`, `hover`, `active`, `disabled`, `subtle` |
+
+Examples: `color.brand.background.default`, `color.feedback.error.foreground`, `space.layout.gap.lg`
+
 ### Color System
 
 From a single brand color, generate a full palette:
@@ -21,6 +58,23 @@ From a single brand color, generate a full palette:
 | 500 | Original | Base/default color |
 | 600–700 | 80–60% of original | Hover (dark), active states |
 | 800–900 | 40–20% of original | Text, headings |
+
+### Wide-Gamut Color Spaces
+
+**Oklch** is the preferred perceptually uniform color space for design tokens. It provides consistent lightness across hues, making palette generation predictable:
+
+```css
+/* Oklch: lightness, chroma, hue */
+--color-brand-500: oklch(0.65 0.25 265);
+--color-brand-600: oklch(0.55 0.25 265);  /* Darken by reducing L */
+
+/* Display P3 fallback for broader gamut */
+--color-accent: color(display-p3 0.2 0.5 1.0);
+```
+
+- Use `oklch()` for new projects; it's supported in all modern browsers (2024+)
+- Use `color(display-p3 ...)` for vivid colors beyond sRGB gamut
+- Always provide an sRGB fallback with `@supports` or CSS `color()` fallback syntax
 
 ### Typography Scale (1.25x Ratio)
 
@@ -153,3 +207,14 @@ module.exports = { theme: { colors: tokens.colors, fontFamily: tokens.typography
 | Font Mono | Fira Code | Courier | Source Code Pro |
 | Border Radius | 8px | 4px | 16px |
 | Shadows | Layered, subtle | Single layer | Soft, pronounced |
+
+---
+
+## Tooling Reference
+
+| Tool | Purpose |
+|------|---------|
+| [Style Dictionary](https://styledictionary.com/) (v4+) | Transform DTCG tokens to CSS, iOS, Android, Compose |
+| [Figma Variables](https://help.figma.com/hc/en-us/articles/15339657135383) | Design-side token management and theming |
+| [Cobalt UI](https://cobalt-ui.pages.dev/) | DTCG-native token pipeline alternative |
+| [Tokens Studio](https://tokens.studio/) | Figma plugin for syncing tokens to/from code |
