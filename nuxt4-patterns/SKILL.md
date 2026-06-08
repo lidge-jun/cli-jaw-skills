@@ -5,6 +5,8 @@ description: Nuxt 4 app patterns for hydration safety, performance, route rules,
 
 # Nuxt 4 Patterns
 
+> **Nuxt 3 EOL: July 31, 2026.** Migrate to Nuxt 4 before that date to continue receiving security patches.
+
 Use when building or debugging Nuxt 4 apps with SSR, hybrid rendering, route rules, or page-level data fetching.
 
 ## When to Activate
@@ -14,6 +16,30 @@ Use when building or debugging Nuxt 4 apps with SSR, hybrid rendering, route rul
 - Performance work around lazy loading, lazy hydration, or payload size
 - Page or component data fetching with `useFetch`, `useAsyncData`, or `$fetch`
 - Nuxt routing issues tied to route params, middleware, or SSR/client differences
+
+## Directory Structure (Nuxt 4 `app/` convention)
+
+Nuxt 4 moves application source into an `app/` directory, cleanly separating app code from project config:
+
+```
+project-root/
+├── app/                  # Application source (Nuxt 4 default)
+│   ├── assets/
+│   ├── components/
+│   ├── composables/
+│   ├── layouts/
+│   ├── middleware/
+│   ├── pages/
+│   ├── plugins/
+│   └── app.vue
+├── public/
+├── server/               # Server routes & API (stays at root)
+├── shared/               # Code shared between app/ and server/
+├── nuxt.config.ts
+└── package.json
+```
+
+The `shared/` directory is for utilities, types, and constants used by both client and server code.
 
 ## Hydration Safety
 
@@ -47,6 +73,34 @@ const { data: comments } = await useFetch(`/api/articles/${route.params.slug}/co
   server: false,
 })
 ```
+
+### Custom `useFetch` Factories
+
+Create typed, preconfigured fetch composables to reduce boilerplate and enforce API conventions:
+
+```ts
+// composables/useApiFetch.ts
+export function useApiFetch<T>(path: string, opts: Parameters<typeof useFetch>[1] = {}) {
+  return useFetch<T>(path, {
+    baseURL: '/api',
+    headers: { 'X-App-Version': useRuntimeConfig().public.appVersion },
+    ...opts,
+  })
+}
+```
+
+This keeps auth headers, base URLs, and error handling consistent across all data-fetching calls.
+
+## Vue Router v5 Features
+
+Nuxt 4 ships with Vue Router v5, which adds:
+
+- **Typed route names and params**: `useRoute('users-id')` gives typed `params.id` without manual casting.
+- **`useRouteQuery`**: A reactive composable for reading and writing query parameters.
+- **Route groups**: Organize pages by feature with `(group)/` directory names — the group name is stripped from the URL.
+- **Nested lazy routes**: Fine-grained control over code-splitting for nested layouts.
+
+Prefer the Nuxt `useRoute()` / `useRouter()` composables which wrap Vue Router v5 with SSR-safe behavior.
 
 ## Route Rules
 
@@ -90,6 +144,12 @@ Pick route rules per route group, not globally. Marketing pages, catalogs, dashb
 - Nuxt lazy hydration works on single-file components. Passing new props to a lazily hydrated component will trigger hydration immediately.
 - Use `NuxtLink` for internal navigation so Nuxt can prefetch route components and generated payloads.
 
+## Accessibility (Nuxt 4.4+)
+
+- **`<NuxtRouteAnnouncer>`**: Built-in component that announces route changes to screen readers. Included by default in Nuxt 4.4+ app templates.
+- **`useRouteAnnouncer`**: Composable to customize announcement text on navigation.
+- Run `npx nuxi module add @nuxtjs/a11y` for additional compile-time and runtime accessibility auditing.
+
 ## Review Checklist
 
 - First SSR render and hydrated client render produce the same markup
@@ -97,3 +157,4 @@ Pick route rules per route group, not globally. Marketing pages, catalogs, dashb
 - Non-critical data is lazy and has explicit loading UI
 - Route rules match the page's SEO and freshness requirements
 - Heavy interactive islands are lazy-loaded or lazily hydrated
+- App source lives in `app/` directory (Nuxt 4 convention)
