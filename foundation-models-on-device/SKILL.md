@@ -241,3 +241,24 @@ var body: some View {
 - AI-assisted features that must work offline
 - Streaming UI that progressively shows generated content
 - Domain-specific AI actions via tool calling (search, compute, lookup)
+
+## iOS 27 / WWDC 2026 Updates
+
+> The FoundationModels framework received major updates at WWDC 2026 (June 8, 2026).
+
+### New Capabilities
+
+- **Multimodal support**: Pass both images and text into on-device models for reasoning (new in iOS 27)
+- **Custom Skills**: Define custom skill profiles for domain-specific agentic workflows
+- **Dynamic Profiles**: Swap models, tools, and instructions within a continuous session — apps can adapt intelligence in real time
+- **Evaluation Framework**: New companion framework for ensuring AI features perform reliably across dynamic conditions
+- **Server-side execution**: Support for server-side model execution for complex workflows (Private Cloud Compute)
+- **Google collaboration**: Apple Intelligence now built on foundation models developed with Google (Gemini-inspired architecture)
+
+### Migration Notes
+
+- Skills written for iOS 26 FoundationModels API remain compatible
+- Add multimodal inputs where applicable — `ImageInput` alongside `TextInput`
+- Consider `DynamicProfile` for apps that need to switch AI behavior contextually
+- Use the new Evaluation Framework to test AI features before shipping
+
