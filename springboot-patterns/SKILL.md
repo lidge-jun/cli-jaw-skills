@@ -311,3 +311,12 @@ Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ
 - Enforce null-safety via `@NonNull` and `Optional` where appropriate
 
 **Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.
+
+## Spring Boot Version Notes (June 2026)
+
+> ⚠️ **Spring Boot 3.5 OSS support ends June 30, 2026.** Migrate to Spring Boot 4.0.
+
+**Current**: Spring Boot 4.0.6 (Spring Framework 7). Key changes:
+- Java 17–25 supported; Java 25 (LTS) recommended for production
+- Spring Boot 4.0 uses Spring Framework 7 with updated defaults
+- **Upgrade path**: 3.x → 4.0 requires review of deprecated APIs removed in 4.0
