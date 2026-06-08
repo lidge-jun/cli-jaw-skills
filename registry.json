@@ -754,6 +754,19 @@
       "install": null,
       "version": "1.1.0"
     },
+    "dev-architecture": {
+      "name": "Dev Architecture",
+      "name_ko": "Dev Architecture",
+      "name_en": "Dev Architecture",
+      "emoji": "🏗️",
+      "category": "orchestration",
+      "description": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
+      "desc_ko": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
+      "desc_en": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
     "dev-backend": {
       "name": "Dev Backend",
       "name_ko": "Dev Backend",
