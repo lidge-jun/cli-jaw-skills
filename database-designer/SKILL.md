@@ -101,6 +101,34 @@ CREATE TABLE documents (
 CREATE INDEX idx_doc_user ON documents USING GIN ((data->>'user_id'));
 ```
 
+### Vector Data Model (pgvector)
+```sql
+-- Requires: CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE embeddings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content TEXT NOT NULL,
+    embedding vector(1536),           -- OpenAI ada-002 dimension
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- HNSW index: best for recall + speed (PG 16+ with pgvector 0.7+)
+CREATE INDEX idx_embeddings_hnsw ON embeddings
+    USING hnsw (embedding vector_cosine_ops)
+    WITH (m = 16, ef_construction = 64);
+
+-- IVFFlat index: faster build, lower recall
+CREATE INDEX idx_embeddings_ivf ON embeddings
+    USING ivfflat (embedding vector_cosine_ops)
+    WITH (lists = 100);
+
+-- Similarity search
+SELECT id, content, 1 - (embedding <=> $1::vector) AS similarity
+FROM embeddings
+ORDER BY embedding <=> $1::vector
+LIMIT 10;
+```
+
 ### Hierarchical Data
 ```sql
 -- Materialized path pattern
@@ -109,6 +137,21 @@ CREATE TABLE categories (
     parent_id INT REFERENCES categories(id),
     path VARCHAR(500)  -- "/1/5/12/"
 );
+```
+
+### Virtual Generated Columns (PG 12+)
+```sql
+-- Computed column stored on disk (STORED) or computed on read (VIRTUAL, PG 18+)
+CREATE TABLE orders (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    quantity INT NOT NULL,
+    unit_price NUMERIC(10,2) NOT NULL,
+    total NUMERIC(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED
+);
+
+-- PG 18+: VIRTUAL generated columns (no storage cost)
+ALTER TABLE users ADD COLUMN display_name TEXT
+    GENERATED ALWAYS AS (first_name || ' ' || last_name) VIRTUAL;
 ```
 
 ---
@@ -173,6 +216,26 @@ CREATE TABLE user_data_0 PARTITION OF user_data
 
 ---
 
+## ID Type Recommendation
+
+| Type | When to Use |
+|------|-------------|
+| **UUIDv7** (recommended) | Default for new tables — time-sortable, globally unique, B-tree friendly |
+| `bigint GENERATED ALWAYS AS IDENTITY` | Internal-only IDs, maximum insert performance |
+| `cuid2` / `nanoid` | Application-generated, URL-safe identifiers |
+| UUIDv4 (`gen_random_uuid()`) | Legacy — poor B-tree locality, causes index fragmentation |
+
+```sql
+-- UUIDv7 via pg_uuidv7 extension (PG 13+)
+CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
+CREATE TABLE events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    name TEXT NOT NULL
+);
+```
+
+---
+
 ## Design Checklist
 
 - [ ] Normalization appropriate for workload (normalize first, denormalize with evidence)
@@ -182,3 +245,5 @@ CREATE TABLE user_data_0 PARTITION OF user_data
 - [ ] Migration strategy supports zero-downtime
 - [ ] Partitioning considered for tables >10M rows
 - [ ] Connection pooling configured
+- [ ] UUIDv7 or bigint identity for primary keys (avoid UUIDv4 for new tables)
+- [ ] Vector columns use HNSW indexes when recall matters
