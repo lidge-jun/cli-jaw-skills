@@ -81,3 +81,20 @@ Bun.serve({
 - Commit the lockfile (`bun.lock` or `bun.lockb`) for reproducible installs.
 - Prefer `bun run` for scripts. For TypeScript, Bun runs `.ts` natively.
 - Keep dependencies up to date; Bun and the ecosystem evolve quickly.
+
+## Bun 1.3+ Features (2026)
+
+**Current version**: Bun 1.3.x (June 2026). Bun 2.0 is not yet released.
+
+- **`Bun.SQL`**: Built-in unified database API for PostgreSQL, MySQL, MariaDB, and SQLite — no external drivers needed
+- **Built-in Redis client**: High-performance Redis support integrated directly into the runtime
+- **Zero-config frontend dev**: Native HMR and React Fast Refresh without additional configuration
+- **Zig → Rust rewrite**: Experimental runtime rewrite from Zig to Rust is in progress (99.8% test compatibility on Linux x64); production use remains on the current implementation
+
+```typescript
+// Bun.SQL example (built-in, no dependencies)
+import { SQL } from "bun";
+
+const db = new SQL("postgres://localhost/mydb");
+const users = await db`SELECT * FROM users WHERE active = ${true}`;
+```
