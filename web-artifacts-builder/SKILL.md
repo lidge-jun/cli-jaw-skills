@@ -12,7 +12,7 @@ license: Complete terms in LICENSE.txt
 4. Share the bundled HTML with user
 5. (Optional) Test the artifact
 
-**Stack**: React 18 + TypeScript + Vite + Parcel (bundling) + Tailwind CSS + shadcn/ui
+**Stack**: React 19 + TypeScript + Vite + Parcel (bundling) + Tailwind CSS + shadcn/ui v4
 
 ## Design & Style Guidelines
 
@@ -22,7 +22,7 @@ Why: claude.ai artifacts are viewed side-by-side with conversation. Generic styl
 
 ## Commands
 
-- **Init**: `bash scripts/init-artifact.sh <project-name>` — scaffolds React + TS + Vite + Tailwind + 40+ shadcn/ui components + Parcel bundling.
+- **Init**: `bash scripts/init-artifact.sh <project-name>` — scaffolds React 19 + TS + Vite + Tailwind + 40+ shadcn/ui v4 components + Parcel bundling.
 - **Bundle**: `bash scripts/bundle-artifact.sh` — produces `bundle.html` (requires `index.html` in project root). All JS/CSS inlined.
 - **Test**: use Playwright/Puppeteer after sharing, not before — upfront testing adds latency the user feels.
 
