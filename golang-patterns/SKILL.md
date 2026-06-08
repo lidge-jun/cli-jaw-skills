@@ -382,3 +382,10 @@ func GetUser(id string) (*User, error) {
 **Avoid mixing value and pointer receivers** on the same type. Pick one style and be consistent.
 
 **Prefer context as the first parameter**, not inside struct fields.
+
+## Go Version Notes (June 2026)
+
+**Current**: Go 1.26 (Feb 2026). Key recent additions:
+- **Go 1.26**: Self-referential generics, `new` with expressions, experimental `runtime/secret`
+- **Go 1.25**: Removed "core types" concept, experimental `encoding/json/v2`, PGO stabilized
+- **Go 1.24**: Generic type aliases, `os.Root` for directory-limited filesystem, Swiss Tables for maps
