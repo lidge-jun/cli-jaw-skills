@@ -16,6 +16,8 @@ Use this skill when:
 Read this BEFORE `aesthetics.md` when the user cannot articulate a clear design direction.
 For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
 
+**Emoji ban:** NEVER use emoji as UI visual elements — feature icons, card decorations, section markers, or buttons. Emoji is the #1 AI slop signal in production UI. Design with SVG icon sets (Lucide/Phosphor/Heroicons) or typographic hierarchy instead. User-generated content and CLI terminal output are exempt. Full rationale: `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
+
 **Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
 
 ## Modular References
