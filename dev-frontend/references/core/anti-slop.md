@@ -46,6 +46,22 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 
 **Do instead**: Zinc/Slate neutral base + ONE high-contrast accent. Tint shadows to background hue.
 
+## Premium-Consumer Palette Ban (MANDATORY)
+
+For premium-consumer briefs (cookware, wellness, artisan, luxury, heritage, DTC home, travel):
+
+### Banned default backgrounds (warm paper/cream/chalk/bone):
+`#f5f1ea` `#f7f5f1` `#fbf8f1` `#efeae0` `#ece6db` `#faf7f1` `#e8dfcb` `#f7f6f3`
+
+### Banned default accents (brass/clay/oxblood/ochre):
+`#b08947` `#b6553a` `#9a2436` `#9c6e2a` `#bc7c3a` `#7d5621`
+
+### Banned default text (espresso/warm near-black):
+`#1a1714` `#1a1814` `#1b1814`
+
+Override: ONLY when the brand brief explicitly names warm beige/cream colors.
+For alternative palettes, see `aesthetics.md § Color & Theme`.
+
 ---
 
 ## Banned Layouts
@@ -74,6 +90,23 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 - Trust-heavy domains using playful visuals without semantic purpose
 - Soft 3D miniatures copied from generic icon packs instead of a brand-consistent asset system
 - Giant centered Korean headlines used as decoration rather than hierarchy
+
+## AI Tell Patterns (Extended)
+- Version labels in hero (V0.6, BETA, INVITE-ONLY)
+- Section-number eyebrows (001 · Capabilities, 06 · how it works)
+- Middle-dot rationing: max 1 per metadata line
+- Em-dash (—) ban — use hyphen, comma, period, or restructure
+- "Quietly in use at" / "Quietly trusted by" social-proof headers
+- Weather/locale strips unless genuinely place-focused
+- Scroll cues (↓ scroll, Scroll to explore)
+- Decorative dots before nav/list items
+- Photo-credit captions on stock/AI-generated images
+- Fake product previews built from styled divs
+- Version footers on marketing pages (v1.4.2, Build 0048)
+- Decoration text strips at hero bottom (BRAND. MOTION. SPATIAL.)
+- "Stage 1 / Phase 01"-style generic step labels
+- Pills/labels overlaid on images
+- Scoring/progress bars as comparison visuals on landing pages
 
 ## Banned Logo/Integration Section Patterns
 - Generic stroke icons (Lucide/Heroicons/Feather) used as brand logos → use actual brand SVGs from Simple Icons, SVGL, or press kits (see `brand-asset-sourcing.md`)

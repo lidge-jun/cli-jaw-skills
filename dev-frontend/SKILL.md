@@ -27,6 +27,8 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, **short descriptor category** (`balance` not `pretty` for 1-3 line text), `ch` units, rag control, Korean orphan prevention, `-webkit-line-clamp` conflict |
 | `references/core/logo-sections.md`        | Integration/partner logo display     | Marquee CSS, static grid, orphan cell fix, grayscale treatment, no individual hover |
 | `references/core/brand-asset-sourcing.md` | Brand logos in UI                    | Simple Icons/SVGL sourcing, AI agent strategy, placeholder hierarchy, legal guide  |
+| `references/core/layout-discipline.md`    | Landing/marketing pages              | Hero, eyebrow, section repetition, bento, zigzag                                    |
+| `references/core/consistency-locks.md`    | Any multi-section page               | Color, shape, theme consistency per page                                             |
 | See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
 | `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
 | `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
@@ -129,6 +131,9 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Avoid asset-free UI: abstract blobs/gradients do not replace real visual evidence
 - Avoid generic soft 3D icon packs; soft 3D must be semantic, brand-consistent, and restrained
 - **NEVER use emoji as UI visual elements** (feature icons, card icons, section markers, buttons) — emoji in production UI is the #1 AI slop signal. Use SVG icons (Lucide/Phosphor/Heroicons). See `anti-slop.md § Emoji Slop`
+- Warm beige/cream backgrounds with brass/clay accents are banned as defaults for premium-consumer briefs — see `anti-slop.md § Premium-Consumer Palette Ban`
+- Layout monotony (same family repeated, 3+ zigzag sections, overused eyebrows) — see `references/core/layout-discipline.md`
+- Color, shape, and theme must be locked per-page and audited before shipping — see `references/core/consistency-locks.md`
 - Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
 - Use realistic, specific names and brands in placeholder content
 - Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
@@ -324,6 +329,10 @@ Before delivering:
 - [ ] Focus management on modals and popovers (§11)
 - [ ] Desktop/mobile/narrow screenshots checked for overlap, clipping, and asset rendering
 - [ ] Interactive components isolated as Client Components (if RSC)
+- [ ] Design Read declared before code generation (see dev-uiux-design §2)
+- [ ] Eyebrow count ≤ ceil(sectionCount / 3) (see layout-discipline.md)
+- [ ] Section layout diversity: ≥4 different families per 8 sections
+- [ ] Color/shape/theme locks consistent across all sections (see consistency-locks.md)
 - [ ] Stack-specific rules followed (see `references/stacks/`)
 
 ---

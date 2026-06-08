@@ -29,7 +29,7 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 | `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
 | `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
 | `references/color-system.md` | Generating colors/palette | OKLCH-based palette generation, dark mode, accessibility |
-| `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, DESIGN.md |
+| `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, **DESIGN.md format** (google-labs-code/design.md) |
 | `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
 | `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
 | `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, **short descriptor category** (hero subtitle, card desc — use `balance` not `pretty`), orphan prevention, `ch` units, Korean orphan criteria, `-webkit-line-clamp` conflict |
@@ -111,7 +111,50 @@ When the user gives feedback without specifics, translate:
 
 ---
 
-## 2. Korean Request Translation
+## 2. Design Read (MANDATORY before code)
+
+Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
+
+### Output format (mini DESIGN.md)
+
+```yaml
+---
+name: <project-name>
+colors:
+  primary: "<hex>"
+  accent: "<hex>"
+  background: "<hex>"
+typography:
+  heading: { fontFamily: <font>, fontSize: <size> }
+  body: { fontFamily: <font>, fontSize: <size> }
+---
+```
+
+Reading this as: <page kind> for <audience>, with a <vibe> language.
+<1-2 sentences: specific reference, not adjectives. "1970s lecture handout" > "modern and clean">
+
+Do's: <context-specific positive from brief>
+Don'ts: <context-specific ban from brief>
+
+### Signals to read
+1. Page kind — landing (SaaS/consumer/agency/event), portfolio, redesign, editorial, app UI, tool UI
+2. Vibe words — what the user said or implied
+3. Reference signals — URLs, screenshots, brands named
+4. Audience — B2B procurement vs design-conscious consumer vs recruiter
+5. Existing brand assets — logo, color, type, photography
+6. Quiet constraints — accessibility-first, public-sector, regulated, kids
+
+### Anti-Default Discipline
+Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
+
+If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
+
+### DESIGN.md persistence
+If the project needs persistent design tokens across sessions, save the Design Read as a full `DESIGN.md` in the project root. Format spec: `references/design-system-bootstrap.md § DESIGN.md Format`. Validate: `npx @google/design.md lint DESIGN.md`.
+
+---
+
+## 3. Korean Request Translation
 
 Map common Korean design descriptors to concrete tokens. When the user uses these words, translate before implementing.
 
@@ -134,7 +177,7 @@ Map common Korean design descriptors to concrete tokens. When the user uses thes
 
 ---
 
-## 3. Quick-Match Table
+## 4. Quick-Match Table
 
 Rapid lookup: user word → concrete starting point.
 

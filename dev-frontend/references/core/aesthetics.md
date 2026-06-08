@@ -25,6 +25,26 @@ Hero-scale typography belongs to true hero surfaces. It is usually slop inside w
 - **Body**: `text-base text-gray-600 leading-relaxed max-w-[65ch]`
 - **Serif**: BANNED for Dashboard/Software UIs. OK for editorial/creative only.
 
+### Serif Discipline (expanded)
+Serif is VERY DISCOURAGED as default font. "It feels creative/premium" is NOT a reason.
+
+**Serif acceptable ONLY when:**
+- Brand brief literally names a serif font, OR
+- Aesthetic is genuinely editorial/luxury/publication AND you can articulate why
+
+**Banned as defaults:**
+- Fraunces, Instrument_Serif (the two LLM-favorite display serifs)
+
+**Emphasis Rule:**
+- Never inject serif word into sans headline (or vice versa) for visual interest
+- Use italic or bold of the SAME font family
+
+**If serif is justified (rare), rotate from:**
+PP Editorial New, GT Sectra Display, Reckless Neue, Tiempos Headline, Recoleta, Cormorant Garamond, Playfair Display, EB Garamond, IvyPresto, Migra
+
+**Italic Descender Clearance:**
+When italic has descender letters (y g j p q): `line-height: 1.1` min + `padding-bottom: 0.25rem` reserve
+
 ### Recommended Fonts (rotate — never converge on one)
 | Category         | Options                                                     |
 | ---------------- | ----------------------------------------------------------- |
