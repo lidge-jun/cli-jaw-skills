@@ -29,7 +29,7 @@ Before applying any migration:
 
 - [ ] Migration has both UP and DOWN (or is explicitly marked irreversible)
 - [ ] No full table locks on large tables (use concurrent operations)
-- [ ] New columns have defaults or are nullable (never add NOT NULL without default)
+- [ ] New columns have defaults or are nullable (never add NOT NULL without default on PG <18)
 - [ ] Indexes created concurrently (not inline with CREATE TABLE for existing tables)
 - [ ] Data backfill is a separate migration from schema change
 - [ ] Tested against a copy of production data
@@ -46,7 +46,8 @@ ALTER TABLE users ADD COLUMN avatar_url TEXT;
 -- Preferred: column with default (Postgres 11+ is instant, no rewrite)
 ALTER TABLE users ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT true;
 
--- Avoid: NOT NULL without default on existing table (requires full rewrite + lock)
+-- PG 18+: NOT NULL without default is now safe (no full table rewrite)
+-- On PG <18, avoid: requires full rewrite + lock
 -- ALTER TABLE users ADD COLUMN role TEXT NOT NULL;
 ```
 
@@ -123,6 +124,10 @@ END $$;
 ```
 
 ## Prisma (TypeScript/Node.js)
+
+> **Prisma 7 (June 2025):** Ships a pure-TypeScript query engine, eliminating the
+> Rust binary sidecar. Faster cold starts, simpler deployment (no platform-specific
+> engine files). Upgrade: `npm install prisma@7 @prisma/client@7`.
 
 ### Workflow
 
@@ -262,7 +267,7 @@ class Migration(migrations.Migration):
     ]
 ```
 
-## golang-migrate (Go)
+## golang-migrate (Go 1.24+)
 
 ### Workflow
 
