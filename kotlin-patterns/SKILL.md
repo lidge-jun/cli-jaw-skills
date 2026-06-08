@@ -426,3 +426,10 @@ coroutineScope { launch { } }
 // Prefer: Direct null-safe chains
 user?.address?.city?.let { process(it) }
 ```
+
+## Kotlin Version Notes (June 2026)
+
+**Current**: Kotlin 2.4.0 (June 3, 2026). Key additions since 2.2:
+- **2.4.0**: Stable context parameters, explicit backing fields, improved Swift interop, Wasm incremental compilation
+- **2.2.20**: Swift Export available by default, Kotlin/Wasm Beta, smaller native binaries
+- **KMP**: Kotlin Multiplatform is production-ready across iOS, Android, Web (Wasm), and desktop
