@@ -5,7 +5,7 @@ description: "Translate Figma nodes into production-ready code with 1:1 visual f
 
 # Implement Design
 
-Translate Figma designs into production-ready code with pixel-perfect accuracy via the Figma MCP server.
+Translate Figma designs into production-ready code with pixel-perfect accuracy via the Figma MCP server. Supports read (design context, screenshots, assets) and write (create/update canvas nodes) workflows.
 
 ## Prerequisites
 
@@ -19,6 +19,15 @@ Translate Figma designs into production-ready code with pixel-perfect accuracy v
 2. Set `[features].rmcp_client = true` in `config.toml` or run `codex --enable rmcp_client`
 3. `codex mcp login figma`
 4. Tell user to restart codex after login
+
+## Upstream: Figma Make
+
+If the design doesn't exist yet, use **Figma Make** (AI-powered design generation) as the upstream step:
+1. Describe the desired UI to Figma Make to generate an initial design
+2. Refine the generated design in Figma
+3. Then follow the implementation workflow below to translate the finalized design into code
+
+Figma Make produces structured Figma nodes — the same workflow below applies to Make-generated designs.
 
 ## Workflow
 
@@ -56,6 +65,13 @@ Download images, icons, SVGs returned by the MCP server.
 - Use `localhost` sources directly when provided
 - Use assets from the Figma payload rather than importing new icon packages
 
+### Step 4b: Extract Figma Variables as Design Tokens
+
+Use Figma Variables (collections of color, spacing, typography, and sizing values) as the canonical design token source:
+- Map Figma Variable collections to your project's token files (CSS custom properties, JSON, or platform-specific formats)
+- Prefer Figma Variables over hardcoded values extracted from individual node properties
+- Use the `get_design_context` response to identify which Variables are applied to each node
+
 ### Step 5: Translate to Project Conventions
 
 - Treat Figma MCP output (typically React + Tailwind) as a design representation, not final code
@@ -80,6 +96,34 @@ Compare final UI against the Figma screenshot:
 - [ ] Responsive behavior follows Figma constraints
 - [ ] Assets render correctly
 - [ ] Accessibility standards met
+
+### Step 8: Write Back to Canvas (Optional)
+
+The Figma MCP server supports **write-to-canvas** — creating or updating Figma nodes programmatically:
+- Use `create_node` or `update_node` to push generated component variants back into Figma
+- Useful for syncing implementation-driven changes (e.g., new states, responsive variants) back to design
+- Coordinate with designers before writing to shared files
+
+## Code Connect
+
+Link production components to their Figma counterparts with **Code Connect**:
+- Define `.figma.tsx` (React) or `.figma.swift` (SwiftUI) files mapping Figma components to code
+- Designers see live code snippets in Figma's Dev Mode inspect panel
+- Keeps implementation and design in sync as either side evolves
+
+```tsx
+// Button.figma.tsx
+import figma from '@figma/code-connect'
+import { Button } from './Button'
+
+figma.connect(Button, 'https://figma.com/design/xyz/file?node-id=1-2', {
+  props: {
+    label: figma.string('Label'),
+    variant: figma.enum('Variant', { Primary: 'primary', Secondary: 'secondary' }),
+  },
+  example: ({ label, variant }) => <Button variant={variant}>{label}</Button>,
+})
+```
 
 ## Implementation Rules
 
