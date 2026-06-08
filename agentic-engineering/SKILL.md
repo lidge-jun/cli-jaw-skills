@@ -30,9 +30,13 @@ Apply the 15-minute unit rule:
 
 ## Model Routing
 
-- Haiku: classification, boilerplate transforms, narrow edits
-- Sonnet: implementation and refactors
-- Opus: architecture, root-cause analysis, multi-file invariants
+| Tier | Model | Use For |
+|------|-------|---------|
+| Fast/Cheap | Haiku 4.5 (`claude-haiku-4-5`) | Classification, boilerplate, narrow edits |
+| Balanced | Sonnet 4.6 (`claude-sonnet-4-6`) | Implementation, refactors, most coding |
+| Deep | Opus 4.8 (`claude-opus-4-8`) | Architecture, root-cause analysis, multi-file invariants |
+
+Escalate model tier only when lower tier fails with a clear reasoning gap.
 
 ## Session Strategy
 
@@ -60,3 +64,32 @@ Track per task:
 - success/failure
 
 Escalate model tier only when lower tier fails with a clear reasoning gap.
+
+## Agent Development Lifecycle (ADLC)
+
+Structured approach for building agent-powered features:
+
+1. **Define** — Write eval criteria and acceptance tests before implementation
+2. **Build** — Implement agent workflow with tool definitions (MCP preferred)
+3. **Test** — Run capability evals + regression evals, measure quality metrics
+4. **Deploy** — Canary rollout with observability; use feature flags for gradual enablement
+5. **Monitor** — Track success rate, cost, drift, and user feedback in production
+
+## Tool Integration
+
+- Use **MCP (Model Context Protocol)** as the standard for agent tool access
+- Define tools with precise schemas — vague descriptions produce vague tool calls
+- Prefer server-side tool execution over client-side when security matters
+
+## Agent Security & Governance
+
+- Agents are **non-human identities**: apply zero-trust principles (least-privilege, time-bounded credentials)
+- Audit every tool call and decision in structured logs
+- Define a governance policy: which actions require human approval?
+- Review agent outputs for compliance before external delivery
+
+## Team Structure
+
+- Optimal: **2–4 person pods** with AI agent support
+- Each pod member reviews agent output, not just code
+- Measure team by **business outcomes**, not vanity metrics (lines of code, commits)
