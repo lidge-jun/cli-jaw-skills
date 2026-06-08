@@ -1560,19 +1560,6 @@
       "install": null,
       "version": "1.0.0"
     },
-    "k-thread-gen": {
-      "name": "K-Thread Generator",
-      "name_ko": "K-Thread Generator",
-      "name_en": "K-Thread Generator",
-      "emoji": "🧵",
-      "category": "productivity",
-      "description": "Generate Korean community thread and slide-style posts with strong hooks and natural conversational tone.",
-      "desc_ko": "한국 커뮤니티 쓰레드/슬라이드 포스트를 강한 후킹과 자연스러운 대화체로 생성.",
-      "desc_en": "Generate Korean community thread and slide-style posts with strong hooks and natural conversational tone.",
-      "requires": null,
-      "install": null,
-      "version": "1.0.0"
-    },
     "kotlin-coroutines-flows": {
       "name": "Kotlin Coroutines & Flows",
       "name_ko": "Kotlin Coroutines & Flows",
@@ -1686,19 +1673,6 @@
       "description": "Run before PRs, after major changes, and pre-deploy.",
       "desc_ko": "Run before PRs, after major changes, and pre-deploy.",
       "desc_en": "Run before PRs, after major changes, and pre-deploy.",
-      "requires": null,
-      "install": null,
-      "version": "1.0.0"
-    },
-    "lecture-stt": {
-      "name": "Lecture STT Skill",
-      "name_ko": "Lecture STT Skill",
-      "name_en": "Lecture STT Skill",
-      "emoji": "🎤",
-      "category": "utility",
-      "description": "Convert lecture audio into near-verbatim structured markdown using LLM-based STT.",
-      "desc_ko": "Convert lecture audio into near-verbatim structured markdown using LLM-based STT.",
-      "desc_en": "Convert lecture audio into near-verbatim structured markdown using LLM-based STT.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
