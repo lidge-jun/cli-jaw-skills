@@ -40,12 +40,12 @@ Run project-native linters, type checker, and tests before reviewing.
 3. **Tool findings go first** in review output, before manual findings.
 4. **No tool available?** Skip gracefully — pre-scan is additive, not a gate.
 
-| Tool | Catches | Misses |
-|------|---------|--------|
-| ESLint/Ruff | Style, simple bugs, import issues | Architecture, business logic |
-| tsc/mypy | Type errors, null safety | Runtime behavior, performance |
-| Semgrep | Injection, auth bypass, SSRF | Complex multi-step vulnerabilities |
-| npm audit/pip-audit | Known CVEs in deps | Zero-day, license issues |
+| Tool | Catches | Misses | Key Rules |
+|------|---------|--------|-----------|
+| ESLint/Ruff | Style, simple bugs, import issues | Architecture, business logic | `import/no-cycle`, `no-unused-vars`, `no-floating-promises`, `complexity` |
+| tsc/mypy | Type errors, null safety | Runtime behavior, performance | `strict`, `noImplicitAny`, `strictNullChecks` |
+| Semgrep | Injection, auth bypass, SSRF | Complex multi-step vulnerabilities | `javascript.lang.security.audit.sqli` |
+| npm audit/pip-audit | Known CVEs in deps | Zero-day, license issues | — |
 
 **Separation of concerns:** Tools catch patterns; humans catch intent. Focus manual review on architecture, correctness, and business logic that tools cannot evaluate.
 
@@ -117,6 +117,18 @@ Flag these during review:
 | Deep nesting | 4+ levels of if/for/try | Guard clauses, early returns, extraction |
 | Feature envy | Method uses another object's data more than its own | Move method to the data owner |
 | Shotgun surgery | One change requires edits in 10+ files | Consolidate related logic |
+
+### Dead Code
+
+| Pattern | Detection | Fix |
+|---------|-----------|-----|
+| Unreachable code after return/throw | `no-unreachable`, compiler warnings | Delete the dead branch |
+| Unused imports / variables | `no-unused-vars`, `@typescript-eslint/no-unused-vars` | Remove |
+| Commented-out code blocks | Manual review | Delete — use version control history |
+| Unused exports | `ts-prune`, `knip`, grep for import sites | Remove export; delete if no internal use |
+| Stale feature-flagged code | Check flag status in flag service | Remove dead branch and the flag check |
+
+Dead code is a maintenance tax — remove rather than comment out.
 
 ### Logic
 

@@ -25,6 +25,27 @@ This skill covers universal guidelines. For domain-specific work, also read the 
 | `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 
+### Skill Ownership Map
+
+Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST NOT duplicate canonical content.
+
+| Rule Area | Canonical Owner | Stub Locations |
+|-----------|----------------|----------------|
+| Circular dependencies | dev-architecture | dev, code-reviewer |
+| Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
+| Coupling taxonomy | dev-architecture | code-reviewer |
+| Barrel / re-export | dev-architecture | — |
+| Pre-write search | dev §1.5 | code-reviewer |
+| Edge-first testing | dev-testing §6 | — |
+| Test-induced defense | dev-testing §6.6 | code-reviewer |
+| Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
+| Process isolation | dev-backend refs/ | code-reviewer |
+| Long-lived connections | dev-backend §1 | dev-frontend (connection limits) |
+| Async task queue | dev-backend §2 | — |
+| Debugging methodology | dev-debugging | code-reviewer |
+
+When updating a rule, update the canonical owner first, then verify stubs still point correctly.
+
 **When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read each relevant skill file before starting.
 
 ---
@@ -96,6 +117,18 @@ Give every file, function, and class a single, clear responsibility.
 | Class methods       | >20 methods | Split by responsibility                  |
 | Nesting depth       | >4 levels   | Flatten with early returns or extraction |
 | Function parameters | >5          | Use an options/config object             |
+| PR changeset        | >500 lines  | Split into focused PRs                   |
+
+### Blast Radius Limits
+
+Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, unrelated cleanup, and drive-by refactors go in separate PRs.
+
+| Change Scope | Max Blast Radius | Exceeds → |
+|---|---|---|
+| Single bug fix | 1–3 files | Split fix from cleanup |
+| Feature addition | 1 module/package | Separate infra from feature |
+| Refactoring | Pre-approved scope only | Get scope approval first |
+| Dependency upgrade | Isolated PR | Never bundle with features |
 
 **Rules:**
 - Use ES Module (`import`/`export`) in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
@@ -272,6 +305,20 @@ After every code change, run the project's static analysis toolchain as part of 
 | Go             | `go vet ./...`                        | Zero issues                  |
 | Rust           | `cargo clippy -- -D warnings`         | Zero warnings                |
 | C#             | `dotnet build /warnaserror`           | Zero warnings                |
+
+#### Common Rule ↔ Prose Mapping
+
+| Anti-Pattern (prose) | ESLint / Biome Rule |
+|---|---|
+| Unused variable/import | `no-unused-vars`, `@typescript-eslint/no-unused-vars` |
+| Unsafe `any` type | `@typescript-eslint/no-explicit-any` |
+| Loose equality (`==`) | `eqeqeq` |
+| Circular import | `import/no-cycle` |
+| Unhandled async | `@typescript-eslint/no-floating-promises` |
+| `var` usage | `no-var`, `prefer-const` |
+| Complex function | `complexity`, `max-depth`, `max-lines-per-function` |
+
+This table is not exhaustive — check project config for the canonical set.
 
 If no static analysis tool is configured in the project, recommend one to the
 user — but do not add tooling without approval.

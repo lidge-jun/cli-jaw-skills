@@ -51,6 +51,24 @@ Enforces architectural rules that prevent structural decay: circular dependencie
 | Shared mutable state between modules | Hidden temporal coupling | Pass explicitly or use event system |
 | God module (20+ exports) | Everything depends on it | Extract cohesive sub-modules |
 
+### Module SSOT (Single Source of Truth)
+
+Every concept, constant, type, or configuration value MUST have exactly one canonical owner module.
+
+| Concept | Canonical Owner | Consumers Do |
+|---------|----------------|--------------|
+| Shared types / interfaces | `types/` or `contracts/` module | Import, never redefine |
+| Constants / magic values | Domain-specific constants module | Import the constant |
+| Config / env | Central config module | Import resolved values |
+| Validation schemas | Boundary module (API entry) | Import schema, don't recreate |
+| API contracts | API layer | Import types from API module |
+
+| Banned | Why | Fix |
+|--------|-----|-----|
+| Duplicating a type/constant in a consumer | Two sources of truth → drift | Import from canonical owner |
+| "Local copy for convenience" | Convenience becomes divergence | Import the original |
+| Re-deriving a value that has a canonical source | Silent inconsistency | Import the derived value or computation |
+
 ---
 
 ## 2. Circular Dependency Detection & Prevention
