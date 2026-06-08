@@ -70,3 +70,32 @@ Track:
 - Include recovery hints in every tool response.
 - Pair error output with suggested next steps.
 - Keep context references focused and relevant to the current task.
+
+## Tool Integration Standards (2026)
+
+- **MCP (Model Context Protocol)**: Preferred standard for defining and exposing agent tools. Provides schema-based tool discovery, typed inputs/outputs, and cross-platform compatibility.
+- **AGENTS.md / Harness Templates**: Codify harness configuration in a discoverable file at the project root. Document available tools, preferred patterns, and constraints.
+
+## Observability
+
+Instrument every tool call with:
+- Tool name and invocation timestamp
+- Input hash (for deduplication detection)
+- Latency and token cost
+- Success/failure and error class
+
+Use **LangSmith**, **Logfire**, or **OpenTelemetry** for trace visualization. Without observability, harness optimization is guesswork.
+
+## Multi-Agent Topologies
+
+| Topology | Structure | Best For |
+|----------|-----------|----------|
+| Pipeline | A → B → C | Sequential processing stages |
+| Fan-out/Fan-in | Hub dispatches N workers, merges results | Parallel independent tasks |
+| Supervisor | Supervisor delegates and reviews | Quality-gated workflows |
+| DAG | Dependency-ordered execution graph | Complex workflows with partial dependencies |
+
+## Evals-in-CI
+
+Run harness evaluation as part of your CI pipeline. Track completion rate, cost, and latency per commit. Regressions in harness quality should block merges.
+
