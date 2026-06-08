@@ -126,3 +126,11 @@ Each question should be: independent, read-only, complex (multiple tool calls), 
 | TypeScript | `@modelcontextprotocol/sdk` (npm) | Use Context7 for current patterns |
 | Go | `modelcontextprotocol/go-sdk` (GitHub) | Official Go SDK |
 | C# | Official C# SDK for .NET | .NET ecosystem |
+
+## MCP Version Notes (June 2026)
+
+**Current**: MCP SDK v1.x (production). MCP v2 spec targeting stable release Q3 2026 (July 28, 2026).
+- **Governance**: MCP is now under the Linux Foundation's Agentic AI Foundation (since late 2025)
+- **v2 direction**: Stateless architecture for load-balanced enterprise environments (vs current stateful/session-based)
+- **v1.x SDKs**: Continue using v1.x for production. v2 TypeScript SDK is pre-alpha.
+- **Python**: Use `fastmcp` for quick server creation; `mcp` package for full control
