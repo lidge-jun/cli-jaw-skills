@@ -150,13 +150,16 @@ def process(text: str, config: Config, tracker: CostTracker) -> tuple[Result, Co
     return parse_result(response), tracker
 ```
 
-## Pricing Reference (2025-2026)
+## Pricing Reference (June 2026)
 
 | Model | Input ($/1M tokens) | Output ($/1M tokens) | Relative Cost |
 |-------|---------------------|----------------------|---------------|
-| Haiku 4.5 | $0.80 | $4.00 | 1x |
-| Sonnet 4.6 | $3.00 | $15.00 | ~4x |
-| Opus 4.5 | $15.00 | $75.00 | ~19x |
+| Haiku 4.5 | $1.00 | $5.00 | 1x |
+| Sonnet 4.6 | $3.00 | $15.00 | ~3x |
+| Opus 4.8 | $5.00 | $25.00 | ~5x |
+
+> **Batch API**: 50% discount on all models for async batch processing.
+> **Prompt caching**: Up to 90% savings on cached input tokens (24-hour retention).
 
 ## Preferred Practices
 
@@ -174,3 +177,46 @@ def process(text: str, config: Config, tracker: CostTracker) -> tuple[Result, Co
 - Batch processing pipelines where cost adds up quickly
 - Multi-model architectures that need intelligent routing
 - Production systems that need budget guardrails
+
+## Advanced Patterns (2026)
+
+### Model Cascading (Cheap-First)
+
+Start with the cheapest model; escalate only when quality is insufficient:
+
+```python
+def cascade_call(prompt: str, quality_threshold: float = 0.8) -> tuple[str, str]:
+    """Try cheap model first, escalate if quality is low."""
+    result = call_model(MODEL_HAIKU, prompt)
+    if evaluate_quality(result) >= quality_threshold:
+        return result, MODEL_HAIKU
+    return call_model(MODEL_SONNET, prompt), MODEL_SONNET
+```
+
+### Circuit Breaker
+
+Hard-stop when budget is exhausted — never silently overspend:
+
+```python
+def check_circuit(tracker: CostTracker) -> None:
+    """Raise immediately if budget exceeded. Check BEFORE every call."""
+    if tracker.total_cost >= tracker.budget_limit:
+        raise BudgetExceededError(
+            f"Budget exhausted: ${tracker.total_cost:.2f} / ${tracker.budget_limit:.2f}"
+        )
+```
+
+### Semantic Caching
+
+Cache semantically similar requests to avoid duplicate API calls:
+
+```python
+def get_or_call(prompt: str, cache: dict, similarity_threshold: float = 0.95) -> str:
+    """Return cached result for semantically similar prompts."""
+    for cached_prompt, cached_result in cache.items():
+        if semantic_similarity(prompt, cached_prompt) >= similarity_threshold:
+            return cached_result
+    result = call_model(MODEL_SONNET, prompt)
+    cache[prompt] = result
+    return result
+```
