@@ -6,8 +6,8 @@
 <p align="center">
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml/badge.svg" alt="Pages"></a>
-  <img src="https://img.shields.io/badge/skills-224-111827" alt="224 skills">
-  <img src="https://img.shields.io/badge/reference_assets-43-2563eb" alt="43 skills with references">
+  <img src="https://img.shields.io/badge/skills-226-111827" alt="226 skills">
+  <img src="https://img.shields.io/badge/reference_assets-44-2563eb" alt="44 skills with references">
 </p>
 
 ---
@@ -26,8 +26,8 @@ while maintainers can review the full library in one place.
 
 | Surface | Status |
 |---------|--------|
-| Skill library | 224 top-level `SKILL.md` files |
-| Reference material | 43 skills include `reference/` or `references/` folders |
+| Skill library | 226 top-level `SKILL.md` files |
+| Reference material | 44 skills include `reference/` or `references/` folders |
 | Helper scripts | 28 skills include `scripts/` folders |
 | Templates | 2 skills include `templates/` folders |
 | Office formats | `docx`, `pptx`, `xlsx`, and `hwp` skill families are present |

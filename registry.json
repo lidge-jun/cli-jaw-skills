@@ -832,19 +832,6 @@
       "install": null,
       "version": "1.0.0"
     },
-    "dev-uiux-design": {
-      "name": "Dev UI/UX Design",
-      "name_ko": "Dev UI/UX 디자인",
-      "name_en": "Dev UI/UX Design",
-      "emoji": "🎯",
-      "category": "orchestration",
-      "description": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
-      "desc_ko": "UI/UX 의도 발견, 디자인 어휘, 제품 성격, UX 상태 패턴. 디자인 방향이 모호하거나 온보딩/빈상태/에러상태 구현 시 사용.",
-      "desc_en": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
-      "requires": null,
-      "install": null,
-      "version": "1.0.0"
-    },
     "dev-pabcd": {
       "name": "Dev PABCD",
       "name_ko": "Dev PABCD",
@@ -896,6 +883,19 @@
       "requires": null,
       "install": null,
       "version": "1.1.0"
+    },
+    "dev-uiux-design": {
+      "name": "Dev UI/UX Design",
+      "name_ko": "Dev UI/UX 디자인",
+      "name_en": "Dev UI/UX Design",
+      "emoji": "🎯",
+      "category": "orchestration",
+      "description": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+      "desc_ko": "UI/UX 의도 발견, 디자인 어휘, 제품 성격, UX 상태 패턴. 디자인 방향이 모호하거나 온보딩/빈상태/에러상태 구현 시 사용.",
+      "desc_en": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
     },
     "develop-web-game": {
       "name": "웹 게임 개발",
@@ -1557,6 +1557,19 @@
           "python3"
         ]
       },
+      "install": null,
+      "version": "1.0.0"
+    },
+    "k-thread-gen": {
+      "name": "K-Thread Generator",
+      "name_ko": "K-Thread Generator",
+      "name_en": "K-Thread Generator",
+      "emoji": "🧵",
+      "category": "productivity",
+      "description": "Generate Korean community thread and slide-style posts with strong hooks and natural conversational tone.",
+      "desc_ko": "한국 커뮤니티 쓰레드/슬라이드 포스트를 강한 후킹과 자연스러운 대화체로 생성.",
+      "desc_en": "Generate Korean community thread and slide-style posts with strong hooks and natural conversational tone.",
+      "requires": null,
       "install": null,
       "version": "1.0.0"
     },
@@ -2451,6 +2464,24 @@
       "desc_ko": "macOS 스크린샷·웹캠·녹화. 전체/영역/윈도우/다중모니터. 도구별 캡처 불가 시 기본 폴백.",
       "desc_en": "macOS screenshot/webcam/recording. Full/region/window/multi-monitor. Default fallback when tool-specific capture unavailable.",
       "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
+    "search": {
+      "name": "Search Hub",
+      "name_ko": "Search Hub",
+      "name_en": "Search Hub",
+      "emoji": "🔎",
+      "category": "research",
+      "description": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
+      "desc_ko": "웹, 실시간, X/Twitter, 한국어 원문 민감 검색, 딥리서치 라우팅을 위한 통합 검색 허브.",
+      "desc_en": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
+      "requires": {
+        "optional_bins": [
+          "progrok",
+          "cli-jaw"
+        ]
+      },
       "install": null,
       "version": "1.0.0"
     },

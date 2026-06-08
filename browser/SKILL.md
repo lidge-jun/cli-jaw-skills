@@ -172,6 +172,38 @@ For ChatGPT web-ai workflows, use the `web-ai` skill. The browser skill owns
 primitive page control; `web-ai` owns structured question rendering, active-tab
 safety, and response baseline handling.
 
+### Korean Search Result Verification
+
+Use browser commands as downstream evidence checks after the search skill has
+produced URL candidates. Search snippets and AI summaries are not final
+evidence.
+
+Recommended ladder:
+
+```bash
+cli-jaw browser fetch "<url>" --json
+cli-jaw browser open "<url>"
+cli-jaw browser text
+cli-jaw browser snapshot --interactive
+cli-jaw browser get-dom --selector "<selector>" --max-chars 4000 --json
+cli-jaw browser network --json --limit 40
+```
+
+Escalate through the ladder when the candidate URL is important and the current
+evidence is weak:
+
+- fetch/open returns empty, truncated, redirected, or shell-only content;
+- the page is JS-rendered, iframe-heavy, or Naver-cafe/blog/search shell content;
+- the evidence lives in a PDF, attachment, table, list, ranking, or paginated
+  section that plain text extraction does not expose;
+- snippets conflict across providers or look like they describe a different
+  program, year, region, or source.
+
+For Korean public/current searches, preserve source-sensitive status in the
+answer: `sufficient` only after original evidence is visible, `browse-needed`
+when browser escalation is still required, and `insufficient` when the source
+cannot be reached.
+
 ### Standalone agbrowse Alternative
 
 When the user explicitly wants to drive a **single Chrome instance** (for
@@ -192,8 +224,10 @@ identical; only the binary prefix changes.
 | `cli-jaw browser tabs` | `agbrowse tabs` |
 | `cli-jaw browser stop` | `agbrowse stop` |
 
-Only switch when the user explicitly asks for the standalone path. Do not run
-`cli-jaw browser` and `agbrowse` against the same `--port` simultaneously —
+Only switch when the user explicitly asks for the standalone path. For search
+planning, `agbrowse research plan` is optional and does not replace native
+cli-jaw search/browser verification. Do not run `cli-jaw browser` and `agbrowse`
+against the same `--port` simultaneously —
 the second start will reuse the first CDP and the persisted state files can
 collide. For the web-ai layer, see the corresponding `Standalone agbrowse
 Alternative` section in the `web-ai` skill.
