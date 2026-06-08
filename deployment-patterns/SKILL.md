@@ -119,14 +119,14 @@ CMD ["node", "dist/server.js"]
 ### Multi-Stage Dockerfile (Go)
 
 ```dockerfile
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /server ./cmd/server
 
-FROM alpine:3.19 AS runner
+FROM alpine:3.21 AS runner
 RUN apk --no-cache add ca-certificates
 RUN adduser -D -u 1001 appuser
 USER appuser
@@ -141,19 +141,19 @@ CMD ["/server"]
 ### Multi-Stage Dockerfile (Python/Django)
 
 ```dockerfile
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 WORKDIR /app
 RUN pip install --no-cache-dir uv
 COPY requirements.txt .
 RUN uv pip install --system --no-cache -r requirements.txt
 
-FROM python:3.12-slim AS runner
+FROM python:3.13-slim AS runner
 WORKDIR /app
 
 RUN useradd -r -u 1001 appuser
 USER appuser
 
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY . .
 
@@ -259,6 +259,46 @@ PR opened:
 Merged to main:
   lint → typecheck → unit tests → integration tests → build image → deploy staging → smoke tests → deploy production
 ```
+
+## GitOps (Argo CD / Flux)
+
+Declarative, Git-driven deployment for Kubernetes.
+
+```yaml
+# Argo CD Application manifest
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/org/manifests.git
+    targetRevision: main
+    path: k8s/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+**Key principles:**
+- Git repository is the single source of truth for desired cluster state
+- Changes go through PRs → merge triggers automated sync
+- Argo CD reconciles cluster to match Git; Flux uses Kustomize controllers
+- Image update automation: Argo CD Image Updater or Flux Image Reflector
+
+| Tool | Strengths |
+|------|-----------|
+| Argo CD | Rich UI, multi-cluster, RBAC, app-of-apps pattern |
+| Flux | Lightweight, native Kustomize/Helm, OCI support |
+
 
 ## Health Checks
 
@@ -418,6 +458,8 @@ Before any production deployment:
 - [ ] Rate limiting enabled on public endpoints
 - [ ] Authentication and authorization verified
 - [ ] Security headers set (CSP, HSTS, X-Frame-Options)
+- [ ] SBOM generated for container images (e.g., `syft`, `docker sbom`)
+- [ ] Container images signed (e.g., `cosign`) for supply-chain integrity
 
 ### Operations
 - [ ] Rollback plan documented and tested
