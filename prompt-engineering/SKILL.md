@@ -8,10 +8,12 @@ description: >
   "how to write a prompt for", "help me prompt"
 ---
 
-# Prompt Engineering
+# Prompt & Context Engineering
 
 Analyze a draft prompt, identify gaps, map it to available agent components,
 and output an optimized prompt the user can paste and run.
+
+> **2026 note**: The field has evolved from "prompt engineering" to **"context engineering"** — managing the full context window (system prompts, retrieved data, tool schemas, conversation history) rather than just optimizing the wording of a single prompt.
 
 ## When to Use
 
@@ -123,7 +125,7 @@ Produce two versions:
 | Research | `Search for [topic]. Summarize findings with citations.` |
 | Testing | `Add tests for [module]. Target [coverage]% coverage.` |
 
-## Prompt Quality Principles
+## Prompt & Context Quality Principles
 
 1. **Specificity over vagueness**: name files, modules, endpoints
 2. **Acceptance criteria**: define "done" before starting
@@ -131,6 +133,10 @@ Produce two versions:
 4. **Existing patterns**: reference existing code the agent should follow
 5. **Verification step**: end with a concrete check (test, build, curl)
 6. **Component awareness**: invoke skills/agents by name when applicable
+7. **Context assembly**: include relevant code, docs, and data — not just the question
+8. **Self-reflection**: ask the model to verify its own reasoning (CoT) before final output
+9. **Treat prompts like code**: version control prompts, run evals, iterate based on metrics
+10. **Tool-augmented prompting**: when a prompt involves factual lookup, direct the model to use search/MCP tools rather than relying on training data
 
 ## Output Format
 
