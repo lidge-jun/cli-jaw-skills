@@ -5,7 +5,9 @@ description: Build AI agents on Cloudflare Workers using the Agents SDK. Load wh
 
 # Cloudflare Agents SDK
 
-Prefer retrieval over pre-training — the Agents SDK evolves rapidly.
+> **Not to be confused with** the [OpenAI Agents SDK](https://github.com/openai/openai-agents-python) (Python-based agent orchestration). This skill covers **Cloudflare's** Agents SDK for building stateful agents on Workers.
+
+Prefer retrieval over pre-training — the Agents SDK evolves rapidly. **Current version: v0.14.0** (June 2, 2026).
 
 ## Documentation
 
@@ -35,11 +37,13 @@ The Agents SDK provides:
 
 - **Persistent state** - SQLite-backed, auto-synced to clients
 - **Callable RPC** - `@callable()` methods invoked over WebSocket
-- **Scheduling** - One-time, recurring (`scheduleEvery`), and cron tasks
-- **Workflows** - Durable multi-step background processing via `AgentWorkflow`
+- **Scheduling** - One-time, recurring (`scheduleEvery`), cron, and **declarative scheduled tasks** (v0.14+)
+- **Workflows** - Durable multi-step background processing via `AgentWorkflow`, with **reasoning steps** (v0.14+)
 - **MCP integration** - Connect to MCP servers or build your own with `McpAgent`
 - **Email handling** - Receive and reply to emails with secure routing
-- **Streaming chat** - `AIChatAgent` with resumable streams
+- **Streaming chat** - `AIChatAgent` with resumable streams and **hardened recovery** (v0.14+)
+- **Agent Skills** - Modular, composable skill definitions (v0.14+)
+- **Chat Messengers** - Direct Telegram integration (v0.14+)
 - **React hooks** - `useAgent`, `useAgentChat` for client apps
 
 ## FIRST: Verify Installation
