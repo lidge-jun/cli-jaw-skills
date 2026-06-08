@@ -11,6 +11,10 @@ metadata:
 
 57 performance rules across 8 categories, prioritized by impact.
 
+> **React Compiler (React 19+):** If the React Compiler is enabled in your project, it automatically memoizes components, hooks return values, and expensive computations. Manual `useMemo`, `useCallback`, and `React.memo` are no longer needed in most cases — the compiler handles them. Rules marked ⚙️ below are automatically optimized by the compiler. Keep these rules as fallback guidance for projects without the compiler enabled.
+
+> **`useActionState` (React 19+):** For form submissions with server actions, prefer `useActionState` over manual `useState` + `onSubmit` handlers. It integrates with React's transition system and works with progressive enhancement.
+
 ## Rule Categories by Priority
 
 | Priority | Category | Impact | Prefix |
@@ -62,17 +66,19 @@ metadata:
 ### 5. Re-render Optimization (Situational)
 
 - `rerender-defer-reads` - Don't subscribe to state only used in callbacks
-- `rerender-memo` - Extract expensive work into memoized components
-- `rerender-memo-with-default-value` - Hoist default non-primitive props
+- `rerender-memo` - Extract expensive work into memoized components ⚙️
+- `rerender-memo-with-default-value` - Hoist default non-primitive props ⚙️
 - `rerender-dependencies` - Use primitive dependencies in effects
 - `rerender-derived-state` - Subscribe to derived booleans, not raw values
 - `rerender-derived-state-no-effect` - Derive state during render, not effects
-- `rerender-functional-setstate` - Use functional setState for stable callbacks
+- `rerender-functional-setstate` - Use functional setState for stable callbacks ⚙️
 - `rerender-lazy-state-init` - Pass function to useState for expensive values
-- `rerender-simple-expression-in-memo` - Avoid memo for simple primitives
+- `rerender-simple-expression-in-memo` - Avoid memo for simple primitives ⚙️
 - `rerender-move-effect-to-event` - Put interaction logic in event handlers
 - `rerender-transitions` - Use startTransition for non-urgent updates
 - `rerender-use-ref-transient-values` - Use refs for transient frequent values
+
+> ⚙️ = Automatically handled by React Compiler when enabled. No manual `useMemo`/`useCallback`/`React.memo` needed.
 
 ### 6. Rendering Performance (Situational)
 
