@@ -22,11 +22,45 @@ From simplest to most sophisticated:
 
 | Pattern | Complexity | Best For |
 |---------|-----------|----------|
+| [Native `/loop` & `/bg`](#0-native-loop--bg-commands) | Minimal | Quick iterative tasks, background agents |
 | [Sequential Pipeline](#1-sequential-pipeline-claude--p) | Low | Daily dev steps, scripted workflows |
 | [Infinite Agentic Loop](#2-infinite-agentic-loop) | Medium | Parallel content generation, spec-driven work |
 | [Continuous Claude PR Loop](#3-continuous-claude-pr-loop) | Medium | Multi-day iterative projects with CI gates |
 | [De-Sloppify Pattern](#4-the-de-sloppify-pattern) | Add-on | Quality cleanup after any Implementer step |
 | [Ralphinho / RFC-Driven DAG](#5-ralphinho--rfc-driven-dag-orchestration) | High | Large features, multi-unit parallel work with merge queue |
+
+> ⚠️ **Anti-pattern: Loop of Death** — An unconstrained autonomous loop that runs indefinitely, consuming tokens without progress. Always define a **max iteration count**, **budget cap**, or **convergence condition**. See [Loop of Death](#loop-of-death-anti-pattern) below.
+
+---
+
+## 0. Native `/loop` & `/bg` Commands
+
+**The simplest starting point.** Claude Code's built-in loop mechanisms handle most autonomous iteration needs without any external tooling.
+
+### `/loop` — Iterative Task Execution
+
+```
+/loop "Run tests, fix failures, repeat until all pass" --max-turns 10
+```
+
+The agent iterates autonomously until the condition is met or max turns reached.
+
+### `/bg` — Background Agents
+
+```
+/bg "Research all usages of deprecated API v2 and list them in a report"
+```
+
+Runs an agent in the background while you continue interactive work. Monitor with the Monitor tool.
+
+### When to Use Native vs Custom Loops
+
+| Use native `/loop` when... | Use custom loops when... |
+|---|---|
+| Task fits in a single session | Multi-session, multi-day workflows needed |
+| No external CI/CD integration needed | Need PR creation, CI gates, merge coordination |
+| Simple convergence condition | Complex DAG orchestration or parallel agents |
+| Quick iteration (< 10 turns) | Long-running with checkpointing |
 
 ---
 
@@ -415,6 +449,46 @@ These patterns compose well:
 
 ---
 
+## Loop of Death Anti-Pattern
+
+An autonomous loop that runs indefinitely without making progress, consuming tokens and budget.
+
+**Symptoms:**
+- Agent repeats the same fix/undo cycle
+- Token consumption spikes without corresponding code changes
+- Same test failures appear in consecutive iterations
+
+**Mitigations:**
+- **Max iterations**: Hard cap (e.g., `MAX_ITERATIONS=10`)
+- **Budget cap**: Stop when cumulative API cost exceeds threshold
+- **Convergence detection**: Track test pass count — if no improvement in 3 iterations, stop
+- **Diff-size check**: If an iteration produces zero meaningful diff, break
+
+```bash
+# Example: convergence check in a loop
+PREV_FAILURES=999
+for i in $(seq 1 $MAX_ITERATIONS); do
+    claude -p "$PROMPT"
+    FAILURES=$(npm test 2>&1 | grep -c "FAIL" || true)
+    if [ "$FAILURES" -eq 0 ]; then break; fi
+    if [ "$FAILURES" -ge "$PREV_FAILURES" ]; then
+        echo "No progress after iteration $i — stopping"
+        break
+    fi
+    PREV_FAILURES=$FAILURES
+done
+```
+
+---
+
+## Higher-Level Alternatives (2026)
+
+- **Claude Agent Teams**: Native multi-agent orchestration built into Claude Code — managed team creation with role assignment
+- **DevFleet MCP**: Project-level orchestration with mission dispatch and monitoring
+- **continuous-claude v3**: Updated with skills system, better orchestration, and improved context management
+
+---
+
 ## References
 
 | Project | Author | Link |
@@ -422,3 +496,4 @@ These patterns compose well:
 | Ralphinho | enitrat | credit: @enitrat |
 | Infinite Agentic Loop | disler | credit: @disler |
 | Continuous Claude | AnandChowdhary | credit: @AnandChowdhary |
+
