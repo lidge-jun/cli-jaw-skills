@@ -27,12 +27,13 @@ Quick reference for PostgreSQL best practices.
 | `WHERE jsonb @> '{}'` | GIN | `CREATE INDEX idx ON t USING gin (col)` |
 | `WHERE tsv @@ query` | GIN | `CREATE INDEX idx ON t USING gin (col)` |
 | Time-series ranges | BRIN | `CREATE INDEX idx ON t USING brin (col)` |
+| Multi-col leading skip | B-tree (PG 18 skip scan) | Automatic for `WHERE b = value` on index `(a, b)` |
 
 ### Data Type Quick Reference
 
 | Use Case | Correct Type | Avoid |
 |----------|-------------|-------|
-| IDs | `bigint` | `int`, random UUID |
+| IDs | `UUIDv7` (time-sortable, B-tree friendly) | UUIDv4 (random, fragments indexes) |
 | Strings | `text` | `varchar(255)` |
 | Timestamps | `timestamptz` | `timestamp` |
 | Money | `numeric(10,2)` | `float` |
@@ -77,6 +78,14 @@ DO UPDATE SET value = EXCLUDED.value;
 ```sql
 SELECT * FROM products WHERE id > $last_id ORDER BY id LIMIT 20;
 -- O(1) vs OFFSET which is O(n)
+```
+
+**Virtual Generated Column (PG 18+):**
+```sql
+-- Computed on read, no storage cost
+ALTER TABLE users ADD COLUMN display_name TEXT
+    GENERATED ALWAYS AS (first_name || ' ' || last_name) VIRTUAL;
+-- On PG 12–17, use STORED (persisted to disk)
 ```
 
 **Queue Processing:**
@@ -133,6 +142,15 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 REVOKE ALL ON SCHEMA public FROM public;
 
 SELECT pg_reload_conf();
+```
+
+### Authentication
+
+```sql
+-- MD5 password auth is deprecated. Use SCRAM-SHA-256 (default since PG 14).
+ALTER SYSTEM SET password_encryption = 'scram-sha-256';
+-- Update pg_hba.conf: replace 'md5' with 'scram-sha-256'
+-- Existing users must reset passwords after switching.
 ```
 
  
