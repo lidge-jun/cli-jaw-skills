@@ -13,8 +13,12 @@ Execute safe, read-only queries against configured PostgreSQL databases.
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.10+
 - psycopg2-binary: `pip install -r requirements.txt`
+
+> **Tip:** For new projects, consider **psycopg (v3)** (`pip install psycopg[binary]`)
+> as the recommended modern PostgreSQL adapter. It offers async support, pipeline
+> mode, and better typing. psycopg2 remains supported but is in maintenance mode.
 
 ## Setup
 
