@@ -160,39 +160,50 @@ ORDER BY market_id, date;
 ### Bulk Insert (Recommended)
 
 ```typescript
-import { ClickHouse } from 'clickhouse'
+// Official client: @clickhouse/client (replaces deprecated 'clickhouse' npm package)
+import { createClient } from '@clickhouse/client'
 
-const clickhouse = new ClickHouse({
-  url: process.env.CLICKHOUSE_URL,
-  port: 8123,
-  basicAuth: {
-    username: process.env.CLICKHOUSE_USER,
-    password: process.env.CLICKHOUSE_PASSWORD
-  }
+const client = createClient({
+  url: process.env.CLICKHOUSE_URL ?? 'http://localhost:8123',
+  username: process.env.CLICKHOUSE_USER ?? 'default',
+  password: process.env.CLICKHOUSE_PASSWORD ?? '',
+  // For ClickHouse Cloud, use:
+  // url: 'https://<host>.clickhouse.cloud:8443',
 })
 
-// Batch insert (preferred)
+// Batch insert (preferred) — uses parameterized values, no SQL injection risk
 async function bulkInsertTrades(trades: Trade[]) {
-  const values = trades.map(trade => `(
-    '${trade.id}',
-    '${trade.market_id}',
-    '${trade.user_id}',
-    ${trade.amount},
-    '${trade.timestamp.toISOString()}'
-  )`).join(',')
+  await client.insert({
+    table: 'trades',
+    values: trades.map(trade => ({
+      id: trade.id,
+      market_id: trade.market_id,
+      user_id: trade.user_id,
+      amount: trade.amount,
+      timestamp: trade.timestamp.toISOString(),
+    })),
+    format: 'JSONEachRow',
+  })
+}
 
-  await clickhouse.query(`
-    INSERT INTO trades (id, market_id, user_id, amount, timestamp)
-    VALUES ${values}
-  `).toPromise()
+// Query example
+async function queryTrades(marketId: string) {
+  const result = await client.query({
+    query: 'SELECT * FROM trades WHERE market_id = {marketId:String} LIMIT 100',
+    query_params: { marketId },
+    format: 'JSONEachRow',
+  })
+  return await result.json<Trade[]>()
 }
 
 // Avoid: individual inserts (slow)
 async function insertTrade(trade: Trade) {
-  // Avoid calling this in a loop
-  await clickhouse.query(`
-    INSERT INTO trades VALUES ('${trade.id}', ...)
-  `).toPromise()
+  // Avoid calling this in a loop — batch instead
+  await client.insert({
+    table: 'trades',
+    values: [trade],
+    format: 'JSONEachRow',
+  })
 }
 ```
 
@@ -242,6 +253,26 @@ FROM market_stats_hourly
 WHERE hour >= now() - INTERVAL 24 HOUR
 GROUP BY hour, market_id;
 ```
+
+## Lightweight UPDATE / DELETE
+
+ClickHouse supports mutations (ALTER TABLE ... UPDATE/DELETE) for correcting data.
+Mutations are asynchronous and rewrite parts in the background — they are **not** intended for frequent OLTP-style updates.
+
+```sql
+-- Update rows (asynchronous mutation)
+ALTER TABLE trades UPDATE user_id = 'new-user' WHERE id = 'trade-123';
+
+-- Delete rows
+ALTER TABLE trades DELETE WHERE timestamp < '2024-01-01';
+
+-- Check mutation progress
+SELECT * FROM system.mutations WHERE is_done = 0;
+```
+
+> **Note:** Mutations are heavy operations. For frequent updates, consider
+> ReplacingMergeTree (deduplicates on merge) or CollapsingMergeTree (sign-based
+> row versioning) instead of ALTER TABLE ... UPDATE.
 
 ## Performance Monitoring
 
@@ -436,3 +467,23 @@ pgClient.on('notification', async (msg) => {
 - Review slow query log
 
 ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.
+
+## ClickHouse Cloud
+
+ClickHouse Cloud is the managed offering with automatic scaling, backups, and built-in observability.
+
+- **Connection:** Use native protocol (`clickhouse://`) on port 8443 (TLS) or HTTP on 8443
+- **Client config:**
+  ```typescript
+  const client = createClient({
+    url: 'https://<host>.clickhouse.cloud:8443',
+    username: 'default',
+    password: process.env.CLICKHOUSE_CLOUD_PASSWORD,
+  })
+  ```
+- **Key differences from self-hosted:**
+  - SharedMergeTree engine (default, replaces ReplicatedMergeTree)
+  - Automatic scaling of compute and storage
+  - Built-in backups and point-in-time recovery
+  - Query-level concurrency limits instead of server-level
+- **Docs:** https://clickhouse.com/docs/en/cloud
