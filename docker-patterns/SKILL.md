@@ -20,7 +20,8 @@ Docker and Docker Compose best practices for containerized development.
 ### Standard Web App Stack
 
 ```yaml
-# docker-compose.yml
+# compose.yaml (preferred filename; docker-compose.yml still supported)
+# NOTE: The top-level `version` field is obsolete and ignored by Compose v2+.
 services:
   app:
     build:
@@ -43,7 +44,7 @@ services:
     command: npm run dev
 
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     ports:
       - "5432:5432"
     environment:
@@ -146,6 +147,57 @@ docker compose up
 
 # Production
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+### Watch Mode (Compose v2.22+)
+
+File-watching with auto-sync or rebuild — replaces bind mounts for many dev workflows:
+
+```yaml
+# compose.yaml
+services:
+  app:
+    build: .
+    develop:
+      watch:
+        - action: sync            # Hot-sync source files into container
+          path: ./src
+          target: /app/src
+        - action: rebuild          # Rebuild image when deps change
+          path: ./package.json
+```
+
+```bash
+docker compose watch             # Start watching (foreground)
+docker compose up --watch         # Start services + watch
+```
+
+### Profiles
+
+Optionally start services only when a profile is active:
+
+```yaml
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+
+  debug:
+    image: busybox
+    profiles: [debug]             # Only starts with --profile debug
+    command: sleep infinity
+
+  seed:
+    build: ./scripts
+    profiles: [setup]             # Only starts with --profile setup
+    command: ["node", "seed.js"]
+```
+
+```bash
+docker compose up                        # Starts only 'app'
+docker compose --profile debug up        # Starts 'app' + 'debug'
+docker compose --profile setup run seed  # Run one-off seed task
 ```
 
 ## Networking
