@@ -14,6 +14,8 @@ reproduction frameworks, and verification tooling, see `dev-testing`. For
 domain-specific context (API errors, hydration issues, query performance),
 consult `dev-backend` or `dev-frontend`.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ```
 dev-debugging = root cause methodology (the thinking)
 dev-testing   = test harness for reproducing/verifying (the tooling)
@@ -196,7 +198,7 @@ Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 | Modifying failing tests to pass | Fix the code, not the test — a failing test is evidence |
 | Claiming "fixed" without running verification | Run full test suite, show green output, verify the original symptom |
 | Copy-pasting a fix without understanding | Understand why the fix works, then adapt to your codebase |
-| Wrapping `try/catch` around the crash site | Fix at the source — trace upstream to where the bad data originates |
+| Suppressive try/catch (catch-and-ignore, catch-and-return-null) | Fix at the source. Boundary catch with logging/re-throw is fine — see dev-architecture §4. |
 | Guessing at types, nulls, or undefined values | Add diagnostic logging, inspect actual runtime values |
 | "It works now" after changing something unrelated | Correlation ≠ causation — revert the change and test again |
 
@@ -256,7 +258,7 @@ and a **recommendation** for next steps.
 After resolving any bug that:
 - Was user/customer-impacting
 - Took >1 hour to diagnose
-- Involved repeated failed fix attempts
+- Involved 3+ failed fix attempts (per postmortem-template.md)
 - Revealed a systemic issue (same bug class exists elsewhere)
 
 Fill out `references/postmortem-template.md` and include it in the PR or commit.

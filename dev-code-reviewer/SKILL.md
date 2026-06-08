@@ -74,7 +74,7 @@ Flag these during review:
 | Issue | Threshold | Severity |
 |-------|-----------|----------|
 | Long function | >50 lines | Medium |
-| Large file | >500 lines (target 200-400) | Medium |
+| Large file | >400 lines | Medium |
 | God class | >20 methods | High |
 | Too many parameters | >5 | Medium |
 | Deep nesting | >4 levels | Medium |

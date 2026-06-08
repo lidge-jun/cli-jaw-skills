@@ -62,7 +62,7 @@ cli-jaw orchestrate reset   → return to IDLE (from any state)
 
 ### P — Plan
 
-If the request has unclear scope or unspecified technology, clarify first:
+If the request has unclear scope or unspecified technology, return to Interview (`cli-jaw orchestrate I`). Within Interview:
 - Present 2–3 options as `<TechName> — <plain explanation>`
 - Recommend one with project-specific reasoning
 - Confirm once, then proceed
@@ -125,7 +125,7 @@ Output worker JSON for the audit. Review results when they come back.
 ⛔ Wait for user approval. When approved → `cli-jaw orchestrate B`
 
 ### B — Build
-Implement the plan. You write all code directly. Workers are read-only verifiers.
+Implement the plan. You write all code by default. Workers are read-only verifiers unless dispatched with `--mutable` (see Pitfalls).
 
 Do not create `structure/` or `devlog/` unless approved in P or explicitly requested by the user.
 

@@ -11,6 +11,8 @@ This skill is the authoritative source for authentication, authorization, input 
 `dev-backend` delegates here for policy and verification depth.
 `dev-frontend` remains responsible for UI implementation, but frontend security touchpoints such as CSP compliance, CORS behavior, XSS prevention, and dependency auditing are defined here.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## When to Activate
 
 Activate this skill when you are:
@@ -84,7 +86,7 @@ Validate all input at trust boundaries with schema validation (Zod strict, Pydan
 
 Use this checklist for login, session, token, password reset, magic link, OAuth, and admin access:
 - [ ] Passwords hashed with `argon2id` or `bcrypt`; use MD5, SHA1, or raw SHA256 only for non-security hashing.
-- [ ] Access tokens are short-lived (a 15-60 minute window is typical; defer to org policy and threat model).
+- [ ] Access tokens are short-lived (15 minutes recommended; up to 60 minutes acceptable per org policy).
 - [ ] Refresh tokens rotate on use and support family invalidation after reuse detection.
 - [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; keep session tokens out of `localStorage`.
 - [ ] OAuth uses Authorization Code + PKCE; avoid implicit flow (deprecated, token-in-URL exposure).

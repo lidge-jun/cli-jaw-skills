@@ -24,7 +24,7 @@ When starting a new project or establishing a design system, use this token arch
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'SF Mono', monospace;
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
   --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem; --text-3xl: 2rem;

@@ -11,6 +11,8 @@ metadata:
 
 Production-grade data engineering patterns for building reliable data systems.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## When to Activate
 
 - Building data pipelines or ETL/ELT processes
@@ -32,7 +34,7 @@ Five rules that apply to every data task:
 | **Schema-first** | Define expected columns, types, and constraints BEFORE writing transformation logic. |
 | **Defensive parsing** | External data will have nulls, wrong types, extra columns, missing columns, and encoding issues. Assume all of these. |
 | **Idempotent operations** | Running the same pipeline twice on the same input must produce the same output. Use upsert patterns, not blind inserts. |
-| **Fail fast, fail loud** | Raise errors on invalid data immediately — silent failures produce wrong downstream results that are harder to debug. |
+| **Fail fast, fail loud** | Raise errors at pipeline boundaries immediately. Internal transforms propagate errors; dead-letter queues handle row-level quarantine at the boundary (see §3). |
 
 ---
 
@@ -248,7 +250,7 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 
 | Factor | pandas | Polars | DuckDB |
 |--------|--------|--------|--------|
-| **Best for** | <1GB, exploration, ML prep | >1GB, batch ETL, performance | SQL analytics, ad-hoc queries |
+| **Best for** | <100MB, exploration, ML prep | >100MB, batch ETL, performance | SQL analytics, ad-hoc queries |
 | **Execution** | Single-threaded, eager | Multi-threaded Rust, lazy eval | Vectorized, auto disk spill |
 | **Speed (groupby/join)** | Baseline | 5-10x faster | Matches Polars on SQL-native |
 | **Memory** | Full load into RAM | Streaming, lazy chains | Spill-to-disk for out-of-core |
@@ -328,7 +330,7 @@ Data engineering does not exist in isolation. Cross-reference these skills when 
 | Companion | When to Consult | Key Sections |
 |-----------|-----------------|--------------|
 | `dev-backend` | Exposing data via API, response envelope shape, pagination | §5 API Response Contract, §2 Layered Architecture |
-| `dev-security` | PII handling, data classification, access controls, audit logging | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
+| `dev-security` | PII handling, data classification, access controls, audit logging, input validation policy (per dev-security §10 ownership matrix) | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
 | `dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend & API Testing, §3 Contract Testing |
 | `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §8 Backend Contract & Security Alignment |
 

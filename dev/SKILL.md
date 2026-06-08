@@ -11,6 +11,16 @@ metadata:
 
 Core rules applied to every sub-agent, regardless of role.
 
+## §0.1 Patch Fast-Path
+
+When the change is **≤5 lines**, **in-place edit**, and **introduces no new abstractions**:
+- Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
+- Keep: §3 verification gate, §5 safety rules (imports/exports), §7.2 static analysis
+- Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
+
+This is scope guidance, not an exemption. If the small patch touches a critical area
+(auth, payments, data deletion), read the relevant reference regardless.
+
 ## Companion Skills
 
 This skill covers universal guidelines. For domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
@@ -127,7 +137,7 @@ Give every file, function, and class a single, clear responsibility.
 
 | Metric              | Threshold   | Action                                   |
 | ------------------- | ----------- | ---------------------------------------- |
-| File length         | >500 lines  | Split into focused modules               |
+| File length         | >400 lines  | Split into focused modules (per dev-architecture) |
 | Function length     | >50 lines   | Extract helper functions                 |
 | Class methods       | >20 methods | Split by responsibility                  |
 | Nesting depth       | >4 levels   | Flatten with early returns or extraction |
@@ -268,7 +278,7 @@ Watch for these anti-patterns and fix immediately. For the full detection catalo
 | **Deep nesting**           | >4 levels of if/for/try             | Early returns, guard clauses, extract |
 | **Magic numbers**          | Hardcoded `86400`, `1024`, `3`      | Named constants with clear intent     |
 | **Stringly typed**         | Strings where enums/types belong    | Define explicit types or enums        |
-| **Missing error handling** | No catch, no input validation       | Add try/catch, validate all inputs    |
+| **Missing error handling** | No catch at trust boundaries        | Add try/catch at boundaries (controller, API edge, event handler). Internal code propagates errors — see dev-architecture §4. |
 | **Floating promises**      | async call without `await`          | Always `await` or handle rejection    |
 | **Copy-paste code**        | Same logic in 2+ places             | Extract shared function, import it    |
 

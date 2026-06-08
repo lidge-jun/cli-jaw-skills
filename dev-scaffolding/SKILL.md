@@ -5,6 +5,8 @@ description: "Scaffold new projects or add feature modules following the Lidge S
 
 # Dev Scaffolding
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§10) for verification.
 
 ## 1. The Lidge Standard
@@ -53,11 +55,8 @@ Jawdev devlog method:
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
-Jawdev phase document naming uses decade-range prefixes (see `dev-pabcd/SKILL.md` for the canonical table):
+Jawdev phase document naming uses decade-range prefixes. For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §P — that is the single source of truth.
 - Plan unit folder: `devlog/_plan/YYMMDD_slug/`
-- `00–09` research/specs/MOC (mandatory before implementation), `10–19` Phase 1, `20–29` Phase 2, and so on.
-- Default sequential within a decade (`00`, `01`, `02`…); on overflow use a sub-index (`00_0_name.md`, `00_1_name.md`).
-- `00_*` (e.g. `00_plan.md` or `00_overview.md`) is the plan-folder index and file map.
 - The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
 - When adding a document, scan siblings and choose the next unused prefix in the correct decade.
 
@@ -183,7 +182,7 @@ Split smells (heuristics, not hard gates):
 ## 10. Cross-Cutting Scaffolding
 
 ### Health Endpoints
-Every backend scaffold must include health routes:
+Backend scaffolds should propose health routes (skip if the mature repo already handles health checks per §2):
 - `src/routes/health.ts` (or equivalent) — `/health` (liveness) and `/ready` (readiness)
 - See `dev-backend/references/core/health-checks.md` for response format
 

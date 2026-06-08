@@ -154,7 +154,7 @@ npx vitest run
 npx vitest run --coverage
 ```
 
-Testing pyramid: unit (70%) → integration (20%) → E2E (10%)
+Testing: see dev-testing §1.2 for ratio guidance (Trophy for web/API, Pyramid for libraries).
 
 ---
 

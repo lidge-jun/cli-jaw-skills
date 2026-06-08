@@ -13,14 +13,15 @@ metadata:
 Build reliable, secure, and maintainable server-side applications.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## Modular References
 
 | File                                   | When to Read                   | What It Covers                                                         |
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
 | `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
-| `references/core/anti-slop-backend.md` | **Always**                     | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
-| `references/core/security.md`          | **Always** for production code | Redirect to `dev-security` skill (this file is a delegation pointer)             |
+| `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
 | `references/core/health-checks.md`    | Every backend service          | Liveness, readiness, startup probes, dependency checks                 |
 | `references/core/process-isolation.md` | CPU-bound or untrusted work    | worker_threads vs child_process vs separate service, communication, resource limits |
@@ -153,7 +154,7 @@ Use SSE/WebSocket only for push notifications about job status — not for the o
 Routes → Controllers → Services → Repositories → Database
   │          │             │            │
   │          │             │            └── Data access only
-  │          │             └── Business logic, validation
+  │          │             └── Business logic (validation at controller boundary — service trusts caller per dev-architecture §4)
   │          └── Parse HTTP, format response
   └── URL mapping, middleware
 ```
@@ -390,10 +391,10 @@ Treat templates as starting points, not gospel. Strip to essentials, then add wh
 | Metric | Target | Escalation |
 |--------|--------|-----------|
 | p50 response time (reads) | ≤ 50ms | Profile with tracing |
-| p95 response time (reads) | ≤ 200ms | Mandatory optimization |
+| p95 response time (reads) | ≤ 200ms target, alert at >500ms (see observability.md) | Optimization target |
 | p95 response time (writes) | ≤ 500ms | Acceptable for complex writes |
 | p99 response time | ≤ 1000ms | Investigate outliers |
-| Error rate | < 0.1% | Alert threshold |
+| Error rate | < 0.1% target, alert at >1% (see observability.md) | Optimization target |
 
 - Measure at the handler level, not including network
 - Use `Server-Timing` header to expose backend timing to frontend

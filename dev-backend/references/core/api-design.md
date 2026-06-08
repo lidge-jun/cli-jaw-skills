@@ -12,7 +12,7 @@ Synthesized from dev-backend + senior-backend (alirezarezvani) + mrgoonie backen
 | GET    | Read (list/item) |    Yes     | `GET /api/users`, `/users/:id` |
 | POST   | Create resource  |     No     | `POST /api/users`              |
 | PUT    | Full replace     |    Yes     | `PUT /api/users/:id`           |
-| PATCH  | Partial update   |    Yes     | `PATCH /api/users/:id`         |
+| PATCH  | Partial update   |     No     | `PATCH /api/users/:id`         |
 | DELETE | Remove resource  |    Yes     | `DELETE /api/users/:id`        |
 
 ---

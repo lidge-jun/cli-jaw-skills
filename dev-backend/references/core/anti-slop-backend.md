@@ -118,7 +118,7 @@ Public endpoints without rate limiting → DDoS target.
 ### No Tests
 Every feature MUST have tests. Minimum: unit tests for service layer.
 
-Testing pyramid: Unit 70% → Integration 20% → E2E 10%
+Testing distribution depends on project type. Web/API apps: see dev-testing §1.2 (Testing Trophy favors integration). Libraries: Testing Pyramid (Unit 70% → Integration 20% → E2E 10%).
 
 ### `console.log` Debugging in Production
 Use structured logging (JSON) with levels:

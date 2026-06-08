@@ -20,6 +20,8 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 
 **Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## Modular References
 
 | File | When to Read | What It Covers |
@@ -42,6 +44,8 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 ## 1. User Intent Discovery Protocol
 
 When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 6-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
+
+> Skip this section if the user provided explicit design specs or this is a ≤5-line patch.
 
 **Rules:**
 - Ask a maximum of 6 questions before proposing a concrete direction.
@@ -125,7 +129,7 @@ When the user gives feedback without specifics, translate:
 
 ---
 
-## 2. Design Read (MANDATORY before code)
+## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see dev §0.1 Patch Fast-Path.)
 
 Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
 

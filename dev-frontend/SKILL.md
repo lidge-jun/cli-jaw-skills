@@ -10,26 +10,28 @@ license: Complete terms in LICENSE.txt
 Build distinctive, production-grade interfaces that fit the product domain, locale, interaction model, and real visual evidence.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## Modular References
 
 | File                                      | When to Read                         | What It Covers                                                                    |
 | ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- |
-| `references/core/anti-slop.md`            | **Always**                           | 2026 AI slop patterns, Korean slop, oversized text, fake assets, default UI smells |
-| `references/core/aesthetics.md`           | **Always**                           | Domain-correct visual direction, typography, color, composition                    |
+| `references/core/anti-slop.md`            | New components or UI redesign        | 2026 AI slop patterns, Korean slop, oversized text, fake assets, default UI smells |
+| `references/core/aesthetics.md`           | Visual design decisions              | Domain-correct visual direction, typography, color, composition                    |
 | `references/core/product-density.md`      | Apps, tools, dashboards              | Density profiles for landing, consumer app, SaaS, ops, finance, devtools          |
 | `references/core/asset-requirements.md`   | Any public/product/visual surface    | Required screenshots, images, diagrams, charts, generated bitmaps, or 3D assets   |
-| `references/core/visual-verification.md`  | **Always before delivery**           | Screenshot, viewport, text fit, state, asset, and motion verification              |
+| `references/core/visual-verification.md`  | Changes affecting rendered layout    | Screenshot, viewport, text fit, state, asset, and motion verification              |
 | `references/core/korea-2026.md`           | Korean-first or Korea-facing UI      | Korean service patterns, CJK typography, formats, mobile flows                     |
 | `references/core/ux-writing-ko.md`        | Korean UI copy                       | Natural Korean labels, error messages, tone, spacing, punctuation                  |
 | `references/core/soft-3d-asset-gates.md`  | 3D/miniature/character-like visuals  | Toss-style soft 3D vs generic cute asset slop, domain gates                        |
 | `references/core/motion.md`               | Motion/animation needed              | CSS animations, Framer Motion, scroll-driven, View Transitions, domain gates       |
 | `references/core/iterative-design.md`     | Multi-round design                   | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques           |
-| `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, **short descriptor category** (`balance` not `pretty` for 1-3 line text), `ch` units, rag control, Korean orphan prevention, `-webkit-line-clamp` conflict |
+| `references/core/typography-wrapping.md`  | Heading/descriptor text changes      | `text-wrap: balance/pretty`, **short descriptor category** (`balance` not `pretty` for 1-3 line text), `ch` units, rag control, Korean orphan prevention, `-webkit-line-clamp` conflict |
 | `references/core/logo-sections.md`        | Integration/partner logo display     | Marquee CSS, static grid, orphan cell fix, grayscale treatment, no individual hover |
 | `references/core/brand-asset-sourcing.md` | Brand logos in UI                    | Simple Icons/SVGL sourcing, AI agent strategy, placeholder hierarchy, legal guide  |
 | `references/core/layout-discipline.md`    | Landing/marketing pages              | Hero, eyebrow, section repetition, bento, zigzag, **per-section responsive transforms** |
 | `references/core/consistency-locks.md`    | Any multi-section page               | Color, shape, theme consistency per page                                             |
-| `references/core/responsive-viewport.md`  | **Always**                           | Canonical breakpoints, page containment, container queries, responsive images, safe area, split-screen |
+| `references/core/responsive-viewport.md`  | Layout or breakpoint changes         | Canonical breakpoints, page containment, container queries, responsive images, safe area, split-screen |
 | `references/core/mobile-ux.md`            | Consumer/landing pages with mobile traffic | Thumb zone, touch targets, sticky CTA, mobile section composition, bottom sheet, portrait media |
 | `references/core/seo-baseline.md`         | Public-facing sites, SSR/SSG           | SEO meta, JSON-LD, robots.txt, GEO strategies, OG/Twitter cards                      |
 | `references/core/a11y-patterns.md`        | Interactive widgets, modals, forms     | ARIA patterns, focus management, keyboard nav, screen reader testing                  |

@@ -120,7 +120,7 @@ Three pillars every project must follow:
 
 ```
 <project>/
-├── AGENTS.md              # AI context
+├── AGENTS.md              # AI context (propose in plan — do not create silently per dev §0.5)
 ├── README.md              # Human overview
 ├── .env.example           # Env template (never commit .env)
 ├── devlog/
@@ -131,7 +131,7 @@ Three pillars every project must follow:
 │   ├── auth/              # Feature folder
 │   │   ├── auth.tool.ts
 │   │   ├── auth.test.ts
-│   │   └── index.ts       # Barrel export
+│   │   └── index.ts       # Public API barrel (package boundary only — see dev-architecture §5)
 │   └── shared/            # Truly shared utils only
 ├── config/
 ├── docs/

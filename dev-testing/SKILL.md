@@ -11,11 +11,13 @@ metadata:
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## Modular References
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
-| `references/edge-first-testing.md` | **Always** when writing tests | Edge-first principle, test order by change type, 11-class edge matrix |
+| `references/edge-first-testing.md` | New unit/service/integration tests for features (skip for regression/contract tests) | Edge-first principle, test order by change type, 11-class edge matrix |
 | `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
 | `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |
 
@@ -253,7 +255,7 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
 - Force sandbox mode in test setup: `process.env.SANDBOX_MODE = 'true'`
 - Assert sandbox responses match the same contract as production responses.
 - Treat sandbox/production parity as a high-priority regression target.
-- Write tests for bugs that were found, not for code that already works — test count grows organically with bug fixes.
+- In sandbox/spike mode, write tests for bugs found — coverage grows organically. For production refactors, see §1.5 (tests required for behavior changes).
 
 ---
 ## 6.6 Test-Induced Production Defense Detection
