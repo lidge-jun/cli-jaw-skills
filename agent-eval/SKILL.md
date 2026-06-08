@@ -9,10 +9,25 @@ A lightweight CLI tool for comparing coding agents head-to-head on reproducible 
 
 ## When to Activate
 
-- Comparing coding agents (Claude Code, Aider, Codex, etc.) on your own codebase
+- Comparing coding agents (Claude Code, Aider, Codex, Cursor, Augment, etc.) on your own codebase
 - Measuring agent performance before adopting a new tool or model
 - Running regression checks when an agent updates its model or tooling
 - Producing data-backed agent selection decisions for a team
+
+## 2026 Evaluation Landscape
+
+> The harness (tools, prompts, context) matters as much as the model. When evaluating, isolate whether differences come from the model or the harness.
+
+**Standard benchmarks** (for reference — this tool measures on *your* code):
+- SWE-bench Verified / SWE-bench Pro — real GitHub issue resolution
+- SWE Atlas — broader tasks: QA, test writing, refactoring
+- Terminal-Bench v2.1 — CLI/terminal agent evaluation
+- τ-Bench — real-world agentic task completion
+
+**Judging approaches** (beyond deterministic tests):
+- Deterministic: pytest, type-check, build pass (this tool's default)
+- **LLM-as-judge**: Use a model to evaluate output quality, reasoning, and code style
+- Human-expert review: For subjective quality dimensions
 
 ## Installation
 
