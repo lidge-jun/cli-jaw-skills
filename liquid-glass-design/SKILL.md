@@ -1,11 +1,13 @@
 ---
 name: liquid-glass-design
-description: iOS 26 Liquid Glass design system — dynamic glass material with blur, reflection, and interactive morphing for SwiftUI, UIKit, and WidgetKit.
+description: iOS 26–27 Liquid Glass design system — dynamic glass material with blur, reflection, interactive morphing, adjustable intensity, and layering for SwiftUI, UIKit, and WidgetKit.
 ---
 
-# Liquid Glass Design System (iOS 26)
+# Liquid Glass Design System (iOS 26–27)
 
 Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content, and reacts to touch and pointer interactions. Covers SwiftUI, UIKit, and WidgetKit integration.
+
+> **iOS 27 / WWDC 2026 updates:** Users can now adjust Liquid Glass intensity via a system-wide transparency slider in Settings → Display. Apps must test at all intensity levels. New `.clear` and `.identity` glass effect styles added. Enhanced layering system for nested glass surfaces.
 
 ## When to Activate
 
@@ -39,6 +41,8 @@ Text("Hello, World!")
 
 Key customization options:
 - `.regular` — standard glass effect
+- `.clear` — minimal glass with reduced blur and no tint (iOS 27+); use for subtle, non-competing surfaces
+- `.identity` — no glass effect rendering; the view appears as if no glass is applied (iOS 27+); useful for conditionally disabling glass
 - `.tint(Color)` — add color tint for prominence
 - `.interactive()` — react to touch and pointer interactions
 - Shape: `.capsule` (default), `.rect(cornerRadius:)`, `.circle`
@@ -260,6 +264,8 @@ VStack { /* content */ }
 - **Use `withAnimation`** when changing view hierarchies to enable smooth morphing transitions
 - **Test across appearances** — light mode, dark mode, and accented/tinted modes
 - **Ensure accessibility contrast** — text on glass must remain readable
+- **Test with adjustable glass intensity** (iOS 27+) — use the transparency slider in Settings → Display & Brightness to verify content remains readable at minimum, default, and maximum glass intensity
+- **Use enhanced layering** (iOS 27+) — when nesting glass surfaces (e.g., a glass card inside a glass toolbar), the system automatically differentiates layers; avoid manual opacity hacks
 
 ## Anti-Patterns to Avoid
 
