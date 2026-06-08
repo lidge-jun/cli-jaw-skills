@@ -125,6 +125,38 @@ export default {
 - Using `await` between related storage writes (breaks atomicity)
 - Holding `blockConcurrencyWhile()` across `fetch()` or external I/O
 
+## Durable Object Facets (April 2026)
+
+Facets allow a single DO instance to expose multiple independent "facets" — each with its own RPC interface — enabling fine-grained access control and modular design.
+
+```typescript
+import { DurableObject, DurableObjectFacet } from "cloudflare:workers";
+
+export class UserFacet extends DurableObjectFacet {
+  async getProfile(): Promise<UserProfile> {
+    // Read-only access to user data
+    return this.ctx.storage.sql.exec<UserProfile>(
+      "SELECT * FROM profiles WHERE id = 1"
+    ).one();
+  }
+}
+
+export class AdminFacet extends DurableObjectFacet {
+  async deleteUser(): Promise<void> {
+    this.ctx.storage.sql.exec("DELETE FROM profiles WHERE id = 1");
+  }
+}
+
+export class UserDO extends DurableObject<Env> {
+  user = this.facet(UserFacet);   // Expose as stub.user.getProfile()
+  admin = this.facet(AdminFacet); // Expose as stub.admin.deleteUser()
+}
+```
+
+- Each facet is accessed via `stub.<facetName>.<method>()`
+- Use facets to separate read vs write, public vs admin interfaces
+- Docs: https://developers.cloudflare.com/durable-objects/api/facets/
+
 ## Stub Creation
 
 ```typescript
@@ -151,6 +183,26 @@ const rows = this.ctx.storage.sql.exec<Row>("SELECT * FROM t").toArray();
 await this.ctx.storage.put("key", value);
 const val = await this.ctx.storage.get<Type>("key");
 ```
+
+> **Storage limit:** Each DO instance has a **10 GB** SQLite storage limit.
+
+> **SQL transactions:** Explicit `BEGIN`/`COMMIT`/`ROLLBACK` are **not supported**.
+> Each `sql.exec()` call is auto-committed. For atomic multi-statement writes,
+> use `blockConcurrencyWhile()` to prevent interleaving (but note: no rollback
+> on partial failure).
+
+### Point-in-Time Recovery (PITR)
+
+```typescript
+// List available bookmarks
+const bookmarks = await this.ctx.storage.sql.getBookmarksForRestore();
+
+// Restore to a specific bookmark
+await this.ctx.storage.sql.restoreFromBookmark(bookmarks[0]);
+```
+
+PITR allows restoring a DO's SQLite database to a previous state. Useful for
+recovering from application-level data corruption.
 
 ## Alarms
 
