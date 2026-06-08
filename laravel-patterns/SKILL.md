@@ -412,3 +412,10 @@ return response()->json([
 
 - Keep secrets in `.env` and config in `config/*.php`
 - Use per-environment config overrides and `config:cache` in production
+
+## Laravel Version Notes (June 2026)
+
+**Current**: Laravel 13 (March 17, 2026). Laravel 12 is in security-only mode (EOL: Feb 2027).
+- **Laravel 13**: AI SDK (production-stable), Passkey authentication, JSON:API first-party support
+- **Laravel 12**: Zero breaking changes, modern starter kits (React/Vue/Livewire + shadcn/ui)
+- **PHP**: Requires PHP 8.2–8.5
