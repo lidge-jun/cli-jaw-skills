@@ -105,6 +105,40 @@ cli-jaw memory init
 2. Use episodic files for time-bound outcomes
 3. Use semantic/profile files for long-lived knowledge
 
+## Context (memory→chat jump)
+
+Find chat messages related to a memory file by its creation time and keywords.
+
+```bash
+cli-jaw memory context structured/semantic/cli-jaw.md
+cli-jaw memory context structured/episodes/live/2026-06-08.md --window 8
+cli-jaw memory context feedback_no-idle-waiting.md --window 2 --limit 5
+```
+
+How it works:
+- Uses `created_at` frontmatter (or file mtime) as the time center
+- Extracts keywords from `name:` → `description:` → filename stem → `kind:` → body first line
+- Splits compound terms into individual words for OR-based LIKE search
+- Searches `messages` DB in a ±window hour range (default 4 hours)
+- Cross-session — not limited to one conversation
+
+### L2 Chat Search
+
+Search jaw.db chat messages across all registered instances (read-only).
+
+```bash
+cli-jaw dashboard chat search "memory architecture"
+cli-jaw dashboard chat search "auth" --instance 3457,3458
+cli-jaw dashboard chat search "deploy" --days 7 --limit 20
+cli-jaw dashboard chat search "error" --json
+```
+
+How it works:
+- Opens each instance's `jaw.db` in readonly mode
+- Schema probe: auto-detects `tool_log` column for extended search
+- Reports warnings for native module mismatch, missing DB, schema issues
+- Results sorted by `created_at` DESC across all instances
+
 ## Notes
 
 - Prefer concise, durable entries over verbose logs
