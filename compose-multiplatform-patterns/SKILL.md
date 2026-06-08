@@ -296,3 +296,10 @@ fun AppTheme(
 
 See skill: `android-clean-architecture` for module structure and layering.
 See skill: `kotlin-coroutines-flows` for coroutine and Flow patterns.
+
+## Compose Multiplatform Version Notes (June 2026)
+
+**Current**: Compose Multiplatform 1.11.2. Kotlin 2.1.0+ required (2.2.20 recommended for iOS/Web).
+- **1.11**: Native text input on iOS (UIView-based), concurrent rendering by default, UI testing v2 (StandardTestDispatcher)
+- **KMP project structure**: Updated module layout — `shared/`, `androidApp/`, `iosApp/`, `webApp/`
+- **Kotlin 2.4.0**: Context parameters and explicit backing fields now stable
