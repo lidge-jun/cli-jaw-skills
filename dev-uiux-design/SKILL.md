@@ -39,7 +39,7 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 
 ## 1. User Intent Discovery Protocol
 
-When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 5-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
+When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 6-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
 
 **Rules:**
 - Ask a maximum of 6 questions before proposing a concrete direction.

@@ -15,7 +15,7 @@ Every multi-column layout, every full-height section, every image-heavy page MUS
 | T5 | ≥ 1280px | Desktop | `xl:` | Standard desktop monitors |
 | T5+ | ≥ 1536px | Large Desktop | `2xl:` | Ultra-wide, large monitors |
 
-Use these tiers consistently. Do not invent ad-hoc breakpoints.
+Use these tiers consistently. Do not invent ad-hoc `@media` breakpoints. Container query breakpoints are based on container width (not viewport tiers) — custom values like 400px or 900px are fine there.
 
 ## Page Containment (MANDATORY)
 
@@ -41,11 +41,7 @@ Prefer `@container` over `@media` for any reusable component. Components should 
 ```css
 .card-grid { container-type: inline-size; }
 
-@container (max-width: 599px) {
-  .card-grid .card { grid-column: span 1; }
-}
 @container (min-width: 600px) {
-  .card-grid .card { grid-column: span 1; }
   .card-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @container (min-width: 900px) {
@@ -76,19 +72,20 @@ Section padding scales with viewport tier:
 | Section horizontal padding | `px-4` (1rem) | `px-6` (1.5rem) | `px-8` (2rem) |
 | Inter-section gap | `gap-12` | `gap-16` | `gap-20` |
 | Card grid gap | `gap-4` | `gap-5` | `gap-6` |
-| Content max-width | `max-w-full` | `max-w-2xl` | `max-w-7xl` or `max-w-[1400px]` |
+| Content max-width | `max-w-full` | `max-w-2xl` | `max-w-[1400px]` |
 
 ## Responsive Images (MANDATORY for image-heavy pages)
 
 ### srcset / sizes
-Every `<img>` with a width > 400px MUST use responsive loading:
+Above-fold / LCP images use `loading="eager"` (or omit — eager is the default) + `fetchpriority="high"`. Below-fold images use `loading="lazy"`. Example (above-fold hero):
 ```html
 <img
   src="hero-800.webp"
   srcset="hero-400.webp 400w, hero-800.webp 800w, hero-1200.webp 1200w"
   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
   alt="..."
-  loading="lazy"
+  loading="eager"
+  fetchpriority="high"
   decoding="async"
 />
 ```
@@ -114,19 +111,18 @@ Lock aspect ratios to prevent layout shift:
 
 Modern phones have notches, dynamic islands, and home indicators. Content MUST not hide behind them:
 
+Apply safe-area insets selectively, not as blanket body padding (top inset on `body` conflicts with fixed navigation bars):
+
 ```css
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+/* Fixed bottom elements (sticky CTA, tab bar) */
+.sticky-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+/* Horizontal safe area for landscape notch devices */
+.page-wrapper {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-}
-```
-
-For bottom-fixed elements (sticky CTA, tab bar):
-```css
-.sticky-cta {
-  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 ```
 

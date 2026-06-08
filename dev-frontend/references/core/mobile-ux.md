@@ -6,7 +6,7 @@ Mobile is NOT "desktop squished down." It is a different interaction model with 
 
 ## Thumb Zone Geometry
 
-49% of users hold their phone with one hand. The bottom third of the screen is the natural thumb reach zone.
+49% of users hold their phone with one hand. The bottom 40% of the screen is the natural thumb reach zone ("easy"), the middle 40% is comfortable, and the top 20% is hard to reach.
 
 ```
 ┌────────────────────┐
@@ -19,7 +19,7 @@ Mobile is NOT "desktop squished down." It is a different interaction model with 
 ```
 
 Rules:
-- Primary CTA → bottom 60% of viewport, or sticky-bottom
+- Primary CTA → bottom 80% of viewport (easy + comfortable zones), or sticky-bottom
 - Secondary actions (share, bookmark, settings) → top or overflow menu
 - Destructive actions (delete, cancel) → require confirmation, never in thumb zone default
 - FAB (floating action button) → bottom-right, 56px, 16px from edges
@@ -43,7 +43,7 @@ On landing/marketing pages longer than 2 screen heights, the primary CTA scrolls
 
 ```html
 <div class="fixed bottom-0 inset-x-0 p-4 bg-white/90 backdrop-blur-sm border-t
-            safe-area-bottom z-40 md:hidden">
+            pb-[calc(1rem+env(safe-area-inset-bottom))] z-40 md:hidden">
   <button class="w-full h-12 rounded-lg bg-primary text-white font-semibold">
     Get Started
   </button>
@@ -122,7 +122,7 @@ Rules:
 ## Mobile Form Rules
 
 - One input per row (never side-by-side on mobile)
-- Use correct `inputmode`: `numeric` for phone/zip, `email` for email, `url` for URLs
+- Use correct `inputmode`: `tel` for phone, `numeric` for zip/PIN, `email` for email, `url` for URLs
 - Label above input, not inside (placeholder-only labels are inaccessible)
 - Auto-advance between short fields (OTP, phone segments)
 - Submit button full-width, sticky-bottom for long forms

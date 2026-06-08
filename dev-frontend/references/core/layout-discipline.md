@@ -39,9 +39,7 @@
 - Quotes: max 3 lines, attribution = name + role [+ company]
 
 ## Page Containment (MANDATORY)
-- All page content: `max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8`
-- Full-bleed sections (hero images, color blocks): break out with `w-screen` or negative margins, content inside still contained
-- Without containment, text lines stretch to 200+ chars on wide monitors — unreadable
+See `responsive-viewport.md` for the canonical containment rule (`max-w-[1400px] mx-auto`) and full explanation. Full-bleed sections break out with `w-screen` or negative margins; content inside stays contained.
 
 ## Responsive Transforms by Section Type (MANDATORY)
 
@@ -54,7 +52,7 @@ Every section type MUST declare its behavior at each viewport tier. "Tailwind ha
 
 ### Split Text-Image (60/40, 50/50)
 - **Desktop**: Side-by-side columns.
-- **Tablet**: Side-by-side if ≥900px with tighter gap; stack if <900px.
+- **Tablet**: Side-by-side if container ≥900px with tighter gap; stack if container <900px (use `@container`, not viewport).
 - **Mobile**: Always stack. Image first (product/visual), text first (story/narrative). Never side-by-side.
 
 ### Multi-Column Cards/Features (3+ columns)
@@ -74,7 +72,7 @@ Every section type MUST declare its behavior at each viewport tier. "Tailwind ha
 
 ### Zigzag (Alternating Left/Right)
 - **Desktop**: Left/right alternation.
-- **Tablet**: Same if ≥900px, else stack.
+- **Tablet**: Same if container ≥900px, else stack (use `@container`).
 - **Mobile**: Always stack. Consistent order (no alternation). Pick image-then-text or text-then-image and keep it.
 
 ### CTA Section

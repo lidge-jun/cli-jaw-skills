@@ -37,7 +37,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/stacks/vanilla.md`            | HTML+CSS+JS (no framework)           | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement         |
 | `references/stacks/svelte.md`             | Svelte/SvelteKit projects            | Svelte conventions, reactivity, stores, SvelteKit routing                          |
 
-Start with `anti-slop.md`, `aesthetics.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
+Start with `anti-slop.md`, `aesthetics.md`, `responsive-viewport.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
 
 ---
 
@@ -351,7 +351,7 @@ Before delivering:
 
 Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
 
-### 13.1 Contract Ownership
+### 14.1 Contract Ownership
 
 | Responsibility | Owner |
 |---------------|-------|
@@ -365,7 +365,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 2. If changed, update or add a contract test first (see `dev-testing` §3.5)
 3. Align frontend mocks/fixtures with backend golden examples
 
-### 13.2 Security Responsibilities
+### 14.2 Security Responsibilities
 
 | Control | Policy Owner | Implementation Owner |
 |---------|-------------|---------------------|
@@ -375,7 +375,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 | Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
 | Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
 
-### 13.3 Testing Integration
+### 14.3 Testing Integration
 
 - Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
 - Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5
