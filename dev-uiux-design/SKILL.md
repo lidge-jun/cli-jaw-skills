@@ -32,7 +32,7 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 | `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, DESIGN.md |
 | `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
 | `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
-| `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, orphan prevention, `ch` units, Korean wrapping |
+| `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, **short descriptor category** (hero subtitle, card desc — use `balance` not `pretty`), orphan prevention, `ch` units, Korean orphan criteria, `-webkit-line-clamp` conflict |
 | `references/logo-trust-sections.md` | Integration/partner/client logos | Marquee vs grid decision, anti-patterns, grayscale treatment, placement |
 
 ---

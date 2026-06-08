@@ -24,7 +24,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/soft-3d-asset-gates.md`  | 3D/miniature/character-like visuals  | Toss-style soft 3D vs generic cute asset slop, domain gates                        |
 | `references/core/motion.md`               | Motion/animation needed              | CSS animations, Framer Motion, scroll-driven, View Transitions, domain gates       |
 | `references/core/iterative-design.md`     | Multi-round design                   | LLM convergence problem, Diverge→Kill→Mutate process, upgrade techniques           |
-| `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, `ch` units, rag control, heading line breaks          |
+| `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, **short descriptor category** (`balance` not `pretty` for 1-3 line text), `ch` units, rag control, Korean orphan prevention, `-webkit-line-clamp` conflict |
 | `references/core/logo-sections.md`        | Integration/partner logo display     | Marquee CSS, static grid, orphan cell fix, grayscale treatment, no individual hover |
 | `references/core/brand-asset-sourcing.md` | Brand logos in UI                    | Simple Icons/SVGL sourcing, AI agent strategy, placeholder hierarchy, legal guide  |
 | See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
@@ -109,7 +109,7 @@ Korean app/tool surfaces usually need higher density and clearer hierarchy, not 
 
 Read `references/core/aesthetics.md` for full guidelines. Summary:
 
-- **Typography**: Use domain-appropriate typography. For Korean-first UIs, prioritize CJK-safe stacks before Latin display fonts. Apply `text-wrap: balance` on all headings and `text-wrap: pretty` on body text — see `typography-wrapping.md` for full rules.
+- **Typography**: Use domain-appropriate typography. For Korean-first UIs, prioritize CJK-safe stacks before Latin display fonts. Apply `text-wrap: balance` on all headings **AND short descriptors** (hero subtitle, card description, caption — anything 1-3 lines). Use `text-wrap: pretty` only on body paragraphs (4+ lines). `pretty` has no effect on short text and will leave Korean orphans like "합니다." or "화." on a line alone. See `typography-wrapping.md` for full rules.
 - **Color**: Max 1 accent. Use neutral bases (Zinc/Slate) with singular high-contrast accent — avoid purple-on-white.
 - **Layout**: Match the product surface. Avoid centered-card/hero patterns in repeated-use tools.
 - **Motion**: See `references/core/motion.md`. One well-choreographed page load > 10 scattered effects.
@@ -133,6 +133,8 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Use realistic, specific names and brands in placeholder content
 - Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
 - Treat uncontrolled heading line breaks (orphaned single word, no `text-wrap`, no `max-width` in `ch`) as a slop signal — see `typography-wrapping.md`
+- Treat short descriptors (hero subtitle, card description, caption) using `text-wrap: pretty` instead of `balance` as a slop signal — `pretty` does nothing on 1-3 line text, especially Korean
+- Treat Korean orphan fragments ("합니다.", "화.", "입니다." alone on a line) as a slop signal — always verify Korean text breaks at target viewports
 - Treat generic stroke icons as brand logo substitutes as a slop signal — use actual brand SVGs from Simple Icons, SVGL, or press kits. See `brand-asset-sourcing.md`
 
 ---
