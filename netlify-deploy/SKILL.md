@@ -43,6 +43,9 @@ npx netlify link --git-remote-url <REMOTE_URL>
 
 # If no site exists on Netlify:
 npx netlify init
+
+# Or create a new site directly (without linking)
+npx netlify create --name my-site-name
 ```
 
 `netlify init` guides through team selection, site naming, build settings, and netlify.toml creation.
@@ -61,6 +64,10 @@ npx netlify deploy
 
 # Production deploy
 npx netlify deploy --prod
+
+# Stream deploy and function logs
+npx netlify logs             # All logs
+npx netlify logs:function     # Function logs only
 ```
 
 ### 5. Report Results
@@ -106,3 +113,29 @@ Set secrets in Netlify dashboard (Site Settings → Environment Variables), not 
 - [CLI commands](references/cli-commands.md)
 - [Deployment patterns](references/deployment-patterns.md)
 - [netlify.toml guide](references/netlify-toml.md)
+
+## Netlify Database
+
+Netlify offers a managed serverless PostgreSQL database (built on Neon).
+
+```bash
+# Create a database for the linked site
+npx netlify db:init
+
+# Open database shell
+npx netlify db:shell
+
+# Connection string available as environment variable
+# DATABASE_URL is auto-injected into Netlify Functions at runtime
+```
+
+- Serverless Postgres (Neon-backed), auto-scales to zero
+- Connection string auto-provisioned as `DATABASE_URL`
+- Use with Prisma, Drizzle, or raw `pg` client in Netlify Functions
+- Docs: https://docs.netlify.com/database/overview/
+
+## Build Plugin Compatibility
+
+> **Node 18 and Node 20 are no longer supported** for Netlify Build Plugins
+> (as of 2026). Build Plugins must target **Node 22+**. Update your plugin's
+> `engines` field in package.json accordingly.
