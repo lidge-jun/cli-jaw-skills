@@ -16,13 +16,22 @@ Provide authoritative, current guidance from OpenAI developer docs using the dev
 
 ## OpenAI product snapshots
 
+> ⚠️ **Assistants API sunset**: The Assistants API (v1 and v2) will be **shut down on August 26, 2026**. Migrate to the Responses API for stateful workflows, or use the new Conversations API for persistence/state management.
+
+> **Current recommended models (June 2026)**: `gpt-5.5` (flagship), `gpt-5.4` (fast/cost-effective), `gpt-oss-120b` / `gpt-oss-20b` (open-weight reasoning).
+
 1. Apps SDK: Build ChatGPT apps by providing a web component UI and an MCP server that exposes your app's tools to ChatGPT.
-2. Responses API: A unified endpoint designed for stateful, multimodal, tool-using interactions in agentic workflows.
-3. Chat Completions API: Generate a model response from a list of messages comprising a conversation.
-4. Codex: OpenAI's coding agent for software development that can write, understand, review, and debug code.
-5. gpt-oss: Open-weight OpenAI reasoning models (gpt-oss-120b and gpt-oss-20b) released under the Apache 2.0 license.
-6. Realtime API: Build low-latency, multimodal experiences including natural speech-to-speech conversations.
-7. Agents SDK: A toolkit for building agentic apps where a model can use tools and context, hand off to other agents, stream partial results, and keep a full trace.
+2. Responses API: A unified endpoint designed for stateful, multimodal, tool-using interactions in agentic workflows. Now supports inline moderation.
+3. Conversations API: New persistence/state API for multi-turn conversations. Replaces Threads from the deprecated Assistants API.
+4. Chat Completions API: Generate a model response from a list of messages comprising a conversation.
+5. Codex: OpenAI's coding agent for software development that can write, understand, review, and debug code. Uses container sessions (5-minute minimum billing).
+6. gpt-oss: Open-weight OpenAI reasoning models (gpt-oss-120b and gpt-oss-20b) released under the Apache 2.0 license.
+7. Realtime API: Build low-latency, multimodal experiences including natural speech-to-speech conversations.
+8. Agents SDK: A toolkit for building agentic apps where a model can use tools and context, hand off to other agents, stream partial results, and keep a full trace.
+9. Lockdown Mode: Security feature for restricting agent/API capabilities in production environments.
+
+> **Note**: Product snapshots are point-in-time references. Always verify current details via MCP tools or the official docs before implementing.
+
 
 ## If MCP server is missing
 
