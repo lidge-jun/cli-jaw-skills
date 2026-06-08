@@ -31,6 +31,11 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/consistency-locks.md`    | Any multi-section page               | Color, shape, theme consistency per page                                             |
 | `references/core/responsive-viewport.md`  | **Always**                           | Canonical breakpoints, page containment, container queries, responsive images, safe area, split-screen |
 | `references/core/mobile-ux.md`            | Consumer/landing pages with mobile traffic | Thumb zone, touch targets, sticky CTA, mobile section composition, bottom sheet, portrait media |
+| `references/core/seo-baseline.md`         | Public-facing sites, SSR/SSG           | SEO meta, JSON-LD, robots.txt, GEO strategies, OG/Twitter cards                      |
+| `references/core/a11y-patterns.md`        | Interactive widgets, modals, forms     | ARIA patterns, focus management, keyboard nav, screen reader testing                  |
+| `references/core/performance-budget.md`   | Launch / audit                         | CWV targets, bundle budgets, font loading, image optimization, build gates            |
+| `references/core/theme-switching.md`      | Dark mode / theme                      | CSS custom properties toggle, FOWT prevention, transition, component checklist         |
+| `references/core/i18n-global.md`          | Multi-language / RTL                   | RTL layout, pluralization, Intl API, locale switching, content expansion               |
 | See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
 | `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
 | `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
@@ -311,7 +316,24 @@ For AI-native interfaces (chat, agent, copilot), design explicit states: empty �
 
 ---
 
-## 13. Pre-Flight Checklist
+## 13. Error Boundaries
+
+React Error Boundary pattern:
+- Wrap each major section (not the entire app) in an Error Boundary
+- Error boundary renders: friendly message + retry button + report link
+- Log error to monitoring service (Sentry, etc.) in componentDidCatch
+- Never show stack traces to end users
+
+Error state hierarchy:
+1. Field-level: inline validation message
+2. Form-level: summary at top of form
+3. Section-level: Error Boundary with retry
+4. Page-level: `error.tsx` / error page
+5. App-level: root Error Boundary → offline/crash page
+
+---
+
+## 14. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Domain-correct direction chosen and committed
@@ -343,15 +365,24 @@ Before delivering:
 - [ ] Eyebrow count ≤ ceil(sectionCount / 3) (see layout-discipline.md)
 - [ ] Section layout diversity: ≥4 different families per 8 sections
 - [ ] Color/shape/theme locks consistent across all sections (see consistency-locks.md)
+- [ ] SEO meta tags present for public pages (`<title>`, `<meta description>`, canonical, OG) — see `seo-baseline.md`
+- [ ] JSON-LD structured data matches page type
+- [ ] Accessibility: modals trap focus, live regions for dynamic content — see `a11y-patterns.md`
+- [ ] Lighthouse Performance ≥ 90, no JS bundle > 150KB compressed — see `performance-budget.md`
+- [ ] Hero image preloaded, below-fold images lazy-loaded
+- [ ] Theme toggle works: light/dark/system, no FOWT — see `theme-switching.md`
+- [ ] All colors use CSS custom properties (theme-ready)
+- [ ] i18n: no hardcoded strings, CSS logical properties, Intl API for dates/numbers — see `i18n-global.md`
+- [ ] Error Boundaries wrap major sections, not entire app (§13)
 - [ ] Stack-specific rules followed (see `references/stacks/`)
 
 ---
 
-## 14. Backend Contract & Security Alignment
+## 15. Backend Contract & Security Alignment
 
 Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
 
-### 14.1 Contract Ownership
+### 15.1 Contract Ownership
 
 | Responsibility | Owner |
 |---------------|-------|
@@ -365,7 +396,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 2. If changed, update or add a contract test first (see `dev-testing` §3.5)
 3. Align frontend mocks/fixtures with backend golden examples
 
-### 14.2 Security Responsibilities
+### 15.2 Security Responsibilities
 
 | Control | Policy Owner | Implementation Owner |
 |---------|-------------|---------------------|
@@ -375,7 +406,7 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 | Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
 | Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
 
-### 14.3 Testing Integration
+### 15.3 Testing Integration
 
 - Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
 - Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5

@@ -195,3 +195,45 @@ When choosing a direction, select from these. Each has distinct rules:
 | Editorial / Magazine       | Warm neutrals, serif display       | Column layouts, pull quotes, dramatic whitespace  |
 
 Vary between these. NEVER converge on the same archetype across generations.
+
+---
+
+## Icon System
+
+```
+Sizing system:
+  --icon-xs: 12px   (inline metadata, tight spaces)
+  --icon-sm: 16px   (inline with body text)
+  --icon-md: 20px   (buttons, form elements)
+  --icon-lg: 24px   (navigation, section icons)
+  --icon-xl: 32px   (feature highlights, empty states)
+  --icon-2xl: 48px  (hero icons, illustrations)
+```
+
+- Icons inherit `currentColor` — never hardcode fill/stroke colors
+- Stroke width consistent within a page (1.5px for Lucide, 2px for Heroicons)
+- Icon + text alignment: `vertical-align: -0.125em` or flexbox `align-items: center`
+- Touch target: icon buttons min 44x44px touch area (icon can be 24px, padding adds the rest)
+- Never use icons without labels for critical actions (tooltip minimum, visible label preferred)
+- Icon-only buttons require `aria-label`
+
+---
+
+## Print Styles
+
+```css
+@media print {
+  nav, footer, .no-print, button, .cookie-banner { display: none; }
+  body { font-size: 12pt; line-height: 1.5; color: #000; background: #fff; }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666; }
+  a[href^="#"]::after, a[href^="javascript"]::after { content: none; }
+  h2, h3 { page-break-after: avoid; }
+  table, figure, blockquote { page-break-inside: avoid; }
+  img { max-width: 100%; page-break-inside: avoid; }
+  p { widows: 3; orphans: 3; }
+}
+```
+
+- Only add print styles for content-heavy pages (blog, docs, reports)
+- Marketing/landing pages: print is rarely needed — skip unless requested
+- Test: Cmd+P in browser, check layout breaks

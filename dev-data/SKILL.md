@@ -304,7 +304,24 @@ See `references/governance.md` for detailed implementation patterns, row-level s
 
 ---
 
-## 8. Companion Skills
+## 8. Query Performance Guidelines
+
+- Every query that runs in production: EXPLAIN ANALYZE before deploy
+- Slow query threshold: > 100ms for OLTP, > 5s for OLAP/analytics
+- Index strategy: B-tree for equality/range, GIN for array/JSONB, GiST for geo
+- Missing index detection: `pg_stat_user_tables` → seq_scan / idx_scan ratio
+- Partition tables > 10M rows if query patterns allow time-range or hash partitioning
+- Never `SELECT *` in production code — specify columns
+
+For pipeline observability, follow the OpenTelemetry patterns in `dev-backend/references/core/observability.md`. Instrument pipeline stages as spans, data quality checks as events.
+
+When pipeline errors surface through APIs, use the AppError taxonomy from `dev-backend/SKILL.md` §3. Map pipeline failures to appropriate HTTP status codes (422 for validation, 502 for upstream failures, 503 for capacity).
+
+For data API patterns (pagination of large datasets, cursor-based access, streaming responses), see `dev-backend/references/core/api-design.md`.
+
+---
+
+## 9. Companion Skills
 
 Data engineering does not exist in isolation. Cross-reference these skills when your pipeline connects to other systems:
 

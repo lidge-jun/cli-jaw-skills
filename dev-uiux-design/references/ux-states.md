@@ -159,3 +159,40 @@ Show ONLY essential information first. Defer advanced/optional content behind ex
 - For dashboards: show summary KPIs first. Drill-down detail on click.
 - For settings: group into Basic (visible) and Advanced (collapsed).
 
+---
+
+## 12. Error Page Taxonomy
+
+| Page | Content | Tone |
+|------|---------|------|
+| **404** | Branded page + search bar + top nav + "popular pages" links | Friendly, helpful |
+| **500** | Branded page + "We're working on it" + status page link + retry button | Reassuring, transparent |
+| **Maintenance** | Branded page + estimated return time + status page link | Professional, time-bound |
+| **Offline** | Service worker cached page + "You're offline" + cached content list | Informative, functional |
+
+Rules:
+- Every error page maintains site branding (logo, colors)
+- Every error page has a path back (nav, home link, search)
+- Never show stack traces or technical errors to end users
+- 500 page: auto-retry with exponential backoff (2s, 4s, 8s) + manual retry button
+- Offline page: cache in service worker during first successful visit
+- Maintenance page: deploy as static HTML (doesn't depend on the broken server)
+
+### Service Worker Offline Shell
+
+```javascript
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('offline-v1').then(cache => cache.add('/offline.html'))
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/offline.html'))
+    );
+  }
+});
+```
+

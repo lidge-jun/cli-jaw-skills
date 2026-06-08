@@ -281,22 +281,51 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
 **Allowed guards:** Boundary validation (process/network/user/file boundary), backward compatibility (documented old schema), security checks, domain invariants, observed production bug regressions, external dependency adapters.
 
 ---
-## 7. Security Testing
+## 7. Accessibility Testing
+
+### Component Level
+- jest-axe / vitest-axe: run axe-core on rendered components
+  ```ts
+  import { axe, toHaveNoViolations } from 'jest-axe'
+  expect.extend(toHaveNoViolations)
+  expect(await axe(container)).toHaveNoViolations()
+  ```
+
+### Page Level
+- Playwright a11y assertions:
+  ```ts
+  import AxeBuilder from '@axe-core/playwright'
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations).toEqual([])
+  ```
+
+### CI Pipeline
+- Lighthouse a11y audit: score ≥ 90
+- Pa11y: page-level scanning for WCAG AA violations
+- Run a11y tests on EVERY page route, not just the homepage
+
+### Observability Verification
+
+Verify trace propagation in integration tests. Assert that spans appear for critical paths. Check structured log format matches the schema in `dev-backend/references/core/observability.md`.
+
+---
+
+## 8. Security Testing
 **→ Delegated**: threat modeling and secure design policy belong to `dev-security`.
 This section covers the **automated test hooks and CI gates** that enforce those rules.
-### 7.1 Minimum Security Stack
+### 8.1 Minimum Security Stack
 ```text
 fast local checks
 → Semgrep / CodeQL gate
 → dependency audit
 → auth / validation regression tests
 ```
-### 7.2 Dependency Scanning Commands
+### 8.2 Dependency Scanning Commands
 ```bash
 npm audit --audit-level=high
 pip-audit --strict --desc
 ```
-### 7.3 Semgrep Gate
+### 8.3 Semgrep Gate
 ```yaml
 - uses: returntocorp/semgrep-action@v1
   with:
@@ -306,17 +335,17 @@ pip-audit --strict --desc
       p/typescript
       p/python
 ```
-### 7.4 Security Regressions
+### 8.4 Security Regressions
 Test missing auth (expect 401) and verify error.code matches contract for every auth-protected endpoint.
-### 7.5 Rules
+### 8.5 Rules
 - dependency audit in CI
 - Semgrep or equivalent SAST
 - auth / permission regression tests
 - validation tests for malicious or malformed input
 - a blocking rule for high / critical dependency findings
 ---
-## 8. Coverage & Quality Gates
-### 8.1 Suggested Thresholds
+## 9. Coverage & Quality Gates
+### 9.1 Suggested Thresholds
 These are project/risk-based, not universal minimums. Adjust for your context.
 
 | Metric | Suggested Floor | Ideal |
@@ -325,14 +354,14 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 | Branch coverage | 60% | 80%+ |
 | Function coverage | 80% | 90%+ |
 | Diff coverage | 80% | 90%+ |
-### 8.2 Outcome Metrics
+### 9.2 Outcome Metrics
 | Metric | Target |
 |--------|--------|
 | Defect detection rate | > 80% |
 | Mean time to detect | < 1 CI run |
 | Test signal-to-noise | > 95% |
 | Contract drift rate | near 0 |
-### 8.3 Coverage Workflow
+### 9.3 Coverage Workflow
 1. generate coverage reports
    ```bash
    npm test -- --coverage
@@ -342,7 +371,7 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 2. review by priority: auth, payment, mutations, upload, contracts first
 3. write targeted tests for the gaps
 4. publish artifacts and fail the merge when thresholds drop
-### 8.4 Quality Gate Checklist
+### 9.4 Quality Gate Checklist
 - [ ] focused unit / service tests
 - [ ] API integration tests for changed routes
 - [ ] contract tests for shared payload changes
@@ -351,30 +380,30 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 - [ ] coverage thresholds and diff coverage
 - [ ] CI artifacts uploaded for failure analysis
 ---
-## 9. Pre-Flight Test Checklist
-### 9.1 Change-Type Routing
+## 10. Pre-Flight Test Checklist
+### 10.1 Change-Type Routing
 - [ ] pure business logic change → add / update unit or service tests
 - [ ] API or middleware change → add / update API integration tests
 - [ ] shared frontend↔backend payload change → add / update contract tests
 - [ ] rendered user flow change → add / update Playwright smoke coverage
 - [ ] auth / upload / billing / external integration change → add security or edge-case regression coverage
-### 9.2 Harness Readiness
+### 10.2 Harness Readiness
 - [ ] fixtures are deterministic and reusable
 - [ ] real dependencies are used where correctness matters
 - [ ] Testcontainers are used for DB truth, not mocked SQL
 - [ ] external APIs are mocked or recorded intentionally, not accidentally called live
 - [ ] `ENFORCE_TDD` requirements were followed if enabled
-### 9.3 Contract & Data Integrity
+### 10.3 Contract & Data Integrity
 - [ ] response envelope remains stable or contract was updated first
 - [ ] error codes are asserted, not only HTTP status
 - [ ] `requestId`, pagination, and nullability are verified where relevant
 - [ ] frontend fixtures do not drift from backend examples
-### 9.4 CI & Reporting
+### 10.4 CI & Reporting
 - [ ] relevant CI jobs exist and are actually executed
 - [ ] sharding / matrix choices match project size
 - [ ] flaky failures were investigated instead of blindly retried
 - [ ] coverage / junit / trace artifacts are available on failure
-### 9.5 Final Rule
+### 10.5 Final Rule
 If you can only point to a manual click-through or one green Playwright run, the testing story is incomplete.
 ```text
 unit / service

@@ -22,6 +22,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/anti-slop-backend.md` | **Always**                     | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/security.md`          | **Always** for production code | Redirect to `dev-security` skill (this file is a delegation pointer)             |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
+| `references/core/health-checks.md`    | Every backend service          | Liveness, readiness, startup probes, dependency checks                 |
 | `references/core/process-isolation.md` | CPU-bound or untrusted work    | worker_threads vs child_process vs separate service, communication, resource limits |
 | `references/core/caching.md`           | Performance optimization       | Redis patterns, CDN, connection pooling, cache invalidation            |
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
@@ -384,7 +385,42 @@ Treat templates as starting points, not gospel. Strip to essentials, then add wh
 
 ---
 
-## 9. Pre-Flight Checklist
+## 9. API Performance Targets
+
+| Metric | Target | Escalation |
+|--------|--------|-----------|
+| p50 response time (reads) | ≤ 50ms | Profile with tracing |
+| p95 response time (reads) | ≤ 200ms | Mandatory optimization |
+| p95 response time (writes) | ≤ 500ms | Acceptable for complex writes |
+| p99 response time | ≤ 1000ms | Investigate outliers |
+| Error rate | < 0.1% | Alert threshold |
+
+- Measure at the handler level, not including network
+- Use `Server-Timing` header to expose backend timing to frontend
+- Log slow queries (> 100ms) with EXPLAIN output
+- Connection pool: min = CPU cores, max = CPU cores × 4
+
+API responses that drive UI must include descriptive error messages (not just codes) for screen reader announcement, pagination metadata (total count) for assistive technology, and `Content-Language` header matching response body language.
+
+## 10. SEO Support Endpoints
+
+When the app serves web pages (SSR/SSG):
+- `GET /sitemap.xml` — dynamic sitemap generation with `<lastmod>`
+- `GET /robots.txt` — configurable per-environment (disallow staging/preview)
+- Structured data: provide JSON-LD data in API responses when frontend needs it
+- Redirect chains: max 1 hop (301 for permanent, 308 for POST-preserving)
+
+## 11. Deployment Patterns
+
+- Blue-green: deploy to inactive environment, verify health + smoke tests, swap traffic
+- Canary: route 5% → 25% → 100% with automated rollback on error rate spike
+- Rollback: always keep previous version deployed and ready to swap back
+- Database migrations: separate from code deploy, backward-compatible (expand-then-contract)
+- Feature flags: use for gradual rollout of risky changes
+
+---
+
+## 12. Pre-Flight Checklist
 
 Before delivering:
 - [ ] Consistent response envelope on every endpoint
@@ -397,5 +433,8 @@ Before delivering:
 - [ ] No hardcoded secrets
 - [ ] Migrations have rollback
 - [ ] Observability: traces and structured logs wired (see `references/core/observability.md`)
+- [ ] Health endpoints: `/health` (liveness) and `/ready` (readiness) — see `references/core/health-checks.md`
+- [ ] API performance: p95 reads ≤ 200ms, slow queries logged with EXPLAIN (§9)
+- [ ] SEO endpoints: sitemap.xml + robots.txt if serving web pages (§10)
 - [ ] Security review: delegate to `dev-security/SKILL.md` for production readiness
 - [ ] Stack-specific rules followed (see `references/stacks/`)

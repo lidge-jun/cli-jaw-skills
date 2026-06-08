@@ -50,6 +50,21 @@ When updating a rule, update the canonical owner first, then verify stubs still 
 
 ---
 
+## Documentation Verification (Context7)
+
+Before using any external library API, verify current syntax via Context7 MCP:
+
+1. `resolve-library-id` — get the library ID (e.g., `/vercel/next.js`)
+2. `query-docs` — fetch current docs for the specific API/feature
+
+**When to verify:** using any API you haven't verified in this session, library version is pinned in package.json/requirements.txt, syntax or behavior seems uncertain, or the library had a major release in the past 6 months.
+
+**When to skip:** language built-ins (Array.map, str.split), standard library (fs, os, path, http), syntax you just verified this session.
+
+**If Context7 MCP is unavailable:** fall back to web search for official docs. Never rely on training data alone for library-specific API calls.
+
+---
+
 ## 0. Intent Clarification
 
 When a request has **ambiguous scope or unspecified technology**, clarify before coding.

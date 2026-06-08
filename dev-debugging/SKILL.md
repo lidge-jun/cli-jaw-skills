@@ -288,6 +288,12 @@ action item that prevents the same class of bug from recurring.
 
 ---
 
+## Security-Sensitive Bugs
+
+For security-sensitive bugs (auth bypass, data leak, injection), follow the incident response in `dev-security/SKILL.md` before applying a fix.
+
+---
+
 ## Compact Summary
 
 When context is limited, preserve: (1) Phase 0 — is it a bug or a design problem?,

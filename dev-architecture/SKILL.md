@@ -279,6 +279,13 @@ When reviewing any PR that adds/modifies module structure, verify:
 
 ---
 
+## Cross-Skill References
+
+- **Observability**: Every module boundary should emit traces. See `dev-backend/references/core/observability.md` for the canonical OTel setup.
+- **Security**: Module boundaries are security boundaries. Validate at every boundary. See `dev-security/SKILL.md` for input validation and auth patterns.
+
+---
+
 ## Quick Decision Trees
 
 ### "Should I create a new module?"

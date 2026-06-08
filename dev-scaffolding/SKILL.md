@@ -180,6 +180,31 @@ Split smells (heuristics, not hard gates):
 | Different runtime needed        | Split into `frontend/` + `backend/`           |
 | 3+ apps share code              | Extract to `shared/` or monorepo `packages/`  |
 
-## 10. Audit
+## 10. Cross-Cutting Scaffolding
+
+### Health Endpoints
+Every backend scaffold must include health routes:
+- `src/routes/health.ts` (or equivalent) — `/health` (liveness) and `/ready` (readiness)
+- See `dev-backend/references/core/health-checks.md` for response format
+
+### SEO Boilerplate (Web Projects)
+Web project templates should include:
+- `public/robots.txt` with AI crawler allowlist
+- Meta tag component with OG defaults
+- JSON-LD helper utility
+- Sitemap generation (static or dynamic)
+
+### CI Template
+Generate CI config scaffold:
+```
+lint → typecheck → test (unit) → test (integration) → build → deploy (staging)
+```
+
+### Security Boilerplate
+Generate security scaffolding: CSP headers, CORS config, rate limiting middleware, `.env.example` with placeholder secrets. See `dev-security/SKILL.md` for full patterns.
+
+---
+
+## 11. Audit
 
 Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, barrel exports, devlog presence, `.env` safety, file length, and AGENTS.md where those apply.

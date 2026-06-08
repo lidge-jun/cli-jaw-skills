@@ -36,6 +36,73 @@ When starting a new project or establishing a design system, use this token arch
 - **Molecules:** Form Field (label + input + error), Card, Menu Item, Search Bar, Stat Card
 - **Organisms:** Navigation Bar, Sidebar, Data Table, Form Section, Modal/Dialog, Command Palette
 
+### Motion Tokens
+
+```css
+:root {
+  /* Easing */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Duration */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-glacial: 600ms;
+
+  /* Composed */
+  --transition-default: var(--duration-normal) var(--ease-default);
+  --transition-enter: var(--duration-normal) var(--ease-out);
+  --transition-exit: var(--duration-fast) var(--ease-in);
+}
+```
+
+### Z-Index Scale
+
+```css
+:root {
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-toast: 600;
+  --z-tooltip: 700;
+  --z-max: 9999;          /* debug overlays only */
+}
+```
+
+- Never use raw z-index numbers — always token reference
+- `z-max` reserved for dev tools
+- Modal backdrop = `--z-modal - 1` (399)
+
+### Breakpoint Tokens
+
+```css
+/* Reference values — use in @media or container queries */
+--bp-sm: 640px;
+--bp-md: 768px;
+--bp-lg: 1024px;
+--bp-xl: 1280px;
+--bp-2xl: 1536px;
+```
+
+Note: CSS custom properties cannot be used in `@media` queries directly. These are reference values for documentation and JS usage. For CSS, use raw values with a comment referencing the token name.
+
+### Token Naming Convention
+
+| Pattern | Example | Use |
+|---------|---------|-----|
+| Semantic | `--color-text-primary`, `--spacing-section` | Component usage |
+| Scale | `--space-4`, `--radius-lg` | Design system primitives |
+| Composed | `--transition-enter` = `duration + ease` | Shorthand combinations |
+
+Semantic tokens reference scale tokens. Components use semantic tokens. Never reference scale tokens directly in components.
+
 ### Extending Existing Systems (shadcn/ui)
 - Inspect existing installed components before adding new ones.
 - Use the project's `components.json`, aliases, tokens, and registry conventions.
