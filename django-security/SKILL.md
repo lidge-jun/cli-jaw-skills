@@ -192,3 +192,10 @@ See `references/code-examples.md` § Logging Security Events.
 | Updates | Keep Django and dependencies updated |
 
 Security is a continuous process. Review and update practices regularly.
+
+## Django Security Version Notes (June 2026)
+
+**Current**: Django 6.0.6. Key security additions:
+- **Native CSP support**: Built-in Content Security Policy with nonce functionality (no more third-party CSP packages)
+- **Security patch 6.0.6**: Fixes signed cookie salt collision, potential unencrypted email transmission
+- **Python**: Requires 3.12+ (3.10/3.11 dropped — ensure CI/CD updates)
