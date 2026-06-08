@@ -204,6 +204,32 @@ Generate security scaffolding: CSP headers, CORS config, rate limiting middlewar
 
 ---
 
-## 11. Audit
+## 11. Documentation Generation
+
+When `role=docs` or when generating project documentation:
+
+### README Generation
+1. Read existing structure (§2 Existing Repo First)
+2. Generate README with: project purpose, quick start, architecture overview (link to structure/ if present), contribution guide
+3. Match tone to project maturity: immature repos get setup-heavy READMEs; mature repos get architecture-heavy ones
+
+### API Documentation
+1. Scan route files and extract endpoint signatures
+2. Generate per-endpoint docs: method, path, params, request/response shape, auth requirements
+3. Place alongside code (colocation) or in `docs/api/` per project convention
+
+### Structure Documentation
+1. Generate `structure/README.md` or update existing structure docs
+2. Include: directory tree, module responsibility map, dependency flow
+3. Follow Jawdev source-of-truth conventions (§2.1) when applicable
+
+### Devlog Documentation
+1. Follow decade numbering (§9 from dev-pabcd): 00-09 research, 10-19 phase 1, etc.
+2. Each devlog entry: title, date, what changed, why, evidence paths
+3. Cross-reference related devlog entries within the same _plan/ folder
+
+---
+
+## 12. Audit
 
 Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, barrel exports, devlog presence, `.env` safety, file length, and AGENTS.md where those apply.

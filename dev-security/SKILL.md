@@ -26,7 +26,7 @@ Activate this skill when you are:
 
 Use this skill together with the domain skill, not instead of it:
 - API architecture and middleware placement: See `dev-backend/SKILL.md` §4.
-- Frontend rendering patterns and anti-slop UI guardrails: See `dev-frontend/SKILL.md` §§3-7.
+- Frontend rendering patterns and anti-slop UI guardrails: See `dev-frontend/SKILL.md` §§4-5.
 - Test strategy and execution flow: See `dev-testing`.
 - Review severity and review flow: See `dev-code-reviewer/SKILL.md` §§1-2.
 - Data pipeline design: See `dev-data/SKILL.md` §§2-4.

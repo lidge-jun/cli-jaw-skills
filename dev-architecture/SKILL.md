@@ -9,6 +9,9 @@ metadata:
 
 # Dev-Architecture — Module Boundaries & Structural Integrity
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **Always read `dev/SKILL.md` first** for project-wide conventions before applying architecture rules.
+
 Enforces architectural rules that prevent structural decay: circular dependencies, implicit coupling, barrel abuse, and misplaced validation. These rules are mechanical — an AI coding agent can follow them without subjective judgment.
 
 ## Modular References

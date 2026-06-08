@@ -34,6 +34,10 @@ This skill covers universal guidelines. For domain-specific work, also read the 
 | `dev-testing/SKILL.md`       | `role=testing` or testing phase   | Test strategy, Playwright browser testing, coverage analysis, contract testing                 |
 | `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
+| `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Circular deps, module boundaries, coupling taxonomy, barrel/re-export discipline               |
+| `dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, product personalities, typography, layout patterns         |
+| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, barrel export, devlog, documentation generation                    |
+| `dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD workflow, phase gates, devlog decade numbering, interview mode                           |
 
 ### Skill Ownership Map
 
@@ -41,18 +45,22 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 
 | Rule Area | Canonical Owner | Stub Locations |
 |-----------|----------------|----------------|
-| Circular dependencies | dev-architecture | dev, code-reviewer |
+| Circular dependencies | dev-architecture | dev, dev-code-reviewer |
 | Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
-| Coupling taxonomy | dev-architecture | code-reviewer |
+| Coupling taxonomy | dev-architecture | dev-code-reviewer |
 | Barrel / re-export | dev-architecture | — |
-| Pre-write search | dev §1.5 | code-reviewer |
+| Pre-write search | dev §1.5 | dev-code-reviewer |
 | Edge-first testing | dev-testing §6 | — |
-| Test-induced defense | dev-testing §6.6 | code-reviewer |
+| Test-induced defense | dev-testing §6.6 | dev-code-reviewer |
 | Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
-| Process isolation | dev-backend refs/ | code-reviewer |
-| Long-lived connections | dev-backend §1 | dev-frontend (connection limits) |
+| Process isolation | dev-backend refs/ | dev-code-reviewer |
+| Long-lived connections | dev-backend §1 | dev-frontend |
 | Async task queue | dev-backend §2 | — |
-| Debugging methodology | dev-debugging | code-reviewer |
+| Debugging methodology | dev-debugging | dev-code-reviewer |
+| Data pipeline patterns | dev-data | dev-backend |
+| Design intent discovery | dev-uiux-design | dev-frontend |
+| Project scaffolding / docs | dev-scaffolding | dev-pabcd |
+| Orchestration workflow | dev-pabcd | — |
 
 When updating a rule, update the canonical owner first, then verify stubs still point correctly.
 

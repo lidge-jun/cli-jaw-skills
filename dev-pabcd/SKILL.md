@@ -5,6 +5,8 @@ description: "PABCD orchestration workflow. Structured 5-phase development with 
 
 Structured 5-phase development. Advance only with user approval.
 
+> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+
 ## Interview Trigger (MUST)
 
 When the user asks for an interview in any form — "인터뷰하자", "인터뷰 모드", "interview",

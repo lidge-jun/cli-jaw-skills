@@ -332,7 +332,7 @@ Data engineering does not exist in isolation. Cross-reference these skills when 
 | `dev-backend` | Exposing data via API, response envelope shape, pagination | §5 API Response Contract, §2 Layered Architecture |
 | `dev-security` | PII handling, data classification, access controls, audit logging, input validation policy (per dev-security §10 ownership matrix) | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
 | `dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend & API Testing, §3 Contract Testing |
-| `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §8 Backend Contract & Security Alignment |
+| `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §15 Backend Contract & Security Alignment |
 
 **Integration patterns:**
 - Data APIs serving frontend dashboards must use the standard response envelope (`dev-backend` §5)
