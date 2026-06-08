@@ -25,6 +25,7 @@ Verify the chrome-devtools MCP server is configured. Test by calling `navigate_p
 - **Quantify impact**: Use estimated savings from insights. Skip changes with 0ms impact.
 - **Be specific**: Say "compress hero.png (450KB) to WebP" not "optimize images".
 - **Prioritize ruthlessly**: A site with 200ms LCP and 0 CLS is already excellent — say so.
+- **AI Assistance panel (Chrome 130+)**: DevTools includes an AI Assistance panel that can explain console errors, performance insights, and network issues. Use it as a complement to manual analysis, not a replacement.
 
 ## Quick Reference
 
@@ -92,7 +93,7 @@ performance_analyze_insight(insightSetId: "<id-from-trace>", insightName: "LCPBr
 **Key thresholds (good/needs-improvement/poor):**
 - TTFB: < 800ms / < 1.8s / > 1.8s
 - FCP: < 1.8s / < 3s / > 3s
-- LCP: < 2.5s / < 4s / > 4s
+- LCP: < 2.0s / < 4s / > 4s *(updated March 2026 — previously 2.5s)*
 - INP: < 200ms / < 500ms / > 500ms
 - TBT: < 200ms / < 600ms / > 600ms
 - CLS: < 0.1 / < 0.25 / > 0.25
@@ -179,6 +180,17 @@ Also check `package.json` for framework dependencies and build scripts.
 - Check for `terser`, `esbuild`, or `swc` minification
 - Look for gzip/brotli compression in build output or server config
 - Check for source maps in production builds (should be external or disabled)
+
+## Soft Navigations API (SPA Measurement)
+
+For single-page applications, Chrome supports the Soft Navigations API to measure Core Web Vitals across client-side navigations:
+
+- Enable via `PerformanceObserver` with `{ type: 'soft-navigation', buffered: true }`
+- CrUX reports soft navigation CWV separately from full page loads
+- Use the `web-vitals` library (v4+) with `reportSoftNavs: true` for automatic collection
+- Soft navigations are detected when a user interaction triggers a URL change and DOM modification
+
+This is critical for SPAs where most user experience happens after the initial load.
 
 ## Output Format
 
