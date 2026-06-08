@@ -118,7 +118,8 @@ replacement for source evidence.
 - Secondary sources may support context, but they do not upgrade a failed
   official-source claim to `sufficient`.
 
-Full instructions: read `/Users/jun/.cli-jaw-3463/skills/browser/SKILL.md`
+Full instructions: read the active `browser` skill from the current Jaw home
+before using browser primitives.
 
 ### When to escalate
 
@@ -236,12 +237,18 @@ cli-jaw browser web-ai query --vendor chatgpt \
   --timeout 1200
 ```
 
-Full instructions: read `/Users/jun/.cli-jaw-3463/skills/web-ai/SKILL.md`
+Full instructions: read the active `web-ai` skill from the current Jaw home
+before driving hosted AI providers.
 
 ## Rules
 
 1. **Order is mandatory.** Cheaper/faster first; escalate only on failure or routing table override.
 2. **Never silently chain.** If a tier errors, report what failed before escalating.
 3. **Always cite sources.** Every factual claim needs a URL.
-4. **Fail fast.** If a gate check fails (progrok not logged in, browser not connected), skip that tier and report.
+4. **Fail fast with tier-specific gates.** For Tier 2 browser, if `browser status`
+   is not connected, run `cli-jaw browser start --agent` and retry
+   status/fetch once. Skip Tier 2 only if browser start, status, or fetch still
+   fails; report the failure and mark affected claims `browse-needed` or
+   `insufficient`. For Tier 3 progrok, if `progrok status` is not logged in,
+   skip that tier and report.
 5. **Match effort to query.** Don't use xhigh/Tier 4 for a simple version check.
