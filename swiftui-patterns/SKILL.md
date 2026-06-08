@@ -5,7 +5,9 @@ description: SwiftUI architecture patterns, state management with @Observable, v
 
 # SwiftUI Patterns
 
-Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition, type-safe navigation, and performance optimization.
+> **Updated for Xcode 26 / iOS 27 (WWDC 2026)**
+
+Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition, type-safe navigation, persistence with SwiftData, and performance optimization.
 
 ## When to Activate
 
@@ -134,6 +136,27 @@ extension View {
 }
 ```
 
+### TabView (Updated API)
+
+Use the `Tab` type inside `TabView` for a declarative, type-safe tab bar:
+
+```swift
+TabView {
+    Tab("Home", systemImage: "house") {
+        HomeView()
+    }
+    Tab("Search", systemImage: "magnifyingglass") {
+        SearchView()
+    }
+    Tab("Profile", systemImage: "person") {
+        ProfileView()
+    }
+}
+.tabViewStyle(.tabBarOnly)  // iOS 27+: tab bar without sidebar option
+```
+
+For apps with many tabs, use `.sidebarAdaptable` style to allow the tab bar to expand into a sidebar on iPad and Mac.
+
 ## Navigation
 
 ### Type-Safe NavigationStack
@@ -230,6 +253,38 @@ struct ExpensiveChartView: View, Equatable {
     }
 }
 ```
+
+## Data Persistence with SwiftData
+
+Prefer **SwiftData** over Core Data for new projects. It integrates natively with SwiftUI's observation system:
+
+```swift
+@Model
+class Task {
+    var title: String
+    var isCompleted: Bool
+    var createdAt: Date
+
+    init(title: String, isCompleted: Bool = false) {
+        self.title = title
+        self.isCompleted = isCompleted
+        self.createdAt = .now
+    }
+}
+
+struct TaskListView: View {
+    @Query(sort: \Task.createdAt, order: .reverse) private var tasks: [Task]
+    @Environment(\.modelContext) private var context
+
+    var body: some View {
+        List(tasks) { task in
+            Text(task.title)
+        }
+    }
+}
+```
+
+Use `@Query` for reactive fetching and `@Environment(\.modelContext)` for writes. Configure the model container at the app level with `.modelContainer(for: [Task.self])`.
 
 ## Previews
 
