@@ -105,7 +105,7 @@ Tight (label-to-input, icon-to-text):   0.25rem - 0.5rem
 
 ## Cross-references
 
-- Size scale clamp values: `aesthetics.md` §Typography
+- Size scale clamp values: `dev-frontend/references/core/aesthetics.md` §Typography
 - Section composition order: `layout-macrostructures.md`
-- Responsive transforms: `layout-discipline.md`
+- Responsive transforms: `dev-frontend/references/core/layout-discipline.md`
 - Color tokens: `color-system.md`

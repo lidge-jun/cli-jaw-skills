@@ -18,8 +18,8 @@ When starting a new project or establishing a design system, use this token arch
   --shadow-md: 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
 
-  /* Timing */
-  --duration-fast: 100ms; --duration-normal: 200ms; --duration-slow: 400ms;
+  /* Timing — canonical values in Motion Tokens below */
+  --duration-fast: 150ms; --duration-normal: 250ms; --duration-slow: 400ms;
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
@@ -108,4 +108,26 @@ Semantic tokens reference scale tokens. Components use semantic tokens. Never re
 - Use the project's `components.json`, aliases, tokens, and registry conventions.
 - Do not hallucinate components — verify against local source.
 - New components must use the same token variables as existing ones.
+
+### DESIGN.md Format
+
+A project-root `DESIGN.md` persists design tokens and decisions across sessions. Structure:
+
+```markdown
+# Design System — [Project Name]
+
+## Tokens
+<!-- Paste the Token Template and Motion Tokens from above -->
+
+## Colors
+<!-- Semantic color palette: --color-text-primary, --color-bg-surface, etc. -->
+
+## Components
+<!-- Component inventory with variants and states -->
+
+## Rules
+<!-- Project-specific constraints: font stacks, icon system, motion policy -->
+```
+
+Keep `DESIGN.md` under 300 lines. Reference it from SKILL.md routing table, not inline.
 

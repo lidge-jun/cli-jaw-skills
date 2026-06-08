@@ -26,7 +26,7 @@ jobs:
         run: python3 scripts/validate_public_surface.py
       - name: Check docs assets and metadata
         run: |
-          grep -qP "\d+ inspectable skills" docs/index.html
+          grep -qE "[0-9]+ inspectable skills" docs/index.html
           grep -q "rel=\"canonical\"" docs/index.html
           grep -q "property=\"og:image\"" docs/index.html
           grep -q "name=\"twitter:card\"" docs/index.html

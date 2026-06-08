@@ -20,8 +20,8 @@ Extends the baseline a11y rules in SKILL.md with ARIA authoring patterns, focus 
 
 ```html
 <div role="tablist" aria-label="Settings">
-  <button role="tab" aria-selected="true" aria-controls="panel-1">General</button>
-  <button role="tab" aria-selected="false" aria-controls="panel-2">Advanced</button>
+  <button role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1">General</button>
+  <button role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2">Advanced</button>
 </div>
 <div role="tabpanel" id="panel-1" aria-labelledby="tab-1">...</div>
 ```

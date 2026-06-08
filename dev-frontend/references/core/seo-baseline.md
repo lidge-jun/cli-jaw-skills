@@ -81,7 +81,7 @@ Optimizing content so AI answer engines (ChatGPT, Perplexity, Gemini, Claude) re
 2. **FAQPage schema** — highest AI citation lift. Use whenever the page addresses common questions.
 3. **Content freshness** — visible "Last updated: YYYY-MM-DD" timestamp.
 4. **Authority signals** — original data, proprietary research, expert commentary.
-5. **Performance** — FCP < 0.4s → 3x more likely to be cited by ChatGPT.
+5. **Performance** — faster FCP strongly correlates with higher AI citation likelihood.
 6. **AI-generated pages** — always SSR/SSG. Never gate critical text behind client-side JS.
 
 ## Social Sharing

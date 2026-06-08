@@ -164,7 +164,7 @@ Do not default to: warm beige backgrounds, centered hero, three equal feature ca
 If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
 
 ### DESIGN.md persistence
-If the project needs persistent design tokens across sessions, save the Design Read as a full `DESIGN.md` in the project root. Format spec: `references/design-system-bootstrap.md § DESIGN.md Format`. Validate: `npx @google/design.md lint DESIGN.md`.
+If the project needs persistent design tokens across sessions, save the Design Read as a full `DESIGN.md` in the project root. Format spec: `references/design-system-bootstrap.md § DESIGN.md Format`.
 
 ---
 

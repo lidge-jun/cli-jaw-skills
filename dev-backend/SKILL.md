@@ -398,7 +398,7 @@ Treat templates as starting points, not gospel. Strip to essentials, then add wh
 - Measure at the handler level, not including network
 - Use `Server-Timing` header to expose backend timing to frontend
 - Log slow queries (> 100ms) with EXPLAIN output
-- Connection pool: min = CPU cores, max = CPU cores × 4
+- Connection pool (long-running servers): min = CPU cores, max = CPU cores × 4; for serverless/Lambda use min = 0–2
 
 API responses that drive UI must include descriptive error messages (not just codes) for screen reader announcement, pagination metadata (total count) for assistive technology, and `Content-Language` header matching response body language.
 

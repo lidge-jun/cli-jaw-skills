@@ -77,5 +77,5 @@ Three states: Light → Dark → System → Light.
 
 ## Cross-references
 
-- Dark token derivation: `color-system.md`
+- Dark token derivation: `dev-uiux-design/references/color-system.md`
 - One theme per page: `consistency-locks.md`
