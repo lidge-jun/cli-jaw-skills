@@ -29,11 +29,19 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 | `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
 | `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
 | `references/color-system.md` | Generating colors/palette | OKLCH-based palette generation, dark mode, accessibility |
-| `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, DESIGN.md |
+| `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, **DESIGN.md format** (google-labs-code/design.md) |
 | `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
 | `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
 | `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, **short descriptor category** (hero subtitle, card desc — use `balance` not `pretty`), orphan prevention, `ch` units, Korean orphan criteria, `-webkit-line-clamp` conflict |
 | `references/logo-trust-sections.md` | Integration/partner/client logos | Marquee vs grid decision, anti-patterns, grayscale treatment, placement |
+
+---
+
+## 0. DESIGN.md Check
+
+Before any design work, check the project root for `DESIGN.md`. If it exists, read it — it contains the authoritative design tokens (colors, typography, spacing, rounded) and prose rationale. Its values override intent discovery defaults.
+
+If it doesn't exist and the project needs a persistent design system, offer to create one after completing intent discovery. Use the format from `references/design-system-bootstrap.md § DESIGN.md Format`.
 
 ---
 

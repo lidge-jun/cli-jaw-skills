@@ -51,6 +51,7 @@ Before designing or coding, classify the work:
 | Motion intensity | static, feedback-only, expressive, cinematic | Prevents cinematic motion in utility workflows |
 
 Default rules:
+- **DESIGN.md**: If the project root has a `DESIGN.md`, read it first — its tokens and prose override routing defaults below. Validate with `npx @google/design.md lint DESIGN.md` when available.
 - For apps/tools/dashboards, build the actual working surface first, not a marketing hero.
 - For Korean-first work, read `korea-2026.md` and `ux-writing-ko.md`.
 - For any soft 3D miniature, mascot, chibi, toy-like object, or character-like asset, read `soft-3d-asset-gates.md`.
