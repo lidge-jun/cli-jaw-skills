@@ -96,10 +96,27 @@ Synthesized from taste-skill, redesign-skill, Anthropic frontend-design, and Koo
 
 ---
 
+## Emoji Slop (CRITICAL)
+
+Emoji as visual elements is the strongest AI-generated tell in 2026 frontend. Human designers never ship emoji as feature icons, section markers, or decorative elements in production UI.
+
+| Context | Verdict | Do Instead |
+|---------|---------|------------|
+| Feature card icons (📋 🧠 🎯) | **BANNED** | Lucide/Phosphor/Heroicons SVG icon |
+| Section headers / bullets | **BANNED** | Typographic hierarchy or icon component |
+| Button labels or CTA | **BANNED** | Text only, or SVG icon + text |
+| Alt text / aria-label | **BANNED** | Descriptive text |
+| Code comments / markup | **BANNED** | Plain text |
+| Chat/messaging UI (user content) | Allowed | User-generated content is exempt |
+| Internal CLI output / logs | Allowed | Functional status indicators (✅ ❌) acceptable in terminal |
+
+**Why it's slop:** Emoji have fixed rendering per OS, no brand alignment, no size control, inconsistent cross-platform, and signal "AI threw this together" to any designer or user.
+
+---
+
 ## Banned Interaction Patterns
 - Generic circular loading spinners → skeleton loaders matching layout
 - Default browser focus rings → `focus-visible:ring-2`
-- Emoji in code, markup, text content, or alt text
 - Custom mouse cursors (outdated, accessibility issue)
 - Neon/outer glow `box-shadow` effects
 - Oversized gradient-fill text headers

@@ -128,7 +128,7 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Avoid oversized bold hero text inside tools, dashboards, admin, finance flows, and public services
 - Avoid asset-free UI: abstract blobs/gradients do not replace real visual evidence
 - Avoid generic soft 3D icon packs; soft 3D must be semantic, brand-consistent, and restrained
-- Use icons or descriptive text instead of emoji in code and UI
+- **NEVER use emoji as UI visual elements** (feature icons, card icons, section markers, buttons) — emoji in production UI is the #1 AI slop signal. Use SVG icons (Lucide/Phosphor/Heroicons). See `anti-slop.md § Emoji Slop`
 - Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
 - Use realistic, specific names and brands in placeholder content
 - Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
