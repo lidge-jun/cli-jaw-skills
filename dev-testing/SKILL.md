@@ -256,6 +256,31 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
 - Write tests for bugs that were found, not for code that already works — test count grows organically with bug fixes.
 
 ---
+## 6.6 Test-Induced Production Defense Detection
+
+**Rule:** Do not add production defensive code solely to satisfy unrealistic tests. A production guard is allowed only when the invalid state can occur at a real boundary or represents an explicit domain rule.
+
+| Production change smell | Likely test problem | Required action |
+|---|---|---|
+| Internal `if (!x) return` added after unit test fails | Test fixture omitted required field | Fix fixture factory or test boundary validation |
+| Required field made optional to satisfy test | Test is using invalid domain object | Restore required type and update test data |
+| Catch-all added so test passes | Test expects silence instead of failure | Assert typed error or user-visible failure |
+| Production default added for impossible state | Test bypassed constructor/parser | Use real constructor/parser in test |
+| Private helper exported only for test | Test is coupled to implementation | Test public behavior or move helper to test support |
+| Sleep/retry added only for test flake | Test lacks deterministic synchronization | Wait on observable condition or fake clock |
+| `NODE_ENV === "test"` branch added | Test-only production behavior | Remove branch; improve test harness |
+
+**Required questions before adding a guard:**
+1. Is the input from an untrusted boundary? → If yes, validate at that boundary
+2. Can this state happen in production? → If no, fix the test
+3. What contract allows this value? → Cite schema/type/domain rule
+4. Would this hide a real bug? → If yes, fail fast instead
+
+**Banned patterns:** `process.env.NODE_ENV === "test"` branches, silent fallbacks for impossible internal state, making required types optional for mocks, exporting internals only for tests.
+
+**Allowed guards:** Boundary validation (process/network/user/file boundary), backward compatibility (documented old schema), security checks, domain invariants, observed production bug regressions, external dependency adapters.
+
+---
 ## 7. Security Testing
 **→ Delegated**: threat modeling and secure design policy belong to `dev-security`.
 This section covers the **automated test hooks and CI gates** that enforce those rules.

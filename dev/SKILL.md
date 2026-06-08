@@ -106,6 +106,30 @@ Give every file, function, and class a single, clear responsibility.
 
 ---
 
+## 1.5 Pre-Write Codebase Search Obligation
+
+**Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence.
+
+| Artifact being created | Required searches | Preferred outcome |
+|---|---|---|
+| Function/helper | Exact name, verb phrase, domain noun | Extend existing helper or add next to owner |
+| Type/interface/schema | Exact type name and shape fields | Reuse or extend existing contract |
+| Component | UI label, route, component name, feature folder | Modify owning component |
+| Constant/magic string | Literal value and semantic name | Move to existing constants/contract module |
+| Test fixture/factory | Fixture factory and existing test data | Extend shared fixture factory |
+| Route/API client | Endpoint path, handler name, client wrapper | Update both server and client owner |
+| Config/env flag | Env var prefix and config module | Add to central config owner |
+
+**Banned patterns:**
+- Creating `utils.ts`, `helpers.ts`, or `common.ts` without owner search
+- Duplicating a type because import path was not obvious
+- Creating parallel API clients for the same endpoint
+- "I could not find it" without showing search terms
+
+**Search evidence required:** When code is changed, include terms searched, files inspected, reuse decision, and new-code justification in the final response.
+
+---
+
 ## 2. Systematic Debugging
 
 Investigate the root cause before applying any fix — guessing leads to compounding rework.
