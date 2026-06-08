@@ -27,8 +27,10 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/typography-wrapping.md`  | **Always**                           | `text-wrap: balance/pretty`, **short descriptor category** (`balance` not `pretty` for 1-3 line text), `ch` units, rag control, Korean orphan prevention, `-webkit-line-clamp` conflict |
 | `references/core/logo-sections.md`        | Integration/partner logo display     | Marquee CSS, static grid, orphan cell fix, grayscale treatment, no individual hover |
 | `references/core/brand-asset-sourcing.md` | Brand logos in UI                    | Simple Icons/SVGL sourcing, AI agent strategy, placeholder hierarchy, legal guide  |
-| `references/core/layout-discipline.md`    | Landing/marketing pages              | Hero, eyebrow, section repetition, bento, zigzag                                    |
+| `references/core/layout-discipline.md`    | Landing/marketing pages              | Hero, eyebrow, section repetition, bento, zigzag, **per-section responsive transforms** |
 | `references/core/consistency-locks.md`    | Any multi-section page               | Color, shape, theme consistency per page                                             |
+| `references/core/responsive-viewport.md`  | **Always**                           | Canonical breakpoints, page containment, container queries, responsive images, safe area, split-screen |
+| `references/core/mobile-ux.md`            | Consumer/landing pages with mobile traffic | Thumb zone, touch targets, sticky CTA, mobile section composition, bottom sheet, portrait media |
 | See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
 | `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
 | `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
@@ -135,6 +137,9 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 - Layout monotony (same family repeated, 3+ zigzag sections, overused eyebrows) — see `references/core/layout-discipline.md`
 - Color, shape, and theme must be locked per-page and audited before shipping — see `references/core/consistency-locks.md`
 - Use off-black (`#0a0a0a`, `#111`) — pure `#000000` lacks depth
+- **Responsive enforcement**: every multi-column section must declare its mobile/tablet collapse behavior — "it'll work at mobile" is not a plan. See `responsive-viewport.md`
+- **Page containment required**: `max-w-[1400px] mx-auto` or equivalent wrapper. Content stretching to viewport edges on wide monitors is a layout bug
+- **Mobile is a different product**: section composition, CTA placement, and interaction model change on mobile — it is NOT just "desktop stacked vertically." See `mobile-ux.md`
 - Use realistic, specific names and brands in placeholder content
 - Write original copy — avoid "Elevate", "Seamless", "Next-Gen" and similar clichés
 - Treat uncontrolled heading line breaks (orphaned single word, no `text-wrap`, no `max-width` in `ch`) as a slop signal — see `typography-wrapping.md`
@@ -316,8 +321,13 @@ Before delivering:
 - [ ] Required assets are real, semantic, rendered, and not generic decoration
 - [ ] Korean-first UI follows CJK typography and Korean UX writing rules
 - [ ] Soft 3D/miniature/character assets pass domain and semantic gates
-- [ ] Mobile layout collapse guaranteed
+- [ ] Mobile layout collapse guaranteed with per-section-type rules (see layout-discipline.md § Responsive Transforms)
 - [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
+- [ ] Page containment: `max-w-[1400px] mx-auto` wrapper present (see responsive-viewport.md)
+- [ ] Tested at 768px (tablet) and 1024px (split-screen) in addition to mobile/desktop
+- [ ] Touch targets ≥ 44px on mobile; no hover-only interactions (see mobile-ux.md)
+- [ ] Responsive images use `srcset`/`sizes` or `<picture>` for art direction (see responsive-viewport.md)
+- [ ] Safe area padding for notched devices: `env(safe-area-inset-*)` on fixed elements
 - [ ] Loading, empty, and error states provided
 - [ ] State classified before adding store/Context/Effect/cache (§12)
 - [ ] Effects sync with external systems; derived state is not Effect-synced

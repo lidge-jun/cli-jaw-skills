@@ -42,7 +42,7 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 5-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
 
 **Rules:**
-- Ask a maximum of 5 questions before proposing a concrete direction.
+- Ask a maximum of 6 questions before proposing a concrete direction.
 - Use binary/ternary choices, not open-ended questions.
 - Reference known products — users recognize what they want faster than they articulate it.
 - If the diagram skill is available, offer: "참고로 스타일 비교를 다이어그램으로 보여드릴 수도 있어요."
@@ -90,7 +90,19 @@ Ask: "모서리가 각진 느낌이 좋으신가요, 둥근 느낌이 좋으신�
 | 살짝 둥근 (Slightly rounded) | `rounded-md` / 6–8px | Linear, Notion, material |
 | 많이 둥근 (Very rounded) | `rounded-2xl` / 16–24px | Figma, iOS, Toss |
 
-### Step 5 — Reference
+### Step 5 — Viewport Priority
+
+Ask: "주로 어떤 화면에서 볼 건가요?" / "What's the primary viewing device?"
+
+| Option | Responsive Strategy | Key Constraint |
+|--------|-------------------|----------------|
+| 데스크탑 위주 (Desktop-first) | Desktop layout → tablet → mobile collapse | Data density OK, hover interactions OK |
+| 모바일 위주 (Mobile-first) | Mobile layout → tablet → desktop expansion | Thumb zone, touch targets, minimal density |
+| 둘 다 중요 (Both equally) | Design mobile AND desktop as separate compositions, not one adapted from the other | Most work — section order/composition may differ |
+
+Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
+
+### Step 6 — Reference
 
 Ask: "혹시 '이런 느낌이면 좋겠다' 하는 사이트나 앱이 있으신가요?" / "Any website or app that feels like what you want?"
 

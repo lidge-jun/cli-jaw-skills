@@ -37,3 +37,57 @@
 - Long lists (>5 items): use cards/tabs/accordion/scroll-snap/carousel, not default <ul>
 - Spec sheets: 2-col card grid, scroll-snap pills, grouped chunks, or featured-vs-rest
 - Quotes: max 3 lines, attribution = name + role [+ company]
+
+## Page Containment (MANDATORY)
+- All page content: `max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8`
+- Full-bleed sections (hero images, color blocks): break out with `w-screen` or negative margins, content inside still contained
+- Without containment, text lines stretch to 200+ chars on wide monitors — unreadable
+
+## Responsive Transforms by Section Type (MANDATORY)
+
+Every section type MUST declare its behavior at each viewport tier. "Tailwind handles it" is not a responsive strategy.
+
+### Hero
+- **Desktop (≥1024px)**: Side-by-side text+image or full-bleed. `text-4xl md:text-5xl lg:text-6xl`.
+- **Tablet (768-1023px)**: Stack image behind/above, text below. One font-scale step down.
+- **Mobile (<768px)**: Vertical stack. Image max 60vh. `text-3xl` max. Subtext ≤15 words. CTA visible without scroll. Full-width button.
+
+### Split Text-Image (60/40, 50/50)
+- **Desktop**: Side-by-side columns.
+- **Tablet**: Side-by-side if ≥900px with tighter gap; stack if <900px.
+- **Mobile**: Always stack. Image first (product/visual), text first (story/narrative). Never side-by-side.
+
+### Multi-Column Cards/Features (3+ columns)
+- **Desktop**: `grid-cols-3` or `grid-cols-4`.
+- **Tablet**: `grid-cols-2`.
+- **Mobile**: `grid-cols-1`. Limit visible to 3-4 cards; rest behind "Show more" or horizontal scroll-snap.
+
+### Full-Width Quote
+- **Desktop**: Large text, generous padding.
+- **Tablet**: Same layout, one font-scale step down.
+- **Mobile**: `text-xl` max. `px-6`. Attribution inline below quote.
+
+### Bento Grid
+- **Desktop**: Multi-cell asymmetric layout.
+- **Tablet**: Reduce to 2-column grid.
+- **Mobile**: Single column. Each cell full-width.
+
+### Zigzag (Alternating Left/Right)
+- **Desktop**: Left/right alternation.
+- **Tablet**: Same if ≥900px, else stack.
+- **Mobile**: Always stack. Consistent order (no alternation). Pick image-then-text or text-then-image and keep it.
+
+### CTA Section
+- **Desktop**: Centered with breathing room.
+- **Tablet**: Same, tighter padding.
+- **Mobile**: Full-width button. Remove decorative elements. Consider sticky bottom bar (see `mobile-ux.md`).
+
+### Logo Wall
+- **Desktop**: Horizontal row or multi-row grid.
+- **Tablet**: Wrap to 2 rows if needed.
+- **Mobile**: Horizontal scroll-snap marquee or compact 2×3 grid. No orphan cells.
+
+### Pricing/Spec Grid
+- **Desktop**: 2-3 column card layout.
+- **Tablet**: 2 columns.
+- **Mobile**: 1 column. Featured plan first. Comparison table → accordion.
