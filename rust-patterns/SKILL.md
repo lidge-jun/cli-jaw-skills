@@ -496,3 +496,10 @@ async fn bad_async() {
 ```
 
 **Remember**: If it compiles, it's probably correct — but only if you avoid `unwrap()`, minimize `unsafe`, and let the type system work for you.
+
+## Rust Version Notes (June 2026)
+
+**Current**: Rust 1.96.0 (May 2026). **Rust 2024 Edition** available (since 1.85.0).
+- **2024 Edition**: Refined RPIT lifetime capture, `gen` keyword reserved, updated `unsafe` rules, new `IntoIterator` for `Box<[T]>`
+- **Key features**: Improved temporary scoping in `if let`, `unsafe_op_in_unsafe_fn` warning, Cargo Rust-version aware resolver
+- **Migration**: Use `cargo fix --edition` to migrate from 2021 → 2024 edition
