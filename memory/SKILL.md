@@ -105,6 +105,20 @@ cli-jaw memory init
 2. Use episodic files for time-bound outcomes
 3. Use semantic/profile files for long-lived knowledge
 
+## Chat Search (L1)
+
+Search past conversation messages in the current instance. Use when you need prior conversation context — what was discussed, decided, or debugged.
+
+```bash
+cli-jaw chat search "<keywords>"
+cli-jaw chat search "<keywords>" --days 3          # limit to recent N days
+cli-jaw chat search "<keywords>" --recent 100      # limit to most recent N messages (~50 Q&A pairs)
+cli-jaw chat search "<keywords>" --context 2       # show ±N surrounding messages
+cli-jaw memory search "<keywords>" --chat          # search memory AND recent chat history together
+```
+
+Use `chat search` when memory search returns nothing but the fact was discussed in a prior conversation. Combine `--recent` and `--context` for focused lookups.
+
 ## Context (memory→chat jump)
 
 Find chat messages related to a memory file by its creation time and keywords.
