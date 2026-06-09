@@ -45,6 +45,12 @@ For substantial UI changes:
 - Mobile CTA visible without scroll in hero; sticky CTA present on long conversion pages
 - Responsive images: no desktop-sized images loading on mobile (check srcset/sizes or framework optimization)
 
+### CTA Integrity (MANDATORY)
+
+1. **No duplicate intent:** Two buttons linking to the same destination → merge into one. Two "Get Started" CTAs on same viewport → remove one.
+2. **Form field contrast:** Input borders must be visible against background (minimum 3:1 against surrounding bg). Test: toggle between light/dark if applicable.
+3. **CTA hierarchy:** One primary CTA per viewport section. Secondary CTAs use ghost/outline style only.
+
 ## Tool Workflow
 
 ```ts

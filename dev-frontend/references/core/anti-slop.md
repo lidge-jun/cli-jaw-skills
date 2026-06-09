@@ -108,6 +108,14 @@ For alternative palettes, see `aesthetics.md § Color & Theme`.
 - Pills/labels overlaid on images
 - Scoring/progress bars as comparison visuals on landing pages
 
+### Copy Self-Audit (MANDATORY — pre-delivery)
+
+Before delivering any page, read all visible text aloud (mentally). Check:
+- No em-dashes (—) anywhere
+- No "We believe" / "Our mission" / "Reimagine" / "Elevate" filler
+- No lorem-adjacent placeholder copy disguised as real content
+- Headlines could not describe a different product/company
+
 ## Banned Logo/Integration Section Patterns
 - Generic stroke icons (Lucide/Heroicons/Feather) used as brand logos → use actual brand SVGs from Simple Icons, SVGL, or press kits (see `brand-asset-sourcing.md`)
 - Individual hover effects on non-clickable logo walls → trust signals, not navigation. No per-item hover.

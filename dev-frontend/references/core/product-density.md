@@ -15,6 +15,14 @@ Choose density before choosing visual style. Many frontend failures happen becau
 | D7 | Finance / analytics | high trust, tabular numbers, explainable changes |
 | D8 | Developer console | code/data density, logs, inspectable state |
 
+### Cross-Density Enforcement (MANDATORY)
+
+If Design Read declares page kind != SaaS/dashboard/admin:
+- Stats rows (e.g., "368 오름 / 1,950m 한라산") — BANNED
+- Metric comparison grids — BANNED
+- Feature checkbox tables — BANNED
+- Use narrative content blocks instead of data-dump sections
+
 ## Rules
 
 - D1-D2 may use hero-scale typography and strong imagery.

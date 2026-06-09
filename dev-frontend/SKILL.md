@@ -111,6 +111,10 @@ Adjust these dials based on what's being built. Present to user if unclear.
 | MOTION_INTENSITY |    4    | 1-10  | 1=static, 10=cinematic choreography    |
 | VISUAL_DENSITY   |    5    | 1-10  | 1=art gallery airy, 10=cockpit dense   |
 
+After Design Read, set dials per `dev-uiux-design` §2 Dial Setting.
+
+Product density profile (D1-D8 in `references/core/product-density.md`) sets component class; VISUAL_DENSITY (1-10) sets spacing within that class. These are orthogonal axes.
+
 Adapt dynamically based on user requests. Dashboard → density up. Portfolio → variance up. Data tool → motion down.
 Korean app/tool surfaces usually need higher density and clearer hierarchy, not oversized hero text.
 
@@ -306,6 +310,25 @@ Before adding state, classify it:
 | AI stream | conversation boundary | append-only message model + stream status |
 
 Rules: Do not store derived state just to sync with Effect. Do not put server state in Zustand. Do not put URL-shareable state only in component state. Keep optimistic state reversible.
+
+### Design System Detection (MANDATORY — before creating tokens)
+
+Before inventing design tokens, check:
+1. Does the project have an installed design system? (`grep -r "material-ui\|@mui\|carbon-components\|@carbon\|@fluentui\|govuk-frontend\|uswds" package.json`)
+2. Does the project have existing tokens? (`find . -name "tokens.*" -o -name "theme.*" -o -name "design-system*"`)
+3. Does the brief name a specific design system?
+
+If YES to any: use the official package. Do not recreate CSS by hand.
+
+| System | Package | Import |
+|--------|---------|--------|
+| Material | @mui/material | `import { Button } from '@mui/material'` |
+| Carbon | @carbon/react | `import { Button } from '@carbon/react'` |
+| Fluent | @fluentui/react | `import { Button } from '@fluentui/react-components'` |
+| GOV.UK | govuk-frontend | `import 'govuk-frontend/dist/govuk/all.scss'` |
+| USWDS | @uswds/uswds | `import '@uswds/uswds/css/uswds.css'` |
+
+If NO: proceed with `dev-uiux-design/references/design-system-bootstrap.md`.
 
 ### shadcn/ui and AI-Assisted UI
 

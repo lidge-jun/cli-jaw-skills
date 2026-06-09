@@ -95,6 +95,20 @@ For CSS text wrapping implementation (`text-wrap`, `ch` units), see `typography-
 | 600-700 | Dark       | Hover (dark), active  |
 | 800-900 | Very dark  | Text, headings        |
 
+### Alternative Palettes (use instead of banned warm-beige)
+
+| Name | Background | Accent | Text |
+|------|-----------|--------|------|
+| Cold Luxury | silver-grey `#e8e8e8` | chrome `#c0c0c0` | smoke `#2d2d2d` |
+| Forest | deep green `#1a3a2a` | bone `#f0ede5` | amber `#d4a017` |
+| Black and Tan | off-black `#1a1a1a` | warm tan `#c9a96e` | white `#f5f5f5` |
+| Cobalt + Cream | cream `#fafaf5` | cobalt `#0047ab` | near-black `#1a1a2e` |
+| Terracotta + Slate | slate `#e2e0dc` | terracotta `#c75b39` | charcoal `#2f2f2f` |
+| Olive + Brick + Paper | paper `#f2f0e8` | olive `#6b7c3e`, brick `#8b3a2a` | dark grey `#333` |
+| Pure Monochrome | white `#fff` | single saturated pop | black `#111` |
+
+Rotate: never the same palette twice in consecutive projects.
+
 ---
 
 ## Spatial Composition

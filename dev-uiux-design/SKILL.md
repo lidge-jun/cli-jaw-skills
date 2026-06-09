@@ -162,6 +162,27 @@ Don'ts: <context-specific ban from brief>
 5. Existing brand assets — logo, color, type, photography
 6. Quiet constraints — accessibility-first, public-sector, regulated, kids
 
+### Dial Setting (MANDATORY — immediately after Design Read)
+
+From the Design Read, derive and declare three dials before any code:
+
+```
+DESIGN_VARIANCE: <1-10>
+MOTION_INTENSITY: <1-10>
+Product density profile: <D1-D8> (see dev-frontend/references/core/product-density.md)
+Reasoning: <one sentence explaining why these values match the brief>
+```
+
+Inference rules:
+- Corporate/gov/utility → VARIANCE 2-4, MOTION 1-3, density D2-D3
+- Marketing/landing → VARIANCE 4-7, MOTION 3-5, density D2-D3
+- Creative/portfolio/editorial → VARIANCE 6-9, MOTION 4-7, density D1-D3
+- Dashboard/SaaS/admin → VARIANCE 2-4, MOTION 1-2, density D4-D5
+- "Complex" in brief → increase density profile (functional depth), NOT VARIANCE or MOTION
+- "Simple" in brief → decrease all three proportionally
+
+"복잡하다" = high DESIGN_VARIANCE is WRONG. Complexity means more features/data/flows, not more visual tricks (carousels, parallax, animations).
+
 ### Anti-Default Discipline
 Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
 

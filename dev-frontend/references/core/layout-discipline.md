@@ -35,6 +35,7 @@
 ## Section Content Limits
 - Default per section: short headline (≤8 words) + sub-paragraph (≤25 words) + one visual/CTA
 - Long lists (>5 items): use cards/tabs/accordion/scroll-snap/carousel, not default <ul>
+- Carousel is for browsing long homogeneous lists (product catalog, image gallery), NOT a default response to "복잡한" or "complex" briefs. If Design Read does not specify list-browsing UX, do not add carousels.
 - Spec sheets: 2-col card grid, scroll-snap pills, grouped chunks, or featured-vs-rest
 - Quotes: max 3 lines, attribution = name + role [+ company]
 
