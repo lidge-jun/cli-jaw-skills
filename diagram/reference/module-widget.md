@@ -441,20 +441,60 @@ Chart.js, ECharts 6, D3.js, Leaflet, Matter.js, Math.js, Three.js, p5.js, Tone.j
 |---------|--------|----------|
 | React 18 | `https://esm.sh/react@18` + `react-dom@18/client` | Complex stateful UI |
 | Plotly.js | `https://esm.sh/plotly.js-basic-dist-min@2` | 3D scatter, contour, surface |
+| Day.js | `https://esm.sh/dayjs@1` | Date formatting/parsing |
 | Tailwind CSS | `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4` | Utility CSS |
+| Lucide Icons | `https://esm.sh/lucide@latest` | SVG icon set |
 | PapaParse | `https://esm.sh/papaparse@5` | CSV parsing |
 | SheetJS | `https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js` | Excel parsing |
 | Anime.js | `https://esm.sh/animejs@3` | Declarative animation |
+
+### Tier 3: Special purpose (verify before use)
+
+TensorFlow.js, Konva.js, PixiJS, Fabric.js, Cytoscape.js — test individually before recommending.
+
+### Import rules
+
+| Pattern | Allowed? | Enforced by | Example |
+|---------|----------|-------------|---------|
+| `<script src="CDN_URL">` | ✅ | widget-validator | `<script src="https://cdnjs.cloudflare.com/...">` |
+| Static `import` in `<script type="module">` | ✅ CDN only | browser CSP `script-src` | `import dayjs from 'https://esm.sh/dayjs@1'` |
+| Dynamic `import('CDN_URL')` | ✅ CDN literal only | widget-validator | `import('https://esm.sh/dayjs@1')` |
+| Dynamic `import(variable)` | ❌ Blocked | widget-validator | `import(url)` — non-literal argument |
+| Any import from non-CDN | ❌ Blocked | widget-validator + CSP | `import('https://example.com/x.js')` |
+
+Static `import` requires `<script type="module">`. JSX is NOT supported (no Babel/SWC in iframe) — use `React.createElement()` directly.
+
+> **Three.js exception**: Three.js uses an auto-injected importmap for bare specifiers (`import from 'three'`). If a widget includes its own `<script type="importmap">`, auto-injection is skipped — use full esm.sh URLs in that case.
+
+### importmap pattern (cleaner Tier 2 imports)
+
+```html
+<script type="importmap">
+{ "imports": {
+    "dayjs": "https://esm.sh/dayjs@1",
+    "dayjs/plugin/relativeTime": "https://esm.sh/dayjs@1/plugin/relativeTime"
+} }
+</script>
+<script type="module">
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
+document.getElementById('out').textContent = dayjs('2026-01-01').fromNow();
+</script>
+```
 
 ### Routing
 
 | Need | Tier 1 sufficient? | Otherwise |
 |------|-------------------|-----------|
-| bar/line/pie | Chart.js | — |
-| sankey/treemap/gauge | ECharts | — |
-| 3D scatter/surface | — | Plotly.js |
-| Complex stateful UI | — | React |
-| Maps | Leaflet | — |
-| Spreadsheet parsing | — | SheetJS/PapaParse |
+| bar/line/pie/scatter | Chart.js ✅ | — |
+| sankey/treemap/gauge/candlestick | ECharts ✅ | — |
+| 3D scatter/surface | — | Plotly.js (Tier 2) |
+| Date formatting | — | Day.js (Tier 2) |
+| CSV parsing in widget | — | PapaParse (Tier 2) |
+| Spreadsheet parsing | — | SheetJS (Tier 2) |
+| Physics | Matter.js ✅ | — |
+| 3D rendering | Three.js ✅ | — |
+| Complex stateful UI | — | React (Tier 2) |
 
 **Rule**: Use Tier 1 if it can do the job. Tier 2 only for capabilities Tier 1 lacks.

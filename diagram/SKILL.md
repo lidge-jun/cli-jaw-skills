@@ -190,6 +190,27 @@ These are design quality rules (separate from security restrictions below):
 - Font sizes in SVG: **14px** (node labels) and **12px** (subtitles/arrow labels) only
 - **Sentence case** always. Never Title Case or ALL CAPS.
 
+### `<style>` in Inline SVG
+
+`<style>` tags inside inline SVG ARE preserved. Custom CSS classes work:
+
+```xml
+<svg viewBox="0 0 100 100">
+  <style>
+    .highlight { fill: #e94560; }
+    .dim { fill: #94a3b8; }
+  </style>
+  <rect class="highlight" width="50" height="50"/>
+</svg>
+```
+
+**Security filters applied automatically:**
+- `@import` rules → stripped
+- `@font-face` blocks → stripped
+- External `url()` → replaced with `none` (internal `url(#ref)` preserved)
+
+**Best practice:** Prefer predefined `.c-*` classes (see `reference/color-palette.md`) for theme-aware colors. Use custom `<style>` when you need colors/patterns not in the design system.
+
 ### Forbidden in Inline SVG (Security)
 These are stripped by DOMPurify — NEVER use in inline `<svg>`:
 - `<foreignObject>` — embeds HTML in SVG (XSS vector)
