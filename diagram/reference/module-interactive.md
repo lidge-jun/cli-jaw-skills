@@ -249,3 +249,62 @@ See the `Style-First, Script-Last` section in the parent `SKILL.md` — same rul
   .controls { flex-direction: column; }
 }
 ```
+
+## Quiz / Game Widget (Display Only)
+
+Interactive quiz/game widgets for education, entertainment, or information.
+Results are consumed **inside the iframe** (scores, type classifications).
+For collecting user input to feed back to the agent, use sendPrompt instead.
+
+### Suitable
+- Learning quizzes ("What does this code output?")
+- Personality/type classifiers
+- Browser mini-games (memory match, hangman)
+- Calculators/simulators (BMI, loan interest, unit conversion)
+
+### NOT suitable (use sendPrompt)
+- "Which approach do you prefer?" — sendPrompt
+- Any case where the result must influence the next agent response
+
+### Structure
+
+```js
+const QUESTIONS = [
+  { text: 'What does this output?', code: 'console.log([1,2,3].map(x => x*2))',
+    options: ['[2,4,6]', '[1,2,3]', 'NaN', 'undefined'], answer: 0 }
+];
+let currentQ = 0, score = 0;
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  container.innerHTML = `
+    <div class="progress">Question ${currentQ + 1} / ${QUESTIONS.length}</div>
+    ${q.code ? `<pre>${q.code}</pre>` : ''}
+    <h3>${q.text}</h3>
+    <div class="options">
+      ${q.options.map((opt, i) => `
+        <button onclick="check(${i})">${opt}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function check(selected) {
+  const correct = selected === QUESTIONS[currentQ].answer;
+  if (correct) score++;
+  setTimeout(() => {
+    currentQ++;
+    currentQ < QUESTIONS.length ? renderQuestion() : showResults();
+  }, 1500);
+}
+
+function showResults() {
+  container.innerHTML = `<h2>Score: ${score}/${QUESTIONS.length}</h2>`;
+}
+```
+
+### Style rules
+- Option buttons: full width, `var(--surface)` background, `var(--border)` border
+- Correct: green flash (`var(--green-fill)` or `#22c55e`)
+- Wrong: red flash + show correct answer
+- Progress bar: `${(currentQ/QUESTIONS.length)*100}%` width

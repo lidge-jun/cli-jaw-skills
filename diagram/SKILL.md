@@ -19,6 +19,7 @@ references:
   - "module-map.md — Leaflet maps"
   - "module-mockup.md — UI mockup patterns"
   - "module-art.md — decorative SVG"
+  - "module-domain-cards.md — weather, finance, sports, product card templates"
 ---
 
 # Diagram Visualization Skill
@@ -263,6 +264,34 @@ This ensures visual content appears before scripts execute (important during str
 - viewBox 680px 기준은 유지하되, 텍스트는 최소 14px (모바일 축소 후 ~9px)
 - CJK 텍스트: 최소 16px (축소 후 ~10px)
 - 터치 가능한 SVG 요소: 최소 44×44 hit area
+
+## Animation Rules
+
+### Inline SVG (DOMPurify sanitized)
+- SMIL tags (`<animate>`, `<set>`, `<animateMotion>`) are stripped — do not use
+- Inline SVG is static only — no animation
+
+### diagram-html (sandboxed iframe)
+All CSS/JS animation is available:
+
+**CSS Transition** (preferred for hover/state changes):
+```css
+.element { transition: all 0.3s ease; }
+.element:hover { transform: scale(1.05); opacity: 0.8; }
+```
+
+**CSS Animation** (keyframes):
+```css
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.element { animation: fadeIn 0.5s ease-out; }
+```
+
+**JS requestAnimationFrame**: already documented in module-widget.md (Matter.js, Three.js, p5.js)
+
+### Performance
+- Animate only `transform` and `opacity` (GPU-accelerated)
+- Avoid animating `width`, `height`, `top`, `left` (layout thrashing)
+- Always call `cancelAnimationFrame` on cleanup
 
 ## Reference Files
 For detailed patterns, see:

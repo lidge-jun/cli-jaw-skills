@@ -170,6 +170,86 @@ option: {
 }
 ```
 
+## Quick Chart Template
+
+For simple bar/line/pie/scatter charts, use this minimal template to reduce boilerplate:
+
+```js
+const isDark = window.__jawTheme?.isDark ?? true;
+const T = window.__jawTokens || {};
+const text = T['--text'] || (isDark ? '#e8e6e3' : '#1a1a1a');
+const grid = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+
+new Chart(document.getElementById('c'), {
+  type: 'bar',  // bar | line | pie | scatter | doughnut | polar
+  data: {
+    labels: ['A', 'B', 'C'],
+    datasets: [{ data: [10, 20, 30], backgroundColor: T['--accent'] || '#3b82f6' }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { ticks: { color: text }, grid: { color: grid } },
+      x: { ticks: { color: text }, grid: { color: grid } },
+    },
+  }
+});
+```
+
+### Chart type routing
+
+| Data shape | Use |
+|-----------|-----|
+| Simple bar/line/pie/scatter | Quick Chart Template above |
+| ECharts-only types (sankey/treemap/gauge/funnel/candlestick) | Full ECharts template |
+| Interactive controls needed | diagram-html with slider/select |
+| Custom D3 visualization | D3 template |
+
+## Interactive Table Widget
+
+| Row count | Approach |
+|-----------|----------|
+| < 50 rows | Markdown table |
+| 50-500 rows | diagram-html sortable table |
+| 500+ rows | diagram-html with virtual scroll |
+
+### Sortable table pattern
+
+```html
+<style>
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { cursor: pointer; user-select: none; position: sticky; top: 0;
+       background: var(--surface); border-bottom: 2px solid var(--border); }
+  td, th { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  .sort-icon::after { content: ' ⇅'; opacity: 0.3; }
+  .sort-asc::after { content: ' ↑'; opacity: 1; }
+  .sort-desc::after { content: ' ↓'; opacity: 1; }
+  input[type="text"] { width: 100%; padding: 8px; margin-bottom: 8px;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg); color: var(--text); }
+  .table-container { max-height: 400px; overflow-y: auto; }
+</style>
+<input type="text" id="filter" placeholder="Filter..." aria-label="Filter table" />
+<div class="table-container">
+  <table id="dataTable" role="grid">
+    <thead><tr></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+<script>
+  const DATA = [ /* row objects */ ];
+  const COLS = Object.keys(DATA[0]);
+  // Build thead, tbody, sort on th click, filter on input
+</script>
+```
+
+### Rules
+- Sticky header: `position: sticky; top: 0`
+- Filter input above table
+- Sort indicator on column headers
+- Max height 400px with overflow scroll
+
 ## D3 Choropleth Template
 
 ```html

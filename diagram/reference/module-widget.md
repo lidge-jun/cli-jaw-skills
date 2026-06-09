@@ -427,3 +427,34 @@ No external library needed — zero loading time.
 - CDN allowlist (CSP-enforced): `cdnjs.cloudflare.com`, `cdn.jsdelivr.net`, `unpkg.com`, `esm.sh`
 - Import maps auto-injected for Three.js bare specifiers (`import from 'three'`)
 - If widget includes its own `<script type="importmap">`, the auto-injection is skipped
+
+## Available CDN Libraries
+
+### Tier 1: Documented (verified, prefer these)
+
+Chart.js, ECharts 6, D3.js, Leaflet, Matter.js, Math.js, Three.js, p5.js, Tone.js
+(see module-chart.md, module-map.md, and earlier sections for versions and templates)
+
+### Tier 2: Available via esm.sh (use when Tier 1 can't)
+
+| Library | Import | Use case |
+|---------|--------|----------|
+| React 18 | `https://esm.sh/react@18` + `react-dom@18/client` | Complex stateful UI |
+| Plotly.js | `https://esm.sh/plotly.js-basic-dist-min@2` | 3D scatter, contour, surface |
+| Tailwind CSS | `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4` | Utility CSS |
+| PapaParse | `https://esm.sh/papaparse@5` | CSV parsing |
+| SheetJS | `https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js` | Excel parsing |
+| Anime.js | `https://esm.sh/animejs@3` | Declarative animation |
+
+### Routing
+
+| Need | Tier 1 sufficient? | Otherwise |
+|------|-------------------|-----------|
+| bar/line/pie | Chart.js | — |
+| sankey/treemap/gauge | ECharts | — |
+| 3D scatter/surface | — | Plotly.js |
+| Complex stateful UI | — | React |
+| Maps | Leaflet | — |
+| Spreadsheet parsing | — | SheetJS/PapaParse |
+
+**Rule**: Use Tier 1 if it can do the job. Tier 2 only for capabilities Tier 1 lacks.
