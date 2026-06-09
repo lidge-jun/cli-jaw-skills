@@ -2,7 +2,23 @@
 name: diagram
 description: "SVG diagrams, charts, and interactive visualizations for chat UI"
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
+capabilities:
+  - "SVG: structural diagrams, comparisons, timelines, mockups, art"
+  - "Mermaid: flowchart, sequence, ER, state, timeline, mindmap, gantt, pie, radar, git graph"
+  - "Charts (Chart.js): bar, line, pie, scatter, doughnut, polar"
+  - "Charts (ECharts): heatmap, sankey, radar, treemap, gauge, funnel, candlestick, chord"
+  - "Maps (Leaflet): interactive maps with markers, popups, dark mode"
+  - "Interactive: sliders, toggles, sendPrompt, physics (Matter.js), 3D (Three.js), audio (Tone.js), creative (p5.js)"
+references:
+  - "svg-components.md — SVG primitives, layout templates"
+  - "color-palette.md — 9-color design system"
+  - "module-chart.md — Chart.js + ECharts + D3"
+  - "module-interactive.md — controls, sendPrompt, debouncing"
+  - "module-widget.md — physics, 3D, audio, creative coding"
+  - "module-map.md — Leaflet maps"
+  - "module-mockup.md — UI mockup patterns"
+  - "module-art.md — decorative SVG"
 ---
 
 # Diagram Visualization Skill
