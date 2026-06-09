@@ -250,6 +250,41 @@ new Chart(document.getElementById('c'), {
 - Sort indicator on column headers
 - Max height 400px with overflow scroll
 
+### Virtual scroll pattern (500+ rows)
+
+Render only the visible window — fixed row height + spacer rows keep the scrollbar true:
+
+```html
+<div class="table-container" id="vc">
+  <table role="grid">
+    <thead><tr><!-- th per column --></tr></thead>
+    <tbody id="vb"></tbody>
+  </table>
+</div>
+<script>
+  const DATA = [ /* row objects */ ], COLS = Object.keys(DATA[0]);
+  const ROW_H = 37, BUF = 10; // fixed row height (px) — required for offset math
+  const vc = document.getElementById('vc'), vb = document.getElementById('vb');
+  function render() {
+    const start = Math.max(0, Math.floor(vc.scrollTop / ROW_H) - BUF);
+    const count = Math.ceil(vc.clientHeight / ROW_H) + BUF * 2;
+    const end = Math.min(DATA.length, start + count);
+    const rows = DATA.slice(start, end).map(r =>
+      `<tr style="height:${ROW_H}px">${COLS.map(c => `<td>${r[c]}</td>`).join('')}</tr>`);
+    vb.innerHTML = `<tr style="height:${start * ROW_H}px"></tr>` + rows.join('')
+      + `<tr style="height:${(DATA.length - end) * ROW_H}px"></tr>`;
+  }
+  let raf = null;
+  vc.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = null; render(); }); });
+  render();
+</script>
+```
+
+- Fixed `ROW_H` on every `<tr>` is mandatory — offset math breaks otherwise
+- Top/bottom spacer rows keep the scrollbar proportional to the full dataset
+- Scroll handler is rAF-throttled — never re-render synchronously per event
+- Reuses the sortable-table CSS above (sticky `<thead>` keeps working); sort/filter: mutate `DATA`, then call `render()`
+
 ## D3 Choropleth Template
 
 ```html

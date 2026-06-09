@@ -107,7 +107,7 @@ Use inside `diagram-html` blocks with jaw theme tokens.
 ```
 
 ### Rules
-- Team logos: emoji or text initials (no external image dependencies unless URL is provided)
+- Team logos: emoji or text initials — arbitrary external image URLs are CSP-blocked (`img-src` allows only CDN-allowlist hosts, `data:`, `blob:`)
 - Score: large centered text, bold
 - Match details: smaller text below score
 - Multiple matches: repeat `.match-row` blocks with dividers
@@ -127,7 +127,7 @@ Use inside `diagram-html` blocks with jaw theme tokens.
 ```
 
 ### Rules
-- Image: emoji placeholder if no URL available
+- Image: emoji placeholder — external image URLs render only from CDN-allowlist hosts (CSP `img-src`); otherwise stay with emoji
 - Price: bold, prominent
 - Rating: star emoji + numeric + review count
 - Grid: `auto-fill, minmax(160px, 1fr)` for responsive columns

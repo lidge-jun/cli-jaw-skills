@@ -324,3 +324,4 @@ For detailed patterns, see:
 - `reference/module-map.md` — Leaflet interactive maps (OpenStreetMap tiles, markers, popups, dark mode)
 - `reference/module-mockup.md` — UI mockup patterns
 - `reference/module-art.md` — Decorative SVG patterns
+- `reference/module-domain-cards.md` — Domain card templates (weather, finance, sports, product) + real-time data pipeline
