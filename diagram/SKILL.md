@@ -69,9 +69,36 @@ Default to illustrative SVG for "how does X work?" — don't default to flowchar
 - **Theme**: all stable Mermaid types pick up the host dark/light theme automatically via cli-jaw's `themeVariables`. Do NOT set explicit colors in `%%{init: ...}%%` unless overriding for semantic reasons.
 
 ## When to Use
-Produce a diagram when the user's question benefits from visual explanation:
-flowcharts, comparisons, timelines, org charts, data charts, maps, UI mockups,
-physics simulations, interactive demos.
+
+### 1. Explicit request (명시적 요청)
+
+한국어: "그려줘", "시각화", "다이어그램", "차트로", "도표로", "비교표", "플로우차트"
+영어: "draw", "visualize", "diagram", "chart", "graph", "illustrate", "show me"
+
+### 2. Proactive generation (에이전트 판단)
+
+다음 상황에서 텍스트만으로는 전달이 부족할 때 자동 생성:
+- 시스템/프로세스 아키텍처 설명 (3+ 컴포넌트)
+- 데이터 3항목 이상 비교
+- 프로세스 5단계 이상 설명
+- 계층 구조 (트리 2+ 레벨)
+- 타임라인/히스토리 (4+ 이벤트)
+- 수학적 관계 시각화
+
+### 3. Specification (명사구 스펙)
+
+사용자가 시각물의 구조를 명사구로 기술:
+- "X vs Y 비교" → comparison layout
+- "X 구조" / "X 아키텍처" → architecture diagram
+- "X 플로우" → flowchart
+- "X 타임라인" → timeline
+
+### 4. When NOT to use
+
+- 단순 질의응답 (팩트 한 줄이면 충분)
+- 코드 리뷰/디버깅 (코드가 더 명확)
+- 이미 diagram-html 내에서 동작 중인 위젯 재생성
+- 사용자가 "간단히 설명해줘"라고 한 경우
 
 ## Delivery Mechanism (read before producing anything)
 
@@ -214,6 +241,12 @@ This ensures visual content appears before scripts execute (important during str
 - **iframe widgets**: use `window.__jawTheme.isDark` (boolean) for JS-side theme detection
 - **iframe widgets**: use `window.__jawTokens['--bg']` etc. for computed host CSS values
 - Do NOT use `matchMedia('prefers-color-scheme')` — the host controls theme
+
+## SVG Mobile Notes
+
+- viewBox 680px 기준은 유지하되, 텍스트는 최소 14px (모바일 축소 후 ~9px)
+- CJK 텍스트: 최소 16px (축소 후 ~10px)
+- 터치 가능한 SVG 요소: 최소 44×44 hit area
 
 ## Reference Files
 For detailed patterns, see:

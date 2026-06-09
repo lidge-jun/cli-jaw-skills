@@ -79,6 +79,97 @@ const chartColors = {
 - Always add `onerror` handler on CDN script tags
 - Use `responsive: true` + `maintainAspectRatio: false`
 
+## Data Formatting
+
+### Number format
+
+| Situation | Method | Example |
+|-----------|--------|---------|
+| Large numbers | compact (K/M/B) | 1,234,567 → 1.2M |
+| Integer | Math.round() | 42.7 → 43 |
+| Decimal | toFixed(N) | 0.1234 → 0.12 |
+
+### Currency
+
+| Locale | prefix | Example |
+|--------|--------|---------|
+| USD | $ | $1,200 |
+| KRW | ₩ | ₩1,200 |
+| EUR | € | €1,200 |
+| JPY | ¥ | ¥1,200 |
+
+Chart.js tick formatter:
+```js
+options: {
+  scales: {
+    y: {
+      ticks: {
+        callback: v => '$' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : v)
+      }
+    }
+  }
+}
+```
+
+### Percent
+
+Store values as integers (42 = 42%), display with "%" suffix.
+
+### Korean number format (한국어 숫자)
+
+| Value | Display |
+|-------|---------|
+| 10,000 | 1만 |
+| 100,000,000 | 1억 |
+| 1,000,000,000,000 | 1조 |
+
+```js
+function formatKR(v) {
+  if (v >= 1e12) return (v/1e12).toFixed(1) + '조';
+  if (v >= 1e8) return (v/1e8).toFixed(1) + '억';
+  if (v >= 1e4) return (v/1e4).toFixed(0) + '만';
+  return v.toLocaleString('ko-KR');
+}
+```
+
+### ECharts formatter
+
+```js
+yAxis: {
+  axisLabel: {
+    formatter: v => '$' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v.toLocaleString())
+  }
+}
+```
+
+## Mobile Chart Sizing
+
+### Label overflow prevention
+
+- x-axis labels > 6: use `maxRotation: 45` or skip every other label
+- Abbreviate on mobile: "January" → "Jan", "2026-01-15" → "1/15"
+
+### Chart.js responsive defaults
+
+```js
+options: {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'bottom' }
+  }
+}
+```
+
+### ECharts responsive defaults
+
+```js
+option: {
+  grid: { left: '15%', right: '5%', containLabel: true },
+  legend: { type: 'scroll', bottom: 0 }
+}
+```
+
 ## D3 Choropleth Template
 
 ```html

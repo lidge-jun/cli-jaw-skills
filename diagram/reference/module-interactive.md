@@ -222,3 +222,30 @@ When combining sliders with charts, update chart data on input events:
 
 ## Style-First, Script-Last
 See the `Style-First, Script-Last` section in the parent `SKILL.md` — same rule applies to interactive widgets. Controls markup goes before `<script>`; scripts only wire up pre-existing DOM.
+
+## Mobile Considerations
+
+### Touch targets
+
+- All interactive elements: **minimum 44×44px** (Apple HIG / Material Design)
+- Slider: `height: 44px`, thumb: `width: 24px; height: 24px`
+- Button gap: `gap: 8px` minimum
+
+### Control layout wrapping
+
+```css
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+```
+
+### Responsive breakpoint
+
+```css
+@media (max-width: 480px) {
+  .chart-container { min-height: 200px; }
+  .controls { flex-direction: column; }
+}
+```
