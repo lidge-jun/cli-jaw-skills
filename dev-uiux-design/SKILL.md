@@ -1,7 +1,7 @@
 ---
 name: dev-uiux-design
-description: "UI/UX intent discovery, design vocabulary, product personalities, UX state patterns, typography line break judgment, and logo trust section design. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic."
-keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections]
+description: "UI/UX intent discovery, design vocabulary, product personalities, UX state patterns, typography line break judgment, favicon/product logo design, and logo trust section design. Use when user design direction is vague, when building onboarding/empty/error states, when setting up favicons or product logos, or when referencing a product aesthetic."
+keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo]
 ---
 
 # UI/UX Design: Intent Discovery, Patterns & Product Vocabulary
@@ -12,6 +12,8 @@ Use this skill when:
 - User references a product aesthetic ("Notion 느낌", "Linear처럼")
 - Starting a new design system or generating a color palette
 - Choosing layout patterns or navigation architecture
+- Setting up favicons, product logos, or brand identity elements
+- Handling logo dark mode variants, OG images, or social sharing meta
 
 Read this BEFORE `aesthetics.md` when the user cannot articulate a clear design direction.
 For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
@@ -35,6 +37,7 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 | `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
 | `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
 | `references/typography-line-breaks.md` | **Always for text-heavy UI** | Heading break quality, **short descriptor category** (hero subtitle, card desc — use `balance` not `pretty`), orphan prevention, `ch` units, Korean orphan criteria, `-webkit-line-clamp` conflict |
+| `references/favicon-logo.md` | **Favicon, product logo, or brand identity work** | Favicon file set, SVG dark mode, logo in nav/footer, dark mode variants, OG images, brand tokens, common mistakes |
 | `references/logo-trust-sections.md` | Integration/partner/client logos | Marquee vs grid decision, anti-patterns, grayscale treatment, placement |
 | `references/visual-hierarchy.md` | Any layout / composition decision | 6 levers: size scale, weight contrast, color emphasis, spacing, position, density |
 | `references/form-patterns.md` | Forms, wizards, auth, file upload | Validation timing, multi-step, password UX, file upload, search/filter |
