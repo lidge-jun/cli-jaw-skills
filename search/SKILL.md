@@ -21,6 +21,14 @@ primary source has been opened or fetched.
 candidates); the `browser` skill verifies evidence (original page, DOM, PDF,
 tables). Search finds, browser proves.
 
+**Snippet consensus is not verification.** Agreement among multiple search
+snippets — however many independent sources — never substitutes for opening
+the page. Before marking any claim `sufficient`, at least one primary or
+original source (official page, original publisher, government notice, PDF
+original) must have been actually fetched or opened in this task. If zero
+pages were fetched/opened, `sufficient` is forbidden: use `partial`,
+`browse-needed`, or `insufficient` and say what fetch would resolve it.
+
 ## Routing Quick-Reference
 
 | Signal in query | Start at |
@@ -96,6 +104,22 @@ cli-jaw browser status   # must show "connected"
 ```
 
 If not connected: `cli-jaw browser start --agent`
+
+**Declared need = execute.** `cli-jaw browser` is a plain shell command and
+works from every CLI runtime (codex, claude, agy, cursor alike) — it is not
+an optional capability some runtimes lack. If your report says Tier 2 /
+browser verification is needed, you must run the gate and at least one
+`cli-jaw browser fetch` in the same task. Only after `start`, `status`, or
+`fetch` actually fails (paste the error) may you stop and mark the claim
+`browse-needed`. Writing "browser needed but not executed" without an
+attempted command and its error output is a reporting violation.
+
+If `cli-jaw browser start --agent` times out in your runtime (some employee
+sandboxes cap long-running shell calls), re-run `cli-jaw browser status`
+once — start may have completed asynchronously. `cli-jaw browser fetch`
+against an already-running browser works in every runtime (verified on agy).
+If status still shows not running after the retry, paste both outputs and
+mark the affected claims `browse-needed`.
 
 ### Verification workflow
 
@@ -256,6 +280,11 @@ before driving hosted AI providers.
    `insufficient`. For Tier 3 progrok, if `progrok status` is not logged in,
    skip that tier and report.
 5. **Match effort to query.** Don't use xhigh/Tier 4 for a simple version check.
+6. **No `sufficient` on snippets alone.** At least one primary/original source
+   must be actually fetched/opened before any claim is marked `sufficient` —
+   snippet agreement across many sources does not count.
+7. **No "browser needed but not executed".** If you state Tier 2 is needed,
+   run it; stop at `browse-needed` only with a pasted command failure.
 
 ## Result Report Template (recommended)
 
