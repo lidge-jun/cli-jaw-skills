@@ -29,6 +29,47 @@ original) must have been actually fetched or opened in this task. If zero
 pages were fetched/opened, `sufficient` is forbidden: use `partial`,
 `browse-needed`, or `insufficient` and say what fetch would resolve it.
 
+## Candidate-space discipline (multi-constraint identification)
+
+**Self-gate**: apply this section ONLY when the question describes a hidden
+entity through 3+ combined constraints (riddle/puzzle style: "the X that did
+A, whose member did B, and ..."). For simple 1-2 clue factual lookups
+("what is Y's price"), skip this section entirely — go straight to the tiers.
+
+When the gate triggers:
+
+1. **M1 — Anchor on the rarest clue.** Rank clues by how few entities can
+   satisfy them. Anchor the search on the most discriminative clue (a unique
+   choreography, a specific incident, an exact number), NEVER on a broad
+   category clue ("girl group", "drama", "city").
+2. **M2 — Enumerate before you converge.** Before accepting any candidate,
+   list 3+ candidates that satisfy the anchor clue (or state explicitly that
+   fewer exist and why). Check EVERY candidate against EVERY clue in a
+   candidate × constraint matrix; record each elimination reason.
+3. **M3 — No implicit narrowing.** Do not restrict era, generation, region,
+   or category unless the question states it. Recency bias is the known
+   failure: older/less-famous entities are valid candidates. If you apply
+   any narrowing, declare it explicitly in the report.
+4. **M4 — Disconfirmation pass.** After converging on a final candidate, run
+   at least one search that tries to find a DIFFERENT entity satisfying the
+   anchor clue ("other groups famous for finger-touching choreography").
+   Only finalize if the disconfirmation search fails to produce a rival.
+5. **M5 — Weak-match flag.** If a clue only matches via reinterpretation or
+   paraphrase (clue says "fingers touching each other", evidence says
+   "piano-fingering dance"), mark that match WEAK in the matrix. Any WEAK
+   match in the final candidate's row forbids `sufficient`.
+
+**Fallbacks (mandatory, in order):**
+- Cannot enumerate 3 candidates → state it, proceed with what exists, and
+  cap evidence_status at `partial`.
+- Disconfirmation finds a rival candidate → report the tie explicitly, run
+  one more discriminating search on the strongest differing clue; if still
+  tied, answer with both and mark `partial`.
+- WEAK match remains on the chosen candidate → answer allowed, but
+  evidence_status MUST be `partial` with the weak clue named.
+- Time budget runs low → report the matrix as-is (incomplete rows marked),
+  never silently drop unchecked clues.
+
 ## Routing Quick-Reference
 
 | Signal in query | Start at |
