@@ -310,6 +310,13 @@ Current:
     DOM fallback, open the model pill and select
     `[data-testid="model-switcher-gpt-5-5-pro-thinking-effort"]`; do not click
     generic "Pro" by role/name because the profile menu can also match.
+  - 2026-06-11 headed UI note: ChatGPT may show a simplified `Intelligence`
+    menu instead of the older model row plus effort submenu. The runtime maps
+    `instant` and `thinking --effort light` to `Instant`,
+    `thinking --effort standard` to `Medium`, `thinking --effort extended` to
+    `High`, `thinking --effort heavy` to `Extra High`,
+    `pro --effort standard` to `Pro Standard`, and `pro --effort extended` to
+    `Pro Extended`.
 - Gemini model switching: flash-lite / flash / pro
   - 2026-05-19 headed UI note: the Gemini picker currently exposes visible
     versioned labels such as `3.1 Flash-Lite`, `3 Flash`, and `3.1 Pro`, but
@@ -328,3 +335,7 @@ Future:
 - ChatGPT web search and image generation tool runtime after headed frontend observation
 - Gemini image generation runtime after headed frontend observation
 - Web UI watcher dashboard
+- agbrowse-owned command surfaces: ChatGPT code mode (`agbrowse web-ai code`),
+  multi-zip artifact retrieval, and repeatable mixed `agbrowse --file` uploads
+  stay in agbrowse until cli-jaw has equivalent command surface, runtime, tests,
+  and installed skill docs.
