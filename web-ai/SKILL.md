@@ -208,11 +208,47 @@ identical; only the binary prefix changes.
 | `cli-jaw browser web-ai render ...` | `agbrowse web-ai render ...` |
 | `cli-jaw browser web-ai query --vendor chatgpt ...` | `agbrowse web-ai query --vendor chatgpt ...` |
 | `cli-jaw browser web-ai poll --vendor chatgpt --timeout 1200` | `agbrowse web-ai poll --vendor chatgpt --timeout 1200` |
+| code-mode artifact extraction | `agbrowse web-ai code-extract --vendor chatgpt --url "https://chatgpt.com/c/<conversation-id>" --output-zip ./result.zip` |
 
 Only switch when the user explicitly asks for the standalone path. The
 two runtimes share defaults (ChatGPT/Gemini 1200s, Grok 600s) and the
 same `[INSTRUCTIONS]` prompt block, so behavior stays consistent. Do not
 run both against the same `--port` at the same time.
+
+### ChatGPT Code Artifact Extraction
+
+ChatGPT code-mode generation and later zip extraction remain standalone
+`agbrowse` surfaces until cli-jaw has equivalent command routes, retrieval
+runtime, tests, and installed skill docs. When an old ChatGPT conversation still
+contains plain assistant text such as `/mnt/data/result.zip`, recover it with:
+
+```bash
+agbrowse web-ai code-extract \
+  --vendor chatgpt \
+  --url "https://chatgpt.com/c/<conversation-id>" \
+  --output-zip ./result.zip
+```
+
+For multiple zips:
+
+```bash
+agbrowse web-ai code-extract \
+  --vendor chatgpt \
+  --url "https://chatgpt.com/c/<conversation-id>" \
+  --multi-zip \
+  --output-dir ./artifacts
+```
+
+Then verify locally:
+
+```bash
+unzip -t ./result.zip
+unzip -l ./result.zip
+```
+
+The original conversation URL/session/current ChatGPT tab and logged-in
+browser profile are still required; a copied `/mnt/data/result.zip` line alone
+is not enough.
 
 ## Context Packaging
 
@@ -336,6 +372,7 @@ Future:
 - Gemini image generation runtime after headed frontend observation
 - Web UI watcher dashboard
 - agbrowse-owned command surfaces: ChatGPT code mode (`agbrowse web-ai code`),
-  multi-zip artifact retrieval, and repeatable mixed `agbrowse --file` uploads
-  stay in agbrowse until cli-jaw has equivalent command surface, runtime, tests,
-  and installed skill docs.
+  later code artifact extraction (`agbrowse web-ai code-extract`), multi-zip
+  artifact retrieval, and repeatable mixed `agbrowse --file` uploads stay in
+  agbrowse until cli-jaw has equivalent command surface, runtime, tests, and
+  installed skill docs.
