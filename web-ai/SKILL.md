@@ -272,7 +272,8 @@ actually available while the response is streaming. Small tasks usually need
 5-10 todo items, but complex tasks may use 20 or more. That visible todo UI
 may disappear after the answer finishes; do not fail a completed run because
 the UI is no longer visible. The durable validation target is the zip-root
-`PLAN.md` or `00_plan.md` checklist.
+`PLAN.md` or `00_plan.md` checklist. Completed items in that plan file should
+be marked `[x]` before final packaging.
 
 ## Context Packaging
 
