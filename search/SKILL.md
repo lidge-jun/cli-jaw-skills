@@ -59,6 +59,13 @@ When the gate triggers:
    "piano-fingering dance"), mark that match WEAK in the matrix. Any WEAK
    match in the final candidate's row forbids `sufficient`.
 
+**Bounded effort (the discipline must fit the time budget):**
+- Cap enumeration at 3-5 candidates; one search per unverified matrix cell,
+  and reuse one page's evidence across multiple cells whenever possible.
+- Disconfirmation pass = 1-2 searches, no more.
+- A complete shallow matrix beats deep verification of a single candidate:
+  breadth first, then verify only the surviving candidate's weakest cells.
+
 **Fallbacks (mandatory, in order):**
 - Cannot enumerate 3 candidates → state it, proceed with what exists, and
   cap evidence_status at `partial`.
