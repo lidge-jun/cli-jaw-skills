@@ -5,7 +5,8 @@ description: "PABCD orchestration workflow. Structured 5-phase development with 
 
 Structured 5-phase development. Advance only with user approval.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (e.g. small in-place patches):** See `dev` §0.0 Work Classifier and §0.1 Patch
+> Fast-Path first — full PABCD is the C4 default and conditional for C3, not the baseline for every task.
 
 ## Interview Trigger (MUST)
 
@@ -91,13 +92,16 @@ Devlog plan artifacts use decade-range numbering to separate concerns:
 
 | Range | Purpose | Examples |
 |-------|---------|----------|
-| 00–09 | Research, specs, MOC (mandatory) | `00_plan.md`, `01_api-survey.md`, `02_competitor-analysis.md` |
+| 00–09 | Research, specs, MOC | `00_plan.md`, `01_api-survey.md`, `02_competitor-analysis.md` |
 | 10–19 | Phase 1 | `10_phase1-auth-module.md`, `11_phase1-db-schema.md` |
 | 20–29 | Phase 2 | `20_phase2-frontend.md` |
 | 30–39 | Phase 3 | ... |
 
 Rules:
-- 00-range research is **mandatory** — always produce at least one research/spec doc before implementation phases.
+- 00-range durable research is **mandatory for C4**, and for C3 only when state must persist
+  across turns/agents, public contract or architecture decisions need durable audit, or the
+  user/repo already uses devlog planning for that task; optional for C0-C2 and
+  low-persistence C3 (a response-level plan plus verification record is enough).
 - Default: sequential within decade (`00`, `01`, `02`...).
 - Overflow (>10 docs in a range): use sub-index (`00_0_name.md`, `00_1_name.md`).
 - NEVER use bare filenames like `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`.
@@ -207,6 +211,19 @@ Audit: verify the imports in ..."` — no "read the plan" line needed.
 - Never let workers reconstruct the plan from a short task description.
 
 ### Phase Skip
-- A (audit) is never "unnecessary". Even trivial plans can hit integration issues. Audit first.
-- B verification is never "skippable". Untested code is not "done".
+- A (audit) is **mandatory for C4**, and for C3 when public contract, architecture,
+  persistence, cross-agent, or cross-session risk exists; use a micro-audit for C2 and
+  optional audit for C0-C1 (see `dev` §0.0 for classes).
+- B verification is never "skippable". Untested code is not "done" — but verification
+  intensity scales with the work class (PABCD-AUTO-01).
 - The orchestrator does not enforce these gates today — YOU do.
+
+## PABCD Depth by Work Class
+
+| Class | Plan (P) | Audit (A) | Build (B) | Check (C) | Record (D) |
+|-------|----------|-----------|-----------|-----------|------------|
+| C0-C1 | None/inline | Optional | Direct fix | Smallest proof | One-line summary |
+| C2 | Compact plan | Micro-audit | Boss writes, focused tests | Targeted gate | Summary |
+| C3 | Compact or full PABCD plan depending on persistence need | Required for public contract/architecture risk; otherwise focused audit | Boss writes, employees verify only when useful | Affected suite + docs consistency when docs/contracts changed | Summary + evidence; durable record only when state must persist |
+| C4 | Full PABCD plan | Required, independent | Boss writes, employee verifies | Full relevant gates | Durable risk/approval/evidence record |
+| C5 | Interview/research first | — | — | — | Reclassify, then follow the new class |

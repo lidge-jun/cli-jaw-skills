@@ -11,15 +11,82 @@ metadata:
 
 Core rules applied to every sub-agent, regardless of role.
 
-## §0.1 Patch Fast-Path
+## §0.0 Work Classifier (C0-C5)
 
-When the change is **≤5 lines**, **in-place edit**, and **introduces no new abstractions**:
+**Classify every task before choosing process depth** (DEV-CLASS-01). The class selects how much
+planning, reading, and verification the task deserves — never apply maximum process by default.
+
+| Class | Name | Signals | Default Process |
+|-------|------|---------|-----------------|
+| C0 | Trivial Text | Typo, comment, copy, log string — zero behavior change | Direct fix + smallest proof (§0.1) |
+| C1 | Single-File Local | One file, local behavior, no new abstractions | Fast path (§0.1) + targeted check |
+| C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests |
+| C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; employee audit when useful |
+| C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Strict PABCD + full relevant gates + durable risk/evidence record |
+| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
+
+**ESCALATE triggers override any fast path** (DEV-ESCALATE-01): security, data
+deletion/migration, destructive ops, public contract change, release surface, permission
+model, new dependency/framework. Any of these promotes the task to C4-level care and may
+require asking the user.
+
+## §0.1 Patch Fast-Path (C0/C1)
+
+For **C0/C1 work** (e.g. a ≤5-line in-place edit with no new abstractions):
 - Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
 - Keep: §3 verification gate, §5 safety rules (imports/exports), §7.2 static analysis
 - Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
 
-This is scope guidance, not an exemption. If the small patch touches a critical area
-(auth, payments, data deletion), read the relevant reference regardless.
+This is scope guidance, not an exemption. If the small patch touches an ESCALATE area
+(auth, payments, data deletion), it is not C0/C1 — reclassify and read the relevant reference.
+
+## §0.2 Rule Classes
+
+Every rule in the dev skill family carries one severity class. When a rule's class is not
+marked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEFAULT.
+
+- **STRICT** — always applies; violating it blocks completion (safety, broken builds, secrets).
+- **DEFAULT** — apply unless a documented, stated reason says otherwise.
+- **HEURISTIC** — judgment guide; deviation needs no justification, just awareness.
+- **STYLE_SAMPLE** — illustrative example or preset only. Examples illustrate acceptable
+  choices but MUST NOT become universal requirements (DEV-STYLE-SAMPLE-01).
+- **ESCALATE** — stop and ask the user before proceeding.
+
+## §0.3 Methodology Overlays (task_tags)
+
+Methodologies are **conditional overlays, never universal**. They activate via dispatch
+`task_tags`, explicit user request, repo convention, or a matching strict trigger — required
+evidence applies only when the strict trigger applies (low-risk/local work uses the smallest
+proof that validates the claim, with the reduced scope stated).
+
+| Tag | Loads | Strict trigger |
+|-----|-------|----------------|
+| `tdd` / `testing` | dev-testing | User/repo enforces TDD, or regression risk |
+| `bdd_acceptance` | dev-testing, dev | Ambiguous acceptance behavior |
+| `ddd` / `clean_arch` / `hexagonal` / `architecture` | dev-architecture, dev-backend | Real boundary pressure at C3/C4 |
+| `vertical_slice` | dev-architecture, dev-backend, dev-frontend, dev-testing | Thin end-to-end slice (C2) |
+| `adr_rfc` | dev-architecture, dev-scaffolding | Architecturally significant decision |
+| `review` / `code_review` | dev-code-reviewer | Review requested or C3/C4 |
+| `threat_model` / `security` | dev-security | C4 security/data/tooling risk |
+| `observability` / `observability_pipeline` | dev-backend (+dev-data) | Production, incident, release, long-lived runtime |
+| `debugging` / `debugging_rca` | dev-debugging | Repeated failure needs root cause |
+| `migration_backfill` | dev-data, dev-backend, dev-testing | Production or non-trivial data |
+| `product_discovery` (+`_ui`) | dev (+dev-uiux-design) | Ambiguous behavior/user value/metric |
+| `release_cd` | dev-testing, dev-backend, dev-scaffolding | Release/CI/CD surface |
+| `frontend_ui` | dev-uiux-design (with role=frontend) | UI/design intent work |
+| `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
+
+Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
+`frontend|backend|data|docs` (PROMPT-ROUTING-01).
+
+## §0.4 Workflow Modes
+
+The same rules flex by execution mode — know which one you are in:
+ordinary chat (direct work, C0-C2 typical) · strict PABCD (`orchestrate P/A/B/C/D`) ·
+goal mode (self-advancing gates, evidence-backed checkpoints) · isolated employee
+(read-only verifier by default) · mutable employee (`--mutable`, scoped writes) ·
+read-only review (no mutation, findings only) · docs-only work (no code gates, docs
+consistency checks instead).
 
 ## Companion Skills
 
