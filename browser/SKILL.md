@@ -203,6 +203,13 @@ evidence is weak:
 - snippets conflict across providers or look like they describe a different
   program, year, region, or source.
 
+On browser escalation, `fetch` also runs an in-page Defuddle pass that
+extracts the main content as **markdown** (tables, links, and footnotes
+preserved). When the JSON evidence includes `browser-defuddle`, the returned
+`content` is that markdown extraction — prefer it over raw page text for
+tables/lists and X/article pages. If it fails (strict CSP), fetch degrades to
+plain text and records a `defuddle:*` warning.
+
 For Korean public/current searches, preserve source-sensitive status in the
 answer: `sufficient` only after original evidence is visible, `browse-needed`
 when browser escalation is still required, and `insufficient` when the source
