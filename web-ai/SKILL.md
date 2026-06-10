@@ -315,7 +315,7 @@ Current:
     `instant` and `thinking --effort light` to `Instant`,
     `thinking --effort standard` to `Medium`, `thinking --effort extended` to
     `High`, `thinking --effort heavy` to `Extra High`,
-    `pro --effort standard` to `Pro Standard`, and `pro --effort extended` to
+    `pro --effort standard` to `Pro Extended`, and `pro --effort extended` to
     `Pro Extended`.
 - Gemini model switching: flash-lite / flash / pro
   - 2026-05-19 headed UI note: the Gemini picker currently exposes visible
