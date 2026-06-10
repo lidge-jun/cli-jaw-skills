@@ -79,6 +79,12 @@ proof that validates the claim, with the reduced scope stated).
 Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
 `frontend|backend|data|docs` (PROMPT-ROUTING-01).
 
+### Ordinary product reference (on-demand)
+
+For C2 ordinary product slices, the recipe lives in
+`references/product/crud-product-development.md` — read it when building a conventional
+feature slice, not for every task.
+
 ## §0.4 Workflow Modes
 
 The same rules flex by execution mode — know which one you are in:

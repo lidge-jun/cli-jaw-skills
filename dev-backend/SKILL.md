@@ -19,6 +19,7 @@ This skill has modular references for specialized guidance — read the relevant
 
 | File                                   | When to Read                   | What It Covers                                                         |
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `references/core/crud-api.md`          | C2 ordinary CRUD/resource endpoints | Route/schema/service/query basics, five operations, error+permission mapping |
 | `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
 | `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |

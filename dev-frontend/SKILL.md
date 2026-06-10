@@ -16,6 +16,7 @@ This skill has modular references for specialized guidance — read the relevant
 
 | File                                      | When to Read                         | What It Covers                                                                    |
 | ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- |
+| `references/core/crud-ui.md`              | C2 list/detail/form product screens  | State coverage (loading/empty/error/permission), forms, objective UX gates         |
 | `references/core/anti-slop.md`            | New components or UI redesign        | 2026 AI slop patterns, Korean slop, oversized text, fake assets, default UI smells |
 | `references/core/aesthetics.md`           | Visual design decisions              | Domain-correct visual direction, typography, color, composition                    |
 | `references/core/product-density.md`      | Apps, tools, dashboards              | Density profiles for landing, consumer app, SaaS, ops, finance, devtools          |
