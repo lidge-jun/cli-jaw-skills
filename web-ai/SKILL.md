@@ -73,6 +73,8 @@ Build a structured question envelope:
 cli-jaw browser web-ai render --vendor chatgpt --prompt "..."
 cli-jaw browser web-ai context-dry-run --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts" --files-report
 cli-jaw browser web-ai context-render --vendor chatgpt --prompt "..." --context-from-files "src/**/*.ts"
+cli-jaw browser web-ai code --vendor chatgpt --model thinking --effort heavy --prompt "Build a Flask API MVP" --output-zip ./result.zip
+cli-jaw browser web-ai code-extract --vendor chatgpt --conversation "https://chatgpt.com/c/<conversation-id>" --output-zip ./result.zip
 cli-jaw browser web-ai status --vendor chatgpt
 cli-jaw browser web-ai query --vendor chatgpt --prompt "..." --context-from-files "src/foo.ts"
 cli-jaw browser web-ai query --vendor chatgpt --inline-only --allow-copy-markdown-fallback --prompt "..."
@@ -212,7 +214,8 @@ identical; only the binary prefix changes.
 | `cli-jaw browser web-ai render ...` | `agbrowse web-ai render ...` |
 | `cli-jaw browser web-ai query --vendor chatgpt ...` | `agbrowse web-ai query --vendor chatgpt ...` |
 | `cli-jaw browser web-ai poll --vendor chatgpt --timeout 1200` | `agbrowse web-ai poll --vendor chatgpt --timeout 1200` |
-| code-mode artifact extraction | `agbrowse web-ai code-extract --vendor chatgpt --url "https://chatgpt.com/c/<conversation-id>" --output-zip ./result.zip` |
+| `cli-jaw browser web-ai code --vendor chatgpt ...` | `agbrowse web-ai code --vendor chatgpt ...` |
+| `cli-jaw browser web-ai code-extract --vendor chatgpt ...` | `agbrowse web-ai code-extract --vendor chatgpt ...` |
 
 Only switch when the user explicitly asks for the standalone path. The
 two runtimes share defaults (ChatGPT/Gemini 1200s, Grok 600s) and the
@@ -232,26 +235,50 @@ older aliases when the current help output differs.
 
 ### ChatGPT Code Artifact Extraction
 
-ChatGPT code-mode generation and later zip extraction remain standalone
-`agbrowse` surfaces until cli-jaw has equivalent command routes, retrieval
-runtime, tests, and installed skill docs. When an old ChatGPT conversation still
-contains plain assistant text such as `/mnt/data/result.zip`, recover it with:
+`cli-jaw browser web-ai code` is the native cli-jaw mirror of agbrowse code
+mode. It is ChatGPT-only. The runtime automatically uploads
+`gpt-dev-agent-context.zip` as attachment 1 before any user-provided `--file`
+attachments, then sends a strict code-generation prompt. New artifacts must
+contain `PLAN.md` or `00_plan.md`; the retrieval step fails closed when that
+plan file is absent.
+
+The prompt asks ChatGPT to use a visible plan/todo tool only when the tool is
+actually available. If no such tool exists in the ChatGPT environment, the
+generated project must put the checklist and verification record in
+`PLAN.md` or `00_plan.md` instead.
+
+Generate and recover a single artifact:
 
 ```bash
-agbrowse web-ai code-extract \
+cli-jaw browser web-ai code \
   --vendor chatgpt \
-  --url "https://chatgpt.com/c/<conversation-id>" \
+  --model thinking \
+  --effort heavy \
+  --prompt "Build a Flask API MVP" \
   --output-zip ./result.zip
 ```
 
-For multiple zips:
+Generate multiple named artifacts:
 
 ```bash
-agbrowse web-ai code-extract \
+cli-jaw browser web-ai code \
   --vendor chatgpt \
-  --url "https://chatgpt.com/c/<conversation-id>" \
+  --model pro \
+  --effort extended \
+  --prompt "Build backend.zip and frontend.zip" \
   --multi-zip \
   --output-dir ./artifacts
+```
+
+When an old ChatGPT conversation still contains assistant text such as
+`MACHINE: /mnt/data/result.zip` or `/mnt/data/result.zip`, recover it later
+without sending a new prompt:
+
+```bash
+cli-jaw browser web-ai code-extract \
+  --vendor chatgpt \
+  --conversation "https://chatgpt.com/c/<conversation-id>" \
+  --output-zip ./result.zip
 ```
 
 Then verify locally:
