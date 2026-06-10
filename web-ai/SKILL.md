@@ -268,12 +268,13 @@ is not enough.
 For new `agbrowse web-ai code` runs, the prompt contract asks ChatGPT to create
 `PLAN.md` or `00_plan.md` in every generated code zip, and to use a visible
 todo/checklist tool such as `turn_plan.update_turn_plan` only when that tool is
-actually available while the response is streaming. Small tasks usually need
-5-10 todo items, but complex tasks may use 20 or more. That visible todo UI
-may disappear after the answer finishes; do not fail a completed run because
-the UI is no longer visible. The durable validation target is the zip-root
-`PLAN.md` or `00_plan.md` checklist. Completed items in that plan file should
-be marked `[x]` before final packaging.
+actually available while the response is streaming. Keep visible/top-level
+checklists to 8 items or fewer; for complex work, put extra detailed stage
+instructions in the plan markdown instead of creating more visible todo items.
+That visible todo UI may disappear after the answer finishes; do not fail a
+completed run because the UI is no longer visible. The durable validation
+target is the zip-root `PLAN.md` or `00_plan.md` checklist. Completed items in
+that plan file should be marked `[x]` before final packaging.
 
 ## Context Packaging
 
