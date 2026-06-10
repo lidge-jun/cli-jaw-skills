@@ -17,6 +17,10 @@ Search is discovery, not evidence. Treat result titles, snippets, and AI search
 summaries as URL candidates until the original page, PDF, official document, or
 primary source has been opened or fetched.
 
+**Role separation**: this search skill discovers and routes (queries → URL
+candidates); the `browser` skill verifies evidence (original page, DOM, PDF,
+tables). Search finds, browser proves.
+
 ## Routing Quick-Reference
 
 | Signal in query | Start at |
@@ -252,3 +256,21 @@ before driving hosted AI providers.
    `insufficient`. For Tier 3 progrok, if `progrok status` is not logged in,
    skip that tier and report.
 5. **Match effort to query.** Don't use xhigh/Tier 4 for a simple version check.
+
+## Result Report Template (recommended)
+
+For search tasks that need comparison or audit (smoke runs, employee
+verification, multi-source research), structure the final report with these
+8 fields. This is a recommended format, not a hard requirement — but smoke
+or audit dispatches may explicitly require it in the task body.
+
+```text
+focused_queries:        <1-3 rewritten keyword queries actually used>
+search_route_used:      <tier/tool used, e.g. built-in web search, cli-jaw browser, progrok>
+candidate_urls:         <URL candidates considered>
+original_pages_opened_or_fetched: <which URLs were actually fetched/opened, with result>
+browse_escalation_decision: <whether Tier 2 browser was needed and why / why not>
+final_answer:           <the answer itself>
+evidence_status:        <sufficient | partial | browse-needed | insufficient, per claim>
+remaining_uncertainty:  <what could not be verified and what would resolve it>
+```

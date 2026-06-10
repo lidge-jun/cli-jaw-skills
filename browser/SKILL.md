@@ -26,6 +26,10 @@ metadata:
 Control Chrome through `cli-jaw browser` commands.
 Use ref-based snapshots to identify page elements, then click/type by ref ID.
 
+**Role separation**: the `search` skill discovers and routes (queries → URL
+candidates); this browser skill verifies evidence when fetch/snippets are not
+enough (original page, DOM, PDF, tables). Search finds, browser proves.
+
 This skill follows the newer `30_browser` workflow shape, adapted for the
 server-backed `cli-jaw browser` runtime. Commands that are not implemented in
 the current `cli-jaw` runtime are separated under **Planned Runtime Delta** and
