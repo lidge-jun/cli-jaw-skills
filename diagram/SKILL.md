@@ -6,7 +6,7 @@ metadata:
 capabilities:
   - "SVG: structural diagrams, comparisons, timelines, mockups, art"
   - "Mermaid: flowchart, sequence, ER, state, timeline, mindmap, gantt, pie, radar, git graph"
-  - "Native Web UI structured renderers: search-results, compose-block, dataframe, chart-json, diff"
+  - "Native chart shortcut: chart-json for simple single-series bar, line, and pie charts"
   - "Charts (Chart.js): bar, line, pie, scatter, doughnut, polar"
   - "Charts (ECharts): heatmap, sankey, radar, treemap, gauge, funnel, candlestick, chord"
   - "Maps (Leaflet): interactive maps with markers, popups, dark mode"
@@ -15,7 +15,7 @@ references:
   - "svg-components.md — SVG primitives, layout templates"
   - "color-palette.md — 9-color design system"
   - "module-chart.md — Chart.js + ECharts + D3"
-  - "structured-renderers.md — native Web UI fence routing and canonical schemas"
+  - "structured-renderers.md — native renderer delegation notes"
   - "module-interactive.md — controls, sendPrompt, debouncing"
   - "module-widget.md — physics, 3D, audio, creative coding"
   - "module-map.md — Leaflet maps"
@@ -67,28 +67,26 @@ Route on the verb, not the noun. Same subject gets different diagrams. Prefer Me
 | "cloud/infra architecture" | Mermaid (beta) | ` ```mermaid ` `architecture-beta` |
 | "hierarchy / proportional size" | Mermaid (beta) | ` ```mermaid ` `treemap-beta` |
 | "free-form block layout" | Mermaid (beta) | ` ```mermaid ` `block-beta` |
-| "show sources / search results / citations" | `search-results` | Use native Web UI result cards for final-answer source lists. Do not use SVG/table unless the user asked for a visual comparison |
-| "write / draft / compose email, message, document" | `compose-block` | Use native editable draft cards with `schemaVersion: "compose-block-v1"` and `variants[]`; do not invent `type/title/body` shorthand |
-| "table / rows / sortable data / filterable data" | `dataframe` | Use native dataframe cards for compact row/column data that benefits from filter/sort/pagination |
-| "patch / diff / unified diff" | `diff` or raw unified diff | Let the native diff viewer own patch display. Do not wrap diffs in SVG or diagram-html |
-| "show data / chart" | `chart-json` for simple bar/line/pie; diagram-html for advanced charts | Use native Web UI cards for compact final-answer charts. Use Chart.js / D3 / ECharts iframe widgets when custom JS, maps, advanced chart types, or richer interactivity are required |
+| "show sources / search results / citations" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `search-results` schema |
+| "write / draft / compose email, message, document" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `compose-block` schema |
+| "table / rows / sortable data / filterable data" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `dataframe` schema |
+| "patch / diff / unified diff" | `structured-renderers` skill | Non-diagram native display: load `structured-renderers` for `diff` routing |
+| "show data / chart" | `chart-json` for simple bar/line/pie; diagram-html for advanced charts | For `chart-json`, load `structured-renderers`; use Chart.js / D3 / ECharts iframe widgets when custom JS, maps, advanced chart types, or richer interactivity are required |
 | "simulate / interactive" | diagram-html | Matter.js / Canvas / sliders |
 | "interactive map (with pan/zoom/markers)" | diagram-html | Leaflet iframe widget — see `reference/module-map.md` |
 | "static country/state choropleth" | diagram-html | D3 + TopoJSON — see `reference/module-chart.md` |
 
 Default to illustrative SVG for "how does X work?" — don't default to flowchart. Default to Mermaid when the type is in the table above — don't hand-roll an SVG when `classDiagram`/`sequenceDiagram`/`stateDiagram` already exists.
 
-### Native Web UI structured renderers
+### Native Web UI renderer boundary
 
 Before producing `diagram-html`, check whether a native renderer is a better fit:
 
-- Use `search-results` for source/result cards.
-- Use `compose-block` for editable email/message/document drafts.
-- Use `dataframe` for row/column data that should be filtered, sorted, paged, or copied.
+- Load `structured-renderers` for `search-results`, `compose-block`, `dataframe`, `chart-json`, and `diff` schemas.
 - Use `chart-json` for simple single-series bar/line/pie charts.
-- Use `diff` or plain unified diff fences for patches.
+- Stay in `diagram` and use `diagram-html` for maps, multi-series charts, advanced chart types, custom JavaScript, external libraries, or richer interaction.
 
-These renderers are lighter than `diagram-html`, survive sanitizer/hydration, and avoid iframe overhead. They are final-answer-only structured fences; during streaming they remain inert code blocks. Keep JSON complete, compact, and schema-versioned. See `reference/structured-renderers.md` for canonical schemas and examples.
+These renderers are lighter than `diagram-html`, survive sanitizer/hydration, and avoid iframe overhead. They are final-answer-only structured fences; during streaming they remain inert code blocks. Keep JSON complete, compact, and schema-versioned. See the active `structured-renderers` skill for canonical schemas and examples.
 
 ### Mermaid gotchas (read before using beta/experimental types)
 

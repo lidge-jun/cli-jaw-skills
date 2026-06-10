@@ -2694,6 +2694,19 @@
       "install": null,
       "version": "1.0.0"
     },
+    "structured-renderers": {
+      "name": "Structured Renderers",
+      "name_ko": "구조화 렌더러",
+      "name_en": "Structured Renderers",
+      "emoji": "🧩",
+      "category": "devtools",
+      "description": "Native Web UI structured renderer schemas for compose-block drafts, search-results cards, dataframe tables, chart-json charts, and diff output.",
+      "desc_ko": "compose-block 초안, search-results 카드, dataframe 표, chart-json 차트, diff 출력을 위한 Web UI 구조화 렌더러 스키마.",
+      "desc_en": "Native Web UI structured renderer schemas for compose-block drafts, search-results cards, dataframe tables, chart-json charts, and diff output.",
+      "requires": {},
+      "install": null,
+      "version": "1.0.0"
+    },
     "summarize": {
       "name": "URL 요약",
       "name_ko": "URL 요약",
