@@ -158,6 +158,10 @@ Summarize the entire flow:
 
 State returns to IDLE automatically.
 
+Project root configuration is persistent. D completion resets the PABCD state, but it
+does not clear configured `projectDirs`; use `cli-jaw project clear` only when the
+user explicitly asks to unset the project root.
+
 ## Rules
 
 1. One phase per response. Present work, then wait for user approval at P, A, B gates.
