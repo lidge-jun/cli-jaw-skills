@@ -50,6 +50,14 @@ When the gate triggers:
    or category unless the question states it. Recency bias is the known
    failure: older/less-famous entities are valid candidates. If you apply
    any narrowing, declare it explicitly in the report.
+   **Era-sweep is mandatory for cultural-phenomenon clues** (a dance, a
+   fashion, a meme, a catchphrase): the live search index over-represents
+   recent entities, so a generic query will only surface the latest
+   generation. Before fixing the candidate list, rerun the anchor clue with
+   explicit era terms — at least one query with `원조`/`최초`/`시초` and one
+   with an older decade qualifier (`2000년대`, `2010년대`). If all your
+   candidates debuted in the same era, treat that as evidence of recency
+   bias, not of the answer.
 4. **M4 — Disconfirmation pass.** After converging on a final candidate, run
    at least one search that tries to find a DIFFERENT entity satisfying the
    anchor clue ("other groups famous for finger-touching choreography").
