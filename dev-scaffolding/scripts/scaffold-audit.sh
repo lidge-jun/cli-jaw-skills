@@ -84,9 +84,9 @@ else
   check "Colocation (no src/ directory)" "fail"
 fi
 
-# 3. Barrel exports (skip for Go — packages are barrels)
+# 3. Public boundary exports (skip for Go — packages are boundaries)
 if $IS_GO; then
-  check "Barrel exports (Go packages = barrels)" "pass"
+  check "Public boundary exports (Go packages = boundaries)" "pass"
 elif [ -d "$DIR/src" ]; then
   FEATURE_DIRS=$(find "$DIR/src" -mindepth 1 -maxdepth 1 -type d ! -name "shared" ! -name "__pycache__" 2>/dev/null)
   if [ -n "$FEATURE_DIRS" ]; then
@@ -95,15 +95,15 @@ elif [ -d "$DIR/src" ]; then
       [ ! -f "$fdir/index.js" ] && [ ! -f "$fdir/index.ts" ] && [ ! -f "$fdir/__init__.py" ] && MISSING_BARREL=$((MISSING_BARREL + 1))
     done <<< "$FEATURE_DIRS"
     if [ "$MISSING_BARREL" -eq 0 ]; then
-      check "Barrel exports" "pass"
+      check "Public boundary exports" "pass"
     else
-      check "Barrel exports ($MISSING_BARREL feature(s) missing index.js/index.ts/__init__.py)" "fail"
+      check "Public boundary exports ($MISSING_BARREL feature(s) missing index.js/index.ts/__init__.py)" "fail"
     fi
   else
-    check "Barrel exports (no feature dirs yet)" "warn"
+    check "Public boundary exports (no feature dirs yet)" "warn"
   fi
 else
-  check "Barrel exports (no src/)" "fail"
+  check "Public boundary exports (no src/)" "fail"
 fi
 
 # 4. devlog structure

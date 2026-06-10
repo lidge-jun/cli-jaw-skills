@@ -46,6 +46,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/stacks/svelte.md`             | Svelte/SvelteKit projects            | Svelte conventions, reactivity, stores, SvelteKit routing                          |
 
 Start with `anti-slop.md`, `aesthetics.md`, `responsive-viewport.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
+For C2 ordinary app screens (form/table/list/detail), `crud-ui.md` alone suffices; add the style references above for marketing/visual surfaces or C3+ work.
 
 ---
 
@@ -93,7 +94,8 @@ Two different kinds of rules live in this skill (see `dev` §0.2):
   (loading/empty/error/permission), keyboard operability, visible focus, contrast. Missing
   these are review findings.
 - **Style direction (STYLE_SAMPLE)** — design thinking (§2), aesthetics, density profiles,
-  product personalities, preset tokens. These illustrate acceptable choices; they are NOT
+  product personalities, preset tokens, and the concrete values in §4-§5 (palettes, font
+  choices, pixel max-widths). These illustrate acceptable choices; they are NOT
   requirements, must not override an existing design system (Design System Detection stays
   MANDATORY), and must never be enforced as universal taste (UX-STYLE-01).
 
@@ -145,6 +147,9 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
 ---
 
 ## 5. Anti-Slop Enforcement
+
+Rule classes (dev §0.2): items below are DEFAULT — deviate with a stated reason; concrete
+values and palettes are STYLE_SAMPLE (§1.5); the emoji-as-UI-icon ban is the only STRICT item.
 
 Read `references/core/anti-slop.md` for full rules. Key standards:
 
@@ -371,6 +376,9 @@ Error state hierarchy:
 ---
 
 ## 14. Pre-Flight Checklist
+
+Checklist items apply to production surfaces (`dev` §0.4 shared definition); prototypes,
+spikes, and internal demos are exempt unless the user asks for production polish.
 
 Before delivering:
 - [ ] Domain-correct direction chosen and committed

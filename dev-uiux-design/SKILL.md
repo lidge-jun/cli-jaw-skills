@@ -18,7 +18,7 @@ Use this skill when:
 Read this BEFORE `aesthetics.md` when the user cannot articulate a clear design direction.
 For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
 
-**Emoji ban:** NEVER use emoji as UI visual elements — feature icons, card decorations, section markers, or buttons. Emoji is the #1 AI slop signal in production UI. Design with SVG icon sets (Lucide/Phosphor/Heroicons) or typographic hierarchy instead. User-generated content and CLI terminal output are exempt. Full rationale: `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
+**Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `dev-frontend` §5 / `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
 
 **Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
 
@@ -248,4 +248,4 @@ Rapid lookup: user word → concrete starting point.
 - **Korean-first**: Pretendard (한글 최적화, Toss/당근 등 국내 서비스 표준)
 - **Warm/editorial**: Outfit or Cabinet Grotesk
 - **Premium/luxury**: Satoshi or system thin weights
-- **NEVER default to Inter** — it is the #1 AI-generated UI tell. Use only when the user explicitly requests it or the project already uses it.
+- **Avoid defaulting to Inter** (DEFAULT) — it is the #1 AI-generated UI tell. Use it when the user explicitly requests it or the project already uses it.

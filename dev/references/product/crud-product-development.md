@@ -7,9 +7,9 @@ This reference is on-demand: read it for C2 ordinary-product work, not for every
 
 ## 1. Classify and scope (dev §0.0)
 
-- Typical slice = **C2**. ESCALATE triggers (auth, payments, deletion, migration, public
-  contract, permissions) promote the relevant part to C4 — split it out rather than
-  inflating the whole slice.
+- Typical slice = **C2**. C4-promotion triggers (DEV-ESCALATE-01: auth, payments, deletion,
+  migration, public contract, permissions) promote the relevant part to C4 — split it out
+  rather than inflating the whole slice.
 - If behavior, target user, or success measure is ambiguous → `product_discovery` overlay:
   capture the behavior/user-value/metric decision first. Do NOT ask discovery questions
   for obvious implementation.

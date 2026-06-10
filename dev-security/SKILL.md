@@ -8,6 +8,7 @@ license: Complete terms in LICENSE.txt
 
 Treat security as a build constraint, not a cleanup step.
 This skill is the authoritative source for authentication, authorization, input validation, secrets, headers, rate limiting, supply-chain checks, PII handling, and agentic AI safety.
+Validation ownership split: this skill owns **what the validation schema enforces** (content/policy); **placement** (boundary-only validation) is owned by `dev-architecture` §4.
 `dev-backend` delegates here for policy and verification depth.
 `dev-frontend` remains responsible for UI implementation, but frontend security touchpoints such as CSP compliance, CORS behavior, XSS prevention, and dependency auditing are defined here.
 

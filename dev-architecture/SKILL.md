@@ -14,6 +14,8 @@ metadata:
 
 Enforces architectural rules that prevent structural decay: circular dependencies, implicit coupling, barrel abuse, and misplaced validation. These rules are mechanical — an AI coding agent can follow them without subjective judgment.
 
+Severity mapping (dev §0.2): `Severity: CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT.
+
 ## Modular References
 
 | File | When to Read | What It Covers |
@@ -168,6 +170,10 @@ Every concept, constant, type, or configuration value MUST have exactly one cano
 **Severity: CRITICAL**
 **Rule:** Validation and defensive checks belong ONLY at system boundaries. Internal module boundaries MUST trust their callers.
 
+Ownership split: **placement** (validation happens at the boundary, nowhere else) is owned
+by this section; **what the validation schema enforces** (content/policy) is owned by
+`dev-security` §1.
+
 ### Validation Location Matrix
 
 | Location | Validate? | Rationale | Example |
@@ -175,7 +181,7 @@ Every concept, constant, type, or configuration value MUST have exactly one cano
 | HTTP/API controller input | YES | Untrusted external data | Zod schema, JSON schema |
 | CLI argument parsing | YES | Untrusted user input | yargs/commander validation |
 | File system reads | YES | External data, may be corrupt | Parse + validate structure |
-| Database query results | YES (shape only) | External system, schema may drift | Check nulls, verify expected shape |
+| Database query results | YES at ORM-untyped/raw-query boundaries (shape only); NO when a typed schema/ORM guarantees the shape | Untyped results may drift; typed guarantees are trusted (see Banned Patterns) | Check raw-query nulls/shape; trust typed ORM results |
 | Message queue consumer | YES | Cross-process boundary | Validate message schema |
 | **Internal function params** | **NO** | Caller is trusted code you control | Type system handles this |
 | **Private method args** | **NO** | Same module, same author | Redundant — types suffice |
@@ -217,7 +223,7 @@ Every concept, constant, type, or configuration value MUST have exactly one cano
 ## 5. Barrel/Re-export Discipline
 
 **Severity: HIGH**
-**Rule:** Barrel files (index.ts/index.js/__init__.py) are ONLY allowed for public package APIs. Internal barrels are banned.
+**Rule:** Barrel files (index.ts/index.js/__init__.py) are ONLY allowed at public boundaries — package APIs and feature public boundary exports. Internal convenience barrels are banned.
 
 ### Barrel Policy Matrix
 
@@ -225,7 +231,8 @@ Every concept, constant, type, or configuration value MUST have exactly one cano
 |---------|-----------------|-----------|
 | Library/package public API (`packages/ui/index.ts`) | YES | Single entry point for consumers |
 | Framework plugin entry (`plugin/index.ts`) | YES | Plugin contract requires it |
-| Feature module internal (`features/auth/index.ts`) | NO | Hides internal structure, breaks tree-shaking |
+| Feature public boundary export (`features/auth/index.ts` as the feature's single external entry) | YES | Public Boundary Export (dev-scaffolding §1); external consumers import the boundary |
+| Feature internal convenience barrel (re-exporting siblings for imports inside the feature) | NO | Hides internal structure, breaks tree-shaking |
 | Utility folder (`utils/index.ts`) | NO | Creates coupling magnet |
 | Component folder re-exporting siblings | NO | Direct imports are clearer |
 | Monorepo package boundary (`@org/shared/index.ts`) | YES | Cross-package contract |

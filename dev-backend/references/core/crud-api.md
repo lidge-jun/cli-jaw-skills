@@ -11,7 +11,9 @@ benchmark — the same shape applies to most conventional resource endpoints.
   the repo already uses). Validation happens HERE, at the controller/trust boundary;
   services trust validated input (dev-architecture §4).
 - Reuse the repo's existing error envelope. Only introduce one if none exists, and keep it
-  minimal (status + machine code + message).
+  minimal — status + machine code + message is the floor; the `success/data/error/meta`
+  envelope from `dev-backend` §5 is the default shape when the project's production scope
+  warrants one.
 
 ## The five operations
 

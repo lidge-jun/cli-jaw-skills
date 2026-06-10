@@ -15,7 +15,7 @@ Apply for new projects or when a repo has no clear structural convention of its 
 
 1. **Screaming Architecture** — folder names reveal what the app does (`stock-price/`, `auth/`, `report/`)
 2. **Colocation** — related files live together (logic + test + schema in the same folder)
-3. **Public Boundary Export** — each feature/package exposes a single public entry point (`index.ts`, `index.js`, `__init__.py`, or Go package) at its boundary; internal convenience barrels are discouraged (see `dev-architecture` barrel/re-export discipline)
+3. **Public Boundary Export** — each feature/package exposes a single public entry point (`index.ts`, `index.js`, `__init__.py`, or Go package) at its boundary; internal convenience barrels are banned (owned by `dev-architecture` §5)
 
 ## 2. Existing Repo First
 
@@ -113,13 +113,17 @@ Each side gets its own package manifest and entry point. Shared types go in root
 
 When adding a new feature, create a folder under `src/` with these files:
 
-| Language   | Folder        | Main File      | Test File      | Barrel               |
-| ---------- | ------------- | -------------- | -------------- | -------------------- |
-| JavaScript | `kebab-case/` | `name.tool.js` | `name.test.js` | `index.js`           |
-| TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts`           |
-| Python     | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py`        |
-| Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = barrel)* |
-| Rust       | `kebab-case/` | `mod.rs`       | `name_test.rs` | `mod.rs`             |
+| Language   | Folder        | Main File      | Test File      | Public boundary export |
+| ---------- | ------------- | -------------- | -------------- | ---------------------- |
+| JavaScript | `kebab-case/` | `name.tool.js` | `name.test.js` | `index.js`             |
+| TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts`             |
+| Python     | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py`          |
+| Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = boundary)* |
+| Rust       | `kebab-case/` | `mod.rs`       | `name_test.rs` | `mod.rs`               |
+
+The `index.*` file is the feature's **public boundary export**. Barrel discipline is owned
+by `dev-architecture` §5: external consumers import this boundary, internal code imports
+sources directly, and convenience-only internal barrels are banned.
 
 Principle: "flat until you can't" — start flat, sub-folder only when a folder becomes hard to scan.
 

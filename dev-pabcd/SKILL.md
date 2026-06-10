@@ -6,7 +6,7 @@ description: "PABCD orchestration workflow. Structured 5-phase development with 
 Structured 5-phase development. Advance only with user approval.
 
 > **C0/C1 work (e.g. small in-place patches):** See `dev` §0.0 Work Classifier and §0.1 Patch
-> Fast-Path first — full PABCD is the C4 default and conditional for C3, not the baseline for every task.
+> Fast-Path first — full PABCD is mandatory for C4 and conditional for C3, not the baseline for every task.
 
 ## Interview Trigger (MUST)
 
@@ -163,6 +163,9 @@ State returns to IDLE automatically.
 1. One phase per response. Present work, then wait for user approval at P, A, B gates.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
+4. Goal-mode precedence: when a jaw goal is active (dev §0.4), P/A/B approval gates are
+   satisfied by evidence-backed checkpoints (`cli-jaw goal update`) instead of waiting for
+   user approval. Phase order, audit conditions, and verification intensity are unchanged.
 
 ## Repository Root Contract
 
@@ -224,6 +227,6 @@ Audit: verify the imports in ..."` — no "read the plan" line needed.
 |-------|----------|-----------|-----------|-----------|------------|
 | C0-C1 | None/inline | Optional | Direct fix | Smallest proof | One-line summary |
 | C2 | Compact plan | Micro-audit | Boss writes, focused tests | Targeted gate | Summary |
-| C3 | Compact or full PABCD plan depending on persistence need | Required for public contract/architecture risk; otherwise focused audit | Boss writes, employees verify only when useful | Affected suite + docs consistency when docs/contracts changed | Summary + evidence; durable record only when state must persist |
-| C4 | Full PABCD plan | Required, independent | Boss writes, employee verifies | Full relevant gates | Durable risk/approval/evidence record |
+| C3 | Compact or full PABCD plan depending on persistence/risk | Required when public contract, architecture, persistence, cross-agent, or cross-session risk exists; otherwise focused audit | Boss writes, employees verify only when useful | Affected suite + docs consistency when docs/contracts changed | Summary + evidence; durable record only when state must persist |
+| C4 | Full PABCD plan (mandatory) | Required, independent | Boss writes, employee verifies | Full relevant gates | Durable risk/approval/evidence record |
 | C5 | Interview/research first | — | — | — | Reclassify, then follow the new class |

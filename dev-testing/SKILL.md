@@ -17,7 +17,7 @@ Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (C
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
-| `references/core/crud-test-matrix.md` | C0-C5 verification intensity + CRUD op matrix | Risk-tier minimums, per-operation negatives, UI smoke rule |
+| `references/core/crud-test-matrix.md` | When choosing verification depth for a classified task, or testing a CRUD slice | Risk-tier minimums, per-operation negatives, UI smoke rule |
 | `references/edge-first-testing.md` | New unit/service/integration tests for features (skip for regression/contract tests) | Edge-first principle, test order by change type, 11-class edge matrix |
 | `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
 | `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |

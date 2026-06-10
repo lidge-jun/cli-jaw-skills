@@ -20,25 +20,37 @@ planning, reading, and verification the task deserves — never apply maximum pr
 |-------|------|---------|-----------------|
 | C0 | Trivial Text | Typo, comment, copy, log string — zero behavior change | Direct fix + smallest proof (§0.1) |
 | C1 | Single-File Local | One file, local behavior, no new abstractions | Fast path (§0.1) + targeted check |
-| C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests |
-| C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; employee audit when useful |
-| C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Strict PABCD + full relevant gates + durable risk/evidence record |
-| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
+| C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests + micro-audit (orchestration mode) |
+| C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; employee audit per `dev-pabcd` Phase Skip conditions |
+| C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Full PABCD (mandatory) + full relevant gates + durable risk/evidence record |
+| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
 
-**ESCALATE triggers override any fast path** (DEV-ESCALATE-01): security, data
+**Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A
+conventional route→service→storage slice still counts as C2 even though it spans files;
+C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
+
+**C4-promotion triggers override any fast path** (DEV-ESCALATE-01): security, data
 deletion/migration, destructive ops, public contract change, release surface, permission
-model, new dependency/framework. Any of these promotes the task to C4-level care and may
-require asking the user.
+model, new dependency/framework. Any of these promotes the **affected part** of the task
+to C4-level care — split it out rather than inflating the whole slice. Promotion alone
+does not force a user question; stopping to ask is required only for rules individually
+classed **ESCALATE** (§0.2).
 
 ## §0.1 Patch Fast-Path (C0/C1)
 
-For **C0/C1 work** (e.g. a ≤5-line in-place edit with no new abstractions):
+For **C0/C1 work** (bounded by "one file, no new abstractions, local behavior" — a ≤5-line
+in-place edit is an example, not a limit):
 - Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
-- Keep: §3 verification gate, §5 safety rules (imports/exports), §7.2 static analysis
+- Keep: §3 verification gate, §4 change documentation when a worklog/changelog file is provided, §5 safety rules (imports/exports), §7.2 static analysis
 - Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
 
-This is scope guidance, not an exemption. If the small patch touches an ESCALATE area
-(auth, payments, data deletion), it is not C0/C1 — reclassify and read the relevant reference.
+This is scope guidance, not an exemption. Conventions visible in the touched file still
+apply even when proactive discovery is skipped. Promotion is **behavioral**, not
+territorial: a patch escalates when it can alter the behavior of an auth/payment/deletion
+or other DEV-ESCALATE-01 path — not merely because the file lives in such an area. A
+zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit
+touching the executed logic of such a path is not C0/C1 — reclassify and read the
+relevant reference.
 
 ## §0.2 Rule Classes
 
@@ -79,6 +91,11 @@ proof that validates the claim, with the reduced scope stated).
 Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
 `frontend|backend|data|docs` (PROMPT-ROUTING-01).
 
+The boss sets `task_tags` at dispatch. With no tags, only strict triggers (self-assessed
+by the employee, reduced scope stated) activate overlays — legacy dispatches without the
+field behave identically. `task_tags` must be an array; a bare string is coerced to a
+single tag, and unknown tags are surfaced in the prompt, not silently dropped.
+
 ### Ordinary product reference (on-demand)
 
 For C2 ordinary product slices, the recipe lives in
@@ -93,6 +110,11 @@ goal mode (self-advancing gates, evidence-backed checkpoints) · isolated employ
 (read-only verifier by default) · mutable employee (`--mutable`, scoped writes) ·
 read-only review (no mutation, findings only) · docs-only work (no code gates, docs
 consistency checks instead).
+
+**Production surface (shared definition):** a surface is production when it is deployed
+for real users beyond the author; prototypes, spikes, and internal demos are not. Skills
+that scope rules to "production-surface" concerns (e.g. `dev-backend` §5 envelope/OTel,
+`dev-frontend` §14 checklist) condition on this definition.
 
 ## Companion Skills
 
@@ -121,7 +143,7 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 | Circular dependencies | dev-architecture | dev, dev-code-reviewer |
 | Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
 | Coupling taxonomy | dev-architecture | dev-code-reviewer |
-| Barrel / re-export | dev-architecture | — |
+| Barrel / re-export | dev-architecture | dev-scaffolding |
 | Pre-write search | dev §1.5 | dev-code-reviewer |
 | Edge-first testing | dev-testing §6 | — |
 | Test-induced defense | dev-testing §6.6 | dev-code-reviewer |
@@ -214,7 +236,7 @@ Preview format:
 
 Give every file, function, and class a single, clear responsibility.
 
-**Hard limits:**
+**Hard limits (DEFAULT — exceed only with a stated reason):**
 
 | Metric              | Threshold   | Action                                   |
 | ------------------- | ----------- | ---------------------------------------- |
@@ -247,7 +269,7 @@ Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, 
 
 ## 1.5 Pre-Write Codebase Search Obligation
 
-**Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence.
+**Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence. This section does not apply on the §0.1 fast path (C0/C1 — no new abstractions are being created).
 
 | Artifact being created | Required searches | Preferred outcome |
 |---|---|---|
@@ -291,7 +313,7 @@ This section covers the **emergency stop triggers** every agent should recognize
 
 ---
 
-## 3. Verification Before Completion
+## 3. Verification Before Completion (STRICT)
 
 Verify every completion claim with evidence. Run the relevant command fresh, read full output, and confirm the claim matches.
 
@@ -344,7 +366,7 @@ Keep entries factual and concise. One entry per file changed.
 - **Verify imports exist** before adding `import` statements. Confirm the target file and export are real.
 - **Externalize configuration** — use config files or environment variables. Place magic strings and numbers in named constants.
 - **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
-- **Confirm before destructive operations** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
+- **Confirm before destructive operations (ESCALATE)** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
 
 ---
 
@@ -448,11 +470,11 @@ When multiple skills are injected simultaneously (e.g., `dev` + `dev-backend` + 
 **Tiered reference loading:**
 1. **Always read**: SKILL.md files for injected skills (these are the orchestrators)
 2. **Read on demand**: Reference files (`references/`) — only load when the task touches that specific topic
-3. **Never preload all references** — a backend task about caching doesn't need `streaming.md`
+3. **Do not preload all references** (HEURISTIC) — a backend task about caching doesn't need `process-isolation.md`
 
 **Example:** For "Add Redis caching to user endpoint":
 - Read: `dev/SKILL.md` + `dev-backend/SKILL.md` + `dev-backend/references/core/caching.md`
-- Skip: `api-design.md`, `architecture.md`, `observability.md`, `database.md` (unless the task touches those areas)
+- Skip: `api-design.md`, `architecture.md`, `observability.md`, `stacks/database.md` (unless the task touches those areas)
 
 **Cost awareness for sub-agents:** Each sub-agent receives its own copy of injected skills. Minimize skills injected per sub-agent — give only what's needed for that specific sub-task.
 

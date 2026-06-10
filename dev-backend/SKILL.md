@@ -32,6 +32,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, ORM comparison         |
 
 Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
+For C2 ordinary slices, `crud-api.md` alone suffices; read `api-design.md`/`architecture.md` for new API styles or C3+ work.
 
 ---
 
@@ -228,7 +229,7 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 
 ---
 
-## 3. Error Handling (Always Follow)
+## 3. Error Handling
 
 | Type           | HTTP | Log Level     |
 | -------------- | ---- | ------------- |
@@ -279,7 +280,7 @@ Apply in this sequence (order matters):
 
 ## 5. API Response Contract
 
-API endpoints should use a **stable response envelope** (DEFAULT) unless the protocol (GraphQL, gRPC, SSE) defines its own or the repo already has a different established contract — follow the existing contract first. Envelope, OTel, health checks, and deployment-readiness checks are production-surface concerns, conditional by project scope, not universal blockers.
+API endpoints should use a **stable response envelope** (DEFAULT) unless the protocol (GraphQL, gRPC, SSE) defines its own or the repo already has a different established contract — follow the existing contract first. Envelope, OTel, health checks, and deployment-readiness checks are production-surface concerns (`dev` §0.4 shared definition), conditional by project scope, not universal blockers.
 
 **Rules:**
 - `success` boolean at top level — never infer from HTTP status alone
