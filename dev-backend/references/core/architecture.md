@@ -17,7 +17,7 @@ Routes → Controllers → Services → Repositories → Database
 | ------------ | ------------------------------- | ---------- | ----------- |
 | Routes       | URL patterns + middleware chain | HTTP req   | (delegates) |
 | Controllers  | Parse input, format output      | req/res    | HTTP resp   |
-| Services     | Business logic, validation      | Plain data | Plain data  |
+| Services     | Business logic (input validated at controller/trust boundary) | Plain data | Plain data  |
 | Repositories | Database access                 | Queries    | Entities    |
 
 **Iron Rule:** Services never receive `req`/`res`. Services never write raw SQL.

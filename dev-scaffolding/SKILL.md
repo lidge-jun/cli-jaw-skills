@@ -1,6 +1,6 @@
 ---
 name: dev-scaffolding
-description: "Scaffold new projects or add feature modules following the Lidge Standard (Feature-based + Colocation + Barrel Export + devlog). Language-agnostic — auto-detects project type from config files. Also audits existing projects for structural compliance. Triggers: scaffold, new project, new feature, init project, audit structure, scaffolding, add module, project setup."
+description: "Scaffold new projects or add feature modules following the Lidge Standard (Feature-based + Colocation + Public Boundary Export + devlog). Language-agnostic — auto-detects project type from config files. Also audits existing projects for structural compliance. Triggers: scaffold, new project, new feature, init project, audit structure, scaffolding, add module, project setup."
 ---
 
 # Dev Scaffolding
@@ -15,7 +15,7 @@ Apply for new projects or when a repo has no clear structural convention of its 
 
 1. **Screaming Architecture** — folder names reveal what the app does (`stock-price/`, `auth/`, `report/`)
 2. **Colocation** — related files live together (logic + test + schema in the same folder)
-3. **Barrel Export** — each feature exposes a single entry point (`index.ts`, `index.js`, `__init__.py`, or Go package)
+3. **Public Boundary Export** — each feature/package exposes a single public entry point (`index.ts`, `index.js`, `__init__.py`, or Go package) at its boundary; internal convenience barrels are discouraged (see `dev-architecture` barrel/re-export discipline)
 
 ## 2. Existing Repo First
 
