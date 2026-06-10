@@ -14,7 +14,7 @@ reproduction frameworks, and verification tooling, see `dev-testing`. For
 domain-specific context (API errors, hydration issues, query performance),
 consult `dev-backend` or `dev-frontend`.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ```
 dev-debugging = root cause methodology (the thinking)

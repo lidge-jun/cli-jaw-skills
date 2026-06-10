@@ -5,7 +5,7 @@ description: "Code review guide for all orchestrated sub-agents. Review process,
 
 # Dev-Code-Reviewer — Code Review Guide
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 > **Always read `dev/SKILL.md` first** for project-wide conventions before applying review rules.
 
 Systematic code review patterns for finding real issues, not bikeshedding.

@@ -11,7 +11,7 @@ metadata:
 
 Production-grade data engineering patterns for building reliable data systems.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ## When to Activate
 

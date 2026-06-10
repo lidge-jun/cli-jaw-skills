@@ -13,7 +13,7 @@ metadata:
 Build reliable, secure, and maintainable server-side applications.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ## Modular References
 
@@ -24,7 +24,7 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
-| `references/core/health-checks.md`    | Every backend service          | Liveness, readiness, startup probes, dependency checks                 |
+| `references/core/health-checks.md`    | Production/long-lived services | Liveness, readiness, startup probes, dependency checks                 |
 | `references/core/process-isolation.md` | CPU-bound or untrusted work    | worker_threads vs child_process vs separate service, communication, resource limits |
 | `references/core/caching.md`           | Performance optimization       | Redis patterns, CDN, connection pooling, cache invalidation            |
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
@@ -240,15 +240,15 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 | Rate limit     | 429  | info          |
 | Internal error | 500  | error + stack |
 
-Use a centralized `AppError` class. Distinguish operational vs programmer errors.
+Use a centralized `AppError` class (DEFAULT — when the repo already has an error convention, follow it instead). Distinguish operational vs programmer errors.
 
 ### Error Taxonomy (AppError Hierarchy)
 
 Create an AppError base class with statusCode, code, and isOperational properties. Extend for each error type (ValidationError, NotFoundError, etc.).
 
-### Result Pattern (Preferred for TypeScript)
+### Result Pattern (conditional)
 
-Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain errors where explicit error handling improves clarity.
+Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain errors where explicit error handling improves clarity — adopt it only when the project scope justifies it and the repo doesn't already settle error style (HEURISTIC, not a universal requirement).
 
 | Library | When to Use |
 |---------|-------------|
@@ -279,7 +279,7 @@ Apply in this sequence (order matters):
 
 ## 5. API Response Contract
 
-API endpoints should use a **stable response envelope** unless the protocol (GraphQL, gRPC, SSE) defines its own.
+API endpoints should use a **stable response envelope** (DEFAULT) unless the protocol (GraphQL, gRPC, SSE) defines its own or the repo already has a different established contract — follow the existing contract first. Envelope, OTel, health checks, and deployment-readiness checks are production-surface concerns, conditional by project scope, not universal blockers.
 
 **Rules:**
 - `success` boolean at top level — never infer from HTTP status alone

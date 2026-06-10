@@ -22,7 +22,13 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 
 **Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+
+> **Rule class note (UX-STYLE-01):** Everything in this skill that expresses taste —
+> product personalities, design-isms, preset tokens, aesthetic vocabulary — is
+> `STYLE_SAMPLE`: examples to draw from, never universal requirements. Objective UX
+> correctness (state coverage, accessibility, readability) is owned by `dev-frontend`
+> §1.5 and stays STRICT/DEFAULT.
 
 ## Modular References
 

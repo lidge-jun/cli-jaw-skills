@@ -11,7 +11,7 @@ metadata:
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ## Modular References
 
@@ -406,8 +406,12 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 - [ ] sharding / matrix choices match project size
 - [ ] flaky failures were investigated instead of blindly retried
 - [ ] coverage / junit / trace artifacts are available on failure
-### 10.5 Final Rule
-If you can only point to a manual click-through or one green Playwright run, the testing story is incomplete.
+### 10.5 Final Rule (risk-tier)
+Verification intensity follows the work class (`dev` §0.0 / `references/core/crud-test-matrix.md`):
+for C2 UI work, one focused smoke (manual click-through or one Playwright run) plus targeted
+checks IS a complete story; for C3/C4 or release-sensitive work, a single smoke is not enough —
+run the affected suites and required negatives. Manual/Playwright smoke is a risk-tier rule,
+not a universal blocker.
 ```text
 unit / service
 → API integration

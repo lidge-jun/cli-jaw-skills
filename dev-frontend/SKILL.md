@@ -10,7 +10,7 @@ license: Complete terms in LICENSE.txt
 Build distinctive, production-grade interfaces that fit the product domain, locale, interaction model, and real visual evidence.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ## Modular References
 
@@ -85,6 +85,17 @@ For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component 
 If frontend structure is unclear, read existing source-of-truth docs/logs first, then document pages, components, routes, state stores, and build commands in the repo's existing SOT before broad implementation.
 
 ---
+
+## 1.5 Objective Gates vs Style Samples
+
+Two different kinds of rules live in this skill (see `dev` §0.2):
+- **Objective UX gates (STRICT/DEFAULT)** — accessibility baseline (§7, §11), state coverage
+  (loading/empty/error/permission), keyboard operability, visible focus, contrast. Missing
+  these are review findings.
+- **Style direction (STYLE_SAMPLE)** — design thinking (§2), aesthetics, density profiles,
+  product personalities, preset tokens. These illustrate acceptable choices; they are NOT
+  requirements, must not override an existing design system (Design System Detection stays
+  MANDATORY), and must never be enforced as universal taste (UX-STYLE-01).
 
 ## 2. Design Thinking
 

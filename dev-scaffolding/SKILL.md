@@ -5,7 +5,7 @@ description: "Scaffold new projects or add feature modules following the Lidge S
 
 # Dev Scaffolding
 
-> **Small patches (≤5 lines, in-place):** See `dev` §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§10) for verification.
 
