@@ -65,7 +65,7 @@ Route on the verb, not the noun. Same subject gets different diagrams. Prefer Me
 | "cloud/infra architecture" | Mermaid (beta) | ` ```mermaid ` `architecture-beta` |
 | "hierarchy / proportional size" | Mermaid (beta) | ` ```mermaid ` `treemap-beta` |
 | "free-form block layout" | Mermaid (beta) | ` ```mermaid ` `block-beta` |
-| "show data / chart" | diagram-html | Chart.js / D3 / ECharts iframe widget |
+| "show data / chart" | `chart-json` for simple bar/line/pie; diagram-html for advanced charts | Use native Web UI cards for compact final-answer charts. Use Chart.js / D3 / ECharts iframe widgets when custom JS, maps, advanced chart types, or richer interactivity are required |
 | "simulate / interactive" | diagram-html | Matter.js / Canvas / sliders |
 | "interactive map (with pan/zoom/markers)" | diagram-html | Leaflet iframe widget — see `reference/module-map.md` |
 | "static country/state choropleth" | diagram-html | D3 + TopoJSON — see `reference/module-chart.md` |

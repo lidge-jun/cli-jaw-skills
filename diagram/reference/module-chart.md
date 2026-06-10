@@ -9,7 +9,24 @@
 | D3.js | 7.8.5 | `https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js` | custom SVG graphics, choropleth, force layout |
 | TopoJSON | 3.0.2 | `https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js` | D3 geo data (+ `connect-src cdn.jsdelivr.net`) |
 
-**Chart library routing**: Chart.js is the default for anything it supports. Switch to ECharts only when the chart type is in ECharts' column above (heatmap, sankey, radar, treemap, etc.). D3 is for custom SVG-based visuals that neither Chart.js nor ECharts cover.
+**Chart library routing**: In cli-jaw Web UI final answers, prefer the native `chart-json` fence for simple bar/line/pie charts. Chart.js is the default inside `diagram-html` for anything it supports beyond `chart-json`. Switch to ECharts only when the chart type is in ECharts' column above (heatmap, sankey, radar, treemap, etc.). D3 is for custom SVG-based visuals that neither Chart.js nor ECharts cover.
+
+## Web UI `chart-json` Shortcut
+
+Use `chart-json` when the answer needs a compact, final-answer chart with simple labels and one numeric series. It renders as a native Web UI card, so it is lighter than a full iframe widget and should be the first choice for ordinary bar, line, and pie charts.
+
+```chart-json
+{
+  "schemaVersion": "chart-json-v1",
+  "type": "bar",
+  "title": "Quarterly Revenue",
+  "description": "USD, millions",
+  "labels": ["Q1", "Q2", "Q3", "Q4"],
+  "data": [12, 18, 16, 24]
+}
+```
+
+Use `diagram-html` instead when the visualization needs custom JavaScript, multiple coordinated charts, advanced Chart.js options, ECharts-only chart types, D3 transforms, maps, live controls, or non-basic interactivity.
 
 ## Theme Token Usage
 
