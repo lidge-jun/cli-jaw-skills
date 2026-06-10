@@ -416,6 +416,10 @@ Current:
 - render/status/send/poll/query/watch/watchers/sessions/capabilities/notifications/stop
 - long-running watcher startup recovery and channel delivery loop
 - observed capability schemas with fail-closed unobserved tools
+- ChatGPT code mode (`cli-jaw browser web-ai code`) with automatic
+  `gpt-dev-agent-context.zip` attachment, `PLAN.md`/`00_plan.md`
+  enforcement for new artifacts, later `code-extract`, multi-zip retrieval,
+  and repeatable mixed `--file` uploads
 
 Future:
 
@@ -424,8 +428,3 @@ Future:
 - ChatGPT web search and image generation tool runtime after headed frontend observation
 - Gemini image generation runtime after headed frontend observation
 - Web UI watcher dashboard
-- agbrowse-owned command surfaces: ChatGPT code mode (`agbrowse web-ai code`),
-  later code artifact extraction (`agbrowse web-ai code-extract`), multi-zip
-  artifact retrieval, and repeatable mixed `agbrowse --file` uploads stay in
-  agbrowse until cli-jaw has equivalent command surface, runtime, tests, and
-  installed skill docs.
