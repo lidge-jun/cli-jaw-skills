@@ -11,6 +11,10 @@ instead of calling a model API directly.
 ## Safe Defaults
 
 - Render before sending.
+- If the user explicitly says to use `agbrowse` or standalone agbrowse, run
+  `agbrowse --help` first, and run `agbrowse web-ai --help` before choosing
+  web-ai flags. Treat the current help output as command truth and adapt this
+  skill to that surface instead of assuming cli-jaw wrapper parity.
 - Use `--inline-only` only when the user explicitly wants pasted inline context.
   Source context should normally be packaged with `--context-from-files` /
   `--context-file`; upload transport creates one `.zip` archive attachment
@@ -215,6 +219,17 @@ two runtimes share defaults (ChatGPT/Gemini 1200s, Grok 600s) and the
 same `[INSTRUCTIONS]` prompt block, so behavior stays consistent. Do not
 run both against the same `--port` at the same time.
 
+When standalone `agbrowse` is explicitly requested, first inspect:
+
+```bash
+agbrowse --help
+agbrowse web-ai --help
+```
+
+Then select flags from the observed help text. The standalone binary can move
+faster than the cli-jaw wrapper, so do not invent wrapper-only flags or assume
+older aliases when the current help output differs.
+
 ### ChatGPT Code Artifact Extraction
 
 ChatGPT code-mode generation and later zip extraction remain standalone
@@ -249,6 +264,14 @@ unzip -l ./result.zip
 The original conversation URL/session/current ChatGPT tab and logged-in
 browser profile are still required; a copied `/mnt/data/result.zip` line alone
 is not enough.
+
+For new `agbrowse web-ai code` runs, the prompt contract asks ChatGPT to create
+`PLAN.md` or `00_plan.md` in every generated code zip, and to use a visible
+todo/checklist tool such as `turn_plan.update_turn_plan` only when that tool is
+actually available while the response is streaming. That visible todo UI may
+disappear after the answer finishes; do not fail a completed run because the
+UI is no longer visible. The durable validation target is the zip-root
+`PLAN.md` or `00_plan.md` checklist.
 
 ## Context Packaging
 
