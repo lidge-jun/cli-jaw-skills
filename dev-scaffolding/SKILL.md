@@ -68,7 +68,7 @@ For a new project, propose the source-of-truth structure in the plan.
 If the user explicitly asks for Lidge/Jawdev standard, create it.
 Otherwise ask once before adding `structure/` and `devlog/`.
 
-When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and shared barrel from detection (§3). Defer exact layout to the framework's own generator when one exists.
+When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and per-feature public boundary exports (per `dev-architecture` §5; file names from language detection, §3). Defer exact layout to the framework's own generator when one exists.
 
 ## 3. Language Detection
 
@@ -236,4 +236,4 @@ When `role=docs` or when generating project documentation:
 
 ## 12. Audit
 
-Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, barrel exports, devlog presence, `.env` safety, file length, and AGENTS.md where those apply.
+Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, public boundary exports (dev-architecture §5), devlog presence, `.env` safety, file length, and AGENTS.md where those apply.

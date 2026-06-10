@@ -20,8 +20,8 @@ This skill has modular references for specialized guidance — read the relevant
 | File                                   | When to Read                   | What It Covers                                                         |
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | `references/core/crud-api.md`          | C2 ordinary CRUD/resource endpoints | Route/schema/service/query basics, five operations, error+permission mapping |
-| `references/core/api-design.md`        | **Always** for API work        | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
-| `references/core/architecture.md`      | **Always** for new features    | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
+| `references/core/api-design.md`        | New/changed API style, or C3+ API work (C2 ordinary slice: `crud-api.md` alone suffices) | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
+| `references/core/architecture.md`      | New features at C3+ (C2 ordinary slice: `crud-api.md` alone suffices) | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
 | `references/core/health-checks.md`    | Production/long-lived services | Liveness, readiness, startup probes, dependency checks                 |

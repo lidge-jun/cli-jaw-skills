@@ -125,8 +125,8 @@ This skill covers universal guidelines. For domain-specific work, also read the 
 | `dev-frontend/SKILL.md`      | `role=frontend`                   | UI/UX implementation, design aesthetics, component architecture, responsive layouts, animation |
 | `dev-backend/SKILL.md`       | `role=backend`                    | API design, architecture patterns, database optimization, error handling, middleware            |
 | `dev-data/SKILL.md`          | `role=data`                       | Data pipelines, ETL/ELT, data quality validation, SQL optimization, analysis & reporting       |
-| `dev-security/SKILL.md`      | Security-sensitive code, `role=security` | OWASP Top 10, auth hardening, input validation, secrets management, supply chain security |
-| `dev-testing/SKILL.md`       | `role=testing` or testing phase   | Test strategy, Playwright browser testing, coverage analysis, contract testing                 |
+| `dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP Top 10, auth hardening, input validation, secrets management, supply chain security |
+| `dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright browser testing, coverage analysis, contract testing                 |
 | `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 | `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Circular deps, module boundaries, coupling taxonomy, barrel/re-export discipline               |
