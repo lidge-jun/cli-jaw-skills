@@ -32,7 +32,7 @@ function run(cmd, args, opts = {}) {
   }
 }
 
-function ensureSharedModules() {
+function syncSharedProjectFiles() {
   mkdirSync(SHARED_DIR, { recursive: true });
 
   const sharedPkg = join(SHARED_DIR, "package.json");
@@ -42,6 +42,14 @@ function ensureSharedModules() {
   const pnpmConfig = join(PROJECT_DIR, ".npmrc");
   if (existsSync(pnpmConfig)) copyFileSync(pnpmConfig, join(SHARED_DIR, ".npmrc"));
 
+  const workspaceConfig = join(PROJECT_DIR, "pnpm-workspace.yaml");
+  if (existsSync(workspaceConfig)) {
+    copyFileSync(workspaceConfig, join(SHARED_DIR, "pnpm-workspace.yaml"));
+  }
+}
+
+function installSharedModules() {
+  syncSharedProjectFiles();
   console.log("[Remotion bootstrap] installing to shared location ~/.jaw-shared/remotion ...");
   const install = run("pnpm", ["install"], { cwd: SHARED_DIR, stdio: "inherit" });
   if (!install.ok) {
@@ -61,14 +69,20 @@ function ensureSymlink() {
   console.log("[Remotion bootstrap] symlinked node_modules → ~/.jaw-shared/remotion/node_modules");
 }
 
+function needsSharedReinstall(output) {
+  return output.includes("ERR_PNPM_IGNORED_BUILDS") || output.includes("Ignored build scripts");
+}
+
 if (isDisabled()) {
   console.log("[Remotion bootstrap] skipped (REMOTION_RUNTIME_BOOTSTRAP disabled)");
   process.exit(0);
 }
 
+syncSharedProjectFiles();
+
 // Install to shared location if needed
 if (!existsSync(SHARED_MODULES)) {
-  ensureSharedModules();
+  installSharedModules();
 }
 
 // Ensure local symlink points to shared modules
@@ -77,9 +91,23 @@ ensureSymlink();
 // Check local CLI
 const localCli = run("pnpm", ["exec", "remotion", "--help"]);
 if (!localCli.ok) {
+  if (needsSharedReinstall(localCli.output)) {
+    console.log("[Remotion bootstrap] shared install policy changed; reinstalling...");
+    installSharedModules();
+    ensureSymlink();
+    const retryLocalCli = run("pnpm", ["exec", "remotion", "--help"]);
+    if (retryLocalCli.ok) {
+      console.log("[Remotion bootstrap] local Remotion CLI is available after reinstall.");
+    } else {
+      console.error("[Remotion bootstrap] failed: local Remotion CLI is not available after reinstall.");
+      if (retryLocalCli.output) console.error(retryLocalCli.output);
+      process.exit(1);
+    }
+  } else {
   console.error("[Remotion bootstrap] failed: local Remotion CLI is not available.");
   if (localCli.output) console.error(localCli.output);
   process.exit(1);
+  }
 }
 
 // Ensure browser
