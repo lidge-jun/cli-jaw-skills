@@ -16,6 +16,9 @@ Triggers: "video", "Remotion", "HyperFrames", "animation", "mp4", "render video"
 Core rule: choose the route, load the matching reference, produce route-specific
 artifacts, and validate the output. A successful command is not enough.
 
+Authoring discipline: keep the main skill short, move deep engine rules into
+references, and avoid copying large third-party docs into the active prompt.
+
 ---
 
 ## Route First
@@ -31,6 +34,7 @@ Read `reference/route-selector.md` when intent is not a simple Remotion render.
 | New generative video clips, image-to-video, cinematic model output | Provider video generation | Deferred docs-first | `reference/route-selector.md` |
 | Presenter/avatar/talking-head video | Presenter/avatar video | Deferred docs-first | `reference/route-selector.md` |
 | Search, summarize, index, or clip moments from existing video | Video understanding | Deferred docs-first | `reference/route-selector.md` |
+| Browser-native media capture or MediaRecorder-style render | Browser media | Watchlist | `reference/route-selector.md` |
 
 Default choice:
 
@@ -39,8 +43,8 @@ Default choice:
 - Use **HyperFrames** for agent-editable HTML/CSS/GSAP compositions and premium
   tech briefings.
 - Use **FFmpeg** for deterministic transforms.
-- Treat provider, presenter, video-understanding, and JSON-template routes as
-  docs-first until a verified local/provider harness exists.
+- Treat provider, presenter, video-understanding, JSON-template, and browser
+  media routes as docs-first/watchlist until a verified harness exists.
 
 Do not promise render support for docs-first or watchlist routes. State the
 missing harness or provider requirement.

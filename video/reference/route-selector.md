@@ -34,6 +34,7 @@ Classify by user intent before selecting an engine.
 | Presenter/avatar video | Deferred docs-first | verify provider, avatar, voice, and language readiness |
 | Video understanding | Deferred docs-first | verify VideoDB or equivalent ingest/index tool |
 | JSON template rendering | Deferred docs-first | requires runtime/license decision |
+| Browser-native media | Watchlist | needs capture harness and frame-accuracy proof |
 | Motion Canvas / Manim / MoviePy | Watchlist | add harness before promising output |
 
 ## Conservative Defaults
@@ -43,6 +44,7 @@ Classify by user intent before selecting an engine.
 - FFmpeg is preferred for simple deterministic media transforms.
 - Existing source video defaults to editing or understanding, not generation.
 - Provider routes require current docs or CLI/MCP discovery before execution.
+- Browser-native capture needs deterministic seek/capture proof before delivery.
 - Docs-first routes may produce plans, contracts, or manual instructions, but
   should not claim local render support until a harness exists.
 

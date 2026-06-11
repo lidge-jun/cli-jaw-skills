@@ -141,7 +141,7 @@ Portrait Shorts exception:
 
 ## Components
 
-Read `components.md` for detailed component behavior.
+Read `reference/components.md` for detailed component behavior.
 
 Common element types:
 
@@ -160,7 +160,8 @@ Common element types:
 
 ## TTS
 
-Read `tts-integration.md` for auth, priority, voice control, speed, and caching.
+Read `reference/tts-integration.md` for auth, priority, voice control, speed,
+and caching.
 
 Draft timeline flow:
 
