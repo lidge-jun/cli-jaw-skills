@@ -189,7 +189,7 @@ Timeline config:
     "captions": {
       "src": "captions.remotion.json",
       "style": "bottom-center",
-      "fontSize": 34
+      "fontSize": 28
     }
   }
 }
@@ -199,6 +199,11 @@ Timeline config:
 embeds cue entries into render props, and `TimelineRenderer` renders caption
 overlay sequences. `Root.tsx` includes caption cue end times in composition
 duration so late cues are not clipped.
+
+For TTS caption scripts, prefer `captionText` when the spoken line needs Korean
+phonetic text but the displayed caption should preserve English proper nouns.
+The helper also auto-normalizes common terms such as `progrok TTS`, `Remotion`,
+`FFmpeg`, `MP4`, and `AAC`, and inserts newline breaks for lower-third captions.
 
 ## Resolution Presets
 

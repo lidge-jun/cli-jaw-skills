@@ -96,7 +96,10 @@ Required:
    `--skip-tts` rationale for deterministic checks
 7. post-TTS alignment proof when TTS changes element durations
 8. non-silent audio proof when the final deliverable should include narration
-9. rendered MP4 validation and sampled frame proof when captions are overlaid
+9. caption readability proof: English proper nouns display in English where
+   expected, lower-third lines are split sensibly, and caption size does not
+   dominate the frame
+10. rendered MP4 validation and sampled frame proof when captions are overlaid
 
 ### FFmpeg Utility
 

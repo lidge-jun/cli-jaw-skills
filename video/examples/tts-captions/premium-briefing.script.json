@@ -9,7 +9,7 @@
     "ttsSpeed": 1.1,
     "captions": {
       "style": "bottom-center",
-      "fontSize": 34,
+      "fontSize": 28,
       "backgroundColor": "rgba(0,0,0,0.72)"
     },
     "theme": {
@@ -26,6 +26,7 @@
       "type": "title",
       "durationSec": 3.2,
       "narration": "스크립트를 먼저 쓰면 자막 문구가 흔들리지 않습니다.",
+      "captionText": "스크립트를 먼저 쓰면\n자막 문구가 흔들리지 않습니다.",
       "props": {
         "title": "TTS Captions",
         "subtitle": "Script-first subtitles for narrated video"
@@ -43,6 +44,7 @@
       "type": "content",
       "durationSec": 4.0,
       "narration": "TTS가 실제 길이를 바꿔도 엘리먼트 기준 로컬 타임으로 다시 맞춥니다.",
+      "captionText": "TTS가 실제 길이를 바꿔도\n엘리먼트 기준 로컬 타임으로 다시 맞춥니다.",
       "props": {
         "header": "Duration aligned",
         "bulletPoints": [

@@ -18,6 +18,7 @@ import { basename, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
   alignCaptionEntriesToTimeline,
+  cleanCaptionText,
   cleanText,
   computeElementStarts,
   validateCaptionEntries,
@@ -32,6 +33,8 @@ const { values } = parseArgs({
     preset: { type: "string" },
     style: { type: "string", default: "bottom-center" },
     "font-size": { type: "string" },
+    "caption-max-line-chars": { type: "string", default: "24" },
+    "caption-max-lines": { type: "string", default: "2" },
     "words-per-minute": { type: "string", default: "145" },
     "min-cue-duration": { type: "string", default: "1.2" },
     "max-cue-duration": { type: "string", default: "3.8" },
@@ -62,6 +65,31 @@ mkdirSync(outputDir, { recursive: true });
 const wpm = Number(values["words-per-minute"]) || 145;
 const minCueDuration = Number(values["min-cue-duration"]) || 1.2;
 const maxCueDuration = Number(values["max-cue-duration"]) || 3.8;
+const captionMaxLineChars = Number(values["caption-max-line-chars"]) || 24;
+const captionMaxLines = Number(values["caption-max-lines"]) || 2;
+
+const CAPTION_TERM_MAP = [
+  [/\bcli\s*jaw\b/gi, "cli-jaw"],
+  [/클리\s*조|클리\s*죠|씨엘아이\s*조/gi, "cli-jaw"],
+  [/\bprogrok\b/gi, "progrok"],
+  [/프로그록|프로\s*그록/gi, "progrok"],
+  [/\btts\b/gi, "TTS"],
+  [/티\s*티\s*에스|티티에스/gi, "TTS"],
+  [/\bstt\b/gi, "STT"],
+  [/에스\s*티\s*티|에스티티/gi, "STT"],
+  [/\bremotion\b/gi, "Remotion"],
+  [/리모션/gi, "Remotion"],
+  [/\bffmpeg\b/gi, "FFmpeg"],
+  [/에프\s*에프\s*엠펙|에프에프엠펙|에프에프엠페그/gi, "FFmpeg"],
+  [/\bffprobe\b/gi, "ffprobe"],
+  [/에프\s*에프\s*프로브|에프에프프로브/gi, "ffprobe"],
+  [/\bmp4\b/gi, "MP4"],
+  [/엠\s*피\s*포|엠피포/gi, "MP4"],
+  [/\baac\b/gi, "AAC"],
+  [/에이\s*에이\s*씨|에이에이씨/gi, "AAC"],
+  [/\boauth\b/gi, "OAuth"],
+  [/오\s*어스|오어스/gi, "OAuth"],
+];
 
 function clamp(n, min, max) {
   return Math.min(Math.max(n, min), max);
@@ -82,6 +110,57 @@ function splitNarration(text) {
     .map(cleanText)
     .filter(Boolean);
   return parts.length ? parts : [cleaned];
+}
+
+function applyCaptionTermMap(text) {
+  return CAPTION_TERM_MAP.reduce((acc, [pattern, replacement]) => (
+    acc.replace(pattern, replacement)
+  ), cleanCaptionText(text));
+}
+
+function measureCaptionToken(token) {
+  const cjk = (token.match(/[\u3131-\uD79D\u3040-\u30FF\u3400-\u9FFF]/g) || []).length;
+  const latin = (token.match(/[A-Za-z0-9-]/g) || []).length;
+  return cjk * 1.15 + latin * 0.62 + Math.max(0, token.length - cjk - latin) * 0.5;
+}
+
+function splitCaptionTokens(text) {
+  return cleanCaptionText(text).split(/(\s+)/).filter((part) => part.length > 0);
+}
+
+function wrapCaptionLine(line, maxChars) {
+  const tokens = splitCaptionTokens(line);
+  const lines = [];
+  let current = "";
+  let currentWidth = 0;
+  for (const token of tokens) {
+    const normalizedToken = /^\s+$/.test(token) ? " " : token;
+    const width = measureCaptionToken(normalizedToken);
+    if (current && currentWidth + width > maxChars) {
+      lines.push(current.trim());
+      current = normalizedToken.trimStart();
+      currentWidth = measureCaptionToken(current);
+    } else {
+      current += normalizedToken;
+      currentWidth += width;
+    }
+  }
+  if (current.trim()) lines.push(current.trim());
+  return lines.length ? lines : [cleanText(line)];
+}
+
+function formatCaptionText(text) {
+  const mapped = applyCaptionTermMap(text);
+  const explicitLines = mapped.split("\n").flatMap((line) => wrapCaptionLine(line, captionMaxLineChars));
+  if (explicitLines.length <= captionMaxLines) return explicitLines.join("\n");
+
+  const merged = explicitLines.join(" ");
+  const wrapped = wrapCaptionLine(merged, Math.ceil(measureCaptionToken(merged) / captionMaxLines));
+  if (wrapped.length <= captionMaxLines) return wrapped.join("\n");
+
+  const kept = wrapped.slice(0, captionMaxLines);
+  kept[kept.length - 1] = [kept.at(-1), ...wrapped.slice(captionMaxLines)].join(" ");
+  return kept.join("\n");
 }
 
 function normalizeScript(raw) {
@@ -110,6 +189,7 @@ function normalizeScript(raw) {
     const narration = cleanText(beat.narration ?? beat.text ?? beat.caption);
     if (!narration) throw new Error(`beat ${id} requires narration/text`);
     const durationSec = Number(beat.durationSec) > 0 ? Number(beat.durationSec) : estimateDuration(narration);
+    const captionText = cleanCaptionText(beat.captionText ?? beat.caption ?? narration);
     return {
       id,
       type: beat.type || "content",
@@ -122,6 +202,7 @@ function normalizeScript(raw) {
       transition: beat.transition || { type: "fade", durationSec: 0.45 },
       voiceControl: beat.voiceControl,
       captionStyle: beat.captionStyle,
+      captionText,
       speaker: beat.speaker,
     };
   });
@@ -133,7 +214,7 @@ function buildCaptionEntries(beats) {
   const starts = computeElementStarts(beats);
   const entries = [];
   for (const [beatIndex, beat] of beats.entries()) {
-    const chunks = splitNarration(beat.narration);
+    const chunks = splitNarration(beat.captionText || beat.narration);
     const totalChars = chunks.reduce((sum, chunk) => sum + Math.max(cleanText(chunk).length, 1), 0);
     const nextTransition = beatIndex < beats.length - 1
       ? Number(beats[beatIndex + 1]?.transition?.durationSec ?? 0.5)
@@ -155,7 +236,7 @@ function buildCaptionEntries(beats) {
         draftElementDurationSec: beat.durationSec,
         start: Number((starts[beatIndex] + localStart).toFixed(3)),
         end: Number((starts[beatIndex] + localEnd).toFixed(3)),
-        text: chunk,
+        text: formatCaptionText(chunk),
         speaker: beat.speaker,
         style: beat.captionStyle,
       });

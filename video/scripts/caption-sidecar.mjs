@@ -9,6 +9,16 @@ export function cleanText(text) {
   return String(text ?? "").replace(/\s+/g, " ").trim();
 }
 
+export function cleanCaptionText(text) {
+  return String(text ?? "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map(cleanText)
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+}
+
 export function formatTimestamp(seconds, separator = ",") {
   const totalMs = Math.max(0, Math.round(asNumber(seconds) * 1000));
   const ms = totalMs % 1000;
@@ -48,7 +58,7 @@ export function normalizeCaptionEntry(cue, index = 0) {
     id: cleanText(cue.id) || `cue-${String(index + 1).padStart(3, "0")}`,
     start,
     end,
-    text: cleanText(cue.text ?? cue.caption ?? cue.narration),
+    text: cleanCaptionText(cue.text ?? cue.caption ?? cue.narration),
   };
   for (const key of [
     "speaker",

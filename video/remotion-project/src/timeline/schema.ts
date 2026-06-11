@@ -18,7 +18,8 @@ export interface TimelineMeta {
   fps?: number;
   totalDurationSec?: number;
   ttsVoice?: string;
-  ttsProvider?: "gemini" | "supertone" | "supertonic";
+  ttsProvider?: "progrok" | "gemini" | "supertone" | "supertonic";
+  ttsLanguage?: string;
   ttsSpeed?: number;
   theme?: {
     aesthetic?: string;
@@ -74,6 +75,7 @@ export interface TimelineElement {
 export interface VoiceControl {
   voice?: string;
   tonePrompt?: string;
+  language?: string;
   style?: string;
   pitch?: number;
   pitchVariance?: number;

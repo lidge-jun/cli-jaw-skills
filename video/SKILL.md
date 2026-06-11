@@ -219,6 +219,9 @@ Read `reference/workspace-policy.md` for source/output boundaries.
 - HyperFrames via `npx --yes hyperframes ...`
 - TTS via local progrok proxy `/v1/tts` by default; run `progrok proxy`
   or use `PROGROK_BASE_URL` when the proxy is on another port.
+- TTS caption scripts may use `captionText` to display English proper nouns
+  while narration stays provider-friendly. Captions auto-wrap with newline
+  breaks and default to a smaller lower-third size.
 - TTS captions via script JSON, existing TTS batch, Remotion caption sidecars
 - STT captions via local `progrok` proxy `/v1/stt`, plus ffmpeg/ffprobe
 - TTS: `GEMINI_API_KEY` for Gemini, `SUPERTONE_API_KEY` for Supertone,

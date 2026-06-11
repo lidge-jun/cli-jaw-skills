@@ -19,7 +19,7 @@ export const Caption: React.FC<Props> = ({
   speaker,
   placement = "bottom-center",
   captionStyle = "default",
-  fontSize = 28,
+  fontSize = 24,
   fontFamily,
   backgroundColor,
   durationInFrames: cueDurationInFrames,
@@ -60,6 +60,7 @@ export const Caption: React.FC<Props> = ({
           textAlign: isLeft ? "left" : "center",
           maxWidth: isLeft ? "72%" : "82%",
           lineHeight: 1.25,
+          whiteSpace: "pre-line",
           textShadow: isMinimal ? "0 2px 10px rgba(0,0,0,0.75)" : "none",
           boxShadow: isMinimal ? "none" : "0 18px 60px rgba(0,0,0,0.32)",
         }}

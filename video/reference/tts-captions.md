@@ -60,7 +60,7 @@ it is not proof that the final video has audible narration.
     "ttsLanguage": "ko",
     "captions": {
       "style": "bottom-center",
-      "fontSize": 34
+      "fontSize": 28
     }
   },
   "beats": [
@@ -68,6 +68,7 @@ it is not proof that the final video has audible narration.
       "id": "intro",
       "type": "title",
       "narration": "Script text is the caption source of truth.",
+      "captionText": "Script text is the caption source\nof truth.",
       "durationSec": 3.2,
       "props": {
         "title": "TTS Captions",
@@ -84,6 +85,9 @@ Rules:
 
 - `beats[]` must be non-empty.
 - each beat needs a stable `id` and `narration`.
+- use `captionText` when displayed captions should differ from spoken TTS text.
+  This is preferred for English proper nouns, e.g. speak "프로그록 티티에스" but
+  display `progrok TTS`.
 - `type`, `props`, and `transition` map directly to Remotion timeline
   elements.
 - `durationSec` can be omitted; the helper estimates it from words per minute.
@@ -91,6 +95,11 @@ Rules:
 - `meta.ttsLanguage` or `voiceControl.language` is recommended for progrok
   TTS; the helper defaults to `auto` when mixed-language detection is
   acceptable.
+- captions are automatically normalized for common English proper nouns such
+  as `cli-jaw`, `progrok`, `TTS`, `STT`, `Remotion`, `FFmpeg`, `MP4`, and `AAC`.
+- captions are wrapped with literal newline breaks for readable lower-third
+  display. Override with `--caption-max-line-chars` and `--caption-max-lines`
+  when a format needs denser or looser line breaks.
 
 ## Caption Timing
 
