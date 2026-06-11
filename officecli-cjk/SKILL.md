@@ -12,10 +12,10 @@ metadata:
 Overlay skill for OfficeCLI that ensures correct CJK text rendering in DOCX, XLSX, and PPTX.
 Use this skill when creating or modifying documents containing Korean, Japanese, or Chinese text.
 
-> **Fork vs Upstream**: The upstream officecli binary ignores CJK fonts entirely.
-> Our fork (`cli-jaw/officecli`) includes `CjkHelper.cs` which **auto-detects** CJK characters
-> in text and applies the correct East Asian font, language tag, and kinsoku rules automatically.
-> If using the upstream binary, you must apply these manually using the commands below.
+> **Fork contract**: Inside cli-jaw, use the fork-installed OfficeCLI binary for CJK/rhwp workflows.
+> Upstream OfficeCLI may have some CJK handling, but cli-jaw's supported contract is the fork plus
+> local verification. Verify the actual binary with version, capability/help output, text roundtrip,
+> and raw XML checks before relying on CJK font/language behavior.
 
 ---
 

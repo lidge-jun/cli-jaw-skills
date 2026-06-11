@@ -12,6 +12,8 @@ Primary tool: **officecli** (on PATH — global install) for HWPX work and exper
 Fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what officecli cannot cover — HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
 Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
 
+**OfficeCLI install contract inside cli-jaw:** install or refresh OfficeCLI through `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`. This installs the supported fork used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
+
 **OfficeCLI discovery rule:** run `officecli hwp doctor --json` and `officecli capabilities --json` before claiming binary `.hwp` support. Use `officecli hwp --json` for current rhwp recipes/policies and `officecli help <format> ... --json` for DOCX/XLSX/PPTX-style schema help.
 
 **Same-file execution rule:** run OfficeCLI commands against the same `.hwpx` or `.hwp` sequentially. Do not run `officecli view`, `officecli validate`, `officecli query`, or `officecli get` in parallel against one package. If a file lock occurs, stop and report the exact command and path before making a copy or retrying.

@@ -9,21 +9,19 @@ description: OfficeCli Command Reference — PPT generation and validation comma
 
 **If `officecli` is not installed:**
 
+Inside cli-jaw, install or refresh OfficeCLI through the cli-jaw installer. This installs the supported fork used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
+
 `macOS / Linux`
 
 ```bash
 if ! command -v officecli >/dev/null 2>&1; then
-    curl -fsSL https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.sh | bash
+    bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"
 fi
 ```
 
 `Windows (PowerShell)`
 
-```powershell
-if (-not (Get-Command officecli -ErrorAction SilentlyContinue)) {
-    irm https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.ps1 | iex
-}
-```
+Use the cli-jaw fork installer from an environment where `npm root -g` resolves the active cli-jaw package. Do not substitute a direct vanilla upstream installer unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
 
 Verify: `officecli --version`
 
@@ -71,7 +69,7 @@ officecli set demo.pptx '/slide[1]/shape[1]' --prop gradient="linear:90:FF0000,0
 officecli validate demo.pptx
 ```
 
-**For comprehensive reference:** https://github.com/iOfficeAI/OfficeCLI/wiki/agent-guide
+**For comprehensive upstream reference only:** https://github.com/iOfficeAI/OfficeCLI/wiki/agent-guide
 
 ---
 

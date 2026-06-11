@@ -22,21 +22,19 @@ Build formula-driven, multi-sheet financial models from scratch in Excel. Every 
 
 **If `officecli` is not installed:**
 
+Inside cli-jaw, install or refresh OfficeCLI through the cli-jaw installer. This installs the supported fork used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
+
 `macOS / Linux`
 
 ```bash
 if ! command -v officecli >/dev/null 2>&1; then
-    curl -fsSL https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.sh | bash
+    bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"
 fi
 ```
 
 `Windows (PowerShell)`
 
-```powershell
-if (-not (Get-Command officecli -ErrorAction SilentlyContinue)) {
-    irm https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.ps1 | iex
-}
-```
+Use the cli-jaw fork installer from an environment where `npm root -g` resolves the active cli-jaw package. Do not substitute a direct vanilla upstream installer unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
 
 Verify: `officecli --version`
 
