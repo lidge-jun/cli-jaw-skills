@@ -117,6 +117,27 @@ Pass `--timeout 1800` (30 min) or higher for unusually long Pro/Deep Think
 runs. The provider tab and the cli-jaw browser Chrome process stay open
 across a poll timeout — only the polling loop gives up.
 
+## Long-Running Queries — bgtask (no turn blocking)
+
+For responses that may take many minutes (ChatGPT Pro/Heavy, Gemini Deep
+Think, Deep Research), do NOT block the boss turn on `web-ai query`. Register
+a server-owned background task instead:
+
+```bash
+SID=$(cli-jaw browser web-ai send --vendor chatgpt --model pro --inline-only \
+  --prompt "..." --json | jq -r .sessionId)
+cli-jaw bgtask add --preset web-ai --session "$SID" \
+  --prompt "web-ai result: {{result}} — summarize and deliver to the user"
+# → end the turn. The jaw server owns the work (native session probe,
+#   restart-durable) and re-invokes the boss with a [bgtask:*] prompt
+#   when the session reaches complete/timeout/error.
+```
+
+- Check status anytime: `cli-jaw bgtask list` / `cli-jaw bgtask show <taskId>`.
+- This is the sanctioned exception to the "never relinquish the turn while
+  work is in flight" rule — a registered bgtask is server-owned, not in-flight.
+- Keep blocking `query` for short/fast lookups where waiting is cheaper.
+
 ## Tab pooling and lease contention
 
 Completed provider tabs are kept warm in a per-vendor pool so the next

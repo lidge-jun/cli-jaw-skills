@@ -264,6 +264,15 @@ query genuinely needs deep multi-source synthesis. It is slow and expensive.
 - Check `usage.server_side_tool_usage_details` for search call counts
 
 ## Tier 4 — web-ai (Grok Expert / GPT Pro)
+### Long-running Tier 4 queries → bgtask
+
+If the Tier 4 query uses a heavy model (GPT Pro, Deep Think, Deep Research)
+and may run for many minutes, do not block the turn on `query`. Use
+`cli-jaw browser web-ai send` to get the sessionId, then
+`cli-jaw bgtask add --preset web-ai --session "$SID"` and end the turn —
+the jaw server re-invokes the boss with a `[bgtask:*]` prompt on completion.
+Details: active `web-ai` skill "Long-Running Queries — bgtask" section.
+
 
 Drive grok.com or chatgpt.com through browser control for complex synthesis that
 raw search cannot produce. Slowest tier, most capable.
