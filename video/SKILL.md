@@ -1,285 +1,109 @@
 ---
 name: video
-description: "Code-based video create, edit, render, preview, and validate. Routes Remotion, HyperFrames, FFmpeg, and docs-first engines."
+description: "Code-based video create, edit, render, preview, and validate. Defaults to Remotion for JSON/React timelines, routes HyperFrames HTML video, FFmpeg transforms, existing-footage editing, and docs-first provider/video-understanding workflows."
 ---
 
 # Code-Based Video Skill
 
-Route video work to the right code-based engine before rendering. Remotion remains the implemented default for JSON timelines; HyperFrames is the HTML-first route for agent-authored compositions; FFmpeg handles deterministic media transforms.
+Route video work before rendering. Remotion is the implemented default for
+JSON/React timeline videos. HyperFrames is the HTML/CSS/GSAP route for
+agent-authored compositions. FFmpeg handles deterministic media transforms.
 
-Triggers: "video", "Remotion", "HyperFrames", "animation", "mp4", "render video", "slides to video", "HTML video".
-Covers: route selection, JSON-driven timelines, HTML/CSS/GSAP compositions, resolution presets, TTS narration, render pipelines, FFmpeg processing, final polish, and artifact validation.
+Triggers: "video", "Remotion", "HyperFrames", "animation", "mp4", "render video",
+"slides to video", "HTML video", "edit this video", "subtitle video",
+"video summary", "image to video", "presenter video".
+
+Core rule: choose the route, load the matching reference, produce route-specific
+artifacts, and validate the output. A successful command is not enough.
 
 ---
 
 ## Route First
 
-| Route | Status | Use When | Verification |
-| ----- | ------ | -------- | ------------ |
-| **Remotion** | Active default | React/JSON timeline videos, UI demos, branded templates, TTS/captions, slide-to-video | `pipeline.mjs` + `validate-artifact.mjs` |
-| **HyperFrames** | Active smoke route | HTML/CSS/GSAP compositions, AI-agent editable scenes, website-capture experiments, premium tech briefings | `hyperframes lint/render` + `ffprobe` + frame QA |
-| **FFmpeg** | Active utility route | Existing media trim/concat/transcode/proxy/audio/reframe tasks | `ffprobe` and output inspection |
-| **Motion Canvas** | Docs-first | Procedural TypeScript technical explainers and vector/code animation | Add harness before promising render |
-| **Manim** | Docs-first | Math, geometry, formula, algorithm animation | Add dependency harness before promising render |
-| **MoviePy** | Docs-first | Python editing/compositing automation | Add dependency policy before promising render |
-| **Mediabunny/WebCodecs** | Watchlist | Browser-native preview/probe/edit workflows | Use only after concrete Web UI requirement |
+Read `reference/route-selector.md` when intent is not a simple Remotion render.
 
-If a route is docs-first or watchlist, do not claim render support until a local harness and validation gate exist.
+| User intent | Route | Status | Read |
+|---|---|---|---|
+| React/JSON timeline, branded explainer, TTS, captions, slide-to-video | Remotion | Active default | `reference/remotion.md` |
+| HTML/CSS/GSAP composition, kinetic typography, premium tech briefing | HyperFrames | Active smoke route | `reference/hyperframes.md` |
+| Trim, concat, transcode, proxy, audio, reframe, deterministic media ops | FFmpeg utility | Active utility | `reference/validation.md` |
+| Cut/polish existing footage with transcript, EDL, subtitles, overlays | Existing-footage editing | Docs-first | `reference/existing-footage-editing.md` |
+| New generative video clips, image-to-video, cinematic model output | Provider video generation | Deferred docs-first | `reference/route-selector.md` |
+| Presenter/avatar/talking-head video | Presenter/avatar video | Deferred docs-first | `reference/route-selector.md` |
+| Search, summarize, index, or clip moments from existing video | Video understanding | Deferred docs-first | `reference/route-selector.md` |
 
----
+Default choice:
 
-## Agent Skill Authoring Rules
+- Use **Remotion** unless the user asks for HTML-first authoring, raw media
+  editing, provider generation, presenter/avatar video, or video search.
+- Use **HyperFrames** for agent-editable HTML/CSS/GSAP compositions and premium
+  tech briefings.
+- Use **FFmpeg** for deterministic transforms.
+- Treat provider, presenter, video-understanding, and JSON-template routes as
+  docs-first until a verified local/provider harness exists.
 
-- Keep `SKILL.md` focused on routing, non-goals, commands, and verification gates.
-- Move engine-specific details to `reference/`; use `scripts/` only for deterministic helpers.
-- State required inputs, produced outputs, and pass/fail evidence for every route.
-- Prefer instructions over scripts unless external tooling or reproducibility requires code.
-- Treat third-party skills as executable instructions; review helper scripts before active runtime promotion.
-
----
-
-## Remotion Route
-
-Use Remotion for the existing JSON timeline pipeline, TTS narration, branded templates, captions, and React/web-style motion graphics.
-
-### Remotion Quick Reference
-
-| Task           | Command                                                                              |
-| -------------- | ------------------------------------------------------------------------------------ |
-| **Render**     | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]`             |
-| **Render+TTS** | `node scripts/pipeline.mjs --timeline timeline.draft.json` (auto-detects narration)  |
-| **Skip TTS**   | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts`                |
-| **TTS only**   | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]`            |
-| **TTS single** | `node scripts/tts.mjs --text "Hello" --output /tmp/tts-out.m4a [--provider gemini]`  |
-| **TTS voices** | `node scripts/tts.mjs --list-voices [--provider supertone]`                          |
-| **Async**      | `node scripts/pipeline.mjs --timeline <path> --async`                                |
-| **Status**     | `node scripts/pipeline.mjs --status /tmp/remotion-render/render-result.json`         |
-| **Preview**    | `cd remotion-project && pnpm exec remotion studio`                                   |
-| **Validate**   | `node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p` |
+Do not promise render support for docs-first or watchlist routes. State the
+missing harness or provider requirement.
 
 ---
 
-### Pipeline Usage
+## Visual Quality Gate
 
-Output goes to `/tmp/remotion-render` by default. Keep render output outside `skills_ref/video/` — that directory is source code, not workspace.
+For any non-trivial original video, read:
+
+- `reference/visual-direction.md`
+- `reference/style-packs.md`
+- `reference/visual-quality.md`
+
+Workflow:
+
+1. Perform a design read: audience, platform, palette, typography, density, and
+   motion intensity.
+2. Pick a style pack or define one.
+3. Author the composition/edit.
+4. Render or produce a preview.
+5. Validate with media evidence plus sampled frames or snapshots.
+6. Report a short visual QA verdict.
+
+Hard rule: style presets are direction; validation gates are law.
+
+---
+
+## Remotion Quick Start
+
+Use Remotion for the implemented JSON timeline pipeline.
 
 ```bash
-# Sync (default) — blocks until render complete
 node skills_ref/video/scripts/pipeline.mjs \
   --timeline timeline.json \
   --output /tmp/remotion-render
-
-# With preset override (timeline.meta.preset is the source of truth)
-node skills_ref/video/scripts/pipeline.mjs \
-  --timeline timeline.json \
-  --preset Portrait-1080p
-
-# Async — returns immediately, renders in background
-node skills_ref/video/scripts/pipeline.mjs \
-  --timeline timeline.json \
-  --async
-
-# Check async status
-node skills_ref/video/scripts/pipeline.mjs \
-  --status /tmp/remotion-render/render-result.json
 ```
 
-`timeline.meta.preset` is the source of truth for resolution. CLI `--preset` overrides it with a warning.
+Common commands:
+
+| Task | Command |
+|---|---|
+| Render | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]` |
+| Render with TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json` |
+| Skip TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts` |
+| TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]` |
+| Preview | `cd remotion-project && pnpm exec remotion studio` |
+| Validate | `node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p` |
+
+Read `reference/remotion.md` for timeline authoring, presets, TTS, components,
+animation rules, and validation details.
+
+Remotion animation rules:
+
+- Use `useCurrentFrame`, `interpolate`, `spring`, and `<Sequence>`.
+- Do not use CSS transitions, CSS animations, or Tailwind animation classes.
+- Keep generated render outputs outside `skills_ref/video`.
 
 ---
 
-### Timeline Authoring
+## HyperFrames Quick Start
 
-Refer to the project's timeline schema TypeScript interface for the full type definition.
-
-#### Minimal Example
-
-```json
-{
-  "meta": {
-    "title": "My Video",
-    "preset": "Landscape-1080p",
-    "fps": 30,
-    "totalDurationSec": 15
-  },
-  "elements": [
-    {
-      "type": "title",
-      "startSec": 0,
-      "durationSec": 5,
-      "props": { "title": "Hello World", "subtitle": "A demo" },
-      "transition": { "type": "fade" }
-    },
-    {
-      "type": "content",
-      "startSec": 5,
-      "durationSec": 5,
-      "props": { "header": "Key Points", "bulletPoints": ["Fast", "Safe", "Beautiful"] },
-      "transition": { "type": "slide", "direction": "from-right" }
-    },
-    {
-      "type": "code",
-      "startSec": 10,
-      "durationSec": 5,
-      "props": { "code": "const x = 42;", "language": "typescript", "title": "Example" },
-      "transition": { "type": "fade" }
-    }
-  ],
-  "audio": []
-}
-```
-
-#### Theme System (`meta.theme`)
-
-Each video should define a unique aesthetic. Uses `@remotion/google-fonts` for cross-platform rendering.
-Default: Chakra Petch (display) + Outfit (body) + JetBrains Mono (code), dark blue + cyan accent.
-
-```json
-{
-  "meta": {
-    "theme": {
-      "aesthetic": "brutalist tech",
-      "font": { "display": "Chakra Petch", "body": "Outfit" },
-      "color": { "accent": "#FF6B35", "bg": "#0A0A0A" },
-      "gradient": { "hero": "radial-gradient(circle at 20% 30%, rgba(255,107,53,0.2) 0%, transparent 60%)" }
-    }
-  }
-}
-```
-
-#### Content Design Rules
-
-**Do:**
-- Use concise headers without emoji
-- Write bullet points as short phrases (max 8 words), 3-4 per slide
-- Vary slide types: title → content → code → content
-- Mix transitions: fade/slide/wipe (avoid repeating same type 3+ times)
-- Show real code on code slides
-- Pick a theme aesthetic and commit
-
-**Avoid:**
-- Emoji in slide titles or headers
-- More than 5 bullets on a single slide
-- Generic headers like "Key Features", "Getting Started", "Summary"
-- Inter, Roboto, Arial as fonts in meta.theme (because they signal generic/AI-generated content)
-
-#### Content Density — Fill the Frame
-
-The canvas is large (1920×1080 or 1080×1920). Sparse content creates dead space.
-Add more content blocks — not bigger fonts or more padding.
-
-- **Content slides**: Use `content` + `bulletPoints` together; 4-5 bullets portrait, 3-4 landscape
-- **Code slides**: Minimum 6 lines portrait, 4 landscape; add comments to fill space
-- **Title slides**: Always include a subtitle
-- **General**: Each slide should use ≥70% of canvas area; prefer fewer dense slides over many sparse ones
-
-#### Visual Quality
-
-Detailed anti-slop rules, per-slide-type layout guidelines, motion principles, and typography specs → `reference/visual-quality.md`
-
-#### Shorts (Portrait-1080p)
-
-- Max 8-10 elements for 60s
-- First slide = hook (max 5 words) + descriptive subtitle
-- Last slide = CTA or memorable closing + tagline
-- 5-6 bullets per content slide, code 6-10 lines
-- Use `content` + `bulletPoints` together on every content slide
-
----
-
-## TTS Integration
-
-Three providers available. Default: Gemini.
-
-| Provider         | ID           | Default Voice | Strengths                              | Env Key             |
-| ---------------- | ------------ | ------------- | -------------------------------------- | ------------------- |
-| **Gemini**       | `gemini`     | `Kore`        | 30 voices, tone via prompt             | `GEMINI_API_KEY`    |
-| **Supertone**    | `supertone`  | Andrew        | 6 emotion styles, Korean-best          | `SUPERTONE_API_KEY` |
-| **Supertonic**   | `supertonic` | `M1`          | 0.22s gen, free, offline               | none                |
-
-### Workflow: Draft → TTS → Final → Render
-
-1. Write `timeline.draft.json` with `narration` + optional `voiceControl` per element
-2. Pipeline auto-detects narration → generates per-cut audio
-3. Produces `timeline.final.json` with `audio[]` entries + corrected `durationSec`
-4. Final timeline rendered with synced audio
-
-### Draft Timeline with Narration
-
-```json
-{
-  "elements": [
-    {
-      "id": "intro",
-      "type": "title",
-      "durationSec": 11,
-      "narration": "Welcome to the analysis report.",
-      "voiceControl": { "tonePrompt": "Calm, professional news anchor tone" },
-      "props": { "title": "Tech Trends", "subtitle": "2026 Edition" }
-    }
-  ]
-}
-```
-
-### Duration Estimation
-
-- Korean: ~6.5 chars/sec → `Math.ceil(narration.length / 6.5) + 0.5`
-- Final `durationSec` auto-corrected by ffprobe measurement
-
-Full TTS details (auth paths, priority chain, voiceControl fields, caching, audio path contract) → `reference/tts-integration.md`
-
----
-
-## Component Library
-
-### Slides
-
-| Component         | Props                                                   | Use For              |
-| ----------------- | ------------------------------------------------------- | -------------------- |
-| `TitleSlide`      | `title`, `subtitle`, `animation?`                       | Opening/closing      |
-| `ContentSlide`    | `header`, `content`, `bulletPoints`, `animation?`       | Body content         |
-| `CodeSlide`       | `code`, `language`, `title`, `animation?`               | Code demos           |
-| `DiagramSlide`    | `src`, `title`, `caption`, `fit`, `animation?`          | Images/diagrams      |
-| `StatSlide`       | `title`, `stats[]` (value/suffix/label/trend/decimals)  | KPI / count-up       |
-| `QuoteSlide`      | `quote`, `author?`, `source?`                           | Quotes               |
-| `ComparisonSlide` | `title`, `left{label,items,accent}`, `right{…}`         | Side-by-side compare |
-| `VideoSlide`      | `src`, `title?`, `startFrom?`, `playbackRate?`, `loop?` | Inline video         |
-| `GifSlide`        | `src`, `title?`, `fit?`                                 | Animated GIF         |
-| `LottieSlide`     | `src`, `title?`                                         | Lottie animation     |
-| `ChartSlide`      | `chartType`, `title`, `data{labels,datasets}`           | Bar/pie/line chart   |
-| `Caption`         | `text`, `position`, `designTheme?`                      | Timed subtitles      |
-
-### Features
-
-- **Surface Card**: Glassmorphism wrapper on content slides. Customize via `meta.theme.card`
-- **Animation**: Optional `animation: { enter: "scale-in", exit: "fade-out" }` per element. Enter: scale-in, fade-in, slide-up, none. Exit: scale-out, slide-down, fade-out, none
-- **Transitions**: fade, slide, wipe, flip, clock-wipe. Optional `timing: "spring"`. Slide/wipe accept `direction`
-- **Korean fonts**: NotoSansKR loaded as body primary. Stack: `NotoSansKR, Outfit, sans-serif`
-- **Charts**: bar (staggered grow), pie (sweep), line (draw-on). Pure SVG, no external library
-- **Audio**: `fadeInSec`/`fadeOutSec`, `loop`, `trimStartSec`
-
-Full component details → `reference/components.md`
-
----
-
-## Resolution Presets
-
-| Preset            | Width | Height | Aspect | Use For             |
-| ----------------- | ----- | ------ | ------ | ------------------- |
-| `Landscape-720p`  | 1280  | 720    | 16:9   | Draft/preview       |
-| `Landscape-1080p` | 1920  | 1080   | 16:9   | Standard delivery   |
-| `Portrait-1080p`  | 1080  | 1920   | 9:16   | TikTok/Reels/Shorts |
-| `Square-1080p`    | 1080  | 1080   | 1:1    | Instagram/LinkedIn  |
-
-Default: `Landscape-1080p`. Agent picks based on user keywords (reels/shorts → Portrait).
-
----
-
-## HyperFrames Route
-
-Use HyperFrames when the output should be authored directly as HTML/CSS/GSAP, when an AI coding agent will iteratively edit the composition, or when the user asks for a premium tech briefing style video.
-
-Quick commands:
+Use HyperFrames when the deliverable should be authored as HTML/CSS/GSAP.
 
 ```bash
 npx --yes hyperframes doctor
@@ -289,169 +113,95 @@ npx --yes hyperframes render /tmp/my-video --output /tmp/my-video/renders/out.mp
 ffprobe -v error -show_format -show_streams -of json /tmp/my-video/renders/out.mp4
 ```
 
-Before `lint` or `render`, author the composition. Rendering an untouched blank scaffold is not valid proof. For production loop, premium tech briefing aesthetics, GeekNews smoke recipe, and validation gates, read `reference/hyperframes.md`.
+Before rendering, author the composition. Rendering an untouched blank scaffold
+is not valid proof.
 
-Do not run `hyperframes skills` or install global AI skills during ordinary video work unless the user explicitly asks. Keep smoke artifacts in `/tmp` or another ignored workspace and record absolute paths in the devlog.
+Read `reference/hyperframes.md` for production loop, premium tech briefing
+style, GeekNews smoke recipe, and verification gates.
 
 ---
 
-## FFmpeg Route
+## FFmpeg Utility Route
 
-FFmpeg handles deterministic cuts, batch processing, and preprocessing outside of Remotion.
+FFmpeg is the active deterministic media utility route.
 
-### Extract segment by timestamp
+Examples:
 
 ```bash
+# Extract segment
 ffmpeg -i raw.mp4 -ss 00:12:30 -to 00:15:45 -c copy segment_01.mp4
-```
 
-### Batch cut from edit decision list
-
-```bash
-#!/bin/bash
-# cuts.txt format: start,end,label
-while IFS=, read -r start end label; do
-  ffmpeg -i raw.mp4 -ss "$start" -to "$end" -c copy "segments/${label}.mp4"
-done < cuts.txt
-```
-
-### Concatenate segments
-
-```bash
-for f in segments/*.mp4; do echo "file '$f'"; done > concat.txt
+# Concatenate listed files
 ffmpeg -f concat -safe 0 -i concat.txt -c copy assembled.mp4
-```
 
-### Create proxy for faster editing
-
-```bash
+# Proxy for faster editing
 ffmpeg -i raw.mp4 -vf "scale=960:-2" -c:v libx264 -preset ultrafast -crf 28 proxy.mp4
-```
 
-### Extract audio for transcription
-
-```bash
+# Extract audio for transcription
 ffmpeg -i raw.mp4 -vn -acodec pcm_s16le -ar 16000 audio.wav
-```
 
-### Normalize audio levels
-
-```bash
+# Normalize audio
 ffmpeg -i segment.mp4 -af loudnorm=I=-16:TP=-1.5:LRA=11 -c:v copy normalized.mp4
 ```
 
-### Scene detection
-
-```bash
-# Detect scene changes (threshold 0.3 = moderate sensitivity)
-ffmpeg -i input.mp4 -vf "select='gt(scene,0.3)',showinfo" -vsync vfr -f null - 2>&1 | grep showinfo
-```
-
-### Silence detection (auto-cut dead air)
-
-```bash
-ffmpeg -i input.mp4 -af silencedetect=noise=-30dB:d=2 -f null - 2>&1 | grep silence
-```
-
-### Social media reframing
-
-```bash
-# 16:9 → 9:16 (center crop for TikTok/Reels)
-ffmpeg -i input.mp4 -vf "crop=ih*9/16:ih,scale=1080:1920" vertical.mp4
-
-# 16:9 → 1:1 (center crop for Instagram)
-ffmpeg -i input.mp4 -vf "crop=ih:ih,scale=1080:1080" square.mp4
-```
+For cut-heavy editing, subtitles, transcript-aware decisions, or output
+timeline EDLs, read `reference/existing-footage-editing.md` instead of treating
+the task as raw FFmpeg snippets.
 
 ---
 
-## ElevenLabs Voice (Supplementary)
+## Validation
 
-For professional voiceover outside the Remotion TTS pipeline, ElevenLabs is available via direct API:
+Read `reference/validation.md` before declaring a video task complete.
 
-```python
-import os, requests
+Minimum active-route evidence:
 
-resp = requests.post(
-    f"https://api.elevenlabs.io/v1/text-to-speech/<voice_id>",
-    headers={
-        "xi-api-key": os.environ["ELEVENLABS_API_KEY"],
-        "Content-Type": "application/json"
-    },
-    json={
-        "text": "Your narration text here",
-        "model_id": "eleven_turbo_v2_5",
-        "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
-    }
-)
-with open("voiceover.mp3", "wb") as f:
-    f.write(resp.content)
-```
+| Route | Evidence |
+|---|---|
+| Remotion | output path, non-zero MP4, `validate-artifact.mjs` or ffprobe, sampled/still frame for non-trivial visuals |
+| HyperFrames | doctor/lint/render, ffprobe, sampled frames or inspect output, visual QA verdict |
+| FFmpeg | input/output ffprobe, expected duration/dimensions/codec, output inspection |
+| Existing footage | EDL/timeline artifact, transcript cache when speech matters, subtitle-last proof, cut-boundary checks |
 
-Use when: high-fidelity English narration, voice cloning, or emotion control beyond what Gemini/Supertone provide. Requires `ELEVENLABS_API_KEY`.
+Command succeeded != done. Completion requires route-specific evidence.
 
 ---
 
-## Final Polish (Descript / CapCut)
+## Workspace Policy
 
-For tasks that code-driven rendering handles poorly — use a traditional editor as the last mile:
+Read `reference/workspace-policy.md` for source/output boundaries.
 
-- **Pacing**: adjust cuts that feel too fast or slow
-- **Captions**: auto-generated, then manually cleaned
-- **Color grading**: basic correction and mood
-- **Final audio mix**: balance voice, music, and SFX levels
-- **Export**: platform-specific formats and quality settings
-
-AI clears repetitive work. Final creative taste lives in this layer.
+- `skills_ref/video` is source, not workspace.
+- Generated video/audio/caption outputs go to `/tmp` or a project output folder.
+- Do not commit generated MP4/WebM/GIF/audio unless explicitly requested.
+- Third-party reference repositories are idea/reference material, not active
+  runtime code.
 
 ---
 
-## Render Validation
+## Reference Map
 
-Every active route needs artifact evidence. Remotion keeps the existing 3-tier gate; HyperFrames uses lint/render/ffprobe/frame QA from `reference/hyperframes.md`; FFmpeg uses command exit plus ffprobe/output inspection.
-
-### Remotion 3-Tier Gate
-
-| Gate         | Checks                                  | Role            |
-| :----------- | :-------------------------------------- | :-------------- |
-| 1. Policy    | No forbidden engine in logs             | Supplementary   |
-| 2. Execution | `remotion render` exit 0                | Primary         |
-| 3. Artifact  | ffprobe duration/codec/resolution valid | **Final truth** |
-
-```bash
-node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p
-```
+| File | When to read |
+|---|---|
+| `reference/route-selector.md` | ambiguous intent, docs-first routes, provider/understanding/presenter requests |
+| `reference/remotion.md` | Remotion timeline, TTS, components, animation, render pipeline |
+| `reference/hyperframes.md` | HTML/CSS/GSAP compositions and premium tech briefings |
+| `reference/existing-footage-editing.md` | transcript/EDL/subtitle/cut-boundary editing |
+| `reference/visual-direction.md` | design read before non-trivial original video |
+| `reference/style-packs.md` | first-pass video aesthetics and banned cliches |
+| `reference/visual-quality.md` | anti-slop frame, typography, layout, and motion rules |
+| `reference/validation.md` | proof bundles and completion gates |
+| `reference/workspace-policy.md` | generated media, reference repos, and commit policy |
+| `reference/tts-integration.md` | provider auth, voiceControl, speed, caching |
+| `reference/components.md` | Remotion component library details |
 
 ---
 
 ## Dependencies
 
-- **Runtime**: Node.js 20+, pnpm, ffmpeg, ffprobe
-- **Packages**: Installed at `~/.remotion/node_modules/`. Run `setup-remotion.sh` once
-- **Chromium**: Auto-installed by `remotion browser ensure` (via `ensure-remotion.mjs`)
-- **HyperFrames**: Use `npx --yes hyperframes ...` for repo-local smoke; do not install global AI skills unless explicitly requested
-- **TTS env**: `GEMINI_API_KEY` for Gemini; `SUPERTONE_API_KEY` for Supertone; none for Supertonic
-- **Bootstrap**: `node scripts/ensure-remotion.mjs` before first render
-- **Vertex AI auth**: `gcloud auth application-default login` or set `GOOGLE_APPLICATION_CREDENTIALS`
-
----
-
-## Project Structure
-
-```
-skills_ref/video/
-├── SKILL.md
-├── reference/                    ← visual-quality.md, tts-integration.md, components.md, hyperframes.md
-├── scripts/
-│   ├── pipeline.mjs              ← CLI entrypoint (sync/async/TTS)
-│   ├── tts.mjs                   ← TTS orchestrator (multi-provider)
-│   ├── tts-providers/            ← gemini.mjs, supertone.mjs, supertonic.mjs
-│   ├── ensure-remotion.mjs       ← runtime bootstrap
-│   ├── validate-artifact.mjs     ← Gate 3: ffprobe validation
-│   └── presets.mjs               ← resolution presets (ESM)
-└── remotion-project/
-    ├── public/example-timeline.json
-    └── src/
-        ├── components/           ← 11 slide components + barrel
-        └── timeline/             ← JSON→React engine
-```
+- Node.js 20+, pnpm, ffmpeg, ffprobe
+- Remotion dependencies under `~/.jaw-shared/remotion/node_modules/`
+- Bootstrap Remotion with `node scripts/ensure-remotion.mjs`
+- HyperFrames via `npx --yes hyperframes ...`
+- TTS: `GEMINI_API_KEY` for Gemini, `SUPERTONE_API_KEY` for Supertone,
+  none for Supertonic

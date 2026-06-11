@@ -2992,9 +2992,9 @@
       "name_en": "Video Rendering",
       "emoji": "🎬",
       "category": "media",
-      "description": "Code-based video routing: Remotion JSON timelines, HyperFrames HTML video, and FFmpeg transforms.",
+      "description": "Code-based video routing and validation: Remotion default timelines, HyperFrames HTML video, FFmpeg transforms, visual quality gates, and docs-first video workflows.",
       "desc_ko": "Remotion JSON timeline, HyperFrames HTML video, FFmpeg 변환을 라우팅하는 코드 기반 영상 스킬.",
-      "desc_en": "Code-based video routing for Remotion JSON timelines, HyperFrames HTML video, and FFmpeg transforms.",
+      "desc_en": "Code-based video routing and validation for Remotion default timelines, HyperFrames HTML video, FFmpeg transforms, visual quality gates, and docs-first video workflows.",
       "requires": {
         "bins": [
           "ffmpeg",
