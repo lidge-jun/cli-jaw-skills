@@ -9,6 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_DIR = resolve(__dirname, "..", "remotion-project");
 const SHARED_DIR = join(homedir(), ".jaw-shared", "remotion");
 const SHARED_MODULES = join(SHARED_DIR, "node_modules");
+const SHARED_REMOTION_BIN = join(SHARED_MODULES, ".bin", "remotion");
 const LOCAL_MODULES = join(PROJECT_DIR, "node_modules");
 
 function isDisabled() {
@@ -46,12 +47,17 @@ function syncSharedProjectFiles() {
   if (existsSync(workspaceConfig)) {
     copyFileSync(workspaceConfig, join(SHARED_DIR, "pnpm-workspace.yaml"));
   }
+
+  const lockfile = join(PROJECT_DIR, "pnpm-lock.yaml");
+  if (existsSync(lockfile)) {
+    copyFileSync(lockfile, join(SHARED_DIR, "pnpm-lock.yaml"));
+  }
 }
 
 function installSharedModules() {
   syncSharedProjectFiles();
   console.log("[Remotion bootstrap] installing to shared location ~/.jaw-shared/remotion ...");
-  const install = run("pnpm", ["install"], { cwd: SHARED_DIR, stdio: "inherit" });
+  const install = run("pnpm", ["install", "--frozen-lockfile"], { cwd: SHARED_DIR, stdio: "inherit" });
   if (!install.ok) {
     console.error("[Remotion bootstrap] pnpm install failed at shared location");
     process.exit(1);
@@ -70,7 +76,10 @@ function ensureSymlink() {
 }
 
 function needsSharedReinstall(output) {
-  return output.includes("ERR_PNPM_IGNORED_BUILDS") || output.includes("Ignored build scripts");
+  return output.includes("ERR_PNPM_IGNORED_BUILDS")
+    || output.includes("Ignored build scripts")
+    || output.includes("Command \"remotion\" not found")
+    || output.includes("ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL");
 }
 
 if (isDisabled()) {
@@ -81,7 +90,7 @@ if (isDisabled()) {
 syncSharedProjectFiles();
 
 // Install to shared location if needed
-if (!existsSync(SHARED_MODULES)) {
+if (!existsSync(SHARED_MODULES) || !existsSync(SHARED_REMOTION_BIN)) {
   installSharedModules();
 }
 

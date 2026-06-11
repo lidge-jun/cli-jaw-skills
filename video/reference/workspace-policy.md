@@ -67,3 +67,20 @@ cli-jaw skill read video
 
 Do not edit `~/.cli-jaw-3459/skills/video` as the source of truth. It is the
 installed runtime copy.
+
+## Remotion Runtime Cache
+
+`scripts/ensure-remotion.mjs` installs Remotion dependencies into
+`~/.jaw-shared/remotion` and symlinks `video/remotion-project/node_modules` to
+that shared cache.
+
+The shared cache must be reproducible from source files:
+
+- `video/remotion-project/package.json`
+- `video/remotion-project/pnpm-lock.yaml`
+- `video/remotion-project/pnpm-workspace.yaml`
+
+Keep build-script approvals and supply-chain timing policy in
+`pnpm-workspace.yaml`, not `.npmrc`. The workspace policy is intentionally
+copied into the shared cache before bootstrap so `pnpm exec remotion ...`
+behaves the same in local checks and employee verifiers.
