@@ -1,17 +1,48 @@
 ---
 name: video
-description: "Remotion video create, render, preview. Triggers: video, Remotion, animation, mp4, render video, slides to video."
+description: "Code-based video create, edit, render, preview, and validate. Routes Remotion, HyperFrames, FFmpeg, and docs-first engines."
 ---
 
-# Remotion Video Skill
+# Code-Based Video Skill
 
-JSON-driven timeline rendering with Remotion. Create, render, preview, and review videos.
-Triggers: "video", "Remotion", "animation", "mp4", "render video", "slides to video".
-Covers: JSON-driven timeline, theme system, resolution presets, TTS narration, render pipeline, FFmpeg processing, final polish.
+Route video work to the right code-based engine before rendering. Remotion remains the implemented default for JSON timelines; HyperFrames is the HTML-first route for agent-authored compositions; FFmpeg handles deterministic media transforms.
+
+Triggers: "video", "Remotion", "HyperFrames", "animation", "mp4", "render video", "slides to video", "HTML video".
+Covers: route selection, JSON-driven timelines, HTML/CSS/GSAP compositions, resolution presets, TTS narration, render pipelines, FFmpeg processing, final polish, and artifact validation.
 
 ---
 
-## Quick Reference
+## Route First
+
+| Route | Status | Use When | Verification |
+| ----- | ------ | -------- | ------------ |
+| **Remotion** | Active default | React/JSON timeline videos, UI demos, branded templates, TTS/captions, slide-to-video | `pipeline.mjs` + `validate-artifact.mjs` |
+| **HyperFrames** | Active smoke route | HTML/CSS/GSAP compositions, AI-agent editable scenes, website-capture experiments, premium tech briefings | `hyperframes lint/render` + `ffprobe` + frame QA |
+| **FFmpeg** | Active utility route | Existing media trim/concat/transcode/proxy/audio/reframe tasks | `ffprobe` and output inspection |
+| **Motion Canvas** | Docs-first | Procedural TypeScript technical explainers and vector/code animation | Add harness before promising render |
+| **Manim** | Docs-first | Math, geometry, formula, algorithm animation | Add dependency harness before promising render |
+| **MoviePy** | Docs-first | Python editing/compositing automation | Add dependency policy before promising render |
+| **Mediabunny/WebCodecs** | Watchlist | Browser-native preview/probe/edit workflows | Use only after concrete Web UI requirement |
+
+If a route is docs-first or watchlist, do not claim render support until a local harness and validation gate exist.
+
+---
+
+## Agent Skill Authoring Rules
+
+- Keep `SKILL.md` focused on routing, non-goals, commands, and verification gates.
+- Move engine-specific details to `reference/`; use `scripts/` only for deterministic helpers.
+- State required inputs, produced outputs, and pass/fail evidence for every route.
+- Prefer instructions over scripts unless external tooling or reproducibility requires code.
+- Treat third-party skills as executable instructions; review helper scripts before active runtime promotion.
+
+---
+
+## Remotion Route
+
+Use Remotion for the existing JSON timeline pipeline, TTS narration, branded templates, captions, and React/web-style motion graphics.
+
+### Remotion Quick Reference
 
 | Task           | Command                                                                              |
 | -------------- | ------------------------------------------------------------------------------------ |
@@ -28,7 +59,7 @@ Covers: JSON-driven timeline, theme system, resolution presets, TTS narration, r
 
 ---
 
-## Pipeline Usage
+### Pipeline Usage
 
 Output goes to `/tmp/remotion-render` by default. Keep render output outside `skills_ref/video/` — that directory is source code, not workspace.
 
@@ -57,11 +88,11 @@ node skills_ref/video/scripts/pipeline.mjs \
 
 ---
 
-## Timeline Authoring
+### Timeline Authoring
 
 Refer to the project's timeline schema TypeScript interface for the full type definition.
 
-### Minimal Example
+#### Minimal Example
 
 ```json
 {
@@ -98,7 +129,7 @@ Refer to the project's timeline schema TypeScript interface for the full type de
 }
 ```
 
-### Theme System (`meta.theme`)
+#### Theme System (`meta.theme`)
 
 Each video should define a unique aesthetic. Uses `@remotion/google-fonts` for cross-platform rendering.
 Default: Chakra Petch (display) + Outfit (body) + JetBrains Mono (code), dark blue + cyan accent.
@@ -116,7 +147,7 @@ Default: Chakra Petch (display) + Outfit (body) + JetBrains Mono (code), dark bl
 }
 ```
 
-### Content Design Rules
+#### Content Design Rules
 
 **Do:**
 - Use concise headers without emoji
@@ -132,7 +163,7 @@ Default: Chakra Petch (display) + Outfit (body) + JetBrains Mono (code), dark bl
 - Generic headers like "Key Features", "Getting Started", "Summary"
 - Inter, Roboto, Arial as fonts in meta.theme (because they signal generic/AI-generated content)
 
-### Content Density — Fill the Frame
+#### Content Density — Fill the Frame
 
 The canvas is large (1920×1080 or 1080×1920). Sparse content creates dead space.
 Add more content blocks — not bigger fonts or more padding.
@@ -142,11 +173,11 @@ Add more content blocks — not bigger fonts or more padding.
 - **Title slides**: Always include a subtitle
 - **General**: Each slide should use ≥70% of canvas area; prefer fewer dense slides over many sparse ones
 
-### Visual Quality
+#### Visual Quality
 
 Detailed anti-slop rules, per-slide-type layout guidelines, motion principles, and typography specs → `reference/visual-quality.md`
 
-### Shorts (Portrait-1080p)
+#### Shorts (Portrait-1080p)
 
 - Max 8-10 elements for 60s
 - First slide = hook (max 5 words) + descriptive subtitle
@@ -244,7 +275,27 @@ Default: `Landscape-1080p`. Agent picks based on user keywords (reels/shorts →
 
 ---
 
-## FFmpeg Patterns
+## HyperFrames Route
+
+Use HyperFrames when the output should be authored directly as HTML/CSS/GSAP, when an AI coding agent will iteratively edit the composition, or when the user asks for a premium tech briefing style video.
+
+Quick commands:
+
+```bash
+npx --yes hyperframes doctor
+npx --yes hyperframes init /tmp/my-video --example blank --non-interactive --skip-skills --resolution landscape
+npx --yes hyperframes lint /tmp/my-video
+npx --yes hyperframes render /tmp/my-video --output /tmp/my-video/renders/out.mp4 --format mp4 --quality standard --fps 30
+ffprobe -v error -show_format -show_streams -of json /tmp/my-video/renders/out.mp4
+```
+
+Before `lint` or `render`, author the composition. Rendering an untouched blank scaffold is not valid proof. For production loop, premium tech briefing aesthetics, GeekNews smoke recipe, and validation gates, read `reference/hyperframes.md`.
+
+Do not run `hyperframes skills` or install global AI skills during ordinary video work unless the user explicitly asks. Keep smoke artifacts in `/tmp` or another ignored workspace and record absolute paths in the devlog.
+
+---
+
+## FFmpeg Route
 
 FFmpeg handles deterministic cuts, batch processing, and preprocessing outside of Remotion.
 
@@ -355,9 +406,11 @@ AI clears repetitive work. Final creative taste lives in this layer.
 
 ---
 
-## Render Validation — 3-Tier Gate
+## Render Validation
 
-All 3 gates pass for a render to be considered successful.
+Every active route needs artifact evidence. Remotion keeps the existing 3-tier gate; HyperFrames uses lint/render/ffprobe/frame QA from `reference/hyperframes.md`; FFmpeg uses command exit plus ffprobe/output inspection.
+
+### Remotion 3-Tier Gate
 
 | Gate         | Checks                                  | Role            |
 | :----------- | :-------------------------------------- | :-------------- |
@@ -376,6 +429,7 @@ node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --pres
 - **Runtime**: Node.js 20+, pnpm, ffmpeg, ffprobe
 - **Packages**: Installed at `~/.remotion/node_modules/`. Run `setup-remotion.sh` once
 - **Chromium**: Auto-installed by `remotion browser ensure` (via `ensure-remotion.mjs`)
+- **HyperFrames**: Use `npx --yes hyperframes ...` for repo-local smoke; do not install global AI skills unless explicitly requested
 - **TTS env**: `GEMINI_API_KEY` for Gemini; `SUPERTONE_API_KEY` for Supertone; none for Supertonic
 - **Bootstrap**: `node scripts/ensure-remotion.mjs` before first render
 - **Vertex AI auth**: `gcloud auth application-default login` or set `GOOGLE_APPLICATION_CREDENTIALS`
@@ -387,7 +441,7 @@ node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --pres
 ```
 skills_ref/video/
 ├── SKILL.md
-├── reference/                    ← visual-quality.md, tts-integration.md, components.md
+├── reference/                    ← visual-quality.md, tts-integration.md, components.md, hyperframes.md
 ├── scripts/
 │   ├── pipeline.mjs              ← CLI entrypoint (sync/async/TTS)
 │   ├── tts.mjs                   ← TTS orchestrator (multi-provider)
