@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "Script-First TTS Caption Demo",
+    "preset": "Landscape-720p",
+    "fps": 30,
+    "ttsProvider": "gemini",
+    "ttsVoice": "Kore",
+    "ttsSpeed": 1.1,
+    "theme": {
+      "aesthetic": "premium tech briefing",
+      "color": {
+        "bg": "#05070A",
+        "accent": "#67E8F9"
+      }
+    },
+    "captions": {
+      "src": "premium-briefing.captions.remotion.json",
+      "style": "bottom-center",
+      "fontSize": 34,
+      "backgroundColor": "rgba(0,0,0,0.72)"
+    }
+  },
+  "elements": [
+    {
+      "id": "script-source",
+      "type": "title",
+      "durationSec": 3.2,
+      "props": {
+        "title": "TTS Captions",
+        "subtitle": "Script-first subtitles for narrated video"
+      },
+      "narration": "스크립트를 먼저 쓰면 자막 문구가 흔들리지 않습니다.",
+      "transition": {
+        "type": "fade",
+        "durationSec": 0.45
+      },
+      "voiceControl": {
+        "tonePrompt": "calm premium Korean tech briefing"
+      }
+    },
+    {
+      "id": "duration-align",
+      "type": "content",
+      "durationSec": 4,
+      "props": {
+        "header": "Duration aligned",
+        "bulletPoints": [
+          "Captions stay script-accurate",
+          "TTS remains provider-owned",
+          "Remotion renders the final overlay"
+        ]
+      },
+      "narration": "TTS가 실제 길이를 바꿔도 엘리먼트 기준 로컬 타임으로 다시 맞춥니다.",
+      "transition": {
+        "type": "slide",
+        "direction": "from-right",
+        "durationSec": 0.45
+      },
+      "voiceControl": {
+        "tonePrompt": "precise and confident"
+      }
+    }
+  ],
+  "audio": []
+}

@@ -1,0 +1,28 @@
+{
+  "language": "ko",
+  "sourceScript": "premium-briefing.script.json",
+  "sourceRoute": "tts-captions",
+  "duration": 6.75,
+  "entries": [
+    {
+      "id": "script-source-cue-01",
+      "elementId": "script-source",
+      "localStart": 0,
+      "localEnd": 2.75,
+      "draftElementDurationSec": 3.2,
+      "start": 0,
+      "end": 2.75,
+      "text": "스크립트를 먼저 쓰면 자막 문구가 흔들리지 않습니다."
+    },
+    {
+      "id": "duration-align-cue-01",
+      "elementId": "duration-align",
+      "localStart": 0,
+      "localEnd": 4,
+      "draftElementDurationSec": 4,
+      "start": 2.75,
+      "end": 6.75,
+      "text": "TTS가 실제 길이를 바꿔도 엘리먼트 기준 로컬 타임으로 다시 맞춥니다."
+    }
+  ]
+}

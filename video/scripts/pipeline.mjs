@@ -10,6 +10,7 @@ import { execFileSync, spawnSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { validateVideoArtifact } from "./validate-artifact.mjs";
 import { getPreset } from "./presets.mjs";
+import { alignCaptionEntriesToTimeline } from "./caption-sidecar.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REMOTION_PROJECT = resolve(__dirname, "..", "remotion-project");
@@ -60,12 +61,13 @@ function normalizeCaptionCue(cue, index) {
     text: String(cue.text ?? cue.caption ?? ""),
     speaker: cue.speaker ? String(cue.speaker) : undefined,
     style: cue.style ? String(cue.style) : undefined,
+    elementId: cue.elementId ? String(cue.elementId) : undefined,
     words: Array.isArray(cue.words) ? cue.words : undefined,
   };
 }
 
-function normalizeCaptionTrack(raw) {
-  const source = Array.isArray(raw)
+function getCaptionSource(raw) {
+  return Array.isArray(raw)
     ? raw
     : Array.isArray(raw.entries)
       ? raw.entries
@@ -74,6 +76,10 @@ function normalizeCaptionTrack(raw) {
         : Array.isArray(raw.captions)
           ? raw.captions
           : [];
+}
+
+function normalizeCaptionTrack(raw) {
+  const source = getCaptionSource(raw);
   const entries = source
     .map(normalizeCaptionCue)
     .filter((cue) => cue.text && Number.isFinite(cue.start) && Number.isFinite(cue.end) && cue.end > cue.start)
@@ -91,6 +97,23 @@ function normalizeCaptionTrack(raw) {
   };
 }
 
+function alignCaptionTrack(raw, timeline) {
+  const source = getCaptionSource(raw);
+  const hasLocalBinding = source.some((cue) => cue?.elementId && (cue.localStart !== undefined || cue.localEnd !== undefined));
+  if (!hasLocalBinding || !Array.isArray(timeline.elements) || timeline.elements.length === 0) {
+    return raw;
+  }
+  const result = alignCaptionEntriesToTimeline(source, timeline.elements);
+  if (result.warnings.length > 0) {
+    console.warn(`[pipeline] caption alignment warnings: ${result.warnings.join("; ")}`);
+  }
+  console.log(`[pipeline] aligned ${result.entries.length} TTS caption cues to effective timeline`);
+  return {
+    ...(Array.isArray(raw) ? {} : raw),
+    entries: result.entries,
+  };
+}
+
 function embedCaptionSidecar(timeline, timelinePath) {
   const captions = timeline.meta?.captions;
   if (!captions?.src) return timeline;
@@ -100,7 +123,7 @@ function embedCaptionSidecar(timeline, timelinePath) {
   if (!existsSync(captionPath)) {
     throw new Error(`Caption sidecar not found: ${captionPath}`);
   }
-  const raw = JSON.parse(readFileSync(captionPath, "utf8"));
+  const raw = alignCaptionTrack(JSON.parse(readFileSync(captionPath, "utf8")), timeline);
   const track = normalizeCaptionTrack(raw);
   timeline.meta.captions = {
     ...captions,
