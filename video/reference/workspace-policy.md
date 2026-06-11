@@ -9,6 +9,7 @@ Use one of:
 
 - `/tmp/<video-project>/`
 - `/tmp/remotion-render/`
+- `/tmp/video-stt-<slug>/`
 - a user-approved project output directory
 - an ignored repo-local scratch directory only when project conventions allow it
 
@@ -27,6 +28,7 @@ Do not commit generated media by default:
 - `.mp3`
 - frame dumps
 - provider result downloads
+- raw STT transcripts and generated subtitle sidecars unless explicitly requested
 
 Commit source artifacts instead:
 
@@ -34,6 +36,7 @@ Commit source artifacts instead:
 - reference docs
 - timeline JSON examples when intentionally maintained
 - deterministic scripts
+- tiny caption JSON fixtures when needed for renderable examples
 - tiny fixtures only when needed for tests
 
 ## Third-Party References

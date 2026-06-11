@@ -170,6 +170,30 @@ Draft timeline flow:
 3. pipeline writes `timeline.final.json`
 4. final timeline renders with synced audio
 
+## Caption Overlays
+
+For subtitle overlays, generate `captions.remotion.json` through
+`reference/stt-captions.md`.
+
+Timeline config:
+
+```json
+{
+  "meta": {
+    "captions": {
+      "src": "captions.remotion.json",
+      "style": "bottom-center",
+      "fontSize": 34
+    }
+  }
+}
+```
+
+`pipeline.mjs` resolves `meta.captions.src` relative to the timeline file,
+embeds cue entries into render props, and `TimelineRenderer` renders caption
+overlay sequences. `Root.tsx` includes caption cue end times in composition
+duration so late cues are not clipped.
+
 ## Resolution Presets
 
 | Preset | Width | Height | Use |

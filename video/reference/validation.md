@@ -59,6 +59,19 @@ mkdir -p /tmp/my-video/snapshots
 ffmpeg -y -i /tmp/my-video/renders/out.mp4 -vf fps=1/3 /tmp/my-video/snapshots/frame_%02d.png
 ```
 
+### STT Captions
+
+Required:
+
+1. source media or source audio path
+2. raw transcript JSON
+3. normalized transcript JSON
+4. SRT or VTT sidecar
+5. `captions.remotion.json` when Remotion overlay is used
+6. monotonic timestamp proof
+7. cue boundary and overlap check
+8. rendered MP4 validation and sampled frame proof when captions are overlaid
+
 ### FFmpeg Utility
 
 Required:

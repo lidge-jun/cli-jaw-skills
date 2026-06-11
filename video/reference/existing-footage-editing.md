@@ -17,6 +17,9 @@ polish. Use FFmpeg utility directly for simple deterministic transforms.
 
 ## Core Artifacts
 
+For speech-heavy edits, run STT/caption prep before EDL or subtitle decisions.
+Read `reference/stt-captions.md`.
+
 Create explicit intermediate artifacts:
 
 - media inventory
