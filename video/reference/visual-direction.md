@@ -20,7 +20,8 @@ Capture these decisions before authoring:
 | Assets | screenshots, code, charts, footage, generated images, none |
 | Verification focus | text readability, chart legibility, cut boundaries, brand match |
 
-If the user does not specify a style, choose a style pack from `style-packs.md`.
+If the user does not specify a style, choose a style pack from
+`reference/style-packs.md`.
 
 ## Required Output In Planning Notes
 

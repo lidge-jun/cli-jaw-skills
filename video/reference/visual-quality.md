@@ -3,8 +3,9 @@
 Adapts `dev-frontend/anti-slop.md` for Remotion motion context.
 Video is more dynamic than static UI — every frame is a first impression.
 
-Before authoring a non-trivial original video, read `visual-direction.md` and
-choose a style pack from `style-packs.md`. Validate final output with
+Before authoring a non-trivial original video, read
+`reference/visual-direction.md` and choose a style pack from
+`reference/style-packs.md`. Validate final output with
 `validation.md`.
 
 ## Banned Patterns → Alternatives
@@ -60,7 +61,7 @@ completion. Check:
 - CJK text is readable
 - one primary focus per beat
 - selected style pack is recognizable
-- no banned patterns from `style-packs.md`
+- no banned patterns from `reference/style-packs.md`
 
 Record a short verdict such as:
 

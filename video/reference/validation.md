@@ -112,7 +112,7 @@ For non-trivial visuals:
 - CJK text has safe line breaks
 - one primary focus per beat
 - selected style pack is recognizable
-- no banned cliches from `style-packs.md`
+- no banned cliches from `reference/style-packs.md`
 - duration/aspect matches the request
 
 Report one line:

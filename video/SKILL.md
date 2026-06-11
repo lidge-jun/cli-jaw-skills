@@ -158,7 +158,7 @@ the task as raw FFmpeg snippets.
 
 Read `reference/validation.md` before declaring a video task complete.
 
-Minimum active-route evidence:
+Minimum route evidence:
 
 | Route | Evidence |
 |---|---|
