@@ -336,6 +336,15 @@ Verify every completion claim with evidence. Run the relevant command fresh, rea
 
 **Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
+**Long external waits (cli-jaw runtime):** when a verification gate depends on a
+long-running external process (CI run, deploy, remote build, web-ai session) and
+you are the boss/goal agent inside cli-jaw, do not block the turn polling it.
+Register a server-owned task and end the turn:
+`cli-jaw bgtask add --cmd '["gh","run","watch","123","--exit-status"]' --prompt "CI done: {{result}} — verify and report"`
+(web-ai: `--preset web-ai --session $SID`). The server re-invokes the boss with a
+`[bgtask:*]` prompt on completion. Local commands (tests, tsc, builds that finish
+in minutes) stay blocking — bgtask is for genuinely long external work.
+
 **Red flags — unverified claims creeping in:**
 - Using words like "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Done!")

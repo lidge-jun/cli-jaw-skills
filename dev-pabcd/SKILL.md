@@ -148,6 +148,11 @@ Final sanity check:
 3. Update project structure docs if applicable
 4. Report completion summary
 
+Long external gates (CI runs, deploys) inside cli-jaw: do not block the turn —
+register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end the turn; the
+server re-invokes the boss on completion and PABCD state persists across turns.
+Local tsc/tests stay blocking.
+
 When done → `cli-jaw orchestrate D`
 
 ### D — Done
