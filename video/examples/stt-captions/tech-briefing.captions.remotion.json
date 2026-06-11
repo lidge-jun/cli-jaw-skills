@@ -1,0 +1,30 @@
+{
+  "language": "ko",
+  "sourceAudio": "/tmp/cli-jaw-video-stt-examples/tech-briefing/audio.wav",
+  "entries": [
+    {
+      "id": "cue-001",
+      "start": 0.25,
+      "end": 2.2,
+      "text": "progrok STT가 자막 타임라인을 만듭니다.",
+      "speaker": "NARRATOR",
+      "style": "speaker"
+    },
+    {
+      "id": "cue-002",
+      "start": 2.45,
+      "end": 4.85,
+      "text": "FFmpeg로 오디오를 준비하고 Remotion으로 렌더합니다.",
+      "speaker": "NARRATOR",
+      "style": "speaker"
+    },
+    {
+      "id": "cue-003",
+      "start": 5.15,
+      "end": 7.2,
+      "text": "완료 기준은 영상과 자막 증거입니다.",
+      "speaker": "NARRATOR",
+      "style": "emphasis"
+    }
+  ]
+}

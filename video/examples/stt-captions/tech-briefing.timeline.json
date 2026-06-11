@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "title": "Progrok STT Caption Route",
+    "preset": "Landscape-720p",
+    "fps": 30,
+    "totalDurationSec": 8,
+    "captions": {
+      "src": "tech-briefing.captions.remotion.json",
+      "style": "bottom-center",
+      "fontSize": 32,
+      "backgroundColor": "rgba(2, 6, 23, 0.78)"
+    },
+    "theme": {
+      "aesthetic": "premium tech briefing",
+      "color": {
+        "bg": "#05070B",
+        "surface": "#111827",
+        "accent": "#67E8F9",
+        "text": "#F8FAFC",
+        "textMuted": "#94A3B8"
+      }
+    }
+  },
+  "elements": [
+    {
+      "id": "intro",
+      "type": "title",
+      "durationSec": 4.2,
+      "props": {
+        "title": "STT Captions",
+        "subtitle": "progrok -> FFmpeg -> Remotion"
+      },
+      "transition": { "type": "fade", "durationSec": 0.45 },
+      "animation": { "enter": "slide-up", "exit": "fade-out" }
+    },
+    {
+      "id": "proof",
+      "type": "content",
+      "durationSec": 4.2,
+      "props": {
+        "header": "Proof Bundle",
+        "bulletPoints": [
+          "raw transcript",
+          "SRT / VTT",
+          "caption JSON",
+          "rendered MP4"
+        ]
+      },
+      "transition": { "type": "slide", "direction": "from-right", "durationSec": 0.45 },
+      "animation": { "enter": "fade-in", "exit": "fade-out", "staggerItems": true }
+    }
+  ],
+  "audio": []
+}

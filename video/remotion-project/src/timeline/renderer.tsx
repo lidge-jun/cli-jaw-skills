@@ -7,6 +7,7 @@ import { wipe } from "@remotion/transitions/wipe";
 import { flip } from "@remotion/transitions/flip";
 import { clockWipe } from "@remotion/transitions/clock-wipe";
 import { ElementRouter } from "./element-router";
+import { Caption } from "../components";
 import type { Timeline, TransitionConfig } from "./schema";
 import { resolveTheme } from "../theme";
 
@@ -42,6 +43,8 @@ type Props = {
 export const TimelineRenderer: React.FC<Props> = ({ timeline }) => {
   const { fps, width, height } = useVideoConfig();
   const theme = resolveTheme(timeline.meta);
+  const captions = timeline.meta?.captions;
+  const captionEntries = captions?.entries || captions?.track?.entries || [];
 
   return (
     <>
@@ -106,6 +109,26 @@ export const TimelineRenderer: React.FC<Props> = ({ timeline }) => {
               }}
               loop={a.loop}
               startFrom={a.trimStartSec ? Math.round(a.trimStartSec * fps) : undefined}
+            />
+          </Sequence>
+        );
+      })}
+
+      {captionEntries.map((cue, i) => {
+        const startFrame = Math.max(0, Math.round(cue.start * fps));
+        const durationInFrames = Math.max(1, Math.round((cue.end - cue.start) * fps));
+        return (
+          <Sequence key={cue.id || `caption-${i}`} from={startFrame} durationInFrames={durationInFrames}>
+            <Caption
+              text={cue.text}
+              speaker={cue.speaker}
+              placement={captions?.style || "bottom-center"}
+              captionStyle={cue.style || (cue.speaker ? "speaker" : "default")}
+              fontSize={captions?.fontSize}
+              fontFamily={captions?.fontFamily}
+              backgroundColor={captions?.backgroundColor}
+              durationInFrames={durationInFrames}
+              designTheme={theme}
             />
           </Sequence>
         );

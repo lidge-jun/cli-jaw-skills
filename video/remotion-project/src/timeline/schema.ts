@@ -28,7 +28,9 @@ export interface TimelineMeta {
     card?: { background?: string; border?: string; shadow?: string; blur?: number; borderRadius?: number };
   };
   captions?: {
-    src: string;
+    src?: string;
+    track?: CaptionTrack;
+    entries?: CaptionCue[];
     style?: "bottom-center" | "bottom-left" | "top-center";
     fontSize?: number;
     fontFamily?: string;
@@ -103,6 +105,32 @@ export interface TimelineAudio {
   fadeInSec?: number;
   fadeOutSec?: number;
   trimStartSec?: number;
+}
+
+export type CaptionPlacement = "bottom-center" | "bottom-left" | "top-center";
+export type CaptionStyle = "default" | "speaker" | "emphasis" | "minimal";
+
+export interface CaptionWord {
+  start: number;
+  end: number;
+  text: string;
+}
+
+export interface CaptionCue {
+  id?: string;
+  start: number;
+  end: number;
+  text: string;
+  speaker?: string;
+  style?: CaptionStyle;
+  words?: CaptionWord[];
+}
+
+export interface CaptionTrack {
+  language?: string;
+  sourceAudio?: string;
+  sourceMedia?: string;
+  entries: CaptionCue[];
 }
 
 export interface StatProps {
@@ -191,6 +219,35 @@ export function validateTimeline(data: unknown): { valid: boolean; errors: strin
     // totalDurationSec is now auto-calculated, so allow missing
     if (meta.totalDurationSec !== undefined && (typeof meta.totalDurationSec !== "number" || meta.totalDurationSec <= 0)) {
       errors.push("meta.totalDurationSec must be a positive number if provided");
+    }
+    if (meta.captions !== undefined) {
+      if (!meta.captions || typeof meta.captions !== "object") {
+        errors.push("meta.captions must be an object if provided");
+      } else {
+        const captions = meta.captions as Record<string, unknown>;
+        const entries = Array.isArray(captions.entries)
+          ? captions.entries
+          : captions.track && typeof captions.track === "object" && Array.isArray((captions.track as Record<string, unknown>).entries)
+            ? (captions.track as Record<string, unknown>).entries as unknown[]
+            : undefined;
+        if (typeof captions.src !== "string" && !entries) {
+          errors.push("meta.captions requires src, entries, or track.entries");
+        }
+        if (entries) {
+          entries.forEach((cue, i) => {
+            if (!cue || typeof cue !== "object") {
+              errors.push(`meta.captions.entries[${i}] must be an object`);
+              return;
+            }
+            const c = cue as Record<string, unknown>;
+            if (typeof c.text !== "string") errors.push(`meta.captions.entries[${i}].text must be a string`);
+            if (typeof c.start !== "number" || c.start < 0) errors.push(`meta.captions.entries[${i}].start must be >= 0`);
+            if (typeof c.end !== "number" || typeof c.start === "number" && c.end <= c.start) {
+              errors.push(`meta.captions.entries[${i}].end must be after start`);
+            }
+          });
+        }
+      }
     }
   }
 

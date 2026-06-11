@@ -1,0 +1,29 @@
+{
+  "language": "ko",
+  "entries": [
+    {
+      "id": "cue-001",
+      "start": 0.35,
+      "end": 2.35,
+      "text": "이 경로는 기존 영상 편집에도 바로 연결됩니다.",
+      "speaker": "SPEAKER_00",
+      "style": "speaker"
+    },
+    {
+      "id": "cue-002",
+      "start": 2.65,
+      "end": 4.9,
+      "text": "화자와 타임코드를 보존해야 EDL이 안전해집니다.",
+      "speaker": "SPEAKER_01",
+      "style": "speaker"
+    },
+    {
+      "id": "cue-003",
+      "start": 5.2,
+      "end": 7.1,
+      "text": "자막은 텍스트가 아니라 영상 UI입니다.",
+      "speaker": "SPEAKER_00",
+      "style": "emphasis"
+    }
+  ]
+}

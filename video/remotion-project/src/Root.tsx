@@ -28,7 +28,13 @@ export const RemotionRoot: React.FC = () => {
 
   // Auto-calculate duration from elements (accounting for transition overlaps)
   const { totalDurationSec: computed } = computeTiming(timeline.elements);
-  const totalDurationSec = timeline.meta?.totalDurationSec || computed || 5;
+  const captionEntries = timeline.meta?.captions?.entries || timeline.meta?.captions?.track?.entries || [];
+  const captionEndSec = captionEntries.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
+  const audioEndSec = (timeline.audio || []).reduce((max, audio) => {
+    if (!audio.durationSec) return max;
+    return Math.max(max, (audio.startSec || 0) + audio.durationSec);
+  }, 0);
+  const totalDurationSec = Math.max(timeline.meta?.totalDurationSec || 0, computed || 0, captionEndSec, audioEndSec, 5);
   const durationInFrames = Math.round(totalDurationSec * fps);
 
   return (

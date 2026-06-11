@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "title": "Interview Caption Demo",
+    "preset": "Portrait-1080p",
+    "fps": 30,
+    "totalDurationSec": 8,
+    "captions": {
+      "src": "interview-captions.captions.remotion.json",
+      "style": "bottom-left",
+      "fontSize": 40,
+      "backgroundColor": "rgba(15, 23, 42, 0.82)"
+    },
+    "theme": {
+      "aesthetic": "developer interview",
+      "color": {
+        "bg": "#09090B",
+        "surface": "#18181B",
+        "accent": "#A7F3D0",
+        "text": "#FAFAFA",
+        "textMuted": "#A1A1AA"
+      }
+    }
+  },
+  "elements": [
+    {
+      "id": "quote",
+      "type": "quote",
+      "durationSec": 4.2,
+      "props": {
+        "quote": "Transcript first. Edit second.",
+        "author": "cli-jaw video skill"
+      },
+      "transition": { "type": "fade", "durationSec": 0.45 },
+      "animation": { "enter": "scale-in", "exit": "fade-out" }
+    },
+    {
+      "id": "caption-contract",
+      "type": "content",
+      "durationSec": 4.2,
+      "props": {
+        "header": "Caption Contract",
+        "bulletPoints": [
+          "speaker",
+          "timestamp",
+          "sidecar",
+          "visual QA"
+        ]
+      },
+      "transition": { "type": "slide", "direction": "from-bottom", "durationSec": 0.45 },
+      "animation": { "enter": "slide-up", "exit": "fade-out", "staggerItems": true }
+    }
+  ],
+  "audio": []
+}

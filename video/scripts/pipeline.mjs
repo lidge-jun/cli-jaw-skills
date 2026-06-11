@@ -5,7 +5,7 @@
  */
 import { parseArgs } from "node:util";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync } from "node:fs";
-import { resolve, dirname, join } from "node:path";
+import { resolve, dirname, join, isAbsolute } from "node:path";
 import { execFileSync, spawnSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { validateVideoArtifact } from "./validate-artifact.mjs";
@@ -48,6 +48,67 @@ const startTime = Date.now();
 function writeStatus(outputDir, status, extra = {}) {
   const resultPath = join(outputDir, "render-result.json");
   writeFileSync(resultPath, JSON.stringify({ status, ...extra, updatedAt: Date.now() }, null, 2));
+}
+
+function normalizeCaptionCue(cue, index) {
+  const start = Number(cue.start ?? cue.startSec ?? 0);
+  const end = Number(cue.end ?? cue.endSec ?? 0);
+  return {
+    id: cue.id || `cue-${String(index + 1).padStart(3, "0")}`,
+    start,
+    end,
+    text: String(cue.text ?? cue.caption ?? ""),
+    speaker: cue.speaker ? String(cue.speaker) : undefined,
+    style: cue.style ? String(cue.style) : undefined,
+    words: Array.isArray(cue.words) ? cue.words : undefined,
+  };
+}
+
+function normalizeCaptionTrack(raw) {
+  const source = Array.isArray(raw)
+    ? raw
+    : Array.isArray(raw.entries)
+      ? raw.entries
+      : Array.isArray(raw.segments)
+        ? raw.segments
+        : Array.isArray(raw.captions)
+          ? raw.captions
+          : [];
+  const entries = source
+    .map(normalizeCaptionCue)
+    .filter((cue) => cue.text && Number.isFinite(cue.start) && Number.isFinite(cue.end) && cue.end > cue.start)
+    .sort((a, b) => a.start - b.start);
+
+  if (entries.length === 0) {
+    throw new Error("caption sidecar has no valid entries");
+  }
+
+  return {
+    language: raw.language,
+    sourceAudio: raw.sourceAudio,
+    sourceMedia: raw.sourceMedia,
+    entries,
+  };
+}
+
+function embedCaptionSidecar(timeline, timelinePath) {
+  const captions = timeline.meta?.captions;
+  if (!captions?.src) return timeline;
+  const captionPath = isAbsolute(captions.src)
+    ? captions.src
+    : resolve(dirname(timelinePath), captions.src);
+  if (!existsSync(captionPath)) {
+    throw new Error(`Caption sidecar not found: ${captionPath}`);
+  }
+  const raw = JSON.parse(readFileSync(captionPath, "utf8"));
+  const track = normalizeCaptionTrack(raw);
+  timeline.meta.captions = {
+    ...captions,
+    track,
+    entries: track.entries,
+  };
+  console.log(`[pipeline] embedded ${track.entries.length} caption cues from ${captionPath}`);
+  return timeline;
 }
 
 async function run() {
@@ -116,6 +177,14 @@ async function run() {
     // Strip narration fields for render
     effectiveTimeline = structuredClone(timeline);
     effectiveTimeline.elements.forEach((el) => { delete el.narration; delete el.voiceControl; });
+  }
+
+  try {
+    effectiveTimeline = embedCaptionSidecar(effectiveTimeline, timelinePath);
+  } catch (e) {
+    console.error("[pipeline] caption sidecar failed:", e.message);
+    writeStatus(outputDir, "failed", { phase: "captions", error: e.message });
+    process.exit(1);
   }
 
   // ── Auto-calculate audioStartSec via computeTiming ──────
