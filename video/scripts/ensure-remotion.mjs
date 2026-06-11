@@ -24,7 +24,7 @@ function run(cmd, args, opts = {}) {
       cwd: PROJECT_DIR,
       ...opts,
     });
-    return { ok: true, output: output.trim() };
+    return { ok: true, output: typeof output === "string" ? output.trim() : "" };
   } catch (error) {
     const stdout = typeof error?.stdout === "string" ? error.stdout : "";
     const stderr = typeof error?.stderr === "string" ? error.stderr : "";
