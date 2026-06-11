@@ -1,6 +1,6 @@
 ---
 name: video
-description: "Code-based video create, edit, render, preview, and validate. Defaults to Remotion for JSON/React timelines, routes HyperFrames HTML video, FFmpeg transforms, existing-footage editing, and docs-first provider/video-understanding workflows."
+description: "Code-based video create, edit, render, preview, and validate. Defaults to Remotion for JSON/React timelines, routes HyperFrames HTML video, TTS/STT captions, FFmpeg transforms, existing-footage editing, and docs-first provider/video-understanding workflows."
 ---
 
 # Code-Based Video Skill
@@ -29,6 +29,7 @@ Read `reference/route-selector.md` when intent is not a simple Remotion render.
 |---|---|---|---|
 | React/JSON timeline, branded explainer, TTS, captions, slide-to-video | Remotion | Active default | `reference/remotion.md` |
 | HTML/CSS/GSAP composition, kinetic typography, premium tech briefing | HyperFrames | Active smoke route | `reference/hyperframes.md` |
+| Authored narration, script-first subtitles, TTS-ready caption sidecars | TTS captions | Active via script JSON + Remotion draft timeline | `reference/tts-captions.md` |
 | Audio/video transcription, diarized captions, subtitle generation, word-timed captions | STT captions | Active via progrok HTTP STT + FFmpeg prep | `reference/stt-captions.md` |
 | Trim, concat, transcode, proxy, audio, reframe, deterministic media ops | FFmpeg utility | Active utility | `reference/validation.md` |
 | Cut/polish existing footage with transcript, EDL, subtitles, overlays | Existing-footage editing | Docs-first | `reference/existing-footage-editing.md` |
@@ -92,6 +93,7 @@ Common commands:
 | Render with TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json` |
 | Skip TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts` |
 | TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]` |
+| TTS captions | `node scripts/tts-captions.mjs --script script.json --output /tmp/video-tts-captions` |
 | STT captions | `node scripts/stt-captions.mjs --input input.mp4 --output /tmp/video-stt --language ko --diarize --word-timestamps` |
 | Preview | `cd remotion-project && pnpm exec remotion studio` |
 | Validate | `node scripts/validate-artifact.mjs /tmp/remotion-render/TimelineVideo.mp4 --preset Landscape-1080p` |
@@ -166,6 +168,7 @@ Minimum route evidence:
 |---|---|
 | Remotion | output path, non-zero MP4, `validate-artifact.mjs` or ffprobe, sampled/still frame for non-trivial visuals |
 | HyperFrames | doctor/lint/render, ffprobe, sampled frames or inspect output, visual QA verdict |
+| TTS captions | script JSON, normalized narration, `captions.remotion.json`, draft/final timeline, TTS manifest or skip-TTS rationale, alignment proof when TTS changes duration, rendered frame proof if overlaid |
 | STT captions | raw transcript, normalized transcript, SRT/VTT, `captions.remotion.json`, timestamp checks, rendered frame proof if overlaid |
 | FFmpeg | input/output ffprobe, expected duration/dimensions/codec, output inspection |
 | Existing footage | EDL/timeline artifact, transcript cache when speech matters, subtitle-last proof, cut-boundary checks |
@@ -193,6 +196,7 @@ Read `reference/workspace-policy.md` for source/output boundaries.
 | `reference/route-selector.md` | ambiguous intent, docs-first routes, provider/understanding/presenter requests |
 | `reference/remotion.md` | Remotion timeline, TTS, components, animation, render pipeline |
 | `reference/hyperframes.md` | HTML/CSS/GSAP compositions and premium tech briefings |
+| `reference/tts-captions.md` | authored narration, script-first subtitles, TTS-ready caption sidecars |
 | `reference/stt-captions.md` | audio transcription, diarization, subtitles, word-level timing, Remotion caption JSON |
 | `reference/existing-footage-editing.md` | transcript/EDL/subtitle/cut-boundary editing |
 | `reference/visual-direction.md` | design read before non-trivial original video |
@@ -211,6 +215,7 @@ Read `reference/workspace-policy.md` for source/output boundaries.
 - Remotion dependencies under `~/.jaw-shared/remotion/node_modules/`
 - Bootstrap Remotion with `node scripts/ensure-remotion.mjs`
 - HyperFrames via `npx --yes hyperframes ...`
+- TTS captions via script JSON, existing TTS batch, Remotion caption sidecars
 - STT captions via local `progrok` proxy `/v1/stt`, plus ffmpeg/ffprobe
 - TTS: `GEMINI_API_KEY` for Gemini, `SUPERTONE_API_KEY` for Supertone,
   none for Supertonic

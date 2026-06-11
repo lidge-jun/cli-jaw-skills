@@ -72,6 +72,20 @@ Required:
 7. cue boundary and overlap check
 8. rendered MP4 validation and sampled frame proof when captions are overlaid
 
+### TTS Captions
+
+Required:
+
+1. source script JSON path
+2. `narration.normalized.json`
+3. `captions.remotion.json`
+4. SRT or VTT sidecar
+5. `timeline.draft.json`
+6. TTS manifest/duration evidence when provider TTS is run, or explicit
+   `--skip-tts` rationale for deterministic checks
+7. post-TTS alignment proof when TTS changes element durations
+8. rendered MP4 validation and sampled frame proof when captions are overlaid
+
 ### FFmpeg Utility
 
 Required:

@@ -13,6 +13,7 @@ Run commands from `skills_ref/video` unless using absolute paths.
 | Render | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]` |
 | Render + TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json` |
 | Skip TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts` |
+| TTS captions | `node scripts/tts-captions.mjs --script script.json --output /tmp/video-tts-captions` |
 | TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]` |
 | TTS single | `node scripts/tts.mjs --text "Hello" --output /tmp/tts-out.m4a [--provider gemini]` |
 | TTS voices | `node scripts/tts.mjs --list-voices [--provider supertone]` |
@@ -170,10 +171,15 @@ Draft timeline flow:
 3. pipeline writes `timeline.final.json`
 4. final timeline renders with synced audio
 
+For script-first narrated videos with subtitles, read
+`reference/tts-captions.md`. It creates the draft timeline and caption sidecar
+from a script before TTS runs.
+
 ## Caption Overlays
 
-For subtitle overlays, generate `captions.remotion.json` through
-`reference/stt-captions.md`.
+For authored narration and TTS, generate `captions.remotion.json` through
+`reference/tts-captions.md`. For existing speech/audio/video, generate it
+through `reference/stt-captions.md`.
 
 Timeline config:
 

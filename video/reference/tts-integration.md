@@ -79,6 +79,23 @@ Set `speed: 1.0` to disable acceleration.
 - Cache hit: skips API call, reuses existing file
 - Manifest: `remotion-project/public/tts/manifest.json`
 
+## Script-First Captions
+
+For narrated videos that need subtitles, use `reference/tts-captions.md` before
+running provider TTS.
+
+Ownership:
+
+- `tts-captions.mjs` owns script normalization, caption sidecars, and
+  `timeline.draft.json`.
+- `tts.mjs` owns provider selection, voice control, cache keys, audio files, and
+  `timeline.final.json`.
+- `pipeline.mjs` owns post-TTS caption realignment before Remotion render.
+
+When the caption sidecar contains `elementId`, `localStart`, and `localEnd`,
+`pipeline.mjs` aligns captions against the effective final timeline so TTS
+duration drift does not desync subtitles.
+
 ## Audio Path Contract
 
 | Context  | Path format        | Example                    |

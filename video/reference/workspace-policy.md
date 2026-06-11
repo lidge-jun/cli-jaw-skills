@@ -10,6 +10,7 @@ Use one of:
 - `/tmp/<video-project>/`
 - `/tmp/remotion-render/`
 - `/tmp/video-stt-<slug>/`
+- `/tmp/video-tts-<slug>/`
 - a user-approved project output directory
 - an ignored repo-local scratch directory only when project conventions allow it
 
@@ -29,6 +30,8 @@ Do not commit generated media by default:
 - frame dumps
 - provider result downloads
 - raw STT transcripts and generated subtitle sidecars unless explicitly requested
+- generated TTS audio, TTS manifests, final timelines, and aligned caption
+  sidecars unless explicitly requested
 
 Commit source artifacts instead:
 
