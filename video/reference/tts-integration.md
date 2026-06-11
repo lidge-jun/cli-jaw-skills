@@ -1,5 +1,36 @@
 # TTS Integration — Detailed Reference
 
+## Progrok Auth Path
+
+Progrok is the default TTS provider for local cli-jaw video work.
+
+```text
+progrok login done?
+├─ Yes → progrok proxy at http://127.0.0.1:18645/v1
+│   └─ POST /v1/tts returns audio bytes using the user's xAI OAuth session
+No proxy?
+└─ Start `progrok proxy` or set PROGROK_BASE_URL to another local proxy URL
+```
+
+`progrok.mjs` calls the local proxy, not xAI directly. It does not need
+`XAI_API_KEY`, `GEMINI_API_KEY`, or `SUPERTONE_API_KEY`.
+
+Request shape:
+
+```json
+{
+  "text": "안녕하세요",
+  "voice_id": "eve",
+  "language": "ko",
+  "output_format": { "codec": "mp3" },
+  "speed": 1.0,
+  "text_normalization": true
+}
+```
+
+Built-in voices: `eve`, `ara`, `leo`, `rex`, `sal`. Custom voice ids from
+progrok/xAI can also be passed as `voiceControl.voice`.
+
 ## Gemini Auth Paths
 
 ```
@@ -35,7 +66,7 @@ Vertex AI does not use File API — only direct generation calls.
 ## Provider Selection
 
 ```
-Default (narration only)          → gemini
+Default (narration only)          → progrok
 meta.ttsProvider specified        → that provider
 element.voiceControl.style set    → supertone (needs emotion)
 Bulk/offline generation           → supertonic (local)
@@ -44,8 +75,9 @@ Bulk/offline generation           → supertonic (local)
 ## Priority Chain
 
 ```
-CLI --provider    >  meta.ttsProvider    >  "gemini"
+CLI --provider    >  meta.ttsProvider    >  "progrok"
 CLI --voice       >  meta.ttsVoice       >  provider.DEFAULT_VOICE
+CLI --language    >  meta.ttsLanguage    >  PROGROK_TTS_LANGUAGE > "auto"
 vc.speed          >  meta.ttsSpeed       >  1.2
 vc.style          >  "neutral"           (supertone only)
 vc.tonePrompt     >  (none)              (gemini only)
@@ -55,6 +87,7 @@ vc.tonePrompt     >  (none)              (gemini only)
 
 | Provider       | Method                     | Notes                    |
 | -------------- | -------------------------- | ------------------------ |
+| **Progrok**    | API `speed`                | Native; OAuth proxy      |
 | **Gemini**     | ffmpeg `atempo` post-proc  | No native speed API      |
 | **Supertone**  | API `voice_settings.speed` | Native — sounds natural  |
 | **Supertonic** | ffmpeg `atempo` post-proc  | PyPI speed needs testing |
@@ -67,6 +100,7 @@ Set `speed: 1.0` to disable acceleration.
 | --------------- | ----------- | ---------------------------------------------------- |
 | `voice`         | All         | Override voice (provider-specific ID)                |
 | `tonePrompt`    | Gemini only | Natural language tone instruction                    |
+| `language`      | Progrok     | BCP-47 language such as `ko`, `en`, or `auto`        |
 | `style`         | Supertone   | "neutral"\|"happy"\|"sad"\|"curious"\|"shy"\|"angry" |
 | `pitch`         | Supertone   | Pitch shift -3 ~ +3                                  |
 | `pitchVariance` | Supertone   | Pitch variance 0.5 ~ 2.0                             |
@@ -74,7 +108,7 @@ Set `speed: 1.0` to disable acceleration.
 
 ## TTS Caching
 
-- Cache key: `sha256(provider|voice|narration|style|pitch|pitchVariance|speed|tonePrompt)` → first 16 hex chars
+- Cache key: `sha256(provider|voice|narration|style|pitch|pitchVariance|speed|tonePrompt|language)` → first 16 hex chars
 - Files: `remotion-project/public/tts/{id}.{m4a|mp3|wav}`
 - Cache hit: skips API call, reuses existing file
 - Manifest: `remotion-project/public/tts/manifest.json`

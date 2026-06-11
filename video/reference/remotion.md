@@ -14,9 +14,9 @@ Run commands from `skills_ref/video` unless using absolute paths.
 | Render + TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json` |
 | Skip TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts` |
 | TTS captions | `node scripts/tts-captions.mjs --script script.json --output /tmp/video-tts-captions` |
-| TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]` |
-| TTS single | `node scripts/tts.mjs --text "Hello" --output /tmp/tts-out.m4a [--provider gemini]` |
-| TTS voices | `node scripts/tts.mjs --list-voices [--provider supertone]` |
+| TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider progrok]` |
+| TTS single | `node scripts/tts.mjs --text "안녕하세요" --output /tmp/tts-out.mp3 --provider progrok --language ko` |
+| TTS voices | `node scripts/tts.mjs --list-voices [--provider progrok]` |
 | Async | `node scripts/pipeline.mjs --timeline <path> --async` |
 | Status | `node scripts/pipeline.mjs --status /tmp/remotion-render/render-result.json` |
 | Preview | `cd remotion-project && pnpm exec remotion studio` |

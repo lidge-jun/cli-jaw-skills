@@ -101,6 +101,7 @@ function normalizeScript(raw) {
     ttsProvider: raw.meta?.ttsProvider,
     ttsVoice: raw.meta?.ttsVoice,
     ttsSpeed: raw.meta?.ttsSpeed,
+    ttsLanguage: raw.meta?.ttsLanguage,
     theme: raw.meta?.theme,
   };
 

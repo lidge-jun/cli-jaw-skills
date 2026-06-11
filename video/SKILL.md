@@ -92,7 +92,9 @@ Common commands:
 | Render | `node scripts/pipeline.mjs --timeline <path> [--preset Landscape-1080p]` |
 | Render with TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json` |
 | Skip TTS | `node scripts/pipeline.mjs --timeline timeline.draft.json --skip-tts` |
-| TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider supertone]` |
+| TTS only | `node scripts/tts.mjs --batch timeline.draft.json [--provider progrok]` |
+| TTS single | `node scripts/tts.mjs --text "안녕하세요" --output /tmp/tts.mp3 --provider progrok --language ko` |
+| TTS voices | `curl http://127.0.0.1:18645/v1/tts/voices` |
 | TTS captions | `node scripts/tts-captions.mjs --script script.json --output /tmp/video-tts-captions` |
 | STT captions | `node scripts/stt-captions.mjs --input input.mp4 --output /tmp/video-stt --language ko --diarize --word-timestamps` |
 | Preview | `cd remotion-project && pnpm exec remotion studio` |
@@ -168,7 +170,7 @@ Minimum route evidence:
 |---|---|
 | Remotion | output path, non-zero MP4, `validate-artifact.mjs` or ffprobe, sampled/still frame for non-trivial visuals |
 | HyperFrames | doctor/lint/render, ffprobe, sampled frames or inspect output, visual QA verdict |
-| TTS captions | script JSON, normalized narration, `captions.remotion.json`, draft/final timeline, TTS manifest or skip-TTS rationale, alignment proof when TTS changes duration, rendered frame proof if overlaid |
+| TTS captions | script JSON, normalized narration, `captions.remotion.json`, draft/final timeline, TTS manifest or skip-TTS rationale, non-silent audio proof when TTS is expected, alignment proof when TTS changes duration, rendered frame proof if overlaid |
 | STT captions | raw transcript, normalized transcript, SRT/VTT, `captions.remotion.json`, timestamp checks, rendered frame proof if overlaid |
 | FFmpeg | input/output ffprobe, expected duration/dimensions/codec, output inspection |
 | Existing footage | EDL/timeline artifact, transcript cache when speech matters, subtitle-last proof, cut-boundary checks |
@@ -215,6 +217,8 @@ Read `reference/workspace-policy.md` for source/output boundaries.
 - Remotion dependencies under `~/.jaw-shared/remotion/node_modules/`
 - Bootstrap Remotion with `node scripts/ensure-remotion.mjs`
 - HyperFrames via `npx --yes hyperframes ...`
+- TTS via local progrok proxy `/v1/tts` by default; run `progrok proxy`
+  or use `PROGROK_BASE_URL` when the proxy is on another port.
 - TTS captions via script JSON, existing TTS batch, Remotion caption sidecars
 - STT captions via local `progrok` proxy `/v1/stt`, plus ffmpeg/ffprobe
 - TTS: `GEMINI_API_KEY` for Gemini, `SUPERTONE_API_KEY` for Supertone,

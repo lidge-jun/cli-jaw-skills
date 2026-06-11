@@ -42,6 +42,11 @@ node scripts/pipeline.mjs \
   --output /tmp/video-tts-captions/render
 ```
 
+The default TTS provider is `progrok`, using the local OAuth proxy at
+`http://127.0.0.1:18645/v1`. Start it with `progrok proxy` when it is not
+already running. Use `--skip-tts` only for deterministic visual/caption checks;
+it is not proof that the final video has audible narration.
+
 ## Script JSON
 
 ```json
@@ -50,8 +55,9 @@ node scripts/pipeline.mjs \
     "title": "Premium Briefing",
     "preset": "Landscape-720p",
     "fps": 30,
-    "ttsProvider": "gemini",
-    "ttsVoice": "Kore",
+    "ttsProvider": "progrok",
+    "ttsVoice": "eve",
+    "ttsLanguage": "ko",
     "captions": {
       "style": "bottom-center",
       "fontSize": 34
@@ -82,6 +88,9 @@ Rules:
   elements.
 - `durationSec` can be omitted; the helper estimates it from words per minute.
 - `voiceControl` stays provider-owned by `tts.mjs`.
+- `meta.ttsLanguage` or `voiceControl.language` is recommended for progrok
+  TTS; the helper defaults to `auto` when mixed-language detection is
+  acceptable.
 
 ## Caption Timing
 
@@ -138,6 +147,7 @@ Minimum proof bundle:
 - `captions.remotion.json`
 - `timeline.draft.json`
 - TTS manifest or explicit `--skip-tts` rationale
+- non-silent audio proof when the deliverable is expected to include narration
 - alignment proof when TTS changes durations
 - rendered MP4 validation when overlay is used
 - sampled frame proof for non-trivial visuals

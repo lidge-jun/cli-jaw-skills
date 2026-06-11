@@ -13,6 +13,7 @@ For every rendered or edited video, collect:
 - fps when applicable
 - codec/container
 - audio presence when audio is expected
+- non-silent audio level when narration/music is expected
 - sampled frame or visual snapshot evidence for non-trivial visuals
 - short PASS/FAIL verdict against the route's promise
 
@@ -21,6 +22,16 @@ Use `ffprobe` for local media:
 ```bash
 ffprobe -v error -show_format -show_streams -of json /path/to/output.mp4
 ```
+
+When audio is expected, verify it is not just a silent track:
+
+```bash
+ffmpeg -hide_banner -i /path/to/output.mp4 \
+  -af volumedetect -vn -sn -dn -f null /tmp/null 2>&1 | tail -20
+```
+
+Treat `max_volume` near `-90 dB` as silence. `--skip-tts` render proof is
+acceptable only for visual/caption checks, not for audible narration.
 
 ## Route Gates
 
@@ -84,7 +95,8 @@ Required:
 6. TTS manifest/duration evidence when provider TTS is run, or explicit
    `--skip-tts` rationale for deterministic checks
 7. post-TTS alignment proof when TTS changes element durations
-8. rendered MP4 validation and sampled frame proof when captions are overlaid
+8. non-silent audio proof when the final deliverable should include narration
+9. rendered MP4 validation and sampled frame proof when captions are overlaid
 
 ### FFmpeg Utility
 

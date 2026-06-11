@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // TTS generator — multi-provider orchestrator
-// Batch:   node tts.mjs --batch timeline.draft.json [--provider supertone]
-// Single:  node tts.mjs --text "text" --output out.mp3 [--provider supertonic]
-// List:    node tts.mjs --list-voices [--provider supertone]
+// Batch:   node tts.mjs --batch timeline.draft.json [--provider progrok]
+// Single:  node tts.mjs --text "text" --output out.mp3 [--provider progrok]
+// List:    node tts.mjs --list-voices [--provider progrok]
 import { fileURLToPath } from "url";
 import { dirname, join, resolve } from "path";
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
@@ -14,6 +14,7 @@ const remotionDir = join(__dirname, "..", "remotion-project");
 
 async function loadProvider(name) {
   switch (name) {
+    case "progrok":    return await import("./tts-providers/progrok.mjs");
     case "supertone":  return await import("./tts-providers/supertone.mjs");
     case "supertonic": return await import("./tts-providers/supertonic.mjs");
     case "gemini":
@@ -39,12 +40,13 @@ const batchFile = getArg("batch", null);
 const output = getArg("output", null);
 const cliProvider = getArg("provider", null);
 const cliVoice = getArg("voice", null);
+const cliLanguage = getArg("language", null);
 const concurrency = parseInt(getArg("concurrency", "3"), 10);
 const maxRetries = parseInt(getArg("retries", "2"), 10);
 
 // ── List voices mode ─────────────────────────────────────
 if (MODE_LIST) {
-  const mod = await loadProvider(cliProvider || "gemini");
+  const mod = await loadProvider(cliProvider || "progrok");
   console.log(JSON.stringify(mod.VOICES, null, 2));
   process.exit(0);
 }
@@ -52,16 +54,16 @@ if (MODE_LIST) {
 // ── Validate ─────────────────────────────────────────────
 if (!MODE_BATCH && !text && !textFile) {
   console.error("Usage:");
-  console.error("  Single: node tts.mjs --text 'text' [--provider supertone] [--voice Andrew]");
-  console.error("  Single: node tts.mjs --textFile narration.txt [--provider gemini]");
-  console.error("  Batch:  node tts.mjs --batch timeline.draft.json [--provider supertone]");
-  console.error("  List:   node tts.mjs --list-voices [--provider supertone]");
+  console.error("  Single: node tts.mjs --text 'text' [--provider progrok] [--voice eve] [--language ko]");
+  console.error("  Single: node tts.mjs --textFile narration.txt [--provider progrok]");
+  console.error("  Batch:  node tts.mjs --batch timeline.draft.json [--provider progrok]");
+  console.error("  List:   node tts.mjs --list-voices [--provider progrok]");
   process.exit(1);
 }
 
 // ── Cache key: sha256(provider|voice|narration|vcParams) ─
 function cacheKey(providerName, voiceId, narration, vc = {}) {
-  const vcStr = `${vc.style || ""}|${vc.pitch ?? ""}|${vc.pitchVariance ?? ""}|${vc.speed ?? ""}|${vc.tonePrompt || ""}`;
+  const vcStr = `${vc.style || ""}|${vc.pitch ?? ""}|${vc.pitchVariance ?? ""}|${vc.speed ?? ""}|${vc.tonePrompt || ""}|${vc.language || ""}`;
   return createHash("sha256")
     .update(`${providerName}|${voiceId}|${narration}|${vcStr}`)
     .digest("hex")
@@ -85,14 +87,15 @@ function probeDuration(filePath) {
 //  SINGLE MODE
 // ══════════════════════════════════════════════════════════
 if (!MODE_BATCH) {
-  const pName = cliProvider || "gemini";
+  const pName = cliProvider || "progrok";
   const mod = await loadProvider(pName);
   const vName = cliVoice || mod.DEFAULT_VOICE;
   let inputText = text;
   if (textFile) inputText = readFileSync(textFile, "utf-8");
   const outPath = resolve(output || `tts_output${mod.AUDIO_EXT}`);
   console.log(`[tts] provider=${pName} voice=${vName}`);
-  const { duration: dur } = await mod.generate(inputText, outPath, { voice: vName });
+  const result = await mod.generate(inputText, outPath, { voice: vName, language: cliLanguage || undefined });
+  const dur = result.duration > 0 ? result.duration : probeDuration(outPath);
   console.log(`[tts] done → ${outPath} (${dur.toFixed(1)}s)`);
   process.exit(0);
 }
@@ -106,12 +109,13 @@ const ttsDir = join(remotionDir, "public", "tts");
 mkdirSync(ttsDir, { recursive: true });
 
 // Resolve provider + defaults
-const pName = cliProvider || draft.meta?.ttsProvider || "gemini";
+const pName = cliProvider || draft.meta?.ttsProvider || "progrok";
 const mod = await loadProvider(pName);
 const defaultVoice = cliVoice || draft.meta?.ttsVoice || mod.DEFAULT_VOICE;
 const defaultSpeed = draft.meta?.ttsSpeed ?? 1.2;
+const defaultLanguage = cliLanguage || draft.meta?.ttsLanguage || process.env.PROGROK_TTS_LANGUAGE || "auto";
 
-console.log(`[tts-batch] provider=${pName} voice=${defaultVoice} speed=${defaultSpeed}`);
+console.log(`[tts-batch] provider=${pName} voice=${defaultVoice} speed=${defaultSpeed} language=${defaultLanguage}`);
 
 // Collect cuts that have narration
 const cuts = elements
@@ -152,7 +156,10 @@ if (existsSync(manifestPath)) {
 async function processCut(cut) {
   const vc = cut.voiceControl || {};
   const voiceId = vc.voice || defaultVoice;
-  const hash = cacheKey(pName, voiceId, cut.narration, vc);
+  const effectiveSpeed = vc.speed ?? defaultSpeed;
+  const effectiveLanguage = vc.language || defaultLanguage;
+  const effectiveVc = { ...vc, speed: effectiveSpeed, language: effectiveLanguage };
+  const hash = cacheKey(pName, voiceId, cut.narration, effectiveVc);
   const filename = `${cut.id}${mod.AUDIO_EXT}`;
   const filePath = join(ttsDir, filename);
 
@@ -172,14 +179,19 @@ async function processCut(cut) {
   for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
     try {
       console.log(`  [${cut.id}] generating (attempt ${attempt})...`);
-      const { duration: dur } = await mod.generate(cut.narration, filePath, {
+      const generated = await mod.generate(cut.narration, filePath, {
         voice: voiceId,
         tonePrompt: vc.tonePrompt,
         style: vc.style,
         pitch: vc.pitch,
         pitchVariance: vc.pitchVariance,
-        speed: vc.speed ?? defaultSpeed,
+        speed: effectiveSpeed,
+        language: effectiveLanguage,
       });
+      const dur = generated.duration > 0 ? generated.duration : probeDuration(filePath);
+      if (dur <= 0) {
+        throw new Error("generated audio duration could not be probed");
+      }
       console.log(`  [${cut.id}] done → ${dur.toFixed(1)}s`);
       return { ...cut, src: `tts/${filename}`, actualDuration: dur, cached: false, hash };
     } catch (err) {

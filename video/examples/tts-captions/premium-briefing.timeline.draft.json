@@ -3,8 +3,9 @@
     "title": "Script-First TTS Caption Demo",
     "preset": "Landscape-720p",
     "fps": 30,
-    "ttsProvider": "gemini",
-    "ttsVoice": "Kore",
+    "ttsProvider": "progrok",
+    "ttsVoice": "eve",
+    "ttsLanguage": "ko",
     "ttsSpeed": 1.1,
     "theme": {
       "aesthetic": "premium tech briefing",
