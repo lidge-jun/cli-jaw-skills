@@ -263,6 +263,13 @@ attachments, then sends a strict code-generation prompt. New artifacts must
 contain `PLAN.md` or `00_plan.md`; the retrieval step fails closed when that
 plan file is absent.
 
+The context zip is attached only on the FIRST turn of a conversation.
+Continuation turns (`--url`, `--conversation`, or `--session` targeting an
+existing conversation) skip it: the container `/mnt` persists across turns and
+the contract already lives in the conversation history. Pass `--context-refresh`
+to force a re-upload (e.g. after the context module changed, or when a long-idle
+conversation may have recycled its sandbox).
+
 The prompt asks ChatGPT to use a visible plan/todo tool only when the tool is
 actually available. If no such tool exists in the ChatGPT environment, the
 generated project must put the checklist and verification record in
