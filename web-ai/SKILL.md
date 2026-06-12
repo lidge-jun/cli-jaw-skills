@@ -313,6 +313,16 @@ The original conversation URL/session/current ChatGPT tab and logged-in
 browser profile are still required; a copied `/mnt/data/result.zip` line alone
 is not enough.
 
+Stale-snapshot guard: when one conversation rebuilds the same sandbox path
+(e.g. `/mnt/data/result.zip`) across several code runs, the download API serves
+the snapshot tied to the message id used to mint the URL. The extractor mints
+candidate message ids NEWEST-first (agbrowse `02f03cc`), so the first successful
+mint is the latest sandbox state, and the result reports `mintedMessageId` for
+auditing. Even so, ALWAYS verify retrieved zip contents against drop-specific
+symbols (grep a file or identifier unique to the expected delivery) before
+applying — on mismatch, retry with `--multi-zip` to recover every archive and
+identify the right one.
+
 For new `agbrowse web-ai code` runs, the prompt contract asks ChatGPT to create
 `PLAN.md` or `00_plan.md` in every generated code zip, and to use a visible
 todo/checklist tool such as `turn_plan.update_turn_plan` only when that tool is
