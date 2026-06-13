@@ -47,10 +47,11 @@ Important drift guards:
 
 - `compose-block` requires `schemaVersion: "compose-block-v1"`, `kind`, and `variants[]`.
 - Never emit shorthand `compose-block` objects such as `{ "type": "...", "title": "...", "body": "..." }`.
-- Put draft text in `variants[].body`; top-level `body` is not the editable draft body.
+- Put draft text in `variants[].body`, `variants[].paragraphs`, or `variants[].bodyLines`; top-level `body` is not the editable draft body.
 - Renderer fences must contain strict JSON, not JavaScript-like object literals.
 - Never put raw literal line breaks inside quoted JSON string values. For multiline draft text, use escaped newlines like `\\n` or `\\n\\n` inside `variants[].body`.
-- For long drafts, prefer JSON produced by `JSON.stringify` or compact JSON so every newline inside string content is escaped.
+- For multiline drafts, prefer `variants[].paragraphs: string[]` (joined with blank lines) or `variants[].bodyLines: string[]` (joined with single line breaks) so no newline escape is needed inside JSON strings.
+- For long single-string drafts, prefer JSON produced by `JSON.stringify` or compact JSON so every newline inside string content is escaped.
 - `search-results`, `dataframe`, and `chart-json` also require their `*-v1` `schemaVersion`.
 - Use `diagram-html` instead of `chart-json` for multi-series charts, maps, advanced chart types, external libraries, or custom JavaScript.
 

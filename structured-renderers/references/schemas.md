@@ -16,9 +16,26 @@ If the current channel cannot render Web UI widgets, fall back to plain Markdown
 
 ## `compose-block`
 
-Do not invent shorthand such as `{ "type": "...", "title": "...", "body": "..." }`. The renderer expects `schemaVersion`, `kind`, and at least one valid `variants[].body`.
+Do not invent shorthand such as `{ "type": "...", "title": "...", "body": "..." }`. The renderer expects `schemaVersion`, `kind`, and at least one valid `variants[].body`, `variants[].paragraphs`, or `variants[].bodyLines`.
 
 The fence body must be strict JSON. Do not place raw literal line breaks inside a quoted string value; JSON requires those line breaks to be escaped as `\n` or `\n\n`. If a `compose-block` fence contains malformed JSON, the Web UI intentionally fails closed instead of guessing how to repair it.
+
+For multiline drafts, prefer `paragraphs` or `bodyLines` arrays so each JSON string stays on one physical line:
+
+```compose-block
+{
+  "schemaVersion": "compose-block-v1",
+  "kind": "document",
+  "title": "Draft",
+  "variants": [
+    {
+      "id": "main",
+      "label": "Main",
+      "paragraphs": ["First paragraph.", "Second paragraph."]
+    }
+  ]
+}
+```
 
 ```compose-block
 {
@@ -42,9 +59,11 @@ Rules:
 - `schemaVersion` must be `"compose-block-v1"`.
 - `kind` is `email`, `message`, `document`, or `other`; `textMessage` normalizes to `message`.
 - `variants` must contain 1-3 valid items.
-- Each valid variant needs a non-empty `body`.
-- Put body text inside `variants[].body`, not top-level `body`.
-- Multiline body text must be represented with escaped newline sequences inside the JSON string, for example `"body": "Line one\n\nLine two"`. Do not split the quoted value across physical lines.
+- Each valid variant needs a non-empty `body`, non-empty `paragraphs`, or non-empty `bodyLines`.
+- Put draft text inside `variants[].body`, `variants[].paragraphs`, or `variants[].bodyLines`, not top-level `body`.
+- Prefer `paragraphs` for normal document/email drafts; the renderer joins entries with blank lines.
+- Use `bodyLines` when single line breaks matter; the renderer joins entries with single line breaks.
+- If using `body`, multiline text must be represented with escaped newline sequences inside the JSON string, for example `"body": "Line one\n\nLine two"`. Do not split the quoted value across physical lines.
 
 ## `search-results`
 
