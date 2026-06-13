@@ -18,6 +18,8 @@ If the current channel cannot render Web UI widgets, fall back to plain Markdown
 
 Do not invent shorthand such as `{ "type": "...", "title": "...", "body": "..." }`. The renderer expects `schemaVersion`, `kind`, and at least one valid `variants[].body`.
 
+The fence body must be strict JSON. Do not place raw literal line breaks inside a quoted string value; JSON requires those line breaks to be escaped as `\n` or `\n\n`. If a `compose-block` fence contains malformed JSON, the Web UI intentionally fails closed instead of guessing how to repair it.
+
 ```compose-block
 {
   "schemaVersion": "compose-block-v1",
@@ -42,6 +44,7 @@ Rules:
 - `variants` must contain 1-3 valid items.
 - Each valid variant needs a non-empty `body`.
 - Put body text inside `variants[].body`, not top-level `body`.
+- Multiline body text must be represented with escaped newline sequences inside the JSON string, for example `"body": "Line one\n\nLine two"`. Do not split the quoted value across physical lines.
 
 ## `search-results`
 
