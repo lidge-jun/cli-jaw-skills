@@ -8,11 +8,22 @@ description: "HWP/HWPX create, read, edit, review, template-fill, QA. Triggers: 
 > **Scope**: HWP/HWPX only. Do NOT reference or load skills for other formats
 > (DOCX, PPTX, XLSX, PDF). If the task involves a non-HWP format, stop and tell the user.
 
-Primary tool: **officecli** (on PATH — global install) for HWPX work and experimental rhwp-backed binary HWP read/edit.
-Fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what officecli cannot cover — HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
+**OfficeCLI routing and consent rule:**
+- First check whether `officecli` is available with `command -v officecli`.
+- If installed, recommend OfficeCLI first for HWPX work and experimental rhwp-backed binary HWP read/edit.
+- If missing, do not auto-install. Present choices before proceeding:
+  1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.
+  2. Continue only with lightweight HWP/HWPX fallback scripts for the current task, with limitations stated.
+  3. Stop or cancel.
+- Before taking a lightweight fallback path, ask the user again and state what HWP/HWPX features may be lost.
+- If the user chooses lightweight mode, save that preference to memory for future Office work.
+- Use upstream/vanilla `iOfficeAI/OfficeCLI` only when the user explicitly asks for upstream behavior.
+
+OfficeCLI is the recommended advanced backend for HWPX work and experimental rhwp-backed binary HWP read/edit.
+Lightweight fallback: **Python OOXML/OWPML scripts** (`scripts/*.py`) for what OfficeCLI cannot cover, or when the user chooses lightweight mode: HWP→HWPX conversion, template assembly, pattern-match editing, direct XML edits. See §3.
 Triggers: `"한글"`, `".hwpx"`, `".hwp"`, `"HWP"`, `"HWPX"`, Korean documents, 한컴오피스, OWPML.
 
-**OfficeCLI install contract inside cli-jaw:** install or refresh OfficeCLI through `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`. This installs the supported fork used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
+**OfficeCLI install contract inside cli-jaw:** after user approval only, install or refresh OfficeCLI through `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`. This installs the supported fork from `https://github.com/lidge-jun/OfficeCLI` used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
 
 **OfficeCLI discovery rule:** run `officecli hwp doctor --json` and `officecli capabilities --json` before claiming binary `.hwp` support. Use `officecli hwp --json` for current rhwp recipes/policies and `officecli help <format> ... --json` for DOCX/XLSX/PPTX-style schema help.
 
@@ -319,11 +330,14 @@ soffice --headless --convert-to pdf --outdir /tmp output.hwpx
 ## 8. Prerequisite Check
 
 ```bash
-# On-demand: OfficeCLI + rhwp (required for most HWP operations)
-which officecli >/dev/null 2>&1 || echo "WARN: OfficeCLI not installed — most HWP operations require it. Install: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+# OfficeCLI + rhwp: check only; do not auto-install from a skill.
+if ! command -v officecli >/dev/null 2>&1; then
+  echo "ASK USER: install forked OfficeCLI from https://github.com/lidge-jun/OfficeCLI, continue lightweight with HWP/HWPX limits, or stop."
+  echo "Install command after approval: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+fi
 
-# On-demand: LibreOffice (auto-install when PDF conversion needed)
-which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion is needed"
+# LibreOffice: check only; ask before installing when PDF conversion is needed.
+which soffice >/dev/null 2>&1 || echo "ASK USER: LibreOffice is not installed; install it for PDF conversion or skip PDF output."
 
 python3 -c "import lxml; import pyhwp" 2>/dev/null || echo "OPTIONAL: pip install lxml pyhwp (for Python fallbacks)"
 echo "JAVA_HOME=$JAVA_HOME (required for H2Orestart HWP→HWPX conversion)"
@@ -832,7 +846,7 @@ officecli and `scripts/hwpx_cli.py` handle this automatically. This rule applies
 
 | Tool | Purpose | Required? |
 |------|---------|-----------|
-| `officecli` (global) | Primary HWPX CLI + experimental rhwp-backed HWP bridge | **Required** |
+| `officecli` (global) | Recommended advanced HWPX CLI + experimental rhwp-backed HWP bridge; fork source is `https://github.com/lidge-jun/OfficeCLI` | Optional; ask before install |
 | `python3` | Fallback scripts (`scripts/*.py`) | **Required for L3/L4** |
 | `lxml` | XML processing for scripts/* | Required for L3/L4 (`pip install lxml`) |
 | `pyhwp` | Legacy HWP 5.0 binary reading/conversion fallback | Required for HWP→HWPX fallback |

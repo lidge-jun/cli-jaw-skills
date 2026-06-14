@@ -13,6 +13,11 @@ Overlay skill for OfficeCLI that bridges Python pandas DataFrames with formatted
 
 > **Architecture**: pandas creates the data → CSV/TSV export preserves the table cleanly → officecli creates/imports the workbook → officecli formats and validates.
 > This path keeps pandas focused on transforms and lets officecli own the OOXML package from creation through validation.
+>
+> **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
+> Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
+> with a lightweight pandas/openpyxl fallback after stating formatting/validation limits, or stop.
+> If the user chooses lightweight mode, save that preference to memory for future Office work.
 
 ---
 

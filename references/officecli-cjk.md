@@ -4,7 +4,7 @@ Cross-format reference for Korean, Japanese, and Chinese text handling in OOXML 
 Applicable to DOCX, XLSX, and PPTX. Format-specific commands live in each format's SKILL.md.
 
 > **Fork vs Upstream**: The upstream officecli binary ignores CJK fonts.
-> Our fork (`cli-jaw/officecli`) includes `CjkHelper.cs` which **auto-detects** CJK characters
+> Our fork (`https://github.com/lidge-jun/OfficeCLI`) includes `CjkHelper.cs` which **auto-detects** CJK characters
 > and applies the correct East Asian font, language tag, and kinsoku rules automatically.
 
 ---

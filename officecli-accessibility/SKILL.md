@@ -12,6 +12,11 @@ metadata:
 Overlay skill for OfficeCLI that ensures documents meet accessibility standards.
 Use this skill for pre-delivery QA, compliance audits, or when creating documents for public distribution.
 
+> **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
+> Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
+> with a lightweight/manual accessibility fallback after stating validation/remediation limits, or
+> stop. If the user chooses lightweight mode, save that preference to memory for future Office work.
+
 ---
 
 ## When to Use

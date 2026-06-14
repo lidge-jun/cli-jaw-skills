@@ -140,6 +140,22 @@ shape drift for PPTX shape props.
 copies OfficeCLI-derived materials into the `docx`, `pptx`, and `xlsx` skill
 families.
 
+OfficeCLI guidance in `skills_ref` is consent-based:
+
+- Check install state first with `command -v officecli`.
+- If OfficeCLI is available, recommend it first for high-fidelity Office work,
+  validation, batch/resident flows, CJK/rhwp-aware behavior, and Office-native
+  output.
+- If OfficeCLI is missing, do not auto-install from a skill. Ask the user to
+  choose between installing the supported fork, continuing with lightweight
+  fallback tools for the current task, or stopping.
+- The supported cli-jaw fork is `https://github.com/lidge-jun/OfficeCLI`.
+  Do not direct users to download/install upstream `iOfficeAI/OfficeCLI` unless
+  they explicitly request vanilla upstream behavior.
+- Before lightweight fallback, ask again and state likely feature/fidelity loss.
+  If the user chooses lightweight mode, save that preference to memory for
+  future Office work.
+
 That workflow can commit and push from GitHub Actions when triggered. This local
 work does not push changes; remote CI and Pages deployment require an authorized
 push.

@@ -8,8 +8,19 @@ description: "Word DOCX create, read, edit, review. Triggers: Word doc, .docx, r
 Use this skill for any `.docx` task: create, read, edit, review, template-fill, or QA verification.
 Triggers: `"Word doc"`, `".docx"`, reports, memos, letters, templates.
 
-Primary tool: **officecli** (`officecli` on PATH) for ~80% of tasks (add/set/remove, validate, query, track-change accept/reject).
-Fallback: **Python OOXML scripts** (`scripts/*.py`) for what officecli cannot do — tracked-change **creation**, OMML equations, bulk pattern matching, unpack/edit/repack. See §3.
+**OfficeCLI routing and consent rule:**
+- First check whether `officecli` is available with `command -v officecli`.
+- If installed, recommend OfficeCLI first for high-fidelity DOCX mutations, validation, query, batch/resident flows, track changes, and CJK/rhwp-aware work.
+- If missing, do not auto-install. Present choices before proceeding:
+  1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.
+  2. Continue with lightweight fallback tools for the current task, with limitations stated.
+  3. Stop or cancel.
+- Before taking a lightweight fallback path, ask the user again and state what fidelity/features may be lost.
+- If the user chooses lightweight mode, save that preference to memory for future Office work.
+- Use upstream/vanilla `iOfficeAI/OfficeCLI` only when the user explicitly asks for upstream behavior.
+
+OfficeCLI is the recommended advanced backend for add/set/remove, validate, query, and track-change accept/reject workflows.
+Lightweight fallback: **Python OOXML scripts** (`scripts/*.py`) for what OfficeCLI cannot do, or when the user chooses lightweight mode: tracked-change **creation**, OMML equations, bulk pattern matching, unpack/edit/repack. See §3.
 
 **DOCX only.** Do NOT use this skill for PDFs, spreadsheets, HWPX, Google Docs, or any other format.
 
@@ -253,11 +264,14 @@ soffice --headless --convert-to pdf --outdir /tmp output.docx
 # Required
 python3 -c "import docx, lxml" || echo "MISSING: pip install python-docx lxml"
 
-# On-demand: LibreOffice (auto-install when PDF conversion needed)
-which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion is needed"
+# LibreOffice: check only; ask before installing when PDF conversion is needed.
+which soffice >/dev/null 2>&1 || echo "ASK USER: LibreOffice is not installed; install it for PDF conversion or skip PDF output."
 
-# On-demand: OfficeCLI (install from forked repo when L1/L2 needed)
-which officecli >/dev/null 2>&1 || echo "INFO: OfficeCLI not installed — install on-demand: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+# OfficeCLI: check only; do not auto-install from a skill.
+if ! command -v officecli >/dev/null 2>&1; then
+  echo "ASK USER: install forked OfficeCLI from https://github.com/lidge-jun/OfficeCLI, continue lightweight, or stop."
+  echo "Install command after approval: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+fi
 ```
 
 ## 8. Tool Discovery
@@ -286,7 +300,7 @@ officecli help all --jsonl | grep '"format":"docx"'
 
 | Binary | Path | Notes |
 |--------|------|-------|
-| officecli | `officecli` (PATH) | Global install includes CJK fork with CjkHelper.cs -- auto-applies fonts/lang tags |
+| officecli | `officecli` (PATH) | Optional advanced backend; ask before install. Supported fork: `https://github.com/lidge-jun/OfficeCLI`, with CjkHelper.cs for CJK font/language behavior |
 
 ---
 
@@ -528,8 +542,8 @@ officecli query doc.docx 'p:contains("placeholder")'
 
 | Tool | Purpose | Status |
 |------|---------|--------|
-| `officecli` (PATH) | Primary DOCX CLI -- global install includes CJK fork | Required |
-| `dotnet` | Runtime/build for officecli | Required for fork builds |
+| `officecli` (PATH) | Recommended advanced DOCX backend; fork source is `https://github.com/lidge-jun/OfficeCLI` | Optional; ask before install |
+| `dotnet` | Runtime/build for OfficeCLI fork builds | Optional; required only after user approves fork install/build |
 | `python3` | Fallback scripts (scripts/*.py) | Required for L3/L4 |
 | `lxml` | Python XML processing for scripts/ooxml/* | Required for L3/L4 (`pip install lxml`) |
 | `soffice` | PDF conversion / `.doc` migration / macro workflows | Optional fallback |

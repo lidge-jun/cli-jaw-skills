@@ -16,6 +16,11 @@ Use this skill when creating or modifying documents containing Korean, Japanese,
 > Upstream OfficeCLI may have some CJK handling, but cli-jaw's supported contract is the fork plus
 > local verification. Verify the actual binary with version, capability/help output, text roundtrip,
 > and raw XML checks before relying on CJK font/language behavior.
+>
+> **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
+> Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
+> with a lightweight parent-skill fallback after stating CJK fidelity limits, or stop. If the user
+> chooses lightweight mode, save that preference to memory for future Office work.
 
 ---
 

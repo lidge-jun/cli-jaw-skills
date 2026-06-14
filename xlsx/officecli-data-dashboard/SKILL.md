@@ -14,23 +14,22 @@ Create professional, formula-driven Excel dashboards from CSV or tabular data. T
 
 **If `officecli` is not installed:**
 
-Inside cli-jaw, install or refresh OfficeCLI through the cli-jaw installer. This installs the supported fork used for CJK/rhwp workflows. Do not use direct upstream install snippets unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
+This workflow expects OfficeCLI, but the skill must not install it automatically. Tell the user OfficeCLI is missing and present these choices before proceeding:
 
-`macOS / Linux`
+1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI`.
+2. Switch to the parent XLSX lightweight fallback path if the requested dashboard can tolerate lower fidelity.
+3. Stop or cancel.
+
+Before switching to lightweight fallback, ask again and state which dashboard features may be lost, such as Office-native validation, chart/table fidelity, recalculation behavior, or CJK/rhwp-aware behavior. If the user chooses lightweight mode, save that preference to memory for future Office work.
+
+Use upstream/vanilla `iOfficeAI/OfficeCLI` only when the task explicitly asks for vanilla upstream OfficeCLI behavior.
+
+After user approval to install the fork:
 
 ```bash
-if ! command -v officecli >/dev/null 2>&1; then
-    bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"
-fi
+bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"
+officecli --version
 ```
-
-`Windows (PowerShell)`
-
-Use the cli-jaw fork installer from an environment where `npm root -g` resolves the active cli-jaw package. Do not substitute a direct vanilla upstream installer unless the task explicitly asks for vanilla upstream OfficeCLI behavior.
-
-Verify: `officecli --version`
-
-If `officecli` is still not found after first install, open a new terminal and run the verify command again.
 
 ---
 

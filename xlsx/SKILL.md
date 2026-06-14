@@ -7,9 +7,20 @@ description: "Excel XLSX create, read, edit, analyze. Triggers: Excel, .xlsx, sp
 
 Use this skill for `.xlsx`, `.xlsm`, `.csv`, and `.tsv` work that ends in an Excel workbook.
 
-Primary tool: **officecli** for workbook mutation and inspection.
+**OfficeCLI routing and consent rule:**
+- First check whether `officecli` is available with `command -v officecli`.
+- If installed, recommend OfficeCLI first for high-fidelity XLSX mutations, inspection, validation, batch/resident flows, CJK/rhwp-aware work, and Office-compatible output.
+- If missing, do not auto-install. Present choices before proceeding:
+  1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.
+  2. Continue with lightweight fallback tools for the current task, with limitations stated.
+  3. Stop or cancel.
+- Before taking a lightweight fallback path, ask the user again and state what fidelity/features may be lost.
+- If the user chooses lightweight mode, save that preference to memory for future Office work.
+- Use upstream/vanilla `iOfficeAI/OfficeCLI` only when the user explicitly asks for upstream behavior.
+
+OfficeCLI is the recommended advanced backend for workbook mutation and inspection.
 Primary data pipeline: **pandas** for DataFrame transforms, joins, aggregations.
-Fallback: **Python OOXML scripts** (`scripts/*.py`) and **openpyxl** for tasks officecli/pandas cannot cover — formula recalc, raw OOXML inspection, complex openpyxl styling. See §3.
+Lightweight fallback: **Python OOXML scripts** (`scripts/*.py`) and **openpyxl** for tasks OfficeCLI/pandas cannot cover, or when the user chooses lightweight mode: formula recalc, raw OOXML inspection, complex openpyxl styling. See §3.
 
 Do NOT use this skill for Word, HTML dashboards, or external database orchestration.
 
@@ -238,11 +249,14 @@ Formula correctness requires recalculation evidence. If LibreOffice/Excel recalc
 # Required
 python3 -c "import pandas, openpyxl" || echo "MISSING: pip install pandas openpyxl"
 
-# On-demand: LibreOffice (auto-install when PDF/recalc needed)
-which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion or recalculation is needed"
+# LibreOffice: check only; ask before installing when PDF/recalc is needed.
+which soffice >/dev/null 2>&1 || echo "ASK USER: LibreOffice is not installed; install it for PDF conversion/recalculation or skip that output."
 
-# On-demand: OfficeCLI (install from forked repo when L1/L2 needed)
-which officecli >/dev/null 2>&1 || echo "INFO: OfficeCLI not installed — install on-demand: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+# OfficeCLI: check only; do not auto-install from a skill.
+if ! command -v officecli >/dev/null 2>&1; then
+  echo "ASK USER: install forked OfficeCLI from https://github.com/lidge-jun/OfficeCLI, continue lightweight, or stop."
+  echo "Install command after approval: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+fi
 ```
 
 ## 8. Tool Discovery
@@ -601,7 +615,7 @@ officecli validate data.xlsx                            # Structural validation
 
 | Tool | Why it exists | Status |
 |------|---------------|--------|
-| `officecli` (PATH) | Primary Excel CLI | Required |
+| `officecli` (PATH) | Recommended advanced XLSX backend; fork source is `https://github.com/lidge-jun/OfficeCLI` | Optional; ask before install |
 | `pandas` | DataFrame analysis pipeline | Primary for transforms |
 | `openpyxl` | pandas Excel engine + fallback editing (L4) | Required for L3/L4 |
 | `python3` | Helper scripts (`scripts/*.py`) | Required for L3 |

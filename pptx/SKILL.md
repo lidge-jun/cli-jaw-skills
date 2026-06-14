@@ -8,8 +8,19 @@ description: "PowerPoint PPTX create, read, edit, review. Triggers: PowerPoint, 
 Use this skill for PowerPoint `.pptx` creation, editing, review, and QA.
 Triggers: `"PowerPoint"`, `"PPTX"`, `"presentation"`, `"slides"`, `"deck"`.
 
-Primary tool: **officecli** (PATH) for ~80% of tasks (slide add/set/remove, validate, query).
-Fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides). **Python scripts** (`scripts/*.py`) for unpack/repair/thumbnail/cleanup. See §3.
+**OfficeCLI routing and consent rule:**
+- First check whether `officecli` is available with `command -v officecli`.
+- If installed, recommend OfficeCLI first for high-fidelity PPTX mutations, validation, query, batch/resident flows, CJK/rhwp-aware work, and Office-compatible output.
+- If missing, do not auto-install. Present choices before proceeding:
+  1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.
+  2. Continue with lightweight fallback tools for the current task, with limitations stated.
+  3. Stop or cancel.
+- Before taking a lightweight fallback path, ask the user again and state what fidelity/features may be lost.
+- If the user chooses lightweight mode, save that preference to memory for future Office work.
+- Use upstream/vanilla `iOfficeAI/OfficeCLI` only when the user explicitly asks for upstream behavior.
+
+OfficeCLI is the recommended advanced backend for slide add/set/remove, validate, and query workflows.
+Lightweight fallback: **pptxgenjs** for large programmatic generation (50+ data-driven slides) and **Python scripts** (`scripts/*.py`) for unpack/repair/thumbnail/cleanup when OfficeCLI is unavailable or the user chooses lightweight mode. See §3.
 Do NOT use this skill for Keynote, Google Slides API automation, or image generation.
 
 **OfficeCLI discovery rule:** use the installed CLI as the source of truth. Run `officecli --help` for workflows and `officecli help pptx ... --json` before inventing element/property names.
@@ -437,11 +448,14 @@ Fix with `officecli set`, rerun QA. **Do not declare success until you've comple
 # Required
 python3 -c "import pptx" || echo "MISSING: pip install python-pptx"
 
-# On-demand: LibreOffice (auto-install when PDF/thumbnail needed)
-which soffice >/dev/null 2>&1 || echo "INFO: LibreOffice not installed — will auto-install when PDF conversion or thumbnails are needed"
+# LibreOffice: check only; ask before installing when PDF/thumbnail output is needed.
+which soffice >/dev/null 2>&1 || echo "ASK USER: LibreOffice is not installed; install it for PDF conversion/thumbnails or skip that output."
 
-# On-demand: OfficeCLI (install from forked repo when L1/L2 needed)
-which officecli >/dev/null 2>&1 || echo "INFO: OfficeCLI not installed — install on-demand: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+# OfficeCLI: check only; do not auto-install from a skill.
+if ! command -v officecli >/dev/null 2>&1; then
+  echo "ASK USER: install forked OfficeCLI from https://github.com/lidge-jun/OfficeCLI, continue lightweight, or stop."
+  echo "Install command after approval: bash \"\$(npm root -g)/cli-jaw/scripts/install-officecli.sh\""
+fi
 ```
 
 ## 9. Tool Discovery
@@ -611,7 +625,7 @@ officecli view deck.pptx stats
 
 | Tool | Purpose | Status |
 |------|---------|--------|
-| `officecli` (PATH) | Primary PPTX CLI | Required |
+| `officecli` (PATH) | Recommended advanced PPTX backend; fork source is `https://github.com/lidge-jun/OfficeCLI` | Optional; ask before install |
 | `pptxgenjs` | Large programmatic generation (L5) | Optional |
 | `python3` | Scripts (`scripts/*.py`) for L3 | Required for L3/L4 |
 | `soffice` | PDF conversion for QA | Optional |
