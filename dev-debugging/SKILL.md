@@ -77,6 +77,12 @@ design problem).
 
 ### Phase 1: Root Cause Investigation
 
+**Feedback loop gate:** For UI, browser, TUI, visual, streaming, or agent-output bugs,
+first create a red-capable loop that can fail before the fix: screenshot/assertion,
+recorded terminal bytes, Playwright visual check, log fixture, or a manual repro script
+with explicit pass/fail evidence. Do not patch from screenshots alone when a repeatable
+probe can be built in reasonable time.
+
 **Complete these before attempting any fix:**
 
 1. **Read the full error** — stack trace, line numbers, error code, surrounding

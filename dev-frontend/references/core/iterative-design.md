@@ -27,6 +27,10 @@ The model is the hand, not the eye. User taste, references, and gut reactions pu
 
 **CRITICAL**: Never treat this as single-pass (brief → design → done). That guarantees convergence.
 
+For runnable implementation mechanics, read `prototype-variants.md`: this file owns
+creative divergence; that file owns `?variant=` routing, switchers, verification, and
+prototype cleanup after a winner is selected.
+
 ### Round 1: Diverge
 Generate 3-5 **structurally different** variants. Not color/font swaps — fundamentally different:
 - Different spatial logic

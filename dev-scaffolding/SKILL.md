@@ -55,6 +55,10 @@ devlog/
 ```
 
 Folder names are advisory. If the repo already has `docs/`, `adr/`, `plans/`, `changelog/`, or another convention, propose using those instead.
+Also detect optional lightweight source-of-truth files such as `CONTEXT.md`,
+`CONTEXT-MAP.md`, and `docs/adr/`. Reuse them when present. Do not create them unless
+the repo already uses that convention or the user approves. Create an ADR only for a
+decision that is hard to reverse, surprising without context, or has a real tradeoff.
 
 Jawdev devlog method:
 - Split large work into phase-level documents instead of one huge plan.

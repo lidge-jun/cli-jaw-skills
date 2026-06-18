@@ -223,19 +223,24 @@ When `ENFORCE_TDD=true` is set in project instructions or explicitly requested, 
 | Failure observed before fix? | red state was actually executed |
 | Behavior-focused assertions? | checks outputs, side effects, contracts |
 | Regression locked in? | failing case is now protected by a persistent test |
-### 6.3 Default Style
+### 6.3 Vertical Tracer-Bullet TDD
+Prefer one behavior test → minimal implementation → next behavior. Slice by something
+a user, caller, or consuming module can observe, not by horizontal layers such as "DB",
+"API", then "UI". Assert through public interfaces and durable contracts. Retire shallow
+scaffolding tests when a stronger interface or acceptance test covers the same promise.
+### 6.4 Default Style
 | Style | Best For |
 |-------|----------|
 | London / mockist | orchestration-heavy boundaries |
 | Chicago / classicist | domain logic and transforms |
 | **Hybrid** | most production code |
 Default to **Hybrid**: mock external systems, keep internal collaboration real unless it becomes too slow or unstable.
-### 6.4 Boundary with dev-debugging
+### 6.5 Boundary with dev-debugging
 - `dev-testing` owns the **regression harness** and enforcement loop.
 - `dev-debugging` owns **root-cause methodology** once a failure is mysterious or multi-layered.
 - After `dev-debugging` isolates the cause, come back here to lock it in with tests.
 ---
-## 6.5 AI-Assisted Development Regressions
+## 6.6 AI-Assisted Development Regressions
 
 When an AI writes and reviews its own code, it carries the same assumptions into both steps. Automated tests break this feedback loop.
 

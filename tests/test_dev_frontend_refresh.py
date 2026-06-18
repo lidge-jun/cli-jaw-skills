@@ -23,6 +23,7 @@ def test_dev_frontend_routes_new_references() -> None:
         "references/core/asset-requirements.md",
         "references/core/soft-3d-asset-gates.md",
         "references/core/visual-verification.md",
+        "references/core/prototype-variants.md",
     ]
 
     for reference in required:

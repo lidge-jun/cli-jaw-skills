@@ -74,6 +74,27 @@ Every concept, constant, type, or configuration value MUST have exactly one cano
 | "Local copy for convenience" | Convenience becomes divergence | Import the original |
 | Re-deriving a value that has a canonical source | Silent inconsistency | Import the derived value or computation |
 
+### Deep Modules and Seams
+
+Use this vocabulary when deciding whether an abstraction earns its keep:
+
+| Term | Meaning |
+|------|---------|
+| Module | A cohesive unit with a named responsibility and public interface |
+| Interface | The small surface consumers depend on |
+| Implementation | The hidden work behind that surface |
+| Depth | Large useful behavior hidden behind a small interface |
+| Seam | A boundary where alternative implementations are real or likely |
+| Adapter | Code translating one external shape into the module's interface |
+| Leverage | How much change the abstraction absorbs for its callers |
+| Locality | How close related behavior stays to its owning concept |
+
+Frontend depth means small props/events hiding complex rendering, state management,
+data transformation, or integration behavior. One adapter usually means hypothetical
+indirection; two adapters, or a near-term second adapter, is evidence of a real seam.
+Do not expose internals only for tests; test through the public interface or add a
+boundary-owned diagnostic hook with production value.
+
 ---
 
 ## 2. Circular Dependency Detection & Prevention

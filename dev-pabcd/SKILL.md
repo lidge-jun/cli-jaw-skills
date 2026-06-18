@@ -78,6 +78,14 @@ For broad changes or unfamiliar repositories, P phase MUST include:
 
 Do not create new project-level source-of-truth folders during B unless approved in P or explicitly requested by the user.
 
+Design phases before mapping them to PABCD. A phase should normally be a user-visible
+or consumer-visible outcome unit: "create an item", "edit an item", "share a report",
+or "compare three runnable prototypes". DB/API/UI/test work are subtasks inside that
+outcome, not top-level phases by default. A simple task can finish in one PABCD with
+several small phases; larger work can split into multiple PABCD passes. Layer-only
+phases are allowed only when independently verifiable and explicitly justified. Do not
+plan a whole database/API foundation as one PABCD before any usable outcome exists.
+
 Read project docs and dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
 
 Write a plan with two parts:
