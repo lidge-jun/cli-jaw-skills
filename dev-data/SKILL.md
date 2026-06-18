@@ -268,6 +268,7 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 | Blended workflow | Polars transforms, DuckDB aggregations (zero-copy via Arrow) |
 
 See `references/tools.md` for full patterns and code examples.
+See `references/ml-pipeline.md` for ML training pipelines, experiment tracking (MLflow 3.x), feature stores (Feast), and data versioning (DVC/Delta Lake).
 
 ---
 

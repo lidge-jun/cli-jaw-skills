@@ -84,7 +84,10 @@ proof that validates the claim, with the reduced scope stated).
 | `debugging` / `debugging_rca` | dev-debugging | Repeated failure needs root cause |
 | `migration_backfill` | dev-data, dev-backend, dev-testing | Production or non-trivial data |
 | `product_discovery` (+`_ui`) | dev (+dev-uiux-design) | Ambiguous behavior/user value/metric |
-| `release_cd` | dev-testing, dev-backend, dev-scaffolding | Release/CI/CD surface |
+| `release_cd` | dev-testing, dev-backend, dev-scaffolding, dev-devops | Release/CI/CD surface |
+| `devops` / `infra` / `deploy` | dev-devops | Container/K8s/IaC/deploy pipeline/SRE |
+| `mobile_native` | dev-frontend + dev-uiux-design + dev-backend (refs) | RN/Flutter/Swift/Kotlin native app |
+| `ml` / `ai` / `llm` / `rag` | dev-backend + dev-data + dev-testing (+dev-devops) | ML serving, RAG, pipeline, evaluation |
 | `frontend_ui` | dev-uiux-design (with role=frontend) | UI/design intent work |
 | `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
 

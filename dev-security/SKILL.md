@@ -62,6 +62,9 @@ Domain skills own architecture and implementation details.
 | `references/static-analysis.md` | Before claiming code is secure | Semgrep, CodeQL, ESLint security, npm audit, pip-audit, Bandit, gitleaks, CI, pre-commit |
 | `references/asvs-checklist.md` | Before deploy or release | ASVS 5.0 Level 1 and Level 2 pre-deploy checklist for V1-V9 |
 | `references/agentic-ai-security.md` | When building tool-using agents or prompt-driven flows | OWASP ASI01-ASI10 mapped to agent rules and safe operating patterns |
+| `references/llm-supply-chain.md` | When integrating LLMs, RAG pipelines, or consuming tool/agent output | Indirect prompt injection defense, RAG poisoning controls, tool output trust, CI adversarial tests |
+| `references/mcp-supply-chain.md` | Adding MCP servers or vetting agent tools | OWASP MCP Top 10, server vetting checklist, allowlist/pinning, sandbox, audit logging |
+| `references/supply-chain-sbom.md` | Dependency auditing or release integrity | SBOM generation (Syft/Trivy), artifact signing (Cosign/Sigstore), dependency pin & audit CI |
 
 Read only the references relevant to the current task.
 A small CSS change needs no OWASP reference.

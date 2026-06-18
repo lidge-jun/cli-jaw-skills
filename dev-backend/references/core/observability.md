@@ -169,3 +169,87 @@ Queue: kafka.SEND orders.created   (operation + topic)
 - Page only on customer-impacting issues (error rate, latency SLO breach)
 - Use warning-level alerts for capacity planning (saturation approaching threshold)
 - Suppress flapping alerts with debounce windows (alert fires only after N consecutive failures)
+
+---
+
+## Alerting Anti-Patterns
+
+| Banned | Symptom | Fix |
+|--------|---------|-----|
+| Alert on every error | Alert fatigue, ignored pages | Burn-rate alerting tied to SLO (see `dev-devops` `sre-foundations.md`) |
+| Single-window threshold | Too many false positives | Multi-window: short (5m) AND long (1h) both fire |
+| No SLO reference | Arbitrary thresholds | Derive alert threshold from SLO error budget |
+| Duplicate alerts | Multiple pages for same incident | Dedup by service+symptom, not by signal |
+| Missing runbook link | Responder guesses what to do | Every alert annotation includes runbook URL |
+
+### Burn-Rate Alert Integration
+
+For SLO-based alerting with burn rates, see `dev-devops/references/sre-foundations.md` §3.
+This file owns the **code instrumentation** (OTel setup, spans, logging); `dev-devops` owns the
+**alerting rules** (Prometheus rules, burn-rate formulas, error budget policy).
+
+---
+
+## Dashboard Design
+
+### RED Method (Request-driven services)
+
+| Signal | Metric | Dashboard Panel |
+|--------|--------|----------------|
+| **R**ate | `rate(http_requests_total[5m])` | Requests/sec time series |
+| **E**rrors | `rate(http_requests_total{code=~"5.."}[5m])` | Error rate % |
+| **D**uration | `histogram_quantile(0.99, http_request_duration_seconds_bucket)` | p50/p95/p99 latency |
+
+### USE Method (Infrastructure resources)
+
+| Signal | What | Example |
+|--------|------|---------|
+| **U**tilization | % time resource is busy | CPU usage, memory usage |
+| **S**aturation | Queue depth / backlog | Goroutine count, connection pool wait |
+| **E**rrors | Error count on resource | Disk I/O errors, network drops |
+
+### Dashboard Rules
+
+| Rule | Detail |
+|------|--------|
+| One dashboard per service | Don't mix unrelated services |
+| RED on top row | Most important signals visible first |
+| Time range | Default 1h, with 6h/24h/7d presets |
+| Annotations | Deploy markers, incident markers |
+| Variables | Service, environment, region dropdowns |
+
+---
+
+## Real User Monitoring (RUM) Basics
+
+### What to Measure
+
+| Metric | Source | Target |
+|--------|--------|--------|
+| LCP (Largest Contentful Paint) | Browser Performance API | < 2.5s |
+| FID/INP (Interaction to Next Paint) | Browser | < 200ms |
+| CLS (Cumulative Layout Shift) | Browser | < 0.1 |
+| TTFB (Time to First Byte) | Server + network | < 800ms |
+| JS Error rate | window.onerror / reportError | < 0.1% of sessions |
+
+### Backend Correlation
+
+```typescript
+// Add trace context to RUM beacon
+const beacon = {
+  traceId: document.querySelector('meta[name="trace-id"]')?.content,
+  lcp: lcpValue,
+  inp: inpValue,
+  cls: clsValue,
+  url: location.pathname,
+  userAgent: navigator.userAgent,
+};
+navigator.sendBeacon("/api/rum", JSON.stringify(beacon));
+```
+
+Link RUM data back to server traces via `traceId` for end-to-end latency attribution.
+
+### Cross-Reference
+
+- Alerting rules and SLO-based monitoring → `dev-devops/references/sre-foundations.md`
+- Dashboard infrastructure and Grafana provisioning → `dev-devops/references/sre-foundations.md` §1

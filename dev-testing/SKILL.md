@@ -21,6 +21,8 @@ Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (C
 | `references/edge-first-testing.md` | New unit/service/integration tests for features (skip for regression/contract tests) | Edge-first principle, test order by change type, 11-class edge matrix |
 | `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
 | `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |
+| `references/load-testing.md` | Performance/load testing, C3+ production readiness | k6/Locust, test types, measure→profile→verify, CI gates |
+| `references/ml-evaluation.md` | ML model/LLM evaluation, quality gates | LLM-as-judge, RAGAS, DeepEval, CI eval gate, regression detection |
 
 ---
 ## 1. Test Strategy

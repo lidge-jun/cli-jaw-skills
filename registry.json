@@ -819,6 +819,19 @@
       "install": null,
       "version": "1.0.0"
     },
+    "dev-devops": {
+      "name": "Dev DevOps",
+      "name_ko": "Dev DevOps",
+      "name_en": "Dev DevOps",
+      "emoji": "🚀",
+      "category": "orchestration",
+      "description": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
+      "desc_ko": "컨테이너 빌드, 배포 파이프라인, Kubernetes, IaC, SRE, 엣지/서버리스, ML 인프라.",
+      "desc_en": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
     "dev-frontend": {
       "name": "Dev Frontend",
       "name_ko": "Dev Frontend",

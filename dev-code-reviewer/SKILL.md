@@ -19,6 +19,14 @@ Systematic code review patterns for finding real issues, not bikeshedding.
 - Pre-refactoring quality baseline check
 
 ---
+## Modular References
+
+| File | When to Read | What It Covers |
+|------|-------------|----------------|
+| `references/tech-debt.md` | Tech debt inventory or paydown | Debt quadrant, inventory template, review integration, paydown budget |
+| `references/ai-assisted-review.md` | Using AI review tools in PR workflow | AI review workflow, severity classification, re-review policy, exclusions, metrics |
+
+---
 
 ## 1. Code Review Process
 

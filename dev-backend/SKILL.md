@@ -21,6 +21,7 @@ This skill has modular references for specialized guidance — read the relevant
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | `references/core/crud-api.md`          | C2 ordinary CRUD/resource endpoints | Route/schema/service/query basics, five operations, error+permission mapping |
 | `references/core/api-design.md`        | New/changed API style, or C3+ API work (C2 ordinary slice: `crud-api.md` alone suffices) | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
+| `references/core/api-lifecycle.md`   | API versioning, deprecation, migration | Versioning strategy, RFC 9745/8594 lifecycle, oasdiff CI gate          |
 | `references/core/architecture.md`      | New features at C3+ (C2 ordinary slice: `crud-api.md` alone suffices) | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
@@ -30,6 +31,9 @@ This skill has modular references for specialized guidance — read the relevant
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
 | `references/stacks/python.md`          | Python projects                | FastAPI/Django, Pydantic, async patterns, testing                      |
 | `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, ORM comparison         |
+| `references/core/ml-serving.md`      | ML model deployment, GPU inference | vLLM/SGLang runtime selection, FastAPI+GPU patterns, dynamic batching, quantization |
+| `references/core/llm-integration.md` | RAG, LLM API integration, prompt engineering | Chunking, hybrid search, vector DB, structured output, LangChain/LlamaIndex 2026 |
+| `references/core/mobile-api.md`          | Mobile app API patterns        | BFF, push notifications, offline sync, mobile auth, API optimization   |
 
 Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
 For C2 ordinary slices, `crud-api.md` alone suffices; read `api-design.md`/`architecture.md` for new API styles or C3+ work.

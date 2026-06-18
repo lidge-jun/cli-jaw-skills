@@ -9,6 +9,13 @@ description: "Scaffold new projects or add feature modules following the Lidge S
 
 Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§10) for verification.
 
+## Modular References
+
+| File | When to Read | What It Covers |
+|------|-------------|----------------|
+| `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
+| `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
+
 ## 1. The Lidge Standard
 
 Apply for new projects or when a repo has no clear structural convention of its own; defer to an existing mature convention when one is present (§2). Three pillars:
