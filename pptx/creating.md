@@ -611,8 +611,8 @@ officecli add slides.pptx /slide[1] --type connector --prop x=2cm --prop y=10cm 
 # Arrow
 officecli add slides.pptx /slide[1] --type connector --prop x=5cm --prop y=8cm --prop width=10cm --prop height=0 --prop tailEnd=triangle --prop line=1E2761 --prop lineWidth=2pt
 
-# Curved connector between shapes
-officecli add slides.pptx /slide[1] --type connector --prop shape=curve --prop startShape=1 --prop endShape=2 --prop line=4472C4 --prop lineWidth=1.5pt
+# Curved connector between shapes (from=/to= take a shape index or /slide[N]/shape[M]; startShape/endShape are read-only readback)
+officecli add slides.pptx /slide[1] --type connector --prop shape=curve --prop from=1 --prop to=2 --prop line=4472C4 --prop lineWidth=1.5pt
 
 # Dashed line
 officecli add slides.pptx /slide[1] --type connector --prop x=2cm --prop y=5cm --prop width=10cm --prop height=0 --prop lineDash=dash --prop line=999999

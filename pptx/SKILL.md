@@ -73,7 +73,7 @@ Slide master and theme definitions (fonts, colors, placeholder geometry) are doc
 1. **User-provided source file** — first-class template
 2. **`tests/fixtures/*.pptx`** — pre-built examples shipped with this skill
 3. **`officecli-pitch-deck/` templates** — if pitch/investor context
-4. **`morph-ppt/reference/styles/*`** — 48 curated style definitions (`bw--brutalist`, `dark--aurora-softedge`, `light--minimal-product`, etc.)
+4. **`morph-ppt/reference/styles/*`** — 51 curated style definitions (`bw--brutalist`, `dark--aurora-softedge`, `light--minimal-product`, etc.)
 5. **`officecli create`** blank — only when nothing else applies
 
 ### Example — Inherit Existing Brand
@@ -112,7 +112,7 @@ These are specific reference files nested inside subskill folders. Load only the
 |------|-----------|----------|
 | `morph-ppt/reference/decision-rules.md` | Planning framework for content-heavy decks | Pyramid Principle, SCQA, page types |
 | `morph-ppt/reference/pptx-design.md` | Canvas spec, ghost position math | Canvas, fonts, spacing tokens (x=36cm ghost) |
-| `morph-ppt/reference/styles/INDEX.md` | Picking a distinct visual style | 48 style definitions with spec + example |
+| `morph-ppt/reference/styles/INDEX.md` | Picking a distinct visual style | 51 style definitions with spec + example |
 | `morph-ppt/reference/quality-gates.md` | Phase 4–5 QA gates for morph decks | QA checklist |
 | `morph-ppt/reference/officecli-pptx-min.md` | Morph-specific officecli commands | Minimal command reference |
 | `pptxgenjs.md` | Programmatic generation (50+ data-driven slides) | PptxGenJS API reference |
@@ -163,21 +163,44 @@ Load ONLY the one subskill matching your task. Do not load all of them.
 
 ---
 
-## 5. Design Ideas
+## 5. Slide Design Guidance
 
-Don't create boring slides. Plain bullets on a white background won't impress anyone.
+Design is a deliverable, not optional polish. A slide deck is not a document: if the largest element plus one glance does not communicate the slide's point, the hierarchy has failed.
 
-### Before starting
+> **The 3-second test.** Every slide must pass it — a viewer grasps the one point in 3 seconds. Wrong chart type, bullet walls, and weak hierarchy all fail it.
+
+Canonical owners (read for depth; this skill carries the slide-adapted essentials inline):
+> - Design-direction / intent discovery, hierarchy levers → `dev-uiux-design` skill.
+> - Anti-slop philosophy + render verification → `dev-frontend` skill.
+
+### 5.1 Slide Design Read
+
+Before styling, state: deck type, audience, the decision the audience must make, existing brand/template, and the dominant visual reference. If a `DESIGN.md` or template exists, it overrides.
+
+### 5.2 Before starting
 
 - **Pick a bold, content-informed color palette.** It should feel designed for THIS topic. If swapping your colors into a completely different presentation would still "work," you haven't made specific enough choices.
 - **One color dominates** (60-70% visual weight), with 1-2 supporting tones and one sharp accent.
 - **Dark/light contrast**: Dark backgrounds for title + conclusion slides, light for content ("sandwich" structure). Or commit to dark throughout for a premium feel.
-- **Commit to a visual motif**: Pick ONE distinctive element and repeat it — colored cards, thick side borders, icon circles. Carry it across every slide.
 
-> Full palettes + typography guide: read `references/design-system.md` (20 palettes, 8 font pairings).
-> Distinct design styles: read `morph-ppt/reference/styles/INDEX.md` (48 curated styles).
+Reference files:
+> - Full palettes + Text/Muted columns + personality map: `references/design-system.md`.
+> - Slide-adapted hierarchy levers + per-slide checklist: `references/visual-hierarchy.md`.
+> - Copy-paste visual-effect recipes (gradient/shadow/glow/etc.): `references/visual-effects.md`.
+> - Distinct design styles: `morph-ppt/reference/styles/INDEX.md` (51 curated styles).
 
-### Design dials
+### 5.3 Intent Discovery for Decks
+
+When deck direction is vague ("멋지게 만들어줘", "깔끔하게"), ask up to 4 binary/ternary questions before building. If the user names a reference product, skip to mapping via `references/design-system.md`. (Adapted from `dev-uiux-design` §1; "viewport" step dropped — slides are fixed 16:9.)
+
+1. **Mood** — "청중에게 남길 느낌: `executive/trustworthy` · `premium/editorial` · `energetic/product-launch` · `technical/precise` · `training/clear` 중?"
+2. **Density** — "한 장당 정보 밀도: `keynote sparse`(한 메시지) · `business normal`(제목+시각+짧은 근거) · `review dense`(차트/표 중심) 중?"
+3. **Shape language** — "도형 언어: `sharp grid`(정밀/컨설팅) · `soft cards`(친근/제품) · `editorial bleed`(이미지/큰 타이포) · `diagrammatic`(프로세스/시스템) 중?"
+4. **Reference / template** — "따라야 할 기준: `existing template/brand deck` · `product ref (Linear/Apple/Stripe)` · `industry convention` · `no reference — propose one` 중?"
+
+Answers feed the dials below with reasoned values instead of defaults.
+
+### 5.4 Deck Dials
 
 Before creating, decide these three parameters. Present to user if ambiguous.
 
@@ -197,7 +220,30 @@ Presets by deck type:
 | Workshop / training | 4 | 6 | 2 |
 | Product launch | 7 | 4 | 6 |
 
-### Recommended palettes
+> **"복잡" = higher DENSITY, not higher VARIANCE.** A complex brief means more data/features, not more visual tricks. "Simple" = decrease all three dials proportionally. (from `dev-uiux-design` §2)
+
+### 5.5 16:9 Canvas, Grid & Negative Space
+
+Standard widescreen is **33.87 × 19.05cm**. Treat it as a 12-column grid internally.
+
+- **Edge margin ≥ 1.27cm** (0.5") on all sides.
+- **Inter-block gap ≥ 0.76cm** (0.3") between cards/columns/rows — pick ONE value (0.76 or 1.27cm) and use it everywhere; mixed gaps look unfinished.
+- **≥ 20% negative space per slide.** Filling every pixel reads as amateur.
+- **Compose, don't web-center.** Intentional asymmetry (content left, breathing room right) reads more designed than centering everything.
+- Card grids: `usable = 33.87 − 2·margin − (N−1)·gap`, then `col_width = usable / N`. Don't hand-pick x.
+
+### 5.6 Slide Visual Hierarchy
+
+Exactly **one** primary focal point per slide. Build the eye-path from 6 levers (full detail: `references/visual-hierarchy.md`):
+
+1. **Size** — title ≥36pt and ≥2× body; adjacent levels differ ≥1.25×; max 4 levels/slide.
+2. **Weight** — title 700-800 / labels 600 / body 400-500; never weight alone.
+3. **Color** — accent on **≤2 elements per slide** (the focal object); "everything accent = nothing accent".
+4. **Spacing** — whitespace = hierarchy; section gap > group gap > element gap; margins ≥1.27cm, gaps ≥0.76cm.
+5. **Position** — primary message upper-left / optical center; citations/notes/page-no in stable periphery.
+6. **Density** — alternate dense/sparse slides; never two dense slides back-to-back (except appendix).
+
+### 5.7 Palette, Contrast & Projection
 
 Choose colors that match your topic — don't default to generic blue.
 
@@ -218,7 +264,10 @@ Off-black: `0A0A0A` not `000000`.
 
 Avoid: purple gradient on white (AI slop), rainbow multi-accent, `FFFFFF` bg + `000000` text (zero personality).
 
-### For each slide
+- **Accent discipline:** one accent only; apply it to **≤2 elements per slide**. If every card/icon is accent-colored, the focal point is lost.
+- Full 20-palette set with Text/Muted + a product-personality → palette map: `references/design-system.md`.
+
+### 5.8 Layout Patterns by Slide Job
 
 Every slide needs a visual element — shape, chart, table, or picture. Text-only slides are forgettable.
 
@@ -263,9 +312,11 @@ officecli add deck.pptx '/slide[4]' --type video --prop path=demo.mp4 \
 officecli add deck.pptx '/slide[5]' --type ole --prop path=data.xlsx \
   --prop x=2cm --prop y=3cm --prop width=20cm --prop height=12cm
 
-# Connectors / arrows between shapes
+# Connectors / arrows between shapes.
+# Endpoints use from=/to= (shape index or /slide[N]/shape[M]). startShape/endShape are READ-ONLY.
+# Every flow connector needs an arrowhead. shape=elbow is the canonical right-angle form.
 officecli add deck.pptx '/slide[2]' --type connector \
-  --prop startShape=1 --prop endShape=2 --prop lineColor=4472C4 --prop tailEnd=arrow
+  --prop from=1 --prop to=2 --prop shape=elbow --prop color=#4472C4 --prop tailEnd=arrow
 
 # Speaker notes on every content slide
 officecli add deck.pptx '/slide[1]' --type notes --prop 'text=Key talking point here.'
@@ -301,7 +352,7 @@ officecli watch deck.pptx --port 3000
 officecli set deck.pptx / --prop show.loop=true --prop show.narration=false
 ```
 
-### Typography
+### 5.9 Typography for Slides
 
 Choose a font pairing with personality — don't default to Arial.
 
@@ -317,26 +368,36 @@ Korean: **Pretendard**, **Noto Sans KR**, **Wanted Sans**.
 Avoid as primary: `Malgun Gothic` (sole), Inter, Roboto, Arial, Calibri — these read as default/template.
 Exception: `Malgun Gothic` acceptable as CJK fallback in `a:ea` font stack, never as primary.
 
-| Element | Size |
-|---------|------|
-| Slide title | 36-44pt bold |
-| Section header | 20-24pt bold |
-| Body text | 16-20pt (min 16pt) |
-| Caption / source | 10-12pt muted |
-| Key metric | 60-72pt bold, accent color |
+| Element | Size | Min shape height |
+|---------|------|------------------|
+| Slide title | 36-44pt bold (≥2× body) | ≥ 2cm |
+| Section header | 20-24pt bold | ≥ 1.2cm |
+| Body text | **18-22pt (min 18pt)** | ≥ 1cm |
+| Caption / source | 10-12pt muted | ≥ 0.6cm |
+| Key metric | 60-72pt bold, accent color | — |
 
-Body text minimum 16pt. Overflow → reduce text or split slides, never shrink font.
+**Body floor is 18pt** for audience-facing prose. Four exceptions may go below 18pt: chart axis labels, legends, footer/page number, and ≤5-word KPI sublabels (e.g. "Active users"). Descriptive sentences must be ≥18pt. Rule of thumb: min shape height ≈ font_pt × 0.05cm. Overflow → cut text or split slides, **never shrink font**; if cards won't fit, drop cards.
+
+**Line breaks (manual `text-wrap: balance`).** Break titles/subtitles between thought-units so no line ends with a 1-word (EN) orphan; keep line lengths balanced. **Korean: last line ≥4 chars (2 syllable blocks)** — never leave "다." / "화." alone. Body line length ~45-65 chars. (from `dev-uiux-design` typography-line-breaks)
+
 All content slides (not cover/closing) should have speaker notes.
 
-### Slide rhythm
+### 5.10 Chart-Choice Decision Table
 
-A 10-slide deck should have at minimum 4 distinct layout types:
-1. Full-bleed hero (title or key metric)
-2. Split layout (text + visual)
-3. Grid or comparison (2-3 items)
-4. Data visualization (chart, diagram, or infographic)
+Wrong chart type kills the 3-second test:
 
-### Content-to-layout guide
+| Data shape | Use | Avoid |
+|---|---|---|
+| Category comparison (A vs B vs C) | `column` (vertical) / `bar` (≥6 cats, horizontal) | pie (slices merge), line (no time axis) |
+| Time series, 1-3 series | `line` | area (occlusion), bar (implies discrete) |
+| Part-of-whole, 2-5 slices | `pie` / `doughnut` | pie with 8+ slices (unreadable) |
+| Correlation / distribution | `scatter` | line (implies ordering) |
+| Many categories × metrics, dense | stacked `column` or heatmap | one chart per metric — consolidate |
+| KPI snapshot (single big number) | **Large-text shape** (60-72pt + ≤5-word sublabel), NOT a chart | gauge chart, tiny bar |
+
+Rule of thumb: if >3 series and >8 categories, split into two charts or switch to a table.
+
+### 5.11 Content-to-Layout Guide
 
 | Content Type | Recommended Layout |
 |---|---|
@@ -349,29 +410,78 @@ A 10-slide deck should have at minimum 4 distinct layout types:
 | Architecture / system | Shapes + connectors diagram |
 | Financial data | Chart + summary table side-by-side |
 
-### Avoid (common design mistakes)
+A 10-slide deck needs ≥4 distinct layout types (hero / split / grid / data-viz) — never repeat one layout.
 
-- Same layout on every slide — vary columns, cards, callouts
-- Center-aligned body text — left-align paragraphs; center only titles
-- Insufficient size contrast — titles 36pt+ vs body 16pt
-- Default blue for everything — pick colors that match the topic
-- Inconsistent spacing — choose 0.3" or 0.5" gaps and stick to it
-- Styling one slide and leaving the rest plain — commit fully
-- Text-only slides — add shapes, charts, color blocks, pictures
-- Low-contrast text or icons — both need strong contrast against background
-- Accent lines under titles — hallmark of AI-generated slides; use whitespace instead
-- Decorative web-UI elements (thin 1cm sidebar lines, small ornamental circles) — PPT는 프로젝터 매체, 웹앱이 아님
+### 5.12 Image / Screenshot / Logo Treatment
+
+Read the image first; choose treatment from what you see, not from the filename.
+- **Full-bleed photo** → size to COVER the region (crop edges), no border.
+- **Screenshot / diagram / logo** → size to FIT (never crop content); place on a contrasting fill rectangle, don't let it float on white.
+- **Text over a photo** → never raw; put it on a card or lay a dark scrim (~50-60% opacity) between.
+- Never stretch (distort aspect ratio). Prefer user/brand assets; no emoji or self-drawn art unless asked.
+
+### 5.13 Visual Motif Commitment
+
+Pick ONE distinctive element (rounded image frames, section numbers in filled circles, single-side border band, diagonal accent strips) and carry it to every slide. **Declare it in your build plan first** (`## Motif: numbered circles in brand color`). A secondary motif is fine only if it doesn't compete. Styling one slide richly and leaving the rest plain reads as abandoned.
+
+### 5.14 Copy Reads Human
+
+Titles orient on content, not punchline. No "It's not X. It's Y.", no manufactured tension, no faux-insight ("The magic moment"), no one-word drama ("Momentum."). Cut hype adjectives (seamless, robust, game-changing, Elevate, Next-Gen) — let the number carry it. Pick ONE title grammar (all noun-phrases OR all action statements, never mixed) and hold it throughout.
+
+### 5.15 Slide-Specific Anti-Slop
+
+Each = pattern → one-line fix. (Slide-adapted from `dev-frontend` §5 + built-in AI-tells.)
+
+1. **Three Icon Columns** — centered title + 3 equal icon/text cols → one dominant block + 2 unequal supports.
+2. **Bullet Wall** — title + 5-9 bullets → split to one idea/slide or convert to process/KPI/comparison.
+3. **Gradient Everywhere** — gradients on everything → one gradient surface max, else solid + whitespace.
+4. **Accent Underline Title** — thin colored rule under every title → hierarchy via whitespace/band/scale.
+5. **Left-Border Card Stripe** — rounded card + colored vertical bar → solid fill / top accent band / spacing.
+6. **Template Blue Corporate** — default blue + Calibri + white → topic palette + explicit font pair.
+7. **Everything Centered** — all text/cards centered → center only cover titles + hero numerals; left-align reading text.
+8. **Data Confetti** — decorative/fake KPIs to fill space → whitespace + hierarchy; never invent evidence.
+9. **Tiny Table Cram** — spreadsheet at 8pt → big-type decision + 3-5 key rows; full table to appendix.
+10. **Directionless Flow** — boxes + plain lines → named shapes, `shape=elbow` connectors, arrowheads on every flow.
+11. **Image Float** — logo/screenshot floating on white / raw text on photo → fit on backing shape; scrim/card for text-over-photo.
+12. **Motif Abandonment** — one designed cover, plain rest → declare one motif, apply across cover/divider/content/close.
+
+**STRICT bans:** emoji as iconography (feature/card/section icons) — use a shape or real icon asset; purple gradient on white; `FFFFFF` bg + `000000` text (use off-black `0A0A0A`).
+
+---
+
+## 5A. Delivery Standards ("not done" if violated)
+
+### 5A.1 All-decks requirements
+
+- **One idea per slide.** If a slide needs a second title to explain its scope, split it.
+- **Explicit type hierarchy** — set sizes on every text shape; don't rely on theme defaults.
+- **Two fonts max, one palette** — one heading + one body; a third *display* face only for cover title / big numerals. One dominant color (60-70%) + one support + one accent; never 4+ in body.
+- **Every slide carries an informing visual** — shape, chart, icon, or meaningful gradient band, not decoration. Exceptions: literal quote slides, code blocks, one summary-table slide.
+- **Less is more** — don't pad with decorative stats/icons/filler ("data slop"). Fix an empty slide with layout + whitespace, not invented content.
+- **Speaker notes on every content slide.**
+- **Preserve existing templates** — when a file has a theme/masters, match them.
+
+### 5A.2 Visual delivery floor (every deck, checked at QA)
+
+- **No placeholder tokens rendered** — `{{name}}`, `$fy$24`, `<TODO>`, `lorem`, `xxxx`, empty `()`/`[]`.
+- **No off-edge overflow / clipped text** — grow the box or shorten the value, never trim content to fit.
+- **Cover carries orienting elements** — title + subtitle + presenter/client + date + brand band.
+- **Contrast** — on any fill brightness <30% (`1E2761`, `36454F`, deep forest/berry), every body run, card body, chart series, and icon must be `FFFFFF` or brightness >80%. Mid-gray (`6B7B8D` ≈44%) vanishes on projection. Spot-check via `view html` after any dark-fill pass.
+
+If any fails, STOP and fix before declaring done.
 
 ---
 
 ## 6. Creation Workflow
 
+**Step 0 — Title sequence first (plan, don't build yet).** Before creating any slide, write the full ordered list of slide titles. If someone reading ONLY the titles can't follow the argument, fix the arc now — cheaper in a list than after 14 slides. Pick ONE title grammar and hold it (see §5.14). Also declare the motif (§5.13) and dials (§5.4) here.
+
 ```bash
 # 1. ASCII 파일명으로 /tmp/ 에서 작업 (한국어 파일명은 resident 깨짐)
 officecli create /tmp/deck_work.pptx --type pptx
 
-# 2. add slide → set background → add shapes/textboxes/charts
-officecli add /tmp/deck_work.pptx /slide --type slide
+# 2. add slide (parent is '/', the presentation root) → set background → add shapes/textboxes/charts
+officecli add /tmp/deck_work.pptx / --type slide
 officecli set /tmp/deck_work.pptx '/slide[1]' --prop background=1E2761
 officecli add /tmp/deck_work.pptx '/slide[1]' --type textbox \
   --prop 'text=Title Here' --prop x=2cm --prop y=3cm --prop w=30cm --prop h=4cm \
@@ -386,13 +496,18 @@ python3 -c "import shutil; shutil.copy2('/tmp/deck_work.pptx', 'final.pptx')"
 
 ---
 
-## 7. QA (Required)
+## 7. QA — Delivery Gate (Required)
 
-**Assume there are problems. Your job is to find them.**
+**Assume there are problems.** First render is almost never correct. Zero issues found = you weren't looking hard enough. **Any gate failure = REJECT, do not deliver.** Done = every gate PASS **and** Gate 3 loop converged.
 
-Your first render is almost never correct. Approach QA as a bug hunt, not a confirmation step. If you found zero issues on first inspection, you weren't looking hard enough.
+### Gate 1 — schema
+`officecli validate "<file>"`. Any schema error → REJECT and fix. (Modern MS chart-extension XML can fail schema yet render in LibreOffice — report as "schema failed, LibreOffice render succeeded".)
 
-### Step 1 — Machine QA
+### Gate 2 — overflow / format / structure
+`officecli view "<file>" issues`. Any issue (`[O1]`, `[C1]`, `[S1]`, …) → REJECT, fix, re-run until clean.
+
+### Gate 2b — leftover placeholders
+`officecli view "<file>" text`, then scan for `xxxx`, `lorem`/`ipsum`, `<TODO>`, `placeholder`, "click to", empty `()`/`[]`. Any hit → REJECT.
 
 ```bash
 officecli validate output.pptx
@@ -401,9 +516,7 @@ officecli view output.pptx text | grep -iE 'xxxx|lorem|ipsum|placeholder|TODO|cl
 officecli view output.pptx stats
 ```
 
-Use `officecli validate` for OOXML/schema checks and `officecli view ... issues` for layout/content issue probes. Modern Microsoft chart extension XML can fail schema validation even when LibreOffice renders the deck; report that as "schema validation failed, LibreOffice render succeeded" rather than calling the file valid.
-
-### Step 2 — Visual QA
+### Gate 3 — Visual audit (MANDATORY)
 
 ```bash
 officecli view output.pptx html --browser
@@ -412,9 +525,9 @@ officecli view output.pptx html --browser
 python3 scripts/thumbnail.py output.pptx grid.png
 ```
 
-LibreOffice PDF/PNG render is visual evidence, not a guarantee that Microsoft PowerPoint for Mac will render identically.
+LibreOffice render is visual evidence, not a guarantee that PowerPoint for Mac renders identically.
 
-**USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
+**USE A FRESH SUBAGENT** — even for 2-3 slides. The builder is biased toward "looks fine"; a separate pair of eyes is more critical. Hand it the screenshots + this checklist with adversarial framing.
 
 **Prompt for visual QA subagent:**
 
@@ -428,17 +541,20 @@ Look for:
 - Uneven gaps (large empty area vs cramped)
 - Insufficient margin from slide edges (< 0.5")
 - Columns or similar elements not aligned
-- Low-contrast text or icons
+- Low-contrast / dark-on-dark text or icons (fill <30% with text <80%)
+- Image treatment: stretched photo, raw text on photo, cropped logo, image floating on white
+- Missing arrowheads on flow connectors
 - Leftover placeholder content
 - Text boxes too narrow causing excessive wrapping
+- Title line-break: last line is a single word (EN) or ≤3 chars (KO)
 
 For each slide, list issues or areas of concern, even if minor.
 Report ALL issues found.
 ```
 
-### Step 3 — Fix and re-verify
+### Fix-verify loop (mandatory, max 3 cycles)
 
-Fix with `officecli set`, rerun QA. **Do not declare success until you've completed at least one fix-and-verify cycle.**
+Fix with `officecli set` → re-run Gate 3 → repeat until zero new issues; one fix often surfaces another. After 3 rounds without convergence, STOP and report `slide N: <issue> — attempted: <fixes> — likely root: <template|design-conflict|ambiguous>` for the user to decide. **Do not declare success until a fix-verify cycle finds zero new issues.**
 
 ---
 

@@ -20,7 +20,6 @@ The Agent uses this table to quickly select a reference style based on the topic
 | dark--investor-pitch     | Investor Pitch Pro       | Investor pitches, fundraising decks, business plans             | Professional, trustworthy, composed     |
 | dark--cosmic-neon        | Cosmic Neon              | Science talks, futuristic topics, physics, cosmic themes        | Sci-fi, mysterious, futuristic, neon    |
 | dark--editorial-story    | Editorial Magazine Story | Brand storytelling, editorial magazines, content releases       | Narrative, artistic, premium            |
-| dark--tech-cosmos        | Tech Cosmos              | Tech talks, architecture reviews, scientific presentations      | Futuristic, scientific, cosmic          |
 | dark--blueprint-grid     | Blueprint Grid           | Technical planning, engineering blueprints, system architecture | Precise, professional, engineered       |
 | dark--diagonal-cut       | Diagonal Industrial Cut  | Industrial, engineering, construction, manufacturing            | Rugged, powerful, bold                  |
 | dark--spotlight-stage    | Spotlight Stage          | Keynotes, launch events, TED-style talks, galas                 | Dramatic, focused, theatrical           |
@@ -57,9 +56,7 @@ The Agent uses this table to quickly select a reference style based on the topic
 | Directory                | Style Name         | Best For                                                          | Mood                             |
 | ------------------------ | ------------------ | ----------------------------------------------------------------- | -------------------------------- |
 | warm--earth-organic      | Earth & Sage       | Eco-friendly, sustainability, organic brands                      | Warm, sincere, natural           |
-| warm--minimal-brand      | Minimal Brand      | Brand introductions, product launches, premium brand showcases    | Warm, refined, minimalist        |
 | warm--brand-refresh      | Brand Refresh      | Brand launches, corporate image updates, creative proposals       | Fashionable, colorful, modern    |
-| warm--creative-marketing | Creative Marketing | Marketing campaigns, ad creatives, poster-style PPTs              | Bold, impactful, expressive      |
 | warm--playful-organic    | Playful Organic    | Lifestyle, pet/animal topics, children's education, storytelling  | Warm, playful, friendly          |
 | warm--sunset-mosaic      | Sunset Mosaic      | Engineering, infrastructure, B2B corporate, construction          | Professional, warm, grounded     |
 | warm--coral-culture      | Coral Culture      | Company culture decks, HR presentations, team showcases           | Warm, cultural, human-centered   |
@@ -101,19 +98,19 @@ The Agent uses this table to quickly select a reference style based on the topic
 
 | Use Case                                 | Recommended Styles                                                                                                                                                                     |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tech / AI / SaaS**                     | dark--tech-cosmos, dark--cyber-future, light--isometric-clean, mixed--chromatic-aberration, light--firmwise-saas, light--fluid-gradient                                                |
+| **Tech / AI / SaaS**                     | dark--cyber-future, light--isometric-clean, mixed--chromatic-aberration, light--firmwise-saas, light--fluid-gradient                                                |
 | **Investment / Pitch / Fundraising**     | dark--investor-pitch, dark--premium-navy, light--project-proposal, light--glassmorphism-vc, dark--obsidian-amber                                                                       |
 | **Corporate / Business / Reports**       | light--minimal-corporate, light--minimal-product, dark--premium-navy, vivid--pink-editorial, warm--sunset-mosaic, warm--coral-culture                                                  |
-| **Brand / Launch / Marketing**           | warm--brand-refresh, warm--creative-marketing, vivid--playful-marketing, warm--minimal-brand, vivid--bauhaus-electric                                                                  |
+| **Brand / Launch / Marketing**           | warm--brand-refresh, vivid--playful-marketing, vivid--bauhaus-electric                                                                  |
 | **Design / Architecture / Art**          | bw--swiss-bauhaus, bw--brutalist-raw, dark--architectural-plan, mixed--duotone-split, dark--midnight-blueprint, mixed--bauhaus-blocks, dark--aurora-softedge, warm--monument-editorial |
 | **Education / Training / Courseware**    | light--training-interactive, warm--playful-organic, vivid--candy-stripe, warm--bloom-academy                                                                                           |
 | **Keynotes / Launch Events / Galas**     | dark--spotlight-stage, dark--liquid-flow, vivid--energy-neon                                                                                                                           |
 | **Creative Agency / Studio**             | dark--sage-grain, mixed--bauhaus-blocks, dark--circle-digital, vivid--bauhaus-electric, mixed--spectral-grid                                                                           |
-| **Developer / Technical**                | dark--cyber-future, dark--blueprint-grid, dark--tech-cosmos                                                                                                                            |
-| **Eco / Nature / Organic**               | warm--earth-organic, warm--minimal-brand, light--spring-launch                                                                                                                         |
+| **Developer / Technical**                | dark--cyber-future, dark--blueprint-grid                                                                                                                            |
+| **Eco / Nature / Organic**               | warm--earth-organic, light--spring-launch                                                                                                                         |
 | **Cultural Creative / Magazine / Story** | dark--editorial-story, light--watercolor-wash, light--bold-type, warm--monument-editorial                                                                                              |
 | **Sci-Fi / Space / Futuristic**          | dark--space-odyssey, dark--cosmic-neon, dark--cyber-future                                                                                                                             |
-| **Luxury / Premium**                     | dark--luxury-minimal, dark--premium-navy, warm--minimal-brand, dark--velvet-rose                                                                                                       |
+| **Luxury / Premium**                     | dark--luxury-minimal, dark--premium-navy, dark--velvet-rose                                                                                                       |
 | **Productivity / Motivation**            | dark--neon-productivity, dark--cyber-future                                                                                                                                            |
 | **Wellness / Health / Lifestyle**        | warm--vital-bloom, warm--playful-organic, light--spring-launch                                                                                                                         |
 | **Finance / Investment**                 | dark--obsidian-amber, dark--investor-pitch, light--glassmorphism-vc                                                                                                                    |

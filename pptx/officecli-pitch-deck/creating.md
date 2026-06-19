@@ -621,7 +621,7 @@ Add all shapes BEFORE connectors. Title = shape[1], flow shapes start at shape[2
 
 ```bash
 officecli add deck.pptx "/slide[N]" --type connector \
-  --prop shape=elbow --prop startShape=2 --prop endShape=3 \
+  --prop shape=elbow --prop from=2 --prop to=3 \
   --prop line=1A73E8 --prop lineWidth=2pt --prop tailEnd=triangle
 ```
 
