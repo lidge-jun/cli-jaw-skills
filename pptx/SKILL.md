@@ -687,7 +687,7 @@ Batch supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, 
 - [ ] Layout variety >= 3 types across slides
 - [ ] No overflow: `y + height <= 19.05cm`, `x + width <= 33.87cm`
 - [ ] No placeholder text remaining
-- [ ] Body text >= 16pt everywhere
+- [ ] Body text >= 18pt for audience prose (16pt only for axis labels, legends, footer/page number, ≤5-word KPI sublabels)
 - [ ] Chart titles contain actual values (no `TBD`, `()`)
 
 ---
