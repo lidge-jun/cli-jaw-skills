@@ -427,6 +427,18 @@ officecli add doc.xlsx /Sheet1 --type chart --prop chartType=column --prop dataR
 # For detailed chart customization (series, axes, legends), read ./officecli-data-dashboard/SKILL.md
 ```
 
+**Three ways to feed chart data — pick ONE per chart (mixing at add-time is a trap):**
+
+| Form | Shape | When |
+|---|---|---|
+| inline `data` | `--prop data="Sales:100,200,300" --prop categories="Jan,Feb,Mar"` | tiny demo charts; source-of-truth lives in the chart XML, not cells |
+| 2D `dataRange` | `--prop dataRange="Sheet1!A1:B4"` (first col = categories, first row = header/series) | normal case; **must be 2-D** — a single column fails with "Chart requires data" |
+| per-series | `--prop series1.name=Sales --prop series1.values="Sheet1!B2:B4" --prop series1.categories="Sheet1!A2:A4"` | multi-series, non-contiguous ranges, or explicit naming |
+
+- **Single-column trap:** `dataRange="Sheet1!B2:B13"` is rejected ("Chart requires data") — widen to include the category column (`A2:B13`) or use per-series with explicit `categories`.
+- **Always prefix `dataRange` with the sheet** (`Summary!A17:C22`, not `A17:C22`) — the sheet-less form is unreliable.
+- **Series + anchor are immutable after create** — to resize/move/add a series, `remove` the chart then `add` again (remove shifts indices and re-add appends; rebuild in order to preserve chart order).
+
 ---
 
 ## 10. pandas Pipeline
