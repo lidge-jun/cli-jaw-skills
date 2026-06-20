@@ -244,7 +244,7 @@ Use color sparingly -- accent color for headings or table headers, not rainbow f
 | Content Type | Recommended Element(s) | Why |
 |---|---|---|
 | Sequential items | Bulleted list (`listStyle=bullet`) | Scanning is faster than inline commas |
-| Step-by-step process | Numbered list (`listStyle=numbered`) | Numbers communicate order |
+| Step-by-step process | Numbered list (`listStyle=ordered`) | Numbers communicate order |
 | Comparative data | Table with header row | Columns enable side-by-side comparison |
 | Trend data | Embedded chart (`chartType=line/column`) | Visual pattern recognition |
 | Key definition | Hanging indent paragraph | Offset term from definition |
@@ -465,7 +465,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | **Track changes — native create** | OfficeCLI creates tracked changes natively (v1.0.115): `--prop revision.type=ins\|del\|moveTo\|moveFrom\|format` with `revision.author`/`revision.date` on the host element; accept/reject via `set /revision --prop revision.action=accept\|reject`. (`scripts/docx_cli.py` no longer required for creation.) |
 | **Tab stops may require raw XML** | Tab stop creation is not exposed in high-level commands. Use `raw-set` to add tab stop definitions. |
 | **Chart series cannot be added after creation** | `set --prop data=` can only update existing series, not add new ones. Delete and recreate the chart. |
-| **Complex numbering definitions** | `listStyle=bullet/numbered` covers simple cases. For multi-level lists, use `numId`/`numLevel` properties. |
+| **Complex numbering definitions** | `listStyle=bullet/ordered` (canonical) covers simple cases. For multi-level lists, use `numId`/`numLevel` properties. |
 | **Shell quoting in batch with echo** | Use heredoc: `cat <<'EOF' \| officecli batch doc.docx`. |
 | **Batch intermittent failure** | ~1-in-15 batch operations may fail with "Failed to send to resident". Retry or close/reopen file. Split large batches into 10-15 operation chunks. |
 | **Table-level `padding` produces invalid XML** | Do not use `set tbl[N] --prop padding=N`. Use cell-level `padding.top`/`padding.bottom`. If already applied, remove with `raw-set --xpath "//w:tbl[N]/w:tblPr/w:tblCellMar" --action remove`. |

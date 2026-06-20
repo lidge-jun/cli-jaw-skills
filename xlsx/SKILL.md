@@ -44,6 +44,7 @@ Do NOT use this skill for Word, HTML dashboards, or external database orchestrat
 | Resident workflow | officecli | `officecli open model.xlsx` | Returns immediately; daemon in bg |
 | CSV/TSV import | officecli | `officecli import model.xlsx /Data data.csv --header` | TSV: `--format tsv`; stdin: `--stdin` |
 | Add table / validation / chart | officecli | `officecli add model.xlsx /Data --type table --prop ref=A1:D10` | Native structured workbook objects |
+| Add pivot table / sparkline | officecli | `--type pivottable` / `--type sparkline` (native ELEMs) | Native — do NOT escalate to pandas/openpyxl |
 | Data transformation | pandas | `pd.read_excel(...)` -> transform -> write | pandas is PRIMARY for analysis |
 | **Formula recalculation** | Python (L3) | `python3 scripts/recalc.py output.xlsx` | **officecli does not recalculate — MANDATORY after formula writes** |
 | **Complex openpyxl formatting** | Python (L3/L4) | See `references/openpyxl_guide.md` | Styling beyond officecli |
