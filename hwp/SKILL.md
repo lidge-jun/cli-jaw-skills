@@ -530,7 +530,7 @@ officecli view doc.hwpx html --browser  # one-shot A4 preview
 | **Direct XML edit without lineseg strip** | Stale `<hp:linesegarray>` cache causes text overlap. Use `scripts/hwpx_cli.py` (strips automatically) or apply lineseg strip manually (see §16) |
 | **Custom style work without reading reference/** | `reference/header-xml-guide.md` + `reference/style_id_maps.md` are mandatory reading. See §3 |
 
-### Essential Rules (from subskill)
+### Essential Rules
 
 - **Auto-normalization**: PUA removal and uniform spacing collapse are applied automatically.
 - **Transport parity**: CLI, Resident, and MCP all support the same view modes (tables, markdown, objects, forms).
@@ -659,6 +659,21 @@ Policy:
 - Treat table-cell mutation as coordinate-based and experimental.
 - If pinned/latest `rhwp` exposes a native HWP primitive that OfficeCLI has not wired yet, report it as an OfficeCLI capability/wiring gap, not as proof that native HWP cannot do it.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
+
+**v0.7.12 native-op recipes** (wired 2026-06-20; gate on `officecli hwp doctor --json` first):
+
+```bash
+# full-text search (read)
+officecli view file.hwp native --op search-all-text --prop query="검색어" --prop case-sensitive=false --prop include-cells=true --json
+# page overlay images (read)
+officecli view file.hwp native --op get-page-overlay-images --prop page-num=0 --json
+# header/footer picture properties (read)
+officecli view file.hwp native --op get-hf-picture-properties --prop section=0 --prop outer-para=0 --prop outer-control=0 --prop inner-para=0 --prop inner-control=0 --json
+# insert a numbered-list start (mutate — output-first)
+officecli set file.hwp /native-op --prop op=insert-new-number --prop section=0 --prop paragraph=0 --prop offset=0 --prop start-num=1 --prop output=out.hwp --json
+# set header/footer picture properties (mutate — output-first)
+officecli set file.hwp /native-op --prop op=set-hf-picture-properties --prop section=0 --prop outer-para=0 --prop outer-control=0 --prop inner-para=0 --prop inner-control=0 --prop props-json='{...}' --prop output=out.hwp --json
+```
 
 ### Binary .hwp Structured Creation Pattern
 
