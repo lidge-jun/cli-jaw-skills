@@ -623,6 +623,7 @@ Supported claims are capability-gated. Current safe recipes include:
 
 ```bash
 officecli create file.hwp --json
+officecli get file.hwp /provider/rhwp --json
 officecli view file.hwp text --json
 officecli view file.hwp svg --page 1 --json
 officecli view file.hwp png --page 1 --out /tmp/hwp-png --json
@@ -640,8 +641,8 @@ officecli view file.hwp tables --section 0 --json
 officecli view file.hwp native --op get-style-list --json
 officecli set file.hwp /field --prop name=회사명 --prop value=리지 --prop output=out.hwp --json
 officecli add file.hwp /text --type paragraph --prop value=새본문 --prop output=out.hwp --json
-officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --prop output=out.hwp --json
-officecli set file.hwp /text --prop find=마케팅 --prop value=브릿지 --in-place --backup --verify --json
+officecli set file.hwp /text --find 마케팅 --replace 브릿지 --prop output=out.hwp --json
+officecli set file.hwp /text --find 마케팅 --replace 브릿지 --in-place --backup --verify --json
 officecli set file.hwp /table/cell --prop section=0 --prop parent-para=3 --prop control=0 --prop cell=0 --prop value=오피스셀 --prop output=out.hwp --json
 officecli set file.hwp /convert-to-editable --prop output=editable.hwp --json
 officecli set file.hwp /native-op --prop op=split-paragraph --prop paragraph=0 --prop offset=5 --prop output=out.hwp --json
@@ -651,9 +652,10 @@ officecli set input.hwpx /save-as-hwp --prop output=out.hwp --json
 Policy:
 
 - Blank `.hwp` creation is native when `capabilities.formats.hwp.operations.create_blank.ready=true`.
+- `get /provider/rhwp` is metadata-only for binary `.hwp`; use it to inspect the packaged sidecar and provider capabilities, not as a generic DOM query surface.
 - Body text insertion is native when `capabilities.formats.hwp.operations.insert_text.ready=true`; use a separate output path and inspect the returned safe-save transaction.
 - PDF/PNG/markdown/thumbnail/info/diagnostics/dump/page exports are native when the matching `export_pdf`, `render_png`, `export_markdown`, `thumbnail`, `document_info`, `diagnostics`, `dump_controls`, or `dump_pages` capability is ready.
-- `native-op` is a generic rhwp escape hatch for pinned native primitives such as paragraph split/merge/delete, table structure operations, header/footer text, footnotes, pictures, shapes, equations, styles, formatting, numbering, page-hide, full-text search (`--prop op=search-all-text --prop query=...`), page overlay images (`get-page-overlay-images --prop page-num=0`), header/footer picture properties (`get-hf-picture-properties` / `set-hf-picture-properties`), and numbered-list insertion (`insert-new-number`). Use it only with explicit operation props and output-first mutation. (rhwp engine pinned at v0.7.12; the last five were wired 2026-06-20.)
+- `view file.hwp native --op <name>` is the read-only rhwp escape hatch for pinned native primitives such as styles and full-text search (`--op search-all-text --native-arg text=...`). Mutating native primitives still use `set /native-op` with explicit operation props and output-first mutation. (rhwp engine pinned at v0.7.12; the last five were wired 2026-06-20.)
 - HWPX → HWP export is native when `capabilities.formats.hwp.operations.save_as_hwp.ready=true`; always verify with readback/Hancom before production use.
 - Prefer output mode for binary `.hwp` mutation: `--prop output=out.hwp`.
 - Use in-place mode only for `/text` replacement, only when explicitly requested, and only after `capabilities.formats.hwp.operations.replace_text.safeInPlace.ready=true`.
@@ -662,13 +664,14 @@ Policy:
 - If pinned/latest `rhwp` exposes a native HWP primitive that OfficeCLI has not wired yet, report it as an OfficeCLI capability/wiring gap, not as proof that native HWP cannot do it.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
-**v0.7.12 native-op recipes** (wired 2026-06-20; gate on `officecli hwp doctor --json` first).
-All native-ops go through `set /native-op` and **require `--prop op=<name>` + `--prop output=<path>`**
-(output-first, even for reads — the result is returned in the JSON `data`; the output file is a working copy). Verified against officecli 1.0.115.
+**v0.7.12 native recipes** (wired 2026-06-20; gate on `officecli hwp doctor --json` first).
+Read-only native operations exposed through `view file.hwp native --op <name>` do not require an output path; use that route for `search-all-text`.
+Native operations that are still only exposed through `set /native-op` require `--prop op=<name>` + `--prop output=<path>` because OfficeCLI writes a working copy.
+Verified against officecli 1.0.115+.
 
 ```bash
 # full-text search (read)
-officecli set file.hwp /native-op --prop op=search-all-text --prop query="검색어" --prop case-sensitive=false --prop include-cells=true --prop output=out.hwp --json
+officecli view file.hwp native --op search-all-text --native-arg text="검색어" --native-arg case-sensitive=false --native-arg include-cells=true --json
 # page overlay images (read)
 officecli set file.hwp /native-op --prop op=get-page-overlay-images --prop page-num=0 --prop output=out.hwp --json
 # header/footer picture properties (read)
