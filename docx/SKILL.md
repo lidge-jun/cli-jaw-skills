@@ -163,6 +163,22 @@ User provided a source file to match?
 
 ## 5. Design Principles for Business Documents
 
+### 5.0 Design Read & Document Anti-Slop
+
+**Intent discovery (before building):** ask audience (board / exec / internal team / public), formality
+register (formal report · memo · whitepaper · proposal), and density (dense reference vs spacious) — then
+match the type scale, palette restraint, and whitespace. If the user names a target ("McKinsey-style",
+"academic", "startup memo"), map to it.
+
+**Named document anti-slop (AI-tells — pattern → fix):**
+1. **Calibri-everything** — single default font → a deliberate heading+body pair (§5.3), committed.
+2. **Fake-heading bold** — manual bold+size instead of real styles → use Heading 1/2/3 styles (§5.1) so TOC/navigation work.
+3. **Wall of text** — dense unbroken prose → break into lists, callouts, tables, sectioned headings.
+4. **Default-Word-template look** — no palette/style identity → a restrained palette (§5.2) + consistent scale.
+5. **Over-coloring** — many accents / colored body text → one accent; body near-black.
+6. **Justified-everything + orphan headings** — full-justify body, headings stranded at page bottom → left-align body; keep headings with content.
+7. **Placeholder leakage** — "Acme Corp"/lorem/TBD in delivered output → realistic specific content, never invented data.
+
 ### 5.1 Heading Hierarchy
 
 - **H1**: Document title (one per document)

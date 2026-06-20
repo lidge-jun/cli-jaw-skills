@@ -163,6 +163,18 @@ Read **only** the subskill relevant to the current task. Do not preload all.
 
 **Professional spreadsheets need clear structure, correct formulas, and intentional formatting.**
 
+**Intent discovery (before building):** ask audience (board / analyst / ops), print-vs-screen, and brand
+palette — then match number formats, column widths, and conditional formatting.
+
+**Named spreadsheet anti-slop (AI-tells — pattern → fix):**
+1. **Default 8.43 widths** — unsized columns → fit to content (CJK ~2× width).
+2. **Rainbow conditional formatting** — competing CF colors → one color-scale / data-bar per metric.
+3. **No number formatting** — raw `1234.5`/`0.4` → currency/accounting/percent (§12); negatives in parens, zero as dash.
+4. **3D / pie / dual-axis overload** — decorative chart types → column/line/bar by data shape; pie only ≤5 parts; no 3D.
+5. **Hardcoded results** — typed-in totals → live formulas + `recalc.py` verification.
+6. **Merged-cell abuse + gridlines-as-structure** — merged headers break sort/filter; raw gridlines → center-across-selection; deliberate fills/borders.
+7. **Fake names / placeholder data** — invented samples in delivered output → real data only.
+
 ### Core Rule: Preserve Existing Templates (MANDATORY)
 
 When modifying files, match existing format, style, and conventions exactly. Rebuilding from scratch silently breaks named ranges, CF rules, and validation. See §2.
