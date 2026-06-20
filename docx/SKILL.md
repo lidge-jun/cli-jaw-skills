@@ -258,6 +258,8 @@ Use color sparingly -- accent color for headings or table headers, not rainbow f
 
 ## 6. Mandatory Verification (NEVER SKIP)
 
+> **Delivery Gate — treat verification as a gate, not a confirmation.** Any failure = REJECT, do not deliver. Fix → re-run the checks → repeat until a pass finds zero new issues. After 3 rounds without convergence, STOP and report the likely root cause for the user to decide.
+
 After ANY DOCX creation or edit, ALWAYS execute both steps:
 
 ```bash

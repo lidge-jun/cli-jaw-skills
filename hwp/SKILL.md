@@ -305,6 +305,8 @@ Korean forms often use uniform character spacing for names in cells:
 
 ## 7. Mandatory Verification (NEVER SKIP)
 
+> **Treat verification as a gate, not a confirmation.** Any failure = REJECT, do not deliver. Fix → re-run the checks → repeat until a pass finds zero new issues (one fix often surfaces another). After 3 rounds without convergence, STOP and report the likely root cause (template / engine-limit / ambiguous) for the user to decide.
+
 After ANY HWPX edit operation, ALWAYS execute these in order:
 
 ```bash

@@ -232,6 +232,8 @@ officecli set data.xlsx "/Sheet1/B10" --prop formula="SUM(B2:B9)"
 
 ## 6. Mandatory Verification (NEVER SKIP)
 
+> **Delivery Gate — treat verification as a gate, not a confirmation.** Any failure (validate error, formula/recalc mismatch, placeholder leak) = REJECT, do not deliver. Fix → re-run the checks (incl. `recalc.py`) → repeat until a pass finds zero new issues. After 3 rounds without convergence, STOP and report the likely root cause.
+
 After ANY XLSX edit, ALWAYS execute both steps:
 
 ```bash
