@@ -662,18 +662,20 @@ Policy:
 - If pinned/latest `rhwp` exposes a native HWP primitive that OfficeCLI has not wired yet, report it as an OfficeCLI capability/wiring gap, not as proof that native HWP cannot do it.
 - Verify edited output with `view text`, `view svg`, and Hancom open/render evidence before relying on it.
 
-**v0.7.12 native-op recipes** (wired 2026-06-20; gate on `officecli hwp doctor --json` first):
+**v0.7.12 native-op recipes** (wired 2026-06-20; gate on `officecli hwp doctor --json` first).
+All native-ops go through `set /native-op` and **require `--prop op=<name>` + `--prop output=<path>`**
+(output-first, even for reads — the result is returned in the JSON `data`; the output file is a working copy). Verified against officecli 1.0.115.
 
 ```bash
 # full-text search (read)
-officecli view file.hwp native --op search-all-text --prop query="검색어" --prop case-sensitive=false --prop include-cells=true --json
+officecli set file.hwp /native-op --prop op=search-all-text --prop query="검색어" --prop case-sensitive=false --prop include-cells=true --prop output=out.hwp --json
 # page overlay images (read)
-officecli view file.hwp native --op get-page-overlay-images --prop page-num=0 --json
+officecli set file.hwp /native-op --prop op=get-page-overlay-images --prop page-num=0 --prop output=out.hwp --json
 # header/footer picture properties (read)
-officecli view file.hwp native --op get-hf-picture-properties --prop section=0 --prop outer-para=0 --prop outer-control=0 --prop inner-para=0 --prop inner-control=0 --json
-# insert a numbered-list start (mutate — output-first)
+officecli set file.hwp /native-op --prop op=get-hf-picture-properties --prop section=0 --prop outer-para=0 --prop outer-control=0 --prop inner-para=0 --prop inner-control=0 --prop output=out.hwp --json
+# insert a numbered-list start (mutate)
 officecli set file.hwp /native-op --prop op=insert-new-number --prop section=0 --prop paragraph=0 --prop offset=0 --prop start-num=1 --prop output=out.hwp --json
-# set header/footer picture properties (mutate — output-first)
+# set header/footer picture properties (mutate)
 officecli set file.hwp /native-op --prop op=set-hf-picture-properties --prop section=0 --prop outer-para=0 --prop outer-control=0 --prop inner-para=0 --prop inner-control=0 --prop props-json='{...}' --prop output=out.hwp --json
 ```
 
