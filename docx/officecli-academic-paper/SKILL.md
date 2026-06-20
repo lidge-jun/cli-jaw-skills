@@ -203,5 +203,5 @@ After any `swap` or `move`, paragraph indices shift — re-query with `officecli
 ## References
 
 - [creating.md](creating.md) -- Complete academic paper creation guide
-- [docx SKILL.md](../officecli-docx/SKILL.md) -- General docx reading, editing, and QA reference
-- [docx creating.md](../officecli-docx/creating.md) -- General building blocks (paragraphs, tables, images, etc.)
+- [docx SKILL.md](../SKILL.md) -- General docx reading, editing, and QA reference
+- [docx creating.md](../creating.md) -- General building blocks (paragraphs, tables, images, etc.)

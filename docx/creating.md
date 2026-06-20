@@ -1,4 +1,4 @@
-<!-- officecli: v1.0.23 -->
+<!-- officecli: v1.0.115 -->
 
 # Creating Documents from Scratch
 
@@ -111,7 +111,7 @@ officecli add report.docx / --type header --prop text="Acme Corporation" --prop 
 # NOTE: Do NOT use `set / --prop differentFirstPage=true` — UNSUPPORTED on current CLI version
 officecli add report.docx / --type footer --prop type=first --prop text=""
 
-# Step 2: Default footer with static "Page " text (--prop field=page is SILENTLY IGNORED — do not use)
+# Step 2: Default footer with static "Page " text (note: --prop field=page also works for a live PAGE field)
 officecli add report.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 
 # Step 3: REQUIRED — inject PAGE field via raw-set (footer[2] = default when first-page footer also exists)
@@ -352,7 +352,7 @@ officecli add paper.docx /body --type section --prop type=nextPage
 # Step 1: Empty footer for title page — type=first auto-enables differentFirstPage (no separate set needed)
 officecli add paper.docx / --type footer --prop type=first --prop text=""
 
-# Step 2: Default footer (--prop field=page is SILENTLY IGNORED — add static text only here)
+# Step 2: Default footer (--prop field=page works for a live PAGE field; or static text)
 officecli add paper.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 
 # Step 3: REQUIRED — inject PAGE field via raw-set
@@ -759,7 +759,7 @@ officecli add doc.docx / --type header --prop text="Acme Corporation" --prop typ
 officecli add doc.docx / --type header --prop text="CONFIDENTIAL" --prop type=first --prop bold=true --prop color=FF0000 --prop align=center
 
 # Default footer with page number — requires 2-step pattern:
-# Step 1: Add footer with static "Page " text (--prop field=page is SILENTLY IGNORED)
+# Step 1: Add footer with static "Page " text (--prop field=page works for a live PAGE field)
 officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 # Step 2: REQUIRED — inject PAGE field via raw-set (footer[1] when no first-page footer)
 officecli raw-set doc.docx "/footer[1]" \
@@ -768,19 +768,19 @@ officecli raw-set doc.docx "/footer[1]" \
   --xml '<w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:sz w:val="18"/></w:rPr><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r><w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>'
 ```
 
-> **⚠️ Known CLI bug:** `--prop field=page` is **silently ignored** in `add --type footer`. You must always use the `raw-set` step to inject the `<w:fldChar>` PAGE field. Verify with `officecli get doc.docx "/footer[N]" --depth 3` — output must show `fldChar` children.
+> **✅ `--prop field=page` works** (v1.0.115): `add --type footer --prop field=page` injects a live PAGE field directly — the `raw-set <w:fldChar>` step above is the legacy manual alternative and is no longer required. Verify with `officecli get doc.docx "/footer[N]" --depth 3` (shows `fldChar` children).
 
 #### First-Page Footer (Suppress Cover Page Number)
 
 To make the first page footer different from all other pages, add a `type=first` footer. The CLI **automatically** inserts the required `<w:titlePg/>` XML element — no separate command needed.
 
-> **⚠️ Known CLI limitation:** `set / --prop differentFirstPage=true` is **UNSUPPORTED** on current CLI version (silently returns "UNSUPPORTED props"). Do not use it. Just add the `type=first` footer directly — that is sufficient.
+> **Cover page number:** there is no `differentFirstPage` prop. Use `set /section[N] --prop titlePage=true` (works v1.0.115) — which writes `<w:titlePg/>` — together with a `type=first` footer to give the cover its own (or empty) footer.
 
 ```bash
 # Step 1: Add first-page footer (empty — suppresses page number on cover)
 officecli add doc.docx / --type footer --prop type=first --prop text=""
 
-# Step 2: Add default footer with static "Page " text (field=page is SILENTLY IGNORED)
+# Step 2: Add default footer with static "Page " text (--prop field=page works for a live PAGE field)
 officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt
 
 # Step 3: REQUIRED — inject PAGE field via raw-set (footer[2] = default when first-page footer exists)
@@ -803,7 +803,7 @@ officecli add doc.docx / --type footer --prop type=default \
 # Line 1 — company name (left-aligned)
 officecli add doc.docx / --type footer --prop type=default \
   --prop text="Acme Corporation | Confidential" --prop align=left --prop size=9pt --prop font=Calibri
-# Line 2 — add static "Page " text (field=page is SILENTLY IGNORED)
+# Line 2 — add static "Page " text (--prop field=page works for a live PAGE field)
 officecli add doc.docx / --type footer --prop text="Page " \
   --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 # REQUIRED: inject PAGE field into the last paragraph of footer[1]

@@ -43,7 +43,7 @@ Lightweight fallback: **Python OOXML scripts** (`scripts/*.py`) for what OfficeC
 | Template-safe replacement | officecli | `officecli set FILE / --prop find="{{X}}" --prop replace="Y"` | Preserves template structure |
 | Validation / issue scan | officecli | `officecli validate FILE` | Pair with `view FILE issues` |
 | Accept/reject tracked changes | officecli | `officecli set FILE / --prop accept-changes=all` | Also `reject-changes=all` |
-| **CREATE tracked changes** | Python (L3/L4) | `scripts/docx_cli.py` + `ooxml/redline_diff.py` | **officecli cannot create — only accept/reject** |
+| **CREATE tracked changes** | officecli (native) | `add ... --prop revision.type=ins --prop revision.author=...` | **Native create + accept/reject** (v1.0.115); Python only for bulk redline diffs |
 | **OMML equations** | Python (L4) | Unpack → inject `<m:oMath>` → repack | **officecli cannot generate OMML** |
 | **Complex anchored comments** | Python (L3) | `python3 scripts/comment.py IN OUT --text "..." --anchor "..."` | For comments beyond officecli |
 | PDF conversion / visual QA | soffice | `soffice --headless --convert-to pdf FILE` | Screenshot-based QA |
@@ -358,20 +358,16 @@ officecli query doc.docx 'field[fieldType!=page]'               # Fields by type
 
 **Standard footer setup (always use this pattern for documents with a cover page):**
 
-> **Known CLI bug:** `--prop field=page` is **silently ignored** in `add --type footer` commands. The footer is created with static text only. You **must** use `raw-set` to inject the PAGE field after creating the footer.
+> **`--prop field=page` works** (verified v1.0.115) — `add --type footer --prop field=page` injects a live PAGE field directly. The old `raw-set <w:fldChar>` workaround is no longer needed.
 
 ```bash
-# Step 1. Empty footer for cover page (auto-enables differentFirstPage)
+# Step 1. Empty footer for the cover page (auto-enables a title-page footer)
 officecli add doc.docx / --type footer --prop type=first --prop text=""
 
-# Step 2. Default footer with static "Page " text
-officecli add doc.docx / --type footer --prop text="Page " --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
+# Step 2. Default footer with a live PAGE field — no raw-set needed
+officecli add doc.docx / --type footer --prop field=page --prop type=default --prop align=center --prop size=9pt --prop font=Calibri
 
-# Step 3. Inject PAGE field via raw-set (footer[2] = default when first-page footer also exists)
-officecli raw-set doc.docx "/footer[2]" \
-  --xpath "//w:p" \
-  --action append \
-  --xml '<w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="18"/></w:rPr><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r><w:r xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>'
+# Verify: officecli get doc.docx "/footer[2]" --depth 3   # shows the fldChar PAGE field
 ```
 
 > **Footer index rule:** When both a first-page footer and a default footer are added, the default footer is `/footer[2]`. If there is no first-page footer, the default footer is `/footer[1]`. Always verify with `officecli get doc.docx "/footer[2]"` (or `"/footer[1]"`) to confirm the `<w:fldChar>` element is present.
@@ -433,9 +429,9 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | Wrong border format | Use `style;size;color;space` format: `single;4;FF0000;1` |
 | listStyle on run | `listStyle` is a paragraph property, not a run property |
 | Row-level bold/color/shd | Row `set` only supports `height`, `header`, and `c1/c2/c3` text shortcuts. Use cell-level `set` for formatting |
-| Section vs root property names | Section uses `pagewidth`/`pageheight` (lowercase). Document root uses `pageWidth`/`pageHeight` (camelCase) |
-| `--prop field=page` in footer | **SILENTLY IGNORED** in `add --type footer`. Must use `raw-set` to inject `<w:fldChar>`. See §9.5 |
-| Page number on cover | Adding `--type footer --prop type=first` auto-enables differentFirstPage. Do NOT use `set / --prop differentFirstPage=true` -- unsupported and silently fails |
+| Section property names | Canonical is camelCase `pageWidth`/`pageHeight`/`marginTop` (lowercase `pagewidth` etc. are accepted aliases — no real dichotomy) |
+| `--prop field=page` in footer | **Works** (v1.0.115) — `add --type footer --prop field=page` injects a live PAGE field; no `raw-set` needed. See §9.5 |
+| Suppress page number on cover | `set /section[N] --prop titlePage=true` (works v1.0.115) + a `type=first` empty footer. There is no `differentFirstPage` prop — `titlePage` is the lever |
 | TOC skipped for multi-heading docs | Any document with 3+ headings requires a TOC. Add with `--type toc --index 0` after cover page break |
 | Code block indentation via spaces | Use `ind.left` paragraph property (e.g. `--prop ind.left=720`) -- consecutive spaces produce warnings |
 | **Recreating styles that exist in template** | `cp source.docx target.docx` first. Don't add styles with existing IDs — validate fails. See §2 |
@@ -450,7 +446,7 @@ Batch fields: `command`, `path`, `parent`, `type`, `from`, `to`, `index`, `after
 | Issue | Workaround |
 |---|---|
 | **No visual preview** | Unlike pptx (SVG/HTML), docx has no built-in rendering. Use `view text`/`outline`/`annotated`/`issues` for verification. Users must open in Word for visual check. |
-| **Track changes creation requires raw XML** | OfficeCLI can accept/reject tracked changes but cannot create them via high-level commands. Use `raw-set` with XML or `scripts/docx_cli.py` (L3). |
+| **Track changes — native create** | OfficeCLI creates tracked changes natively (v1.0.115): `--prop revision.type=ins\|del\|moveTo\|moveFrom\|format` with `revision.author`/`revision.date` on the host element; accept/reject via `set /revision --prop revision.action=accept\|reject`. (`scripts/docx_cli.py` no longer required for creation.) |
 | **Tab stops may require raw XML** | Tab stop creation is not exposed in high-level commands. Use `raw-set` to add tab stop definitions. |
 | **Chart series cannot be added after creation** | `set --prop data=` can only update existing series, not add new ones. Delete and recreate the chart. |
 | **Complex numbering definitions** | `listStyle=bullet/numbered` covers simple cases. For multi-level lists, use `numId`/`numLevel` properties. |
