@@ -1,5 +1,7 @@
 # CJK / Korean Text Handling
 
+> **Note:** the `scripts.ooxml.cjk_utils` helpers below (`auto_fit_columns`, `get_display_width`, `check_contrast`) are **reference implementations, not a shipped module** — `skills_ref/xlsx/scripts/` ships only `recalc.py`, `xlsx_cli.py`, `run_tests.py`. Treat the `from scripts.ooxml.cjk_utils import ...` lines as illustrative: inline the logic or implement the helper yourself.
+
 ## Column Width for CJK
 
 CJK characters are full-width (~2× Latin width). openpyxl's auto-sizing does not account for this. Use the CJK-aware auto-fit utility:

@@ -406,7 +406,8 @@ cat data.csv | officecli import f.xlsx /Sheet1 --stdin --header  # stdin
 
 ```bash
 # Add a column chart from data range
-officecli add doc.xlsx /Sheet1 --type chart --prop chartType=column --prop data=Sheet1!A1:D10 --prop title="Revenue by Quarter"
+officecli add doc.xlsx /Sheet1 --type chart --prop chartType=column --prop dataRange=Sheet1!A1:D10 --prop title="Revenue by Quarter"
+# NOTE: a worksheet RANGE uses --prop dataRange=. --prop data= is for an INLINE series only ('Name:1,2,3') and rejects a range.
 
 # For detailed chart customization (series, axes, legends), read ./officecli-data-dashboard/SKILL.md
 ```

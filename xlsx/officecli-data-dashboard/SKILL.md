@@ -136,11 +136,11 @@ When the user requests changes after the dashboard is built:
 | Move a sheet after another | `officecli move dashboard.xlsx '/Summary' --after '/Dashboard'` |
 | Edit a cell value | `officecli set dashboard.xlsx '/Dashboard/A1' --prop value="..."` |
 | Find & replace text | `officecli set dashboard.xlsx / --prop find=OldText --prop replace=NewText` |
-| Update chart data | `officecli set dashboard.xlsx '/Dashboard/chart[N]' --prop data="A1:D10"` |
+| Re-point chart data | Not supported — chart series are fixed at creation (`data`/`dataRange` are add-only). Delete the chart and re-add it with the new `--prop dataRange=Sheet!A1:D10`. |
 
 ---
 
 ## References
 
 - [creating.md](creating.md) -- Complete dashboard creation guide (the main skill file)
-- [xlsx SKILL.md](../officecli-xlsx/SKILL.md) -- General xlsx reading, editing, and QA reference
+- [xlsx SKILL.md](../SKILL.md) -- General xlsx reading, editing, and QA reference

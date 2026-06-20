@@ -193,5 +193,5 @@ Read [creating.md](creating.md) and follow it step by step. It contains setup co
 ## References
 
 - [creating.md](creating.md) -- Complete financial model creation guide
-- [xlsx SKILL.md](../officecli-xlsx/SKILL.md) -- General xlsx reading, editing, and QA reference
+- [xlsx SKILL.md](../SKILL.md) -- General xlsx reading, editing, and QA reference
 - [data-dashboard creating.md](../officecli-data-dashboard/creating.md) -- Batch syntax, chart presets, and CF basics
