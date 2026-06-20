@@ -176,6 +176,8 @@ palette — then match number formats, column widths, and conditional formatting
 6. **Merged-cell abuse + gridlines-as-structure** — merged headers break sort/filter; raw gridlines → center-across-selection; deliberate fills/borders.
 7. **Fake names / placeholder data** — invented samples in delivered output → real data only.
 
+> Named palettes + formatting conventions + personality→workbook-type map: `references/design-system.md`.
+
 ### Core Rule: Preserve Existing Templates (MANDATORY)
 
 When modifying files, match existing format, style, and conventions exactly. Rebuilding from scratch silently breaks named ranges, CF rules, and validation. See §2.

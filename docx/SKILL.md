@@ -179,6 +179,8 @@ match the type scale, palette restraint, and whitespace. If the user names a tar
 6. **Justified-everything + orphan headings** — full-justify body, headings stranded at page bottom → left-align body; keep headings with content.
 7. **Placeholder leakage** — "Acme Corp"/lorem/TBD in delivered output → realistic specific content, never invented data.
 
+> Named palettes + font pairings + personality→doc-type map: `references/design-system.md`.
+
 ### 5.1 Heading Hierarchy
 
 - **H1**: Document title (one per document)
