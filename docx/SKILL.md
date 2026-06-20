@@ -510,7 +510,7 @@ officecli query doc.docx 'p:contains("placeholder")'
 ### Pre-Delivery Checklist
 
 - [ ] Metadata set (title, author)
-- [ ] PAGE field injected in footer -- verify with `officecli get doc.docx "/footer[2]" --depth 3` (must show `fldChar` elements). **Required: raw-set PAGE field injection** -- `--prop field=page` in add command is silently ignored. If no first-page footer, use `"/footer[1]"`.
+- [ ] PAGE field in footer -- `add --type footer --prop field=page` (works v1.0.115); verify with `officecli get doc.docx "/footer[2]" --depth 3` (shows `fldChar`). If no first-page footer, use `"/footer[1]"`.
 - [ ] First-page footer added (`--prop type=first --prop text=""`) if document has a cover page
 - [ ] Cover page content fills >= 60% of the page (accent bars, subtitle, author, date, contact info)
 - [ ] TOC present when document has 3+ headings (`--type toc --prop levels="1-3" --prop title="Table of Contents" --prop hyperlinks=true --prop pagenumbers=true --index 0`)

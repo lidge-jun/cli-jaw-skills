@@ -107,8 +107,8 @@ officecli add report.docx /styles --type style --prop name="Heading 2" --prop id
 # Header with company name (default — body pages only)
 officecli add report.docx / --type header --prop text="Acme Corporation" --prop type=default --prop font=Calibri --prop size=9pt --prop color=888888 --prop align=right
 
-# Step 1: Empty footer for cover page — adding type=first auto-enables differentFirstPage
-# NOTE: Do NOT use `set / --prop differentFirstPage=true` — UNSUPPORTED on current CLI version
+# Step 1: Empty footer for cover page — type=first gives the cover its own footer
+# NOTE: there is no differentFirstPage prop; for cover page-number control use `set /section[N] --prop titlePage=true`
 officecli add report.docx / --type footer --prop type=first --prop text=""
 
 # Step 2: Default footer with static "Page " text (note: --prop field=page also works for a live PAGE field)
@@ -349,7 +349,7 @@ officecli add paper.docx /body --type paragraph --prop text="Department of Mathe
 # Section break after title page
 officecli add paper.docx /body --type section --prop type=nextPage
 
-# Step 1: Empty footer for title page — type=first auto-enables differentFirstPage (no separate set needed)
+# Step 1: Empty footer for title page — type=first gives the title page its own footer (or `set /section --prop titlePage=true`)
 officecli add paper.docx / --type footer --prop type=first --prop text=""
 
 # Step 2: Default footer (--prop field=page works for a live PAGE field; or static text)
@@ -533,9 +533,9 @@ officecli add doc.docx /body --type paragraph --prop text="Second item" --prop l
 officecli add doc.docx /body --type paragraph --prop text="Third item" --prop listStyle=bullet
 
 # Numbered list
-officecli add doc.docx /body --type paragraph --prop text="Step one" --prop listStyle=numbered
-officecli add doc.docx /body --type paragraph --prop text="Step two" --prop listStyle=numbered
-officecli add doc.docx /body --type paragraph --prop text="Step three" --prop listStyle=numbered
+officecli add doc.docx /body --type paragraph --prop text="Step one" --prop listStyle=ordered
+officecli add doc.docx /body --type paragraph --prop text="Step two" --prop listStyle=ordered
+officecli add doc.docx /body --type paragraph --prop text="Step three" --prop listStyle=ordered
 
 # Remove list style
 officecli set doc.docx "/body/p[5]" --prop listStyle=none
@@ -1147,9 +1147,9 @@ officecli add doc.docx /body --type paragraph --prop text="This document has out
 
 # Next steps (if applicable)
 officecli add doc.docx /body --type paragraph --prop text="Next Steps" --prop style=Heading2
-officecli add doc.docx /body --type paragraph --prop text="Finalize Q1 budget allocation by April 15" --prop listStyle=numbered
-officecli add doc.docx /body --type paragraph --prop text="Present findings to the board on April 20" --prop listStyle=numbered
-officecli add doc.docx /body --type paragraph --prop text="Launch APAC expansion pilot in May 2026" --prop listStyle=numbered
+officecli add doc.docx /body --type paragraph --prop text="Finalize Q1 budget allocation by April 15" --prop listStyle=ordered
+officecli add doc.docx /body --type paragraph --prop text="Present findings to the board on April 20" --prop listStyle=ordered
+officecli add doc.docx /body --type paragraph --prop text="Launch APAC expansion pilot in May 2026" --prop listStyle=ordered
 
 # Contact / acknowledgements section
 officecli add doc.docx /body --type paragraph --prop text="Contact Information" --prop style=Heading2
