@@ -132,7 +132,7 @@ used.
 
 | Channel | Guidance |
 |---|---|
-| Homebrew | Downstream distribution after canonical artifact exists; see `homebrew.md` when added |
+| Homebrew | Downstream distribution after canonical artifact exists; read `homebrew.md` for Formula/Cask detail |
 | GHCR | Use `GITHUB_TOKEN` with `packages: write` for same-repo packages |
 | Docker Hub | Use Docker access token; rotate and scope it because ordinary Docker Hub push is token-first |
 | ECR/GAR/ACR | Treat as cloud IAM federation, not registry-native trusted publishing |
