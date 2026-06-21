@@ -136,3 +136,23 @@ Keep compatibility testing separate from release publishing:
 Do not put legacy/EOL runtimes in generic release examples. If a project still
 supports Node 20, label that lane as legacy compatibility and keep publish jobs
 on the release runtime required by the registry or deployment target.
+
+## 8. CLI Release Smoke Matrix
+
+For CLI packages or native modules, matrix only the platforms the project
+declares or the release claims to support. A Linux-only package does not need a
+Windows smoke, but a cross-platform CLI claim needs runner evidence for each
+declared platform.
+
+Minimum smoke:
+
+1. Install the packed artifact or published package.
+2. Resolve the binary path.
+3. Run `--version`.
+4. Run `--help`.
+5. Run one safe non-destructive command that touches platform-sensitive paths
+   when the release depends on those paths.
+
+CI matrix proof is enough for pure library/import behavior. For desktop,
+installer, profile, permission, PATH, shell-shim, or visible OS behavior that CI
+cannot observe, hand off to `dev-devops/references/cross-platform-release.md`.
