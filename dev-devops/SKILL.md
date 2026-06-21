@@ -22,6 +22,7 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
 | `references/docker.md` | Container build/deploy | Multi-stage builds, distroless, Docker Scout/Trivy, BuildKit secrets, SBOM/Cosign |
+| `references/package-release.md` | Package publishing / release auth | npm/PyPI trusted publishing, Bun-to-npm, registry auth model, downstream distribution table |
 | `references/kubernetes.md` | K8s deployment | Gateway API v1.5, Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
 | `references/ci-cd-deploy.md` | Deploy pipeline | GHA reusable workflows, deploy strategies, rollback, GitOps, progressive delivery |
 | `references/iac.md` | Infrastructure code | OpenTofu/Terraform modules, Pulumi, state encryption, blast radius isolation |
@@ -29,7 +30,9 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | `references/edge-serverless.md` | Edge/serverless work | Edge request shaping, auth at edge, Cloudflare Workers, Vercel Edge, edge AI triage |
 | `references/ml-infra.md` | ML infrastructure | GPU cluster mgmt, model registry, scaling, edge inference, MLOps platform patterns |
 
-Read `docker.md` + `ci-cd-deploy.md` first for containerized deploy workflows.
+Read `package-release.md` for package publishing, registry auth, npm/PyPI
+trusted publishing, Bun-to-npm release decisions, and downstream package
+channels. Read `docker.md` + `ci-cd-deploy.md` first for containerized deploy workflows.
 For K8s-specific work, add `kubernetes.md`. For SRE/on-call, add `sre-foundations.md`.
 
 ---

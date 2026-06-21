@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: { node-version: [20, 22], shard: [1, 2, 3] }
+      matrix: { node-version: [22, 24], shard: [1, 2, 3] }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -76,7 +76,7 @@ jobs:
 
 | Axis | Include When | Example |
 |------|--------------|---------|
-| runtime versions | library or SDK compatibility matters | Node 20/22, Python 3.11-3.13 |
+| runtime versions | library or SDK compatibility matters | Node 22/24, Python 3.11-3.13 |
 | OS | native modules or CLI behavior matter | ubuntu + macOS |
 | shards | suites exceed CI budget | `1/4..4/4` |
 
@@ -118,3 +118,21 @@ quality
 → security
 → coverage aggregation
 ```
+
+## 7. Release Runtime vs Compatibility Matrix
+
+Use the release runtime required by the publish mechanism for release jobs. For
+example, npm Trusted Publishing requires a modern Node/npm pair, so release
+examples should use Node 22 unless the project has a newer declared baseline.
+
+Keep compatibility testing separate from release publishing:
+
+| Matrix | Purpose | Example |
+|---|---|---|
+| Release runtime | Runtime used to build and publish artifacts | Node 22 for npm Trusted Publishing |
+| Compatibility runtime | Extra supported versions the package promises to run on | Node 20 only when a project explicitly carries legacy/EOL support |
+| OS smoke | Platform behavior for native modules, CLIs, installers, or shell shims | ubuntu, macOS, Windows for declared support |
+
+Do not put legacy/EOL runtimes in generic release examples. If a project still
+supports Node 20, label that lane as legacy compatibility and keep publish jobs
+on the release runtime required by the registry or deployment target.

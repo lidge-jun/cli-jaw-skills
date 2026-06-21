@@ -7,6 +7,16 @@ Canonical owner: dev-devops §2
 
 ---
 
+## §0 Release Routing
+
+For package publishing and release-auth decisions, read
+`references/package-release.md` before writing workflow YAML.
+
+This file owns deployment pipelines, GitOps promotion, rollback, environments,
+and progressive delivery. `package-release.md` owns package registry defaults
+such as npm/PyPI trusted publishing, Bun-to-npm decisions, Homebrew as a
+downstream channel, and token fallback boundaries.
+
 ## §1 GHA Reusable Workflow Templates
 
 ### Called Workflow (Template)

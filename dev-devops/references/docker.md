@@ -204,6 +204,11 @@ cosign verify --key cosign.pub myapp@sha256:abc123...
 
 ## §5 BuildKit Secrets
 
+BuildKit secrets are for private dependency install during image builds. Do
+not reuse this pattern as the default for public package publishing. For npm,
+PyPI, Bun-to-npm, Homebrew, and registry publish decisions, read
+`references/package-release.md` first.
+
 ```dockerfile
 # Mount secret at build time — never exposed in image layers
 RUN --mount=type=secret,id=npm_token \

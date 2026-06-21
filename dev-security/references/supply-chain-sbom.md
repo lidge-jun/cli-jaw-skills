@@ -6,6 +6,9 @@ When to read: Dependency auditing, release integrity, SBOM generation
 Canonical owner: dev-security
 
 Cross-ref: `dev-devops` docker.md §1.3 (container image scanning), `dev-security` §7 (Static Analysis Integration)
+Package release auth defaults live in `dev-devops/references/package-release.md`.
+For public package publishing, prefer registry-native trusted publishing/OIDC
+where supported; long-lived publish tokens require an explicit fallback reason.
 
 ## 1. SBOM Generation
 
@@ -70,6 +73,23 @@ Rules:
 - npm packages from CI should use `--provenance` for transparent build attestation.
 - Verify signatures in deployment pipelines before pulling images.
 - Target SLSA Level 2 minimum for production artifacts.
+
+### Public Package Trusted Publishing
+
+For public package release from CI, default to registry-native trusted
+publishing/OIDC where the registry supports it:
+
+| Registry | Default | Token fallback only when |
+|---|---|---|
+| npm | npm Trusted Publishing/OIDC with provenance | Trusted Publishing is unsupported, rejected, or not configured |
+| PyPI | PyPI Trusted Publisher/OIDC | Trusted Publisher is unsupported, rejected, or not configured |
+| RubyGems | RubyGems Trusted Publishing/OIDC | Trusted Publishing is unsupported, rejected, or not configured |
+| crates.io | crates.io Trusted Publishing/OIDC when configured | Trusted Publishing is unavailable for the crate/CI |
+
+Do not ask for `NPM_TOKEN`, `PYPI_TOKEN`, `RUBYGEMS_API_KEY`, or a crates.io API
+token before checking whether a trusted publishing path exists. Token fallback
+must be named in the release proof bundle so reviewers know why OIDC was not
+used.
 
 ## 3. Dependency Pin & Audit CI
 
