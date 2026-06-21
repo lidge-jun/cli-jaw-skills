@@ -5,6 +5,9 @@ Applies to: OpenTofu 1.9+, Terraform 1.10+, Pulumi 3.x
 When to read: Infrastructure provisioning tasks
 Canonical owner: dev-devops §4
 
+Cross-ref: read `platform-engineering.md` for provider-routing breadth,
+platform guardrails, and DORA capability framing before broad IaC refreshes.
+
 ---
 
 ## §1 OpenTofu/Terraform Patterns

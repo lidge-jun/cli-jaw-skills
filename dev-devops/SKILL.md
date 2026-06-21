@@ -25,6 +25,7 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | `references/package-release.md` | Package publishing / release auth | npm/PyPI trusted publishing, Bun-to-npm, registry auth model, downstream distribution table |
 | `references/cross-platform-release.md` | Cross-platform release proof | CI matrix vs local OS proof, Windows App/RDP prompts, desktop verification boundaries |
 | `references/homebrew.md` | Homebrew distribution | Formula vs Cask, audit/test, livecheck, artifact trust, install/uninstall proof |
+| `references/platform-engineering.md` | Platform / DORA / provider routing | DORA capabilities, platform guardrails, provider table rows, SLSA handoff |
 | `references/kubernetes.md` | K8s deployment | Gateway API v1.5, Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
 | `references/ci-cd-deploy.md` | Deploy pipeline | GHA reusable workflows, deploy strategies, rollback, GitOps, progressive delivery |
 | `references/iac.md` | Infrastructure code | OpenTofu/Terraform modules, Pulumi, state encryption, blast radius isolation |
@@ -36,7 +37,8 @@ Read `package-release.md` for package publishing, registry auth, npm/PyPI
 trusted publishing, Bun-to-npm release decisions, and downstream package
 channels. Read `cross-platform-release.md` when a release claim depends on
 OS-local behavior that CI may not prove. Read `homebrew.md` for Formula/Cask
-distribution work. Read `docker.md` + `ci-cd-deploy.md` first for containerized deploy workflows.
+distribution work. Read `platform-engineering.md` for broader DevOps capability
+refresh, DORA, provider routing, and platform guardrails. Read `docker.md` + `ci-cd-deploy.md` first for containerized deploy workflows.
 For K8s-specific work, add `kubernetes.md`. For SRE/on-call, add `sre-foundations.md`.
 
 ---

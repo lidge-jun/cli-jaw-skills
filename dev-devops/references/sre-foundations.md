@@ -5,6 +5,9 @@ Applies to: Google SRE principles, 2026 observability practices
 When to read: Production operations, incident response, SLO definition
 Canonical owner: dev-devops §5
 
+Cross-ref: read `platform-engineering.md` for DORA metrics and platform
+engineering context before broad DevOps capability refreshes.
+
 ---
 
 ## §1 SLO/SLI Design Guide

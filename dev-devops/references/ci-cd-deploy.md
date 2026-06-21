@@ -11,6 +11,8 @@ Canonical owner: dev-devops §2
 
 For package publishing and release-auth decisions, read
 `references/package-release.md` before writing workflow YAML.
+For platform engineering, DORA capability framing, or provider-routing breadth,
+read `references/platform-engineering.md`.
 
 This file owns deployment pipelines, GitOps promotion, rollback, environments,
 and progressive delivery. `package-release.md` owns package registry defaults
