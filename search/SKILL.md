@@ -21,6 +21,52 @@ primary source has been opened or fetched.
 candidates); the `browser` skill verifies evidence (original page, DOM, PDF,
 tables). Search finds, browser proves.
 
+## `/search` command contract
+
+`/search <query>` is a routing command, not a provider implementation. It must
+force the active agent to read and follow this search skill, then apply the
+same tier order, query rewrite, candidate URL discovery, browser verification,
+and evidence-status rules documented here.
+
+`/search` may mention `cli-jaw browser fetch <url>` only after candidate URLs
+exist. It must not pass raw natural-language queries to browser fetch.
+`cli-jaw browser fetch` remains a URL/search-result URL reader, not generic
+search.
+
+For browser verification, choose the smallest browser command that proves the
+claim:
+
+- `cli-jaw browser fetch <url> --json`: default URL reader for candidate URLs.
+- `cli-jaw browser open <url>` plus `cli-jaw browser text`: rendered-page text.
+- `cli-jaw browser get-dom --selector "<selector>"`: specific rendered DOM,
+  tables, iframe/shell content, or structured page regions.
+- `cli-jaw browser snapshot --interactive`: interactive target discovery when
+  refs or page structure matter.
+
+## Model-gated parallel research
+
+Use single-agent search by default. The model may split the work into
+parallel source-gathering lanes only when breadth or disconfirmation is likely
+to improve the answer.
+
+Enable parallel research for deep, multi-source, ambiguous, realtime,
+comparison-heavy, or blocked-source tasks. Keep simple official-doc lookups,
+specific URL reads, and quick version checks single-agent.
+
+When parallel research is useful, cap it at 2-4 lanes:
+
+- `official`: vendor docs, release notes, government/institution pages,
+  primary PDFs.
+- `community`: GitHub issues, Reddit, HN, Stack Overflow, forums.
+- `realtime`: X/Twitter, news, current status, recent posts.
+- `fetch`: browser fetch/open/text/get-dom/snapshot verification for weak or
+  blocked candidate URLs.
+
+Merge lane outputs into one evidence matrix. Parallel snippets still do not
+count as sufficient evidence; the final answer still needs at least one
+primary/original page fetched or opened before any claim is marked
+`sufficient`.
+
 **Snippet consensus is not verification.** Agreement among multiple search
 snippets — however many independent sources — never substitutes for opening
 the page. Before marking any claim `sufficient`, at least one primary or
@@ -194,6 +240,10 @@ For search verification, prefer `cli-jaw browser fetch <url> --json` first, then
 open/text/snapshot/get-dom only as needed. Do not use browser snippets as a
 replacement for source evidence.
 
+Adaptive fetch can read a known URL or a search-result URL. It does not
+discover the URL candidate set by itself. If the input is only a natural
+language query, return to Tier 1 query rewriting first.
+
 ### Evidence rule
 
 - If Tier 2 confirms the official/original source, mark the claim `sufficient`.
@@ -201,6 +251,16 @@ replacement for source evidence.
   `insufficient`.
 - Secondary sources may support context, but they do not upgrade a failed
   official-source claim to `sufficient`.
+
+Evidence status:
+
+- `sufficient`: at least one original/primary URL was opened or fetched and
+  supports the claim.
+- `partial`: candidate evidence exists, but one or more important constraints
+  remain weak or secondary.
+- `browse-needed`: a candidate primary URL exists but browser/fetch
+  verification was needed and could not be completed.
+- `insufficient`: no credible candidate evidence was obtained.
 
 Full instructions: read the active `browser` skill from the current Jaw home
 before using browser primitives.
