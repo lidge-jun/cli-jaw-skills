@@ -179,6 +179,12 @@ Before using any external library API, verify current syntax via Context7 MCP:
 
 **If Context7 MCP is unavailable:** fall back to web search for official docs. Never rely on training data alone for library-specific API calls.
 
+### External/current evidence
+
+For current versions, release notes, CVEs, package/source checks, provider
+behavior, or browser-verifiable public evidence, read the active `search` skill
+and follow its query-rewrite, source-fetch, and evidence-status rules.
+
 ---
 
 ## 0. Intent Clarification

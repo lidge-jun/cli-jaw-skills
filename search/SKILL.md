@@ -21,6 +21,10 @@ primary source has been opened or fetched.
 candidates); the `browser` skill verifies evidence (original page, DOM, PDF,
 tables). Search finds, browser proves.
 
+**Standalone owner**: other skills may point here for external/current evidence,
+but they should not copy this tier policy. Update this skill first when search
+routing, evidence status, or browser-verification rules change.
+
 ## `/search` command contract
 
 `/search <query>` is a routing command, not a provider implementation. It must
