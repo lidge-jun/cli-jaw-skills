@@ -129,6 +129,11 @@ Work through these steps; skip only if clearly irrelevant to the problem at hand
 4. **Check known issues** — GitHub Issues, changelogs, migration guides. Someone
    may have hit the same bug. Search with the exact error message.
 
+When the bug depends on third-party library/API/framework behavior, current
+error workarounds, upstream issues, changelogs, or migration guides, read the
+active `search` skill and follow its source-fetch and evidence-status rules
+before treating external material as proof.
+
 ### Phase 3: Hypothesis and Testing
 
 1. **State hypothesis explicitly** — "X is the root cause because evidence Y

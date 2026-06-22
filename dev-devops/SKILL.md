@@ -41,6 +41,11 @@ distribution work. Read `platform-engineering.md` for broader DevOps capability
 refresh, DORA, provider routing, and platform guardrails. Read `docker.md` + `ci-cd-deploy.md` first for containerized deploy workflows.
 For K8s-specific work, add `kubernetes.md`. For SRE/on-call, add `sre-foundations.md`.
 
+When release, registry-auth, provider-doc, service-status, image/platform
+version, or package-manager behavior depends on current external evidence, read
+the active `search` skill and follow its source-fetch and evidence-status rules
+instead of relying on stale memory or copied snippets.
+
 ---
 
 ## §1 Container Builds

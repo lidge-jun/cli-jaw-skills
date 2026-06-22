@@ -66,6 +66,10 @@ Domain skills own architecture and implementation details.
 | `references/mcp-supply-chain.md` | Adding MCP servers or vetting agent tools | OWASP MCP Top 10, server vetting checklist, allowlist/pinning, sandbox, audit logging |
 | `references/supply-chain-sbom.md` | Dependency auditing or release integrity | SBOM generation (Syft/Trivy), artifact signing (Cosign/Sigstore), dependency pin & audit CI |
 
+For current CVEs, advisories, package maintainer/source checks, release
+integrity claims, or registry trust changes, read the active `search` skill and
+follow its query-rewrite, original-source fetch, and evidence-status rules.
+
 Read only the references relevant to the current task.
 A small CSS change needs no OWASP reference.
 Auth, data access, secrets, file uploads, webhooks, or incident response changes do.
