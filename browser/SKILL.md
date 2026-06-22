@@ -215,6 +215,33 @@ answer: `sufficient` only after original evidence is visible, `browse-needed`
 when browser escalation is still required, and `insufficient` when the source
 cannot be reached.
 
+### Known URL Reader / Adaptive Fetch
+
+`cli-jaw browser fetch <url>` is the known-URL reader lane. It can read a direct
+candidate URL or a search-result URL, but it is not generic search and must not
+receive a raw natural-language query.
+
+Use this ladder for public-source reading:
+
+1. **Public endpoint resolver**: platform-specific public APIs, feeds, oEmbed,
+   registry APIs, archive indexes, or stable JSON endpoints when the URL class is
+   known.
+2. **Direct fetch**: normal HTTP fetch with bounded bytes, redirects, metadata,
+   and clear verdicts.
+3. **Optional public reader service**: only when enabled by the caller and only
+   for public content; record the reader source in the result.
+4. **Browser render**: rendered text/main-content extraction for JS shells,
+   WAF-thin pages, Naver/mobile pages, article pages, and table/list surfaces.
+5. **DOM/table extraction**: `get-dom`, selector-bound reads, snapshots, and
+   screenshots when visual or structured evidence matters.
+6. **Network/metadata inspection**: inspect public network responses, OGP,
+   JSON-LD, and app data only to recover the public page's own exposed content.
+
+Stop rather than bypass when the page requires login, payment, private
+membership, user credentials, or CAPTCHA solving. Report `browse-needed` when a
+candidate likely needs browser/human verification and `insufficient` when no
+credible public route remains.
+
 ### Standalone agbrowse Alternative
 
 When the user explicitly wants to drive a **single Chrome instance** (for

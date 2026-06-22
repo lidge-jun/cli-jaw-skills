@@ -28,24 +28,14 @@ routing, evidence status, or browser-verification rules change.
 ## `/search` command contract
 
 `/search <query>` is a routing command, not a provider implementation. It must
-force the active agent to read and follow this search skill, then apply the
-same tier order, query rewrite, candidate URL discovery, browser verification,
-and evidence-status rules documented here.
+inherit this skill's routing/evidence invariants: classify local-vs-external
+search, rewrite external requests into focused queries, discover candidate URLs
+before browser commands, and refuse snippet-only `sufficient` claims.
 
-`/search` may mention `cli-jaw browser fetch <url>` only after candidate URLs
-exist. It must not pass raw natural-language queries to browser fetch.
-`cli-jaw browser fetch` remains a URL/search-result URL reader, not generic
-search.
-
-For browser verification, choose the smallest browser command that proves the
-claim:
-
-- `cli-jaw browser fetch <url> --json`: default URL reader for candidate URLs.
-- `cli-jaw browser open <url>` plus `cli-jaw browser text`: rendered-page text.
-- `cli-jaw browser get-dom --selector "<selector>"`: specific rendered DOM,
-  tables, iframe/shell content, or structured page regions.
-- `cli-jaw browser snapshot --interactive`: interactive target discovery when
-  refs or page structure matter.
+Slash-specific report fields, UX wording, and v1 command boundaries belong in
+the `/search` workflow prompt, not in this skill. Update this skill only for
+canonical search policy that should also apply to non-slash search intents and
+dev-role evidence routing.
 
 ## Model-gated parallel research
 
@@ -202,6 +192,30 @@ Tavily, Perplexity, Brave, or any other search provider.
 For pages that search APIs cannot reach: WAF-protected, login-gated,
 JS-rendered, official portals, Naver shells/iframes, PDF/download flows, tables,
 lists, or when you need to interact with a specific page.
+
+### Public-source reader routing map
+
+Search may route known source classes toward `browser fetch` / adaptive-fetch
+after candidate URLs exist. The browser side owns the reader ladder; this skill
+only chooses when that lane is appropriate.
+
+| Source class | Preferred reader lane |
+| --- | --- |
+| Official docs, government notices, PDFs | direct candidate URL fetch, then browser/PDF verification |
+| GitHub repositories, releases, issues | official URL fetch, then `gh` or GitHub API only when needed |
+| Package registries (`npm`, PyPI, crates, images) | registry JSON/API or official package page |
+| Academic/library records (`arXiv`, CrossRef, OpenLibrary) | public API or canonical abstract/record URL |
+| Forums and community pages (Reddit, HN, Stack Overflow, dev.to) | public JSON/RSS/API/readable page, then browser render |
+| X/Twitter and fast social/current sources | search candidate discovery, public embed/syndication where available, then realtime tiers |
+| Korean portals, Naver pages, blogs, rankings | candidate URL fetch, Naver/mobile/rendered DOM, table/list extraction |
+| Media pages (YouTube, Vimeo, podcasts) | metadata/caption reader when available, then browser-visible page |
+| Articles and commerce pages | public reader/metadata/JSON-LD, then browser main-content extraction |
+| Archive-needed or removed pages | official/cache/archive candidate only when the live source is unavailable |
+
+If a candidate requires login, payment, private membership, CAPTCHA solving, or
+credentialed access, stop and report `browse-needed` or `insufficient`. Do not
+frame public-source reading as bypassing authentication, paywalls, or private
+content.
 
 ### Gate
 
