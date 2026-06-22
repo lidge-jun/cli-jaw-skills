@@ -24,6 +24,11 @@ Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (C
 | `references/load-testing.md` | Performance/load testing, C3+ production readiness | k6/Locust, test types, measure→profile→verify, CI gates |
 | `references/ml-evaluation.md` | ML model/LLM evaluation, quality gates | LLM-as-judge, RAGAS, DeepEval, CI eval gate, regression detection |
 
+When tests depend on current external API behavior, provider docs, CI service
+behavior, test-environment versions, dependency audit evidence, or recorded
+mock/fixture sources, read the active `search` skill and follow its
+source-fetch and evidence-status rules.
+
 ---
 ## 1. Test Strategy
 ### 1.1 Models

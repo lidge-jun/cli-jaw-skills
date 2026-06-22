@@ -38,6 +38,11 @@ This skill has modular references for specialized guidance — read the relevant
 Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
 For C2 ordinary slices, `crud-api.md` alone suffices; read `api-design.md`/`architecture.md` for new API styles or C3+ work.
 
+When backend decisions depend on current external API docs, API lifecycle
+changes, LLM/RAG provider behavior, dependency freshness, or package/source
+evidence, read the active `search` skill and follow its query-rewrite,
+source-fetch, and evidence-status rules.
+
 ---
 
 ## 0. Stack Detection & Architecture Clarification

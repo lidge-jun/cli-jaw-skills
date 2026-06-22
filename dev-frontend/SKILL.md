@@ -51,6 +51,11 @@ This skill has modular references for specialized guidance — read the relevant
 Start with `anti-slop.md`, `aesthetics.md`, `responsive-viewport.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
 For C2 ordinary app screens (form/table/list/detail), `crud-ui.md` alone suffices; add the style references above for marketing/visual surfaces or C3+ work.
 
+When frontend choices depend on current framework, design-system, browser API,
+library behavior, browser-rendered source evidence, or package/source freshness,
+read the active `search` skill and follow its source-fetch and evidence-status
+rules before treating external material as proof.
+
 ---
 
 ## 0. Frontend Routing
