@@ -24,6 +24,14 @@ Severity mapping (dev §0.2): `Severity: CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` �
 | `references/coupling-taxonomy.md` | Reviewing code for hidden coupling | 8 coupling types, severity matrix, refactoring patterns, banned review responses |
 | `references/barrel-discipline.md` | Creating/modifying index/barrel files | When barrels OK vs banned, tree-shaking impact, safe barrel template |
 
+## External/current architecture evidence
+
+Architecture rules in this skill are local and mechanical. When an architectural
+decision depends on current framework guidance, cloud/provider reference
+architecture, package deprecation, platform limits, or public source evidence,
+read the active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Use browser verification only after candidate URLs exist.
+
 ---
 
 ## 1. Module Boundaries

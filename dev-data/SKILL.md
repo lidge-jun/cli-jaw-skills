@@ -22,6 +22,14 @@ Production-grade data engineering patterns for building reliable data systems.
 - Performing data analysis, aggregation, or reporting
 - Choosing between batch and streaming architectures
 
+## External/current data evidence
+
+For current external dataset contracts, source freshness, pipeline/tool version
+behavior, provider data API changes, or public benchmark/source claims, read the
+active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Use browser fetch/open/text/get-dom/snapshot only after
+candidate URLs exist and the claim needs browser-verifiable source evidence.
+
 ---
 
 ## 1. Data Processing Principles

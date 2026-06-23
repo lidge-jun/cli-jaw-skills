@@ -26,6 +26,14 @@ Systematic code review patterns for finding real issues, not bikeshedding.
 | `references/tech-debt.md` | Tech debt inventory or paydown | Debt quadrant, inventory template, review integration, paydown budget |
 | `references/ai-assisted-review.md` | Using AI review tools in PR workflow | AI review workflow, severity classification, re-review policy, exclusions, metrics |
 
+## External/current review evidence
+
+For dependency CVEs, release-note claims, package maintainer/source checks,
+provider behavior, or other current/public evidence used in a review, read the
+active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Browser fetch/open/text/get-dom/snapshot is downstream
+verification after candidate URLs exist, not a raw-query search substitute.
+
 ---
 
 ## 1. Code Review Process

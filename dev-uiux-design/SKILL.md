@@ -22,6 +22,12 @@ For anti-slop detection and banned patterns, defer to `dev-frontend/references/c
 
 **Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
 
+**External/current design evidence:** For live product-reference claims, current
+design-system docs, browser API behavior, accessibility guidance that may have
+changed, or browser-rendered source evidence, read the active `search` skill and
+follow its query-rewrite, source-fetch, and evidence-status rules. Use browser
+fetch/open/text/get-dom/snapshot only after candidate URLs exist.
+
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 > **Rule class note (UX-STYLE-01):** Everything in this skill that expresses taste —

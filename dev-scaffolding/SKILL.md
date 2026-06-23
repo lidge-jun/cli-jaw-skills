@@ -16,6 +16,14 @@ Rules for generating and auditing project structures. Create files directly foll
 | `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
 | `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
 
+## External/current scaffolding evidence
+
+For current generator behavior, template commands, package versions, framework
+recommendations, provider bootstrap docs, or source-sensitive tooling choices,
+read the active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Browser fetch/open/text/get-dom/snapshot is used only
+after candidate URLs exist and the setup claim needs source verification.
+
 ## 1. The Lidge Standard
 
 Apply for new projects or when a repo has no clear structural convention of its own; defer to an existing mature convention when one is present (§2). Three pillars:
