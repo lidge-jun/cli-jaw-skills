@@ -206,6 +206,12 @@ internally. The agent does not need to manage the ladder manually — just call
 The content-scorer picks the best result across all attempts. If all public
 routes fail, the system reports the challenge type (CAPTCHA/login/paywall).
 
+**Auto-routing policy**: when searching, if a candidate URL's WebFetch/native
+fetch returns 403, empty, or truncated content, always escalate to
+`cli-jaw browser fetch <url>` — the adaptive-fetch ladder handles the rest
+automatically. Do not retry with different headers or user-agents manually;
+the TLS rotation and Jina fallback in the ladder already do this.
+
 ### Public-source reader routing map
 
 Search may route known source classes toward `browser fetch` / adaptive-fetch
