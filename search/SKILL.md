@@ -199,6 +199,14 @@ Search may route known source classes toward `browser fetch` / adaptive-fetch
 after candidate URLs exist. The browser side owns the reader ladder; this skill
 only chooses when that lane is appropriate.
 
+Candidate discovery itself should stay provider-neutral: rewrite the user
+request into focused queries, use native search/provider results as candidate
+URL discovery, then rank/dedupe candidates into lanes such as `official`,
+`community`, `realtime`, `academic`, `package`, `archive`, and `fetch`. This
+lane ranking must not execute browser fetch and must not turn `browser fetch`
+into raw query search. Browser fetch reads or verifies known candidate URLs
+only.
+
 | Source class | Preferred reader lane |
 | --- | --- |
 | Official docs, government notices, PDFs | direct candidate URL fetch, then browser/PDF verification |

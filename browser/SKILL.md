@@ -225,17 +225,27 @@ Use this ladder for public-source reading:
 
 1. **Public endpoint resolver**: platform-specific public APIs, feeds, oEmbed,
    registry APIs, archive indexes, or stable JSON endpoints when the URL class is
-   known.
+   known. Feed readers normalize RSS, Atom, and JSON Feed with bounded items,
+   namespace-tolerant author/category/content/media fields, and no network
+   access beyond the known feed URL.
 2. **Direct fetch**: normal HTTP fetch with bounded bytes, redirects, metadata,
-   and clear verdicts.
+   and clear verdicts. HTML metadata includes canonical/feed/oEmbed links,
+   OpenGraph/Twitter media fields, and JSON-LD media summaries when public in
+   the page source.
 3. **Optional public reader service**: only when enabled by the caller and only
    for public content; record the reader source in the result.
 4. **Browser render**: rendered text/main-content extraction for JS shells,
    WAF-thin pages, Naver/mobile pages, article pages, and table/list surfaces.
-5. **DOM/table extraction**: `get-dom`, selector-bound reads, snapshots, and
-   screenshots when visual or structured evidence matters.
+5. **DOM/table extraction**: rendered DOM metadata, JSON-LD, table/list
+   candidates, `get-dom`, selector-bound reads, snapshots, and screenshots when
+   visual or structured evidence matters.
 6. **Network/metadata inspection**: inspect public network responses, OGP,
    JSON-LD, and app data only to recover the public page's own exposed content.
+
+Adaptive-fetch keeps live public-site smoke targets as a default-off manifest.
+Use it for drift checks only when explicitly running verification; ordinary unit
+tests must not hit live sites. Optional media helpers such as captions or
+`yt-dlp`-style extraction remain opt-in and must not auto-install dependencies.
 
 Stop rather than bypass when the page requires login, payment, private
 membership, user credentials, or CAPTCHA solving. Report `browse-needed` when a
