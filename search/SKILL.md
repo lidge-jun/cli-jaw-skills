@@ -116,12 +116,12 @@ When the gate triggers:
 
 **Fallbacks (mandatory, in order):**
 - Cannot enumerate 3 candidates → state it, proceed with what exists, and
-  cap evidence_status at `partial`.
+  cap evidence status at `partial`.
 - Disconfirmation finds a rival candidate → report the tie explicitly, run
   one more discriminating search on the strongest differing clue; if still
   tied, answer with both and mark `partial`.
 - WEAK match remains on the chosen candidate → answer allowed, but
-  evidence_status MUST be `partial` with the weak clue named.
+  evidence status MUST be `partial` with the weak clue named.
 - Time budget runs low → report the matrix as-is (incomplete rows marked),
   never silently drop unchecked clues.
 
@@ -429,20 +429,17 @@ before driving hosted AI providers.
 7. **No "browser needed but not executed".** If you state Tier 2 is needed,
    run it; stop at `browse-needed` only with a pasted command failure.
 
-## Result Report Template (recommended)
+## Answer Discipline
 
-For search tasks that need comparison or audit (smoke runs, employee
-verification, multi-source research), structure the final report with these
-8 fields. This is a recommended format, not a hard requirement — but smoke
-or audit dispatches may explicitly require it in the task body.
+For search tasks that need comparison or audit, make the answer easy to verify:
 
-```text
-focused_queries:        <1-3 rewritten keyword queries actually used>
-search_route_used:      <tier/tool used, e.g. built-in web search, cli-jaw browser, progrok>
-candidate_urls:         <URL candidates considered>
-original_pages_opened_or_fetched: <which URLs were actually fetched/opened, with result>
-browse_escalation_decision: <whether Tier 2 browser was needed and why / why not>
-final_answer:           <the answer itself>
-evidence_status:        <sufficient | partial | browse-needed | insufficient, per claim>
-remaining_uncertainty:  <what could not be verified and what would resolve it>
-```
+- state the rewritten query terms or local-search rationale;
+- identify candidate URLs separately from pages that were actually opened or
+  fetched;
+- explain whether browser verification was needed and which browser command was
+  used when it was;
+- label the evidence status for each important claim;
+- call out unresolved uncertainty and the next source that would resolve it.
+
+Command-specific field names, output schema, and UX wording belong in the
+calling workflow such as `/search`, not in this standalone skill.
