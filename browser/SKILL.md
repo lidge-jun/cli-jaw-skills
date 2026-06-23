@@ -243,13 +243,22 @@ previous returned blocked, empty, or low-quality content):
 4. **Jina Reader** (default-on): `r.jina.ai` prefix reader for clean markdown
    extraction with JS rendering. Enabled by default (`--allow-third-party-reader`);
    disable with `--no-allow-third-party-reader`. 429 triggers a 60s cooldown.
-5. **Browser render**: rendered text/main-content extraction for JS shells,
-   WAF-thin pages, Naver/mobile pages, article pages, and table/list surfaces.
-6. **DOM/table extraction**: rendered DOM metadata, JSON-LD, table/list
-   candidates, `get-dom`, selector-bound reads, snapshots, and screenshots when
-   visual or structured evidence matters.
-7. **Network/metadata inspection**: inspect public network responses, OGP,
+5. **Camoufox stealth browser** (optional): anti-detect Firefox with C++-level
+   fingerprint spoofing via Juggler protocol. Tried before Chromium CDP when
+   installed (`pip install camoufox[geoip]`). Falls back silently when absent.
+6. **Browser render** (Chromium CDP): rendered text/main-content extraction for
+   JS shells, WAF-thin pages, Naver/mobile pages, article pages, and surfaces.
+7. **Structured extraction**: headings, tables (50-row cap), lists, code blocks,
+   and JSON-LD from HTML via `structured-extractor.ts`. Available alongside
+   defuddle main-content extraction.
+8. **DOM/table extraction**: rendered DOM metadata, `get-dom`, selector-bound
+   reads, snapshots, and screenshots when visual or interactive evidence matters.
+9. **Network/metadata inspection**: inspect public network responses, OGP,
    JSON-LD, and app data only to recover the public page's own exposed content.
+
+Optional media reader: **yt-dlp** integration for YouTube (and 1,800+ sites)
+metadata and transcript extraction. Emits `ytdlp` source candidate alongside
+oembed when yt-dlp binary is detected. Falls back when absent.
 
 Adaptive-fetch keeps live public-site smoke targets as a default-off manifest.
 Use it for drift checks only when explicitly running verification; ordinary unit
