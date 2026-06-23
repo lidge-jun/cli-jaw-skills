@@ -221,25 +221,34 @@ cannot be reached.
 candidate URL or a search-result URL, but it is not generic search and must not
 receive a raw natural-language query.
 
-Use this ladder for public-source reading:
+Use this ladder for public-source reading (each step triggers only when the
+previous returned blocked, empty, or low-quality content):
 
-1. **Public endpoint resolver**: platform-specific public APIs, feeds, oEmbed,
-   registry APIs, archive indexes, or stable JSON endpoints when the URL class is
-   known. Feed readers normalize RSS, Atom, and JSON Feed with bounded items,
+1. **Public endpoint resolver** (23 platform resolvers): platform-specific public
+   APIs, feeds, oEmbed, registry APIs, archive indexes, or stable JSON endpoints.
+   Covers: GitHub, Reddit, HN, Wikipedia, npm/PyPI, arXiv, Bluesky, Mastodon,
+   StackExchange, dev.to, CrossRef, OpenLibrary, Wayback, YouTube, X/Twitter,
+   V2EX, Lobsters, Naver Blog/News/Finance, Medium, Substack, LinkedIn.
+   Feed readers normalize RSS, Atom, and JSON Feed with bounded items,
    namespace-tolerant author/category/content/media fields, and no network
    access beyond the known feed URL.
 2. **Direct fetch**: normal HTTP fetch with bounded bytes, redirects, metadata,
    and clear verdicts. HTML metadata includes canonical/feed/oEmbed links,
    OpenGraph/Twitter media fields, and JSON-LD media summaries when public in
    the page source.
-3. **Optional public reader service**: only when enabled by the caller and only
-   for public content; record the reader source in the result.
-4. **Browser render**: rendered text/main-content extraction for JS shells,
+3. **TLS fingerprint rotation**: on 403/429/challenge from direct fetch,
+   curl-impersonate is tried with rotating browser TLS profiles
+   (chrome131/safari18/firefox133) before escalating to browser. Only available
+   when curl-impersonate binary is installed; falls back silently when absent.
+4. **Jina Reader** (default-on): `r.jina.ai` prefix reader for clean markdown
+   extraction with JS rendering. Enabled by default (`--allow-third-party-reader`);
+   disable with `--no-allow-third-party-reader`. 429 triggers a 60s cooldown.
+5. **Browser render**: rendered text/main-content extraction for JS shells,
    WAF-thin pages, Naver/mobile pages, article pages, and table/list surfaces.
-5. **DOM/table extraction**: rendered DOM metadata, JSON-LD, table/list
+6. **DOM/table extraction**: rendered DOM metadata, JSON-LD, table/list
    candidates, `get-dom`, selector-bound reads, snapshots, and screenshots when
    visual or structured evidence matters.
-6. **Network/metadata inspection**: inspect public network responses, OGP,
+7. **Network/metadata inspection**: inspect public network responses, OGP,
    JSON-LD, and app data only to recover the public page's own exposed content.
 
 Adaptive-fetch keeps live public-site smoke targets as a default-off manifest.

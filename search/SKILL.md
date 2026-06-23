@@ -187,11 +187,24 @@ Tavily, Perplexity, Brave, or any other search provider.
 - You need to verify a specific source page before considering summaries,
   press articles, university reposts, or blogs
 
-## Tier 2 — cli-jaw browser (CDP)
+## Tier 2 — cli-jaw browser (CDP) + Adaptive Fetch Ladder
 
 For pages that search APIs cannot reach: WAF-protected, login-gated,
 JS-rendered, official portals, Naver shells/iframes, PDF/download flows, tables,
 lists, or when you need to interact with a specific page.
+
+`cli-jaw browser fetch <url>` runs the full adaptive-fetch escalation
+internally. The agent does not need to manage the ladder manually — just call
+`browser fetch` and the system tries each step automatically:
+1. 23 platform-specific public endpoint resolvers (APIs, feeds, oEmbed)
+2. Direct HTTP fetch
+3. TLS fingerprint rotation (curl-impersonate, if installed)
+4. Jina Reader r.jina.ai (default-on, opt-out with `--no-allow-third-party-reader`)
+5. Browser render (Chromium CDP / Camoufox if installed)
+6. DOM/table/structured extraction
+
+The content-scorer picks the best result across all attempts. If all public
+routes fail, the system reports the challenge type (CAPTCHA/login/paywall).
 
 ### Public-source reader routing map
 
