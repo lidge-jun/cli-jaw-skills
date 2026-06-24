@@ -61,6 +61,26 @@ cli-jaw orchestrate D       → enter Done (from C only, returns to IDLE)
 cli-jaw orchestrate reset   → return to IDLE (from any state)
 ```
 
+### Evidence gate (forward transitions)
+
+The four forward transitions (P→A, A→B, B→C, C→D) require an **evidence attestation** — a
+real `cli-jaw orchestrate` command with an `--attest` JSON, not narration. The server gates the
+agent (identified by its boss token); a human's `/orchestrate X` keeps the free pass.
+
+```
+cli-jaw orchestrate A --attest '{"from":"P","to":"A","did":"<the concrete plan you wrote: files/surfaces + devlog path>"}'
+cli-jaw orchestrate B --attest '{"from":"A","to":"B","did":"<who audited the plan + the verdict>"}'
+cli-jaw orchestrate C --attest '{"from":"B","to":"C","did":"<what you built + who verified it>"}'
+cli-jaw orchestrate D --attest '{"from":"C","to":"D","did":"<what you checked>","checkOutput":"<paste the real tsc/test tail>","exitCode":0}'
+```
+
+The gate is **form-only**: it checks that the block is well-formed and that `did` is a real
+narrative (booleans/placeholders are rejected); C→D additionally requires a non-empty
+`checkOutput` and, if present, `exitCode:0`. It does NOT cross-check the narrative against
+runtime state — the goal is to force a deliberate, specific claim, not to defeat a malicious
+agent. Saying "현재는 B입니다" without running the command does nothing: the state machine only
+moves on the command.
+
 ## Phases
 
 ### P — Plan
