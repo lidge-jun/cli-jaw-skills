@@ -81,6 +81,11 @@ runtime state — the goal is to force a deliberate, specific claim, not to defe
 agent. Saying "현재는 B입니다" without running the command does nothing: the state machine only
 moves on the command.
 
+Threat model = laziness, not malice. Accepted residuals (NOT bugs): a fabricated `did`, the
+hidden `--force` emergency hatch, a `pendingAttestation` emitted in a prior turn, and an agent
+that deliberately strips its own boss token to pose as a human. Closing the last one would risk
+the legitimate human-via-CLI free pass, so it is out of scope unless the threat model expands.
+
 ## Phases
 
 ### P — Plan
