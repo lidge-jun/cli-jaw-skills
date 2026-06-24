@@ -43,7 +43,9 @@ Every goal should be executable through the P-A-B-C-D orchestration cycle:
 - **C (Check)**: Final sanity check (tsc, consistency, structure docs)
 - **D (Done)**: Summarize and return to IDLE
 
-When a goal is active, it supersedes PABCD phase gates for autonomous execution. Phase transitions are mandatory shell commands (`cli-jaw orchestrate A/B/C/D`), not status text.
+When a goal is active, it supersedes PABCD phase gates for autonomous execution. Phase transitions are mandatory shell commands (`cli-jaw orchestrate A/B/C/D`), not status text. "Supersedes gates" means no user wait — it does NOT mean skip P/A/B/C/D or merge work-phases into B.
+
+**Multi-phase / loop goals**: each sub-goal / work-phase = one FULL PABCD cycle (P→A→B→C→D). After D (state → IDLE), run `cli-jaw orchestrate P` to start the next work-phase; repeat until the objective is met. Never run B for several work-phases back-to-back. A "loop"/"루프" goal is multi-pass: pre-plan the full slice map and scaffold per-phase decade docs, and it may open with a design-only PABCD pass (Phase 0) before the first implementation work-phase. Faithfully execute each PABCD-phase — never rubber-stamp a phase to advance.
 
 ### 2. Documentation Workflow
 

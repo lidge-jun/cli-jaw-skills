@@ -82,9 +82,11 @@ Design phases before mapping them to PABCD. A phase should normally be a user-vi
 or consumer-visible outcome unit: "create an item", "edit an item", "share a report",
 or "compare three runnable prototypes". DB/API/UI/test work are subtasks inside that
 outcome, not top-level phases by default. A simple task can finish in one PABCD with
-several small phases; larger work can split into multiple PABCD passes. Layer-only
-phases are allowed only when independently verifiable and explicitly justified. Do not
-plan a whole database/API foundation as one PABCD before any usable outcome exists.
+several small phases; larger work splits into multiple PABCD passes — one full
+P→A→B→C→D per work-phase, closed by D and re-entered at P for the next work-phase (see
+Terminology / Rule 4). Layer-only phases are allowed only when independently verifiable and
+explicitly justified. Do not plan a whole database/API foundation as one PABCD before any
+usable outcome exists.
 
 Read project docs and dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
 
@@ -177,12 +179,38 @@ user explicitly asks to unset the project root.
 
 ## Rules
 
-1. One phase per response. Present work, then wait for user approval at P, A, B gates.
+1. One phase per response (the gate-and-wait turn boundary). Present work, then wait for
+   user approval at P, A, B gates. Goal-mode exception: when a goal is active this does not
+   permit ending a turn before D when more PABCD-phases remain in the current cycle — keep
+   going P→A→B→C→D, then close D and re-enter P for the next work-phase.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
 4. Goal-mode precedence: when a jaw goal is active (dev §0.4), P/A/B approval gates are
    satisfied by evidence-backed checkpoints (`cli-jaw goal update`) instead of waiting for
    user approval. Phase order, audit conditions, and verification intensity are unchanged.
+
+## Terminology: work-phase vs PABCD-phase
+
+- **work-phase**: one outcome slice of a larger goal (e.g. "Phase 3: Management API"). A
+  multi-phase goal has several work-phases done in sequence.
+- **PABCD-phase**: one of the letters P/A/B/C/D inside a single orchestration cycle.
+
+**Invariant: one work-phase = one full PABCD cycle.** Run P→A→B→C→D for a work-phase, close
+D (state → IDLE), then run `cli-jaw orchestrate P` to start the next work-phase. Do NOT run
+B for several work-phases back-to-back, and do NOT commit a work-phase out of B without
+passing C and D. Depth scales per work-phase class (see "PABCD Depth by Work Class"), but
+the P→D **sequence** is never skipped for a work-phase.
+
+**Loop / multi-pass tasks**: a "loop"/"루프" request (or work too large for one cycle) runs
+as MULTIPLE PABCD passes — one per work-phase. Pre-plan the full slice map and scaffold
+per-phase decade docs (10_phase1, 20_phase2, ...) up front. The first pass MAY be a
+design-only PABCD pass (Phase 0): a code-free whole-system design/documentation cycle
+before the first implementation work-phase.
+
+**Faithful execution (anti-skip)**: do the real work of each PABCD-phase — P writes the
+real diff-level plan, A really dispatches the audit, B really implements AND verifies, C
+really runs tsc/tests/scrutiny, D really summarizes with evidence. Advancing the state is
+NOT the same as doing the phase; never rubber-stamp a phase to move on.
 
 ## Repository Root Contract
 
