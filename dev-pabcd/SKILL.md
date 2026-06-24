@@ -146,7 +146,7 @@ Present to the user:
 2. "혼자 결정하면 안 되는 비즈니스 로직이 있나요?" and "이 방향이 맞습니까?"
 
 ⛔ Present the plan. Revise on feedback.
-When user approves → `cli-jaw orchestrate A`
+When user approves → `cli-jaw orchestrate A --attest '{"from":"P","to":"A","did":"<the plan you wrote>"}'` (forward transitions need an evidence attestation — see the Evidence gate section).
 
 ### A — Plan Audit
 Spawn a worker to audit the plan (not code). The worker verifies:
@@ -163,7 +163,7 @@ Output worker JSON for the audit. Review results when they come back.
 - If FAIL → fix the plan → output worker JSON again to re-audit
 - If PASS → report results to the user
 
-⛔ Wait for user approval. When approved → `cli-jaw orchestrate B`
+⛔ Wait for user approval. When approved → `cli-jaw orchestrate B --attest '{"from":"A","to":"B","did":"<who audited the plan + the verdict>"}'`
 
 ### B — Build
 Implement the plan. You write all code by default. Workers are read-only verifiers unless dispatched with `--mutable` (see Pitfalls).
@@ -174,7 +174,7 @@ After implementing, output worker JSON for verification. The worker checks your 
 - If NEEDS_FIX → you fix the issues → re-verify
 - If DONE → report results to the user
 
-⛔ Wait for user approval. When approved → `cli-jaw orchestrate C`
+⛔ Wait for user approval. When approved → `cli-jaw orchestrate C --attest '{"from":"B","to":"C","did":"<what you built + verifier verdict>"}'`
 
 ### C — Check
 Final sanity check:
@@ -188,7 +188,7 @@ register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end the turn; the
 server re-invokes the boss on completion and PABCD state persists across turns.
 Local tsc/tests stay blocking.
 
-When done → `cli-jaw orchestrate D`
+When done → `cli-jaw orchestrate D --attest '{"from":"C","to":"D","did":"<what you checked>","checkOutput":"<paste the real tsc/test tail>","exitCode":0}'` (C→D uniquely requires a pasted check tail).
 
 ### D — Done
 Summarize the entire flow:
