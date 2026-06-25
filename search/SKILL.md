@@ -212,20 +212,6 @@ fetch returns 403, empty, or truncated content, always escalate to
 automatically. Do not retry with different headers or user-agents manually;
 the TLS rotation and Jina fallback in the ladder already do this.
 
-### /search report format
-
-When invoked via `/search`, the final response must include these fields:
-
-- **focused_queries**: 1-3 rewritten queries or local-search rationale
-- **search_route_used**: tier/tool path actually used
-- **candidate_urls**: URL candidates considered
-- **original_pages_opened_or_fetched**: primary/original URLs fetched
-- **browse_escalation_decision**: why browser was/wasn't needed
-- **parallel_research_decision**: single-agent or parallel lanes with reason
-- **final_answer**: the answer
-- **evidence_status**: sufficient | partial | browse-needed | insufficient
-- **remaining_uncertainty**: what could not be verified
-
 ### Public-source reader routing map
 
 Search may route known source classes toward `browser fetch` / adaptive-fetch
