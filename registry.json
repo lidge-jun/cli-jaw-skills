@@ -843,7 +843,7 @@
       "desc_en": "MUST USE for any frontend, web UI, or visual implementation work: building, styling, or redesigning pages/components, responsive layouts, motion, component architecture, production polish. 2026 platform rules (React 19.2 line, Next 16 Cache Components, Vite 8/Rolldown, Tailwind v4, Baseline-checked CSS), agent-visible runtime diagnostics, CWV-gated performance. Triggers: frontend, UI, component, CSS, responsive, animation, React, layout, styling, redesign, anti-slop.",
       "requires": null,
       "install": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     "dev-pabcd": {
       "name": "Dev PABCD",
@@ -905,10 +905,10 @@
       "category": "orchestration",
       "description": "UI/UX 방향과 디자인 판단에 필수 사용: 모호한 시각 브리프, 온보딩, 빈/에러/로딩 상태, 레이아웃 어휘, 타이포 줄바꿈, 파비콘, 로고, 브랜드. 한국어 디자인 요청 번역표와 검증된 한국어 타이포 게이트 포함. 트리거: make it look good, modern, clean, 깔끔하게, 모던하게, 감성적으로, onboarding, empty state, favicon, logo, design system.",
       "desc_ko": "UI/UX 방향과 디자인 판단에 필수 사용: 모호한 시각 브리프, 온보딩, 빈/에러/로딩 상태, 레이아웃 어휘, 타이포 줄바꿈, 파비콘, 로고, 브랜드. 한국어 디자인 요청 번역표와 검증된 한국어 타이포 게이트 포함. 트리거: make it look good, modern, clean, 깔끔하게, 모던하게, 감성적으로, onboarding, empty state, favicon, logo, design system.",
-      "desc_en": "MUST USE for UI/UX direction and design judgment: vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, brand identity. Korean design-request translation tables and verified Korean typography gates. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system.",
+      "desc_en": "MUST USE for UI/UX direction and design judgment: vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, brand identity. Includes the lazy-user gate (UX-LAZY-01): default-first, one primary action, choices demoted to progressive disclosure, surface-conditional by density profile. Korean design-request translation tables and verified Korean typography gates. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system.",
       "requires": null,
       "install": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     "develop-web-game": {
       "name": "웹 게임 개발",

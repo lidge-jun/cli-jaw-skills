@@ -61,6 +61,34 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 
 ---
 
+## Lazy-User Gate (UX-LAZY-01, DEFAULT — ponytail discipline applied to UX)
+
+Design for the cognitively frugal user: users don't read, they scan; they satisfice;
+they will trade choice for one obvious next action. Before shipping any user-facing
+decision point — option, setting, step, confirmation, input field, mode — justify its
+existence the ponytail way, in order:
+
+1. **Do nothing**: can a correct default remove this decision entirely? (A settings
+   page is a collection of defaults you failed to choose.)
+2. **Delete**: does the step/field earn its completion-rate cost? Every added decision
+   point taxes conversion and comprehension (Hick's law).
+3. **Absorb**: can the system take the complexity instead of the user (Tesler's law) —
+   auto-detect, infer, remember last choice?
+4. **Demote**: still needed for some users → progressive disclosure (advanced section,
+   "more options"), never a top-level fork.
+
+Every screen has ONE primary action. If two actions compete visually, the design has
+not decided what the screen is for.
+
+**Surface-conditional (do not over-apply):** laziness means *fewer decisions* on
+consumer/one-shot flows (D1-D3), but *fewer repeated motions* on repeated-work tools
+(D4-D8: density, keyboard paths, batch actions — collapsing an expert's controls into
+wizards is the inverse failure). Route by the product-density profile first.
+
+**STRICT exemptions (never one-click away):** destructive/irreversible actions,
+consent/privacy/legal choices, payments confirmation, and accessibility affordances
+are never collapsed into magic defaults.
+
 ## UX State Contract (UX-STATE-01)
 
 For onboarding, empty, loading, error, or progressive-disclosure work, answer the state meaning before styling. Deep patterns live in `references/ux-states.md`.
