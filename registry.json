@@ -747,12 +747,12 @@
       "name_en": "Dev Common",
       "emoji": "🔧",
       "category": "orchestration",
-      "description": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
-      "desc_ko": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
-      "desc_en": "MUST USE for every coding task. Classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "description": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 분류기 eval 케이스와 신선도 정책(FAMILY-FRESH-01) 포함. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_ko": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 분류기 eval 케이스와 신선도 정책(FAMILY-FRESH-01) 포함. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_en": "MUST USE for every coding task. Classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Includes classifier eval cases and freshness policy (FAMILY-FRESH-01). Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
       "requires": null,
       "install": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     "dev-architecture": {
       "name": "Dev Architecture",
@@ -760,12 +760,12 @@
       "name_en": "Dev Architecture",
       "emoji": "🏗️",
       "category": "orchestration",
-      "description": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel 또는 re-export 변경, 검증 위치 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
-      "desc_ko": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel 또는 re-export 변경, 검증 위치 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
-      "desc_en": "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "description": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel/re-export 변경, 검증 위치 결정, 모노레포 패키지 분리, 이벤트 경계 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_ko": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel/re-export 변경, 검증 위치 결정, 모노레포 패키지 분리, 이벤트 경계 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_en": "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, validation placement, monorepo package splits, and event-boundary decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor.",
       "requires": null,
       "install": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "dev-backend": {
       "name": "Dev Backend",
@@ -786,12 +786,12 @@
       "name_en": "Dev Code Reviewer",
       "emoji": "🔍",
       "category": "orchestration",
-      "description": "코드 리뷰와 리뷰 준비 상태에 필수 사용. 리뷰 프로세스, 품질 기준, 안티패턴 탐지, 리뷰 판정, 피드백 주고받기를 다룹니다. 트리거: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
-      "desc_ko": "코드 리뷰와 리뷰 준비 상태에 필수 사용. 리뷰 프로세스, 품질 기준, 안티패턴 탐지, 리뷰 판정, 피드백 주고받기를 다룹니다. 트리거: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
-      "desc_en": "MUST USE for code review and review-readiness. Covers review process, quality thresholds, antipattern detection, review verdicts, and giving/receiving feedback. Triggers: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "description": "코드 리뷰와 리뷰 준비성에 필수 사용: 리뷰 프로세스, 품질 임계값, 안티패턴 탐지, 리뷰 판정, AI 리뷰 도구 조율, AI 생성 코드 리뷰(가공 API, 환각 의존성, 얕은 테스트). 트리거: review this, code review, PR review, check my diff, before merge, antipattern, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_ko": "코드 리뷰와 리뷰 준비성에 필수 사용: 리뷰 프로세스, 품질 임계값, 안티패턴 탐지, 리뷰 판정, AI 리뷰 도구 조율, AI 생성 코드 리뷰(가공 API, 환각 의존성, 얕은 테스트). 트리거: review this, code review, PR review, check my diff, before merge, antipattern, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_en": "MUST USE for code review and review-readiness: review process, quality thresholds, antipattern detection, review verdicts, AI-review-tool coordination, and reviewing AI-generated code (invented APIs, hallucinated dependencies, shallow tests). Triggers: review this, code review, PR review, check my diff, before merge, antipattern.",
       "requires": null,
       "install": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "dev-data": {
       "name": "Dev Data",
@@ -851,12 +851,12 @@
       "name_en": "Dev PABCD",
       "emoji": "🎯",
       "category": "orchestration",
-      "description": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용. orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, multi-phase development를 다룹니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
-      "desc_ko": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용. orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, multi-phase development를 다룹니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
-      "desc_en": "MUST USE for cli-jaw PABCD orchestration workflows. Covers orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
+      "description": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용: orchestrate, phase, attest, 인터뷰 모드, 골 모드, 체크포인트, 다단계 개발, 최적화 루프 정체 규율. 상태 전이는 명시적 오케스트레이션 의도가 있을 때만 수행합니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
+      "desc_ko": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용: orchestrate, phase, attest, 인터뷰 모드, 골 모드, 체크포인트, 다단계 개발, 최적화 루프 정체 규율. 상태 전이는 명시적 오케스트레이션 의도가 있을 때만 수행합니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
+      "desc_en": "MUST USE for cli-jaw PABCD orchestration workflows: orchestrate, phase, attest, interview mode, goal mode, checkpoints, multi-phase development, and optimization-loop plateau discipline. State transitions require explicit orchestration intent, not keyword mentions. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
       "requires": null,
       "install": null,
-      "version": "2.0.1"
+      "version": "2.0.2"
     },
     "dev-scaffolding": {
       "name": "Dev Scaffolding",

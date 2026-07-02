@@ -2,10 +2,9 @@
 name: dev-architecture
 description: "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조."
 metadata:
-  {
-    "short-description": "Module boundaries, circular deps, coupling taxonomy, and boundary defenses.",
-    "keywords": ["module-boundary", "circular-dependency", "coupling", "barrel-file", "re-export", "architecture", "layered", "dependency-inversion"]
-  }
+  short-description: "Module boundaries, circular deps, coupling taxonomy, and boundary defenses."
+  keywords: "module-boundary, circular-dependency, coupling, barrel-file, re-export, architecture, layered, dependency-inversion, event-driven"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Architecture — Module Boundaries & Structural Integrity
@@ -57,6 +56,8 @@ Canonical file-size rule: **>400 LOC -> split (DEFAULT)**. Deviations require a 
 | Two unrelated features share a file | Separate into own modules |
 | Circular import detected | Extract shared types/interfaces to a third module |
 | Module name contains "and" or "utils" | Split by actual concern |
+| 3+ apps/services import the same feature folder | Promote to a monorepo package with its own manifest + public boundary |
+| Package needs its own release cadence, CI matrix, or version | Split at package level, not folder level |
 
 ### Banned Patterns
 
@@ -280,11 +281,15 @@ When reviewing any PR that adds/modifies module structure, verify:
 
 | Check | Tool | CI Command |
 |-------|------|------------|
-| Circular deps | madge | `npx madge --circular --extensions ts,tsx src/ && echo "OK"` |
+| Layer/dependency rules (preferred CI gate) | dependency-cruiser | `npx depcruise --validate .dependency-cruiser.cjs src/` |
 | Import boundaries | eslint-plugin-boundaries | ESLint with boundaries config |
-| Layer violations | dependency-cruiser | `npx depcruise --validate .dependency-cruiser.cjs src/` |
-| Barrel abuse | custom ESLint rule | `no-restricted-imports` pattern for internal index files |
+| Circular deps (quick visualization) | madge | `npx madge --circular --extensions ts,tsx src/ && echo "OK"` |
+| Barrel abuse | Biome `noBarrelFile` or ESLint `no-restricted-imports` | pattern for internal index files |
+| Dead files/exports/deps | knip | `npx knip` |
+| Monorepo package consistency | sherif | `npx sherif` |
 | Module size | custom script | `find src -name '*.ts' -exec wc -l {} + | awk '$1 > 400'` |
+
+Tool roles verified 2026-07-02 (Sources: `references/circular-dependencies.md`).
 
 ---
 

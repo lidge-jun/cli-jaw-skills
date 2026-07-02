@@ -1,0 +1,15 @@
+{
+  "description": "Trigger + work-classifier eval cases for the dev skill (R1 2026-07-02). Run each prompt 3x; track trigger rate, expected class, false promotions and false demotions separately.",
+  "cases": [
+    { "prompt": "fix the typo in README", "should_trigger": true, "expected_class": "C0", "must_not": ["PABCD", "convention discovery"] },
+    { "prompt": "rename button label in one React file", "should_trigger": true, "expected_class": "C1", "must_not": ["PABCD"] },
+    { "prompt": "add a comment explaining the retry loop in auth/session.ts", "should_trigger": true, "expected_class": "C0", "notes": "zero-behavior edit in auth file stays C0 (behavioral promotion rule)" },
+    { "prompt": "change the token expiry check in auth/session.ts from 15m to 60m", "should_trigger": true, "expected_class": "C4", "notes": "executed logic on an auth path — DEV-ESCALATE-01 promotion" },
+    { "prompt": "add a list/detail screen for invoices with API endpoint", "should_trigger": true, "expected_class": "C2", "must_include": ["compact plan", "focused tests"] },
+    { "prompt": "add OAuth across API, DB, UI, and tests", "should_trigger": true, "expected_class": "C3", "must_include": ["plan", "affected suites"] },
+    { "prompt": "migrate production auth permissions to the new role model", "should_trigger": true, "expected_class": "C4", "must_include": ["full PABCD", "risk evidence"] },
+    { "prompt": "I'm not sure what we should build for the admin dashboard", "should_trigger": true, "expected_class": "C5", "must_include": ["interview"] },
+    { "prompt": "review this PR for security issues", "should_trigger": true, "expected_tags": ["review", "security"] },
+    { "prompt": "summarize this article, no code involved", "should_trigger": false }
+  ]
+}

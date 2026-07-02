@@ -137,3 +137,14 @@ After resolving a cycle, always:
 2. Run full test suite — ensure no behavioral regression
 3. Check bundle size — extraction should not increase bundle
 4. Review the dependency direction — dependencies point inward toward Domain; outer layers depend on inner layers, never the reverse
+
+## Sources
+
+| Claim | Source | Checked |
+|---|---|---|
+| madge active (release page reachable) | https://github.com/pahen/madge/releases | 2026-07-02 |
+| dependency-cruiser active; preferred for enforceable CI rules | https://github.com/sverweij/dependency-cruiser/releases | 2026-07-02 |
+| eslint-plugin-boundaries active | https://github.com/javierbrea/eslint-plugin-boundaries/releases | 2026-07-02 |
+| knip for dead files/exports/dependencies | https://github.com/webpro-nl/knip/releases | 2026-07-02 |
+| sherif for monorepo package consistency | https://github.com/QuiiBz/sherif/releases | 2026-07-02 |
+| Biome noBarrelFile rule | https://biomejs.dev/linter/rules/no-barrel-file/ | 2026-07-02 |

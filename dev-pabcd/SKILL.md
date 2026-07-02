@@ -1,8 +1,9 @@
 ---
 name: dev-pabcd
-description: "MUST USE for cli-jaw PABCD orchestration workflows — orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리."
+description: "MUST USE for cli-jaw PABCD orchestration workflows — orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리. Operate state transitions only when the user explicitly requests orchestration or an active PABCD phase is injected — do not transition state merely because a document mentions phases, goals, or checkpoints."
 metadata:
   short-description: "cli-jaw PABCD orchestration workflow for interview, phases, attest, and checkpoints."
+  last-verified: "2026-07-02"
 ---
 
 Structured 5-phase development. Advance only with user approval.
@@ -217,6 +218,14 @@ user explicitly asks to unset the project root.
    evidence-backed checkpoints (`cli-jaw goal update`) instead of user approval. Phase order,
    audit conditions, and verification intensity are unchanged.
 
+Gate quick-reference (strict vs goal mode):
+
+| Gate | Strict PABCD | Goal mode |
+|------|--------------|-----------|
+| P→A, A→B, B→C | user approval + `--attest` | evidence-backed checkpoint + `--attest` |
+| C→D | auto + `--attest` w/ `checkOutput`/`exitCode` | same |
+| Turn boundary | one phase per response | continue P→D within the cycle |
+
 ## §5. Terminology: work-phase vs PABCD-phase
 
 - **work-phase**: one outcome slice of a larger goal (e.g. "Phase 3: Management API"). A
@@ -312,10 +321,11 @@ candidates are being discarded by evidence gates. Gate validity itself is owned 
 
 - **DEFAULT (LOOP-PHASE-DEATH-01):** Track each discarded candidate's killing PABCD-phase
   (P/A/B/C/D) and change class: parameter-tweak, branch-toggle, state-space redesign, or
-  evaluator change. After 3 consecutive same-phase, same-class deaths, the next work-phase
-  MUST target the killing mechanism itself, usually the evaluation gate, not another
-  candidate of that class. N consecutive D-evidence collapses means the gate, not the
-  candidates, is probably the bottleneck.
+  evaluator change. After N consecutive same-phase, same-class deaths (starting value
+  N=3 — HEURISTIC, tune per domain), the next work-phase MUST target the killing
+  mechanism itself, usually the evaluation gate, not another candidate of that class.
+  Repeated D-evidence collapses mean the gate, not the candidates, is probably the
+  bottleneck.
 - **STRICT (LOOP-CONTINUITY-01):** P must begin by quoting the previous cycle's D
   conclusions and next-direction. A new candidate that contradicts the recorded
   next-direction requires an explicit stated reason.
@@ -330,4 +340,6 @@ candidates are being discarded by evidence gates. Gate validity itself is owned 
   move; consider it before generic-strategy tweaks.
 
 Grounding: observed in a 14-discard optimization plateau where a prefix-only replay gate
-and a hard draw-protection invariant locked a 3.5/8 score.
+and a hard draw-protection invariant locked a 3.5/8 score. Single-incident induction —
+treat the constants as starting values, keep the per-domain death log, and revise these
+rules when a second domain's evidence contradicts them.

@@ -1,7 +1,10 @@
 ---
 name: dev
 description: "MUST USE for every coding task — classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding."
-metadata: { "short-description": "Universal dev discipline: work classifier, overlays, verification gate, safety rules.", "keywords": ["develop", "implement", "refactor", "feature", "code quality", "verification"] }
+metadata:
+  short-description: "Universal dev discipline: work classifier, overlays, verification gate, safety rules."
+  keywords: "develop, implement, refactor, feature, code quality, verification"
+  last-verified: "2026-07-02"
 ---
 
 # Dev — Common Development Guidelines
@@ -28,7 +31,8 @@ deletion/migration, destructive ops, public contract change, release surface, pe
 model, new dependency/framework. Any of these promotes the **affected part** of the task
 to C4-level care — split it out rather than inflating the whole slice. Promotion alone
 does not force a user question; stopping to ask is required only for rules individually
-classed **ESCALATE** (§0.2).
+classed **ESCALATE** (§0.2). Classifier eval cases: `evals/classifier_cases.json` —
+run when tuning trigger/classification behavior; track false promotions and demotions separately.
 
 ## §0.1 Patch Fast-Path (C0/C1)
 
@@ -114,19 +118,19 @@ prototypes, spikes, and internal demos are not. Skills that scope rules to
 
 This skill covers universal guidelines. **STRICT (DEV-ROUTE-01):** for domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
 
-| Skill File                   | Injected When                     | Covers                                                                                         |
-| ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `dev-frontend/SKILL.md`      | `role=frontend`                   | UI/UX implementation, design aesthetics, component architecture, responsive layouts, animation |
-| `dev-backend/SKILL.md`       | `role=backend`                    | API design, architecture patterns, database optimization, error handling, middleware            |
-| `dev-data/SKILL.md`          | `role=data`                       | Data pipelines, ETL/ELT, data quality validation, SQL optimization, analysis & reporting       |
-| `dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP Top 10, auth hardening, input validation, secrets management, supply chain security |
-| `dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright browser testing, coverage analysis, contract testing                 |
-| `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root cause analysis, boundary instrumentation, hypothesis testing, postmortem                  |
-| `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
-| `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Circular deps, module boundaries, coupling taxonomy, barrel/re-export discipline               |
-| `dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, product personalities, typography, layout patterns         |
-| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, public boundary export, devlog, documentation generation           |
-| `dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD workflow, phase gates, devlog decade numbering, interview mode                           |
+| Skill File                   | Injected When                     | Covers |
+| ---------------------------- | --------------------------------- | ------ |
+| `dev-frontend/SKILL.md`      | `role=frontend`                   | UI implementation, responsive, anti-slop |
+| `dev-backend/SKILL.md`       | `role=backend`                    | API/architecture, data access, ops |
+| `dev-data/SKILL.md`          | `role=data`                       | Pipelines, data quality, analytics SQL |
+| `dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP, auth, secrets, supply chain |
+| `dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright, contracts, CI |
+| `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root-cause method, instrumentation |
+| `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, severity, antipatterns |
+| `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Cycles, coupling, barrels, validation placement |
+| `dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, UX states |
+| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, devlog |
+| `dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD phases, gates, attestation |
 
 ### Skill Ownership Map
 
@@ -143,7 +147,9 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 | Test-induced defense | dev-testing §6.7 | dev-code-reviewer |
 | Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
 | Process isolation | dev-backend refs/ | dev-code-reviewer |
-| Long-lived connections | dev-backend §1 | dev-frontend |
+| Code quality signals / antipatterns | dev-code-reviewer §3 | dev §6 |
+| Long-lived connections (server lifecycle) | dev-backend §1 | dev-frontend |
+| Browser connection budgets | dev-frontend refs/performance-budget | — |
 | Async task queue | dev-backend §2 | — |
 | Debugging methodology | dev-debugging | dev-code-reviewer |
 | Data pipeline patterns | dev-data | dev-backend |
@@ -161,79 +167,59 @@ When updating a rule, update the canonical owner first, then verify stubs still 
 
 **FAMILY-SLOP-01 / FAMILY-CITE-01 / FAMILY-PROOF-01:** no filler, placeholders, fake fallbacks, speculative wrappers, or broad defensive clutter without a named boundary reason; code findings, plans, reviews, contradictions, and verification claims cite exact files/lines or command/artifact evidence; no completion claim without fresh proof from the §3 verification gate.
 
+**FAMILY-FRESH-01 (DEFAULT):** version-pinned or time-sensitive claims live in
+`references/` with a Sources row (URL + checked date); routers carry only a
+frontmatter `last-verified` stamp. Treat claims older than the stamp as re-verify-first.
+
 ## Documentation Verification (Context7)
 
-Before using any external library API, verify current syntax via Context7 MCP:
-
-1. `resolve-library-id` — get the library ID (e.g., `/vercel/next.js`)
-2. `query-docs` — fetch current docs for the specific API/feature
-
-**When to verify:** using any API you haven't verified in this session, library version is pinned in package.json/requirements.txt, syntax or behavior seems uncertain, or the library had a major release in the past 6 months.
-
-**When to skip:** language built-ins (Array.map, str.split), standard library (fs, os, path, http), syntax you just verified this session.
-
-**If Context7 MCP is unavailable:** fall back to web search for official docs. Never rely on training data alone for library-specific API calls.
+Before using any external library API, verify current syntax via Context7 MCP
+(`resolve-library-id` → `query-docs`). **Verify when:** API not verified this session,
+pinned version, uncertain behavior, or a major release in the past 6 months.
+**Skip for:** language built-ins, standard library, syntax verified this session.
+If Context7 is unavailable, fall back to web search for official docs — never rely
+on training data alone for library-specific APIs.
 
 ### External/current evidence
 
-For current versions, release notes, CVEs, package/source checks, provider
-behavior, or browser-verifiable public evidence, read the active `search` skill
-and follow its query-rewrite, source-fetch, and evidence-status rules.
-Sub-agents dispatched via `codex exec` are also bound by this policy; include it in the dispatch prompt.
+For current versions, release notes, CVEs, package/source checks, or provider behavior,
+read the active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Sub-agents are bound by this policy too — include it in dispatch prompts.
 
 ---
 
 ## 0. Intent Clarification
 
-When a request has **ambiguous scope or unspecified technology**, clarify before coding.
-If the user already specifies clear tech and scope (e.g. "React로 Drawer 만들어줘"), skip this step entirely.
+When a request has **ambiguous scope or unspecified technology**, clarify before coding;
+skip entirely when tech and scope are already clear.
 
-### How
-1. **Adapt depth to the question**: vague/abstract → explain each option in detail. User seems to know the terms → brief trade-off comparison only.
-2. **Present options as `<TechName> — <plain explanation>`**: include pros/cons relevant to THIS project. ⚠️ Flag options that are complex, expensive, or carry risk (e.g. memory leaks, operational overhead).
-3. **Recommend one with reasoning**: "이 프로젝트는 ~이기 때문에 ~를 추천합니다." Always cite project context.
-4. **Let the user decide**: "이걸로 갈까요?" — if the user picks a risky option, warn once, then respect the choice.
-
-### Over-engineering guard
-Consider whether simpler alternatives exist before suggesting heavy frameworks. A 3-page portfolio *probably* doesn't need Next.js — but if the user has deployment, SEO, or CMS plans, it might. Use judgement, not absolute rules.
-
-### Limit
-One confirmation round: 2-3 options → 1 recommendation → confirm → move on. Don't turn clarification into an interview.
+- Present 2-3 options as `<TechName> — <plain explanation>` with project-relevant
+  pros/cons; ⚠️ flag complex/expensive/risky options.
+- Recommend one, citing project context; let the user decide (warn once on a risky pick).
+- **Over-engineering guard**: prefer the simplest option that meets stated needs.
+- **Limit — one confirmation round**: options → recommendation → confirm → move on.
 
 ---
 
 ## 0.5 Repository Convention Discovery
 
-Before broad changes, inspect existing project conventions:
-- Source layout: `src/`, `app/`, `packages/`, `frontend/`, `backend/`
-- Source-of-truth docs/logs: `structure/`, `docs/`, `architecture/`, `adr/`, `devlog/`, `plans/`, changelogs
-- Agent context: `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, tool-specific instruction files
-- JS/TS setup: `package.json`, `tsconfig*`, ESLint/Biome config, sibling file extensions
-- Existing naming, test, module, and phase-document patterns
-- Devlog phase documents: decade-range Jawdev numbering (00-09 research, 10-19 phase 1, etc.) — see `dev-pabcd` skill
+Before broad changes, inspect existing conventions: source layout (`src/`, `app/`,
+`packages/`), source-of-truth docs (`structure/`, `docs/`, `adr/`, `devlog/`, `plans/`),
+agent context files (`AGENTS.md`, `CLAUDE.md`, tool instruction files), JS/TS setup
+(`package.json`, `tsconfig*`, linter config, sibling extensions), and naming/test/
+phase-document patterns (Jawdev decade numbering — see `dev-pabcd`).
 
 MUST follow existing conventions when they are clear.
 MUST read existing `structure/`, `devlog/`, or other source-of-truth logs before broad implementation.
 MUST NOT create `structure/`, `devlog/`, `AGENTS.md`, docs folders, or new tooling silently in an existing repo.
-
-If the repo is immature, undocumented, or inconsistent, propose a lightweight source-of-truth structure and ask for approval before creating it.
+If the repo is immature/undocumented, propose a lightweight source-of-truth structure and ask before creating it.
 
 ### Broad Change Preview
 
-Before broad changes, show a compact tree and planned touch points.
-
-Broad change means any of:
-- Creates or reorganizes directories
-- Touches 5+ files
-- Spans frontend + backend or multiple top-level packages
-- Adds a new feature/module/service
-- Adds project documentation or source-of-truth structure
-
-Preview format:
-- Current signals: detected stack and docs/conventions found
-- Compact tree: max ~40 lines; omit `node_modules`, `dist`, `build`, `.git`
-- Planned edits: files/folders to create or modify
-- Convention decision: reuse existing structure, or ask before proposing new structure
+**Broad change** = creates/reorganizes directories, touches 5+ files, spans multiple
+top-level packages, adds a feature/module/service, or adds source-of-truth structure.
+Before one, show: detected signals · compact tree (≤40 lines, omit `node_modules`/`dist`/
+`build`/`.git`) · planned edits (files to create/modify) · convention decision (reuse vs ask).
 
 ---
 
@@ -254,7 +240,7 @@ Give every file, function, and class a single, clear responsibility.
 
 ### Blast Radius Limits
 
-Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, unrelated cleanup, and drive-by refactors go in separate PRs.
+One logical change per PR/changeset — unrelated cleanup and drive-by refactors go separately.
 
 | Change Scope | Max Blast Radius | Exceeds → |
 |---|---|---|
@@ -264,11 +250,10 @@ Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, 
 | Dependency upgrade | Isolated PR | Never bundle with features |
 
 **Rules:**
-- Use ES Module (`import`/`export`) in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
-- One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
-- Follow existing naming conventions in the project. Check sibling files before creating new ones.
-- New files must match the directory structure and naming patterns already in use.
-- For Jawdev/devlog phase documents, use decade-range numbering: 00-09 research/specs, 10-19 phase 1, 20-29 phase 2, etc. Never use bare filenames like `PLAN.md`, `PHASES.md`, or `RCA.md`. See `dev-pabcd` skill for full convention.
+- Use ES Modules in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
+- One default export per file when it has a primary purpose (JS/TS convention; other languages follow their idioms).
+- Follow existing naming/directory conventions; check sibling files before creating new ones.
+- Jawdev/devlog phase documents use decade-range numbering (00-09 research, 10-19 phase 1, …); never bare `PLAN.md`/`PHASES.md`/`RCA.md`. Full convention: `dev-pabcd`.
 
 ---
 
@@ -300,23 +285,15 @@ Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, 
 
 ## 2. Systematic Debugging
 
-Investigate the root cause before applying any fix — guessing leads to compounding rework.
+Investigate the root cause before applying any fix — guessing compounds rework.
+Full methodology (boundary instrumentation, competing hypotheses, postmortem):
+`dev-debugging/SKILL.md` (canonical owner).
 
-For full debugging methodology — boundary instrumentation, pattern analysis, hypothesis testing, and postmortem — see `dev-debugging/SKILL.md`.
-
-This section covers the **emergency stop triggers** every agent should recognize:
-
-**Red flags — stop and return to root cause investigation:**
-
-| Rationalization                                | Reality                                                 |
-| ---------------------------------------------- | ------------------------------------------------------- |
-| "Quick fix for now, investigate later"         | First fix sets the pattern. Do it right from the start. |
-| "Just try changing X and see"                  | Guessing guarantees rework.                             |
-| "I don't fully understand but this might work" | Seeing symptoms ≠ understanding root cause.             |
-| "Proposing solutions before investigating"     | You haven't done Phase 1.                               |
-| "One more fix attempt" (after 2+ failures)     | 3+ failures = architectural problem.                    |
-
-**If 3+ fix attempts fail:** pause and reassess. Each fix revealing a new problem elsewhere signals an **architectural issue**, not a simple bug. Question fundamentals: Is this pattern sound? Are we sticking with it through inertia? Discuss with the user before attempting more fixes.
+**Emergency stop triggers** — any of these means return to root-cause investigation:
+"quick fix now, investigate later" · "just try changing X" · "don't fully understand
+but might work" · proposing solutions before investigating · "one more attempt" after
+2+ failures. **3+ failed fixes = architectural problem**: pause, question the pattern
+itself, and discuss with the user before further fixes.
 
 ---
 
@@ -345,36 +322,21 @@ Verify every completion claim with evidence. Run the relevant command fresh, rea
 
 **Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
-**Long external waits (cli-jaw runtime):** when a verification gate depends on a
-long-running external process (CI run, deploy, remote build, web-ai session) and
-you are the boss/goal agent inside cli-jaw, do not block the turn polling it.
-Register a server-owned task and end the turn:
-`cli-jaw bgtask add --cmd '["gh","run","watch","123","--exit-status"]' --prompt "CI done: {{result}} — verify and report"`
-(web-ai: `--preset web-ai --session $SID`). The server re-invokes the boss with a
-`[bgtask:*]` prompt on completion. Local commands (tests, tsc, builds that finish
-in minutes) stay blocking — bgtask is for genuinely long external work.
+**Long external waits (cli-jaw runtime):** don't block the turn polling CI/deploys/
+web-ai sessions — register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end
+the turn; the server re-invokes the boss on completion. Local tests/tsc/builds stay blocking.
 
-**Red flags — unverified claims creeping in:**
-- Using words like "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Done!")
-- Relying on partial verification or a previous run
-- Trusting agent success reports without independent verification
-- Thinking "just this once"
+**Red flags — unverified claims creeping in:** "should"/"probably"/"seems to" ·
+satisfaction before verification · partial/previous-run evidence · trusting agent
+success reports · "just this once".
 
 ---
 
 ## 4. Change Documentation
 
-When a worklog or changelog file is provided, record every change in this format:
-
-```markdown
-### [filename] — [reason for change]
-- **Changes**: what was modified and why
-- **Impact**: modules that import or depend on this file
-- **Verification**: how the change was tested (command + result)
-```
-
-Keep entries factual and concise. One entry per file changed.
+When a worklog/changelog file is provided, record one factual entry per changed file:
+`### [filename] — [reason]` with **Changes** (what/why), **Impact** (dependent modules),
+and **Verification** (command + result).
 
 ---
 
@@ -388,20 +350,12 @@ Keep entries factual and concise. One entry per file changed.
 
 ---
 
-## 6. Code Quality Signals
+## 6. Code Quality Signals (stub)
 
-Watch for these anti-patterns and fix immediately. For the full detection catalog and review-specific guidance, see `dev-code-reviewer/SKILL.md` §3.
-
-| Anti-Pattern               | Symptom                             | Fix                                   |
-| -------------------------- | ----------------------------------- | ------------------------------------- |
-| **God class**              | >20 methods, mixed responsibilities | Split by domain into focused classes  |
-| **Long method**            | >50 lines, does multiple things     | Extract into named helper functions   |
-| **Deep nesting**           | >4 levels of if/for/try             | Early returns, guard clauses, extract |
-| **Magic numbers**          | Hardcoded `86400`, `1024`, `3`      | Named constants with clear intent     |
-| **Stringly typed**         | Strings where enums/types belong    | Define explicit types or enums        |
-| **Missing error handling** | No catch at trust boundaries        | Add try/catch at trust boundaries; internal code propagates errors — see dev-architecture §4. |
-| **Floating promises**      | async call without `await`          | Always `await` or handle rejection    |
-| **Copy-paste code**        | Same logic in 2+ places             | Extract shared function, import it    |
+Anti-pattern detection (god class, long method, deep nesting, magic numbers, stringly
+typed, missing boundary error handling, floating promises, copy-paste) is canonically
+owned by `dev-code-reviewer/SKILL.md` §3 — read it when writing or reviewing code.
+Thresholds mirror §1 hard limits; boundary-error placement follows dev-architecture §4.
 
 ---
 
@@ -409,91 +363,43 @@ Watch for these anti-patterns and fix immediately. For the full detection catalo
 
 ### 7.0 JS/TS Source File Default
 
-For new JavaScript/TypeScript source files, prefer TypeScript:
-- Use `.ts` for logic and `.tsx` for typed UI components when the project already supports TypeScript or is greenfield JS/TS.
-- Use `.js`/`.jsx` only when the repo is clearly JS-only, build/runtime constraints require JS, or the user asks for JS.
-- Do not introduce TypeScript tooling, convert existing JS, or change `tsconfig` without user approval.
-
-New TypeScript MUST be strict-compatible from the first patch:
-- No implicit `any`.
-- Explicit `any` requires a nearby justification comment.
-- Prefer `unknown` plus narrowing over `any`.
-- Type exported function parameters and return values.
-- Handle null/undefined deliberately.
-- Avoid code that only passes because `strict` is disabled.
-
-Verification:
-- Run the project's configured typecheck when available.
-- If TypeScript is present but no typecheck script exists, use the closest safe command such as `tsc --noEmit`.
-- If strict compatibility cannot be verified, state that explicitly.
+New JS/TS source files prefer TypeScript (`.ts`/`.tsx`) when the repo supports it or
+is greenfield; use `.js` only for clearly JS-only repos, build constraints, or explicit
+user request. Never introduce TS tooling, convert existing JS, or change `tsconfig`
+without approval. New TypeScript MUST be strict-compatible from the first patch:
+no implicit `any` (explicit `any` needs justification), prefer `unknown` + narrowing,
+type exported params/returns, handle null/undefined deliberately. Verify with the
+project's typecheck (or `tsc --noEmit`); if strict compatibility can't be verified, say so.
 
 ### 7.1 Type Annotations
 
-Add explicit type annotations to all function signatures, return types, and non-trivial variables.
-
-| Language   | Rule                                                                                |
-| ---------- | ----------------------------------------------------------------------------------- |
-| TypeScript | `strict: true` in tsconfig. Avoid implicit `any`; explicit `any` requires a line comment with justification. |
-| Python     | Type hints on all function params and returns (`def fetch(url: str) -> Response:`). |
-| Go         | Already enforced by compiler — ensure exported types have doc comments.             |
-| C# / Java  | Use nullability annotations (`?`, `@Nullable`). Avoid raw `Object` or `dynamic`.    |
-| General    | If the language supports a strict/pedantic mode, enable it.                         |
+Add explicit types to all function signatures, return types, and non-trivial variables.
+TypeScript: `strict: true`, no implicit `any` (explicit `any` needs a justification
+comment). Python: hints on all params/returns. Enable the language's strict/pedantic
+mode when one exists. Per-language rules table: `references/static-analysis-gate.md`.
 
 ### 7.2 Static Analysis Gate
 
-After every code change, run the project's static analysis toolchain as part of the verification gate (Section 3).
-
-| Toolchain      | Command                               | Must Pass                    |
-| -------------- | ------------------------------------- | ---------------------------- |
-| TypeScript     | `tsc --noEmit`                        | Zero errors                  |
-| Python (typed) | `mypy .` or `pyright`                 | Zero errors on changed files |
-| ESLint / Biome | `npx eslint .` or `npx biome check .` | Zero errors                  |
-| Go             | `go vet ./...`                        | Zero issues                  |
-| Rust           | `cargo clippy -- -D warnings`         | Zero warnings                |
-| C#             | `dotnet build /warnaserror`           | Zero warnings                |
-
-#### Common Rule ↔ Prose Mapping
-
-| Anti-Pattern (prose) | ESLint / Biome Rule |
-|---|---|
-| Unused variable/import | `no-unused-vars`, `@typescript-eslint/no-unused-vars` |
-| Unsafe `any` type | `@typescript-eslint/no-explicit-any` |
-| Loose equality (`==`) | `eqeqeq` |
-| Circular import | `import/no-cycle` |
-| Unhandled async | `@typescript-eslint/no-floating-promises` |
-| `var` usage | `no-var`, `prefer-const` |
-| Complex function | `complexity`, `max-depth`, `max-lines-per-function` |
-
-This table is not exhaustive — check project config for the canonical set.
-
-If no static analysis tool is configured in the project, recommend one to the
-user — but do not add tooling without approval.
+After every code change, run the project's static analysis toolchain as part of the
+verification gate (§3) — zero errors on changed files is the floor. Per-toolchain
+commands and the anti-pattern ↔ lint-rule mapping live in
+`references/static-analysis-gate.md`; check project config for the canonical rule set.
+If no tool is configured, recommend one — but do not add tooling without approval.
 
 ### 7.3 Escape Hatches
 
-When bypassing the type system is unavoidable:
-
-- **Add a comment** explaining why the escape is needed.
-- **Scope it minimally** — cast at the narrowest point, not the broadest.
-- **Prefer assertion functions** over raw casts (`assertIsString(x)` > `x as string`).
-- TypeScript: `as unknown as T` double-cast requires a linked issue or TODO.
-- Python: `# type: ignore[code]` must specify the exact mypy error code.
+When bypassing the type system is unavoidable: comment why, scope minimally (narrowest
+cast point), prefer assertion functions over raw casts. TS `as unknown as T` needs a
+linked issue/TODO; Python `# type: ignore[code]` must name the exact error code.
 
 ---
 
 ## 8. Token Budget Awareness
 
-When multiple skills are injected simultaneously (e.g., `dev` + `dev-backend` + `dev-security`), token consumption grows quickly. Follow these rules to stay efficient:
-
-**Tiered reference loading:**
-1. **Always read**: SKILL.md files for injected skills (these are the orchestrators)
-2. **Read on demand**: Reference files (`references/`) — only load when the task touches that specific topic
-3. **Do not preload all references** (HEURISTIC) — a backend task about caching doesn't need `process-isolation.md`
-
-**Example:** For "Add Redis caching to user endpoint":
-- Read: `dev/SKILL.md` + `dev-backend/SKILL.md` + `dev-backend/references/core/caching.md`
-- Skip: `api-design.md`, `architecture.md`, `observability.md`, `stacks/database.md` (unless the task touches those areas)
-
-**Cost awareness for sub-agents:** Each sub-agent receives its own copy of injected skills. Minimize skills injected per sub-agent — give only what's needed for that specific sub-task.
+**Tiered reference loading:** (1) always read injected skills' SKILL.md routers;
+(2) read `references/` files only when the task touches that topic; (3) do not
+preload all references (HEURISTIC) — e.g. a caching task reads `caching.md` only.
+**Sub-agents:** each receives its own copy of injected skills — inject only what
+that sub-task needs.
 
 ---

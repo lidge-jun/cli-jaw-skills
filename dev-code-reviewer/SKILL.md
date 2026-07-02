@@ -2,10 +2,9 @@
 name: dev-code-reviewer
 description: "MUST USE for code review and review-readiness — review process, quality thresholds, antipattern detection, review verdicts, and giving/receiving feedback. Triggers: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인."
 metadata:
-  {
-    "short-description": "Code review router: findings, severity, verdicts, and review workflow.",
-    "keywords": ["review", "PR", "pull request", "diff", "merge", "feedback", "approve", "code quality", "code-review", "quality-gate"]
-  }
+  short-description: "Code review router: findings, severity, verdicts, and review workflow."
+  keywords: "review, PR, pull request, diff, merge, feedback, approve, code quality, code-review, quality-gate, AI-generated code"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Code-Reviewer — Code Review Guide
@@ -349,7 +348,7 @@ Push back when:
 
 Parallelize review only when domain breadth exceeds one reviewer's context (e.g., frontend + backend + infra in a single diff, or when the diff spans too many unrelated domains for a single pass). Each sub-agent receives its file subset, the review process from sections 1-5, and outputs structured findings. The orchestrator deduplicates, normalizes severity, and presents a unified review.
 
-### AI Tool Integration Awareness
+### AI Tool Integration Awareness (verified 2026-07-02)
 
 When external AI review tools are available, coordinate — don't duplicate:
 
@@ -357,9 +356,39 @@ When external AI review tools are available, coordinate — don't duplicate:
 |------|-----------|----------|----------------------|
 | **GitHub Copilot Code Review** | Full repo context, multi-model, auto-fix PRs | PR review on GitHub | Architecture, business logic, domain correctness |
 | **CodeRabbit** | 40+ linters, learnable preferences, low false-positive | Team with `.coderabbit.yml` configured | Cross-service impact, subtle logic errors |
-| **SonarQube** | Enterprise SAST, tech debt tracking, security depth | Regulated environments, existing setup | Review findings, add context tools miss |
+| **Cursor Bugbot** | Diff-focused bug hunting in Cursor PR flow | Cursor-based teams | Intent, architecture, exploitability |
+| **Graphite AI Reviews (Diamond)** | Stacked-PR-aware AI review | Graphite stacked workflow | Cross-stack consistency |
+| **SonarQube (+AI capabilities)** | Enterprise SAST, tech debt tracking, security depth | Regulated environments, existing setup | Review findings, add context tools miss |
 | **Manual agent review** | Full codebase understanding, intent verification | No external tools, offline, sensitive code | Everything — full §1-5 process |
 
-**Coordination rule:** If an external AI tool already reviewed the PR, **read its findings first**, then focus manual review on what the tool explicitly cannot do: architectural fit, business intent alignment, and cross-system impact.
+**Coordination rules:**
+- If an external AI tool already reviewed the PR, **read its findings first**, then focus
+  manual review on what tools cannot do: architectural fit, business intent, cross-system impact.
+- **STRICT (REVIEW-AI-EVIDENCE-01):** AI review findings are evidence to inspect, not
+  authority — de-duplicate, reproduce, and severity-normalize them before inclusion.
+  Published evaluation of AI reviewers shows frequent misses on critical vulnerabilities
+  (SQLi/XSS/deserialization) with low-severity skew, so AI output never replaces the
+  §3.5 security pass (source: arXiv:2509.13650, checked 2026-07-02).
+
+---
+
+## 7. Reviewing AI-Generated Code
+
+AI-authored diffs have distinct failure modes. Run this pass IN ADDITION to §1-3 when
+the diff is substantially AI-generated (agent commits, Copilot/Cursor bulk changes):
+
+| Check | AI failure mode | Action |
+|-------|-----------------|--------|
+| Invented APIs | Plausible-but-nonexistent methods/options | Verify each unfamiliar API against the installed version's docs |
+| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `dev-security` |
+| Missing authz edges | Happy-path handlers without ownership checks | Trace every new endpoint against §3.5 BOLA check |
+| Shallow/mirroring tests | Tests restating the implementation, tautologies | Apply REVIEW-REGRESS-01; require behavior-level assertions |
+| Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `dev-testing` §6.7 detection table |
+| Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (dev §1) |
+
+**Agentic/security review trigger (DEFAULT):** if a PR adds MCP servers, tools, agents,
+RAG components, persistent memory, delegated credentials, or autonomous actions, invoke
+`dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
+Agentic Applications 2026.
 
 ---
