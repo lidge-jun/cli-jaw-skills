@@ -869,7 +869,7 @@
       "desc_en": "MUST USE for project setup, feature scaffolding, structural audits, or documentation scaffolding. Applies the Lidge Standard, colocation, public boundary exports, repo-first convention reuse, and source-of-truth doc planning. Triggers: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
       "requires": null,
       "install": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "dev-security": {
       "name": "Dev-Security — Production Security Hardening",
