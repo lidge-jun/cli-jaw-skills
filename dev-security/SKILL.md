@@ -3,18 +3,9 @@ name: dev-security
 description: "MUST USE for security-sensitive code — XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags."
 metadata:
   short-description: "Security as a build constraint: OWASP, auth hardening, secrets, supply chain."
-  keywords:
-    - xss
-    - csrf
-    - sql injection
-    - jwt
-    - oauth
-    - secrets
-    - owasp
-    - auth hardening
-    - supply chain
-    - threat model
+  keywords: "xss, csrf, sql injection, jwt, oauth, secrets, owasp, auth hardening, supply chain, threat model, slopsquatting"
   injection_condition: "security-sensitive code, or security/threat_model task_tags"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Security — Production Security Hardening
@@ -70,13 +61,13 @@ Domain skills own architecture and implementation details.
 
 | File | When to Read | What It Covers |
 | --- | --- | --- |
-| `references/owasp-top10.md` | Any security-sensitive code | OWASP Top 10:2025 with unsafe/safe code pairs and checklists |
+| `references/owasp-top10.md` | Any security-sensitive code | OWASP Top 10:2025 with unsafe/safe code pairs and checklists. 2025-delta mode: explicitly check A03 Software Supply Chain Failures, A10 Mishandling of Exceptional Conditions, and SSRF folded into A01 Broken Access Control |
 | `references/language-quirks.md` | When coding in JS/TS, Python, SQL, or Go | Per-language pitfalls that scanners and reviewers commonly miss |
 | `references/static-analysis.md` | Before claiming code is secure | Semgrep, CodeQL, ESLint security, npm audit, pip-audit, Bandit, gitleaks, CI, pre-commit |
-| `references/asvs-checklist.md` | Before deploy or release | ASVS 5.0 Level 1 and Level 2 pre-deploy checklist for V1-V9 |
-| `references/agentic-ai-security.md` | When building tool-using agents or prompt-driven flows | OWASP ASI01-ASI10 mapped to agent rules and safe operating patterns |
+| `references/asvs-checklist.md` | Before deploy or release | ASVS 5.0.0 pre-deploy checklist by chapter (V-shortcodes) and requirement level L1/L2 |
+| `references/agentic-ai-security.md` | When building tool-using agents or prompt-driven flows | OWASP Top 10 for Agentic Applications 2026 (ASI01-ASI10) mapped to agent rules and safe operating patterns |
 | `references/llm-supply-chain.md` | When integrating LLMs, RAG pipelines, or consuming tool/agent output | Indirect prompt injection defense, RAG poisoning controls, tool output trust, CI adversarial tests |
-| `references/mcp-supply-chain.md` | Adding MCP servers or vetting agent tools | OWASP MCP Top 10, server vetting checklist, allowlist/pinning, sandbox, audit logging |
+| `references/mcp-supply-chain.md` | Adding MCP servers or vetting agent tools | OWASP MCP secure-development + third-party vetting guides (no official "MCP Top 10" exists — map MCP risks to LLM01/03/06 + Agentic Top 10 ASI02/04/05), server vetting checklist, allowlist/pinning, sandbox, audit logging |
 | `references/supply-chain-sbom.md` | Dependency auditing or release integrity | SBOM generation (Syft/Trivy), artifact signing (Cosign/Sigstore), dependency pin & audit CI |
 
 For current CVEs, advisories, package maintainer/source checks, release
@@ -106,8 +97,8 @@ Validate all input at trust boundaries with schema validation (Zod strict, Pydan
 ## 2. Authentication Checklist
 
 Use this checklist for login, session, token, password reset, magic link, OAuth, and admin access:
-- [ ] Passwords hashed with `argon2id` or `bcrypt`; use MD5, SHA1, or raw SHA256 only for non-security hashing.
-- [ ] Access tokens are short-lived (15 minutes recommended; up to 60 minutes acceptable per org policy).
+- [ ] Passwords hashed with `argon2id` (preferred); `scrypt` next if unavailable; `bcrypt` mainly for legacy; PBKDF2 only for FIPS-140 contexts. MD5/SHA1/raw SHA256 never for passwords. (OWASP Password Storage ordering, checked 2026-07-02.)
+- [ ] Access tokens are short-lived with reduced scope (RFC 9700). Exact TTLs are risk-based org policy — 15-60 minutes is a common starting range, not a standard-mandated number; cite your policy source.
 - [ ] Refresh tokens rotate on use and support family invalidation after reuse detection.
 - [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; keep session tokens out of `localStorage`.
 - [ ] OAuth uses Authorization Code + PKCE; avoid implicit flow (deprecated, token-in-URL exposure).
@@ -202,6 +193,21 @@ Treat the limits below as risk-based starting defaults, not fixed gates — tune
 Rate limiting is not only for brute force.
 Use it for enumeration, abuse, accidental loops, webhook replay storms, and AI-triggered runaway automation.
 
+## 6.5 Slopsquatting Gate — AI-Suggested Dependencies (STRICT)
+
+AI-recommended package names are a supply-chain attack surface: 2025 research found
+~20% of LLM-recommended packages in study settings did not exist, and hallucinated
+names recur — attackers register them (slopsquatting). Before adding ANY dependency
+suggested by an AI (including your own suggestions):
+
+- [ ] Package exists on the official registry with real release history (not days old)
+- [ ] Maintainer/org and linked source repository are plausible and consistent
+- [ ] No install scripts doing network/exec surprises; lockfile diff reviewed
+- [ ] Provenance/trusted publishing attestation when the registry supports it (npm/PyPI)
+
+Cross-refs: reviewer-side check in `dev-code-reviewer` §7; registry vetting depth in
+`references/supply-chain-sbom.md`.
+
 ## 7. Static Analysis Integration
 
 Security claims are incomplete without automated checks.
@@ -257,8 +263,9 @@ A security-sensitive change is complete only when every applicable item passes.
 - [ ] Rate limiting covers auth, public endpoints, and abuse-prone flows.
 - [ ] Static analysis runs clean enough for the repository policy: Semgrep, CodeQL or equivalent, dependency audit, and secret scan.
 - [ ] Error handling returns safe client messages and preserves structured server-side diagnostics.
-- [ ] ASVS Level 1 passes for all security-sensitive changes; Level 2 passes for auth, payments, PII, admin, or multi-tenant flows.
-- [ ] Agentic workflows resist prompt injection, tool misuse, exfiltration, and excessive agency.
+- [ ] ASVS 5.0.0 Level 1 requirements pass for all security-sensitive changes; Level 2 for auth, payments, PII, admin, or multi-tenant flows.
+- [ ] Agentic workflows resist prompt injection, tool misuse, exfiltration, and excessive agency (OWASP LLM Top 10 2025 + Top 10 for Agentic Applications 2026).
+- [ ] AI-suggested dependencies passed the §6.5 slopsquatting gate.
 
 ### Must-Pass Addenda for High-Risk Changes
 

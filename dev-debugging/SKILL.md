@@ -2,10 +2,9 @@
 name: dev-debugging
 description: "MUST USE for any real runtime debugging in any language — crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, and integration bugs. A 5-phase root-cause method: architecture check → investigate → analyze → hypothesize → implement. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석."
 metadata:
-  {
-    "short-description": "5-phase systematic root-cause debugging method for real failures in any language.",
-    "keywords": ["debug", "error", "stack trace", "root cause", "flaky", "regression", "crash", "bisect"]
-  }
+  short-description: "5-phase systematic root-cause debugging method for real failures in any language."
+  keywords: "debug, error, stack trace, root cause, flaky, regression, crash, bisect, trace-first, replay"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Debugging — Systematic Root Cause Analysis
@@ -109,6 +108,13 @@ probe can be built in reasonable time.
 5. **Instrument component boundaries** — for multi-layer systems (API → service →
    database, CI → build → deploy), log input/output at each boundary BEFORE
    proposing fixes.
+
+6. **Trace-first for distributed/async/agent failures (DEFAULT)** — capture the
+   evidence trail before hypothesizing: request IDs, OpenTelemetry spans/logs,
+   Playwright traces/videos, and exact agent tool transcripts. For order-dependent,
+   native, concurrency, or intermittent failures that logs cannot explain, use
+   time-travel/replay debugging (Microsoft TTD on Windows, rr on Linux) — see
+   `references/tool-guides.md`.
 
 ```
 For EACH component boundary:
@@ -226,6 +232,7 @@ Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 | Suppressive try/catch (catch-and-ignore, catch-and-return-null) | Fix at the source. Boundary catch with logging/re-throw is fine — see dev-architecture §4. |
 | Guessing at types, nulls, or undefined values | Add diagnostic logging, inspect actual runtime values |
 | "It works now" after changing something unrelated | Correlation ≠ causation — revert the change and test again |
+| Letting an AI auto-repair loop (test healer, auto-fix) mask the defect | Agentic repair aids run only AFTER root cause is understood; keep the failing repro as evidence |
 
 ---
 

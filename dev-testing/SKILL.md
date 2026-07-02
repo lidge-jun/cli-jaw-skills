@@ -2,10 +2,9 @@
 name: dev-testing
 description: "MUST USE for testing, QA, regression protection, and release verification — unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트."
 metadata:
-  {
-    "short-description": "Testing and QA router: strategy, harness choice, CI gates, TDD, and coverage.",
-    "keywords": ["test", "testing", "TDD", "coverage", "regression", "e2e", "playwright", "contract test", "CI"]
-  }
+  short-description: "Testing and QA router: strategy, harness choice, CI gates, TDD, and coverage."
+  keywords: "test, testing, TDD, coverage, regression, e2e, playwright, contract test, CI, property-based, mutation"
+  last-verified: "2026-07-02"
 ---
 # Testing & QA
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
@@ -23,7 +22,7 @@ This skill activates by change surface when work needs verification depth, regre
 | `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
 | `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |
 | `references/load-testing.md` | Performance/load testing, C3+ production readiness | k6/Locust, test types, measure→profile→verify, CI gates |
-| `references/ml-evaluation.md` | ML model/LLM evaluation, quality gates | LLM-as-judge, RAGAS, DeepEval, CI eval gate, regression detection |
+| `references/ml-evaluation.md` | ML model/LLM evaluation, quality gates | LLM-as-judge, RAGAS, DeepEval, CI eval gate, regression detection. CI eval gates are dataset-versioned + regression-based: pin prompts/models/retrieval config, preserve traces, calibrate judges on golden examples, fail only on meaningful regressions or safety failures |
 
 When tests depend on current external API behavior, provider docs, CI service
 behavior, test-environment versions, dependency audit evidence, or recorded
@@ -71,6 +70,16 @@ source-fetch and evidence-status rules.
 - If the failure is mysterious, **delegate methodology to `dev-debugging`**, then return here for the regression harness.
 - **STRICT (TEST-ANTI-FLAKE-01):** A time-based flake is a bug. Do not use sleep-based synchronization, retry-as-fix, or green-on-retry acceptance without a deterministic cause and harness correction.
 - Verification depth follows `dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
+
+### 1.6 Property-Based & Mutation Testing (verified 2026-07-02)
+
+| Technique | Use for | Default tools | When |
+|-----------|---------|---------------|------|
+| Property-based | Pure logic, parsers, serializers, state machines, API invariants | fast-check (TS), Hypothesis (Python) | DEFAULT for invariant-heavy code |
+| Mutation | Judging test-suite strength on critical domain logic, validators, security branches | Stryker (JS/TS), mutmut (Python) | Selective, after stable unit/property tests — not every PR |
+
+- Vitest 4 is the current runner baseline: Browser Mode is stable (visual regression via
+  `toMatchScreenshot`, Playwright trace generation, `expect.schemaMatching`).
 ---
 ## 2. Backend & API Testing
 > Deep reference: `references/backend-testing.md`
@@ -115,16 +124,18 @@ Contract tests protect the **frontend↔backend boundary**. They sit between API
 | schema-first contract | OpenAPI-led backends | OpenAPI validators, Schemathesis |
 | type-level contract | TS monorepos | shared types / codegen |
 | full-stack smoke | final user confidence | Playwright |
-### 3.3 Consumer Contract — TypeScript (PactV3)
-PactV3 workflow:
-1. Define interaction: provider state + request + expected response (use `MatchersV3` for flexible matching)
+### 3.3 Consumer Contract — TypeScript (Pact / PactV4)
+`PactV4` (aliased `Pact`) is the current interface and supports Pact Specification v4;
+treat `PactV3` as the legacy spec-v3 API. Workflow:
+1. Define interaction: provider state + request + expected response (matchers for flexible matching)
 2. Execute test against Pact mock server
 3. Assert consumer expectations
 4. Pact file auto-writes to `pacts/` → publish to broker → provider verifies
 
-See `references/backend-testing.md` for full PactV3 example.
+See `references/backend-testing.md` for a full example.
 ### 3.4 Schema Verification
-Use schema-based API testing (Schemathesis, Dredd) to verify OpenAPI contract compliance.
+Use schema-based API testing (Schemathesis) to verify OpenAPI/GraphQL contract
+compliance. (Dredd is legacy/inactive — do not adopt for new projects.)
 ### 3.5 Rules
 - Contract tests are **strongly recommended** for parallel FE/BE, public APIs, and cross-team contracts.
 - E2E success does **not** replace provider verification.
@@ -162,6 +173,7 @@ python scripts/with_server.py \
 - Prefer locator-based interactions and web-first assertions: `expect(page.get_by_role("button", name="Save")).to_be_visible()`, then `click()` on that locator.
 - Prefer user-facing locators, especially `get_by_role()` with an accessible name. Use `get_by_label()`, `get_by_placeholder()`, or `get_by_test_id()` when role/name cannot express the target.
 - Avoid `networkidle`, hard sleeps, and `wait_for_timeout()` in tests. Wait on observable app-ready signals, locator actions, or `expect()` assertions.
+- **AI-authored tests (DEFAULT):** Playwright MCP / Test Agents (planner/generator/healer) are generation-and-repair aids only — final acceptance still requires deterministic locators, web-first assertions, traces, and a human-readable failure artifact.
 ### 4.5 Reference Files
 - **examples/** - Examples showing common patterns:
   - `element_discovery.py` - Discovering buttons, links, and inputs on a page
@@ -319,7 +331,11 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
   ```
 
 ### CI Pipeline
-- Lighthouse a11y audit: score ≥ 90
+- **Gate order (verified 2026-07-02):** component axe (jest-axe/vitest-axe) → page axe
+  (@axe-core/playwright) → keyboard/focus/manual checks. **Blocking gate = zero
+  serious/critical axe violations + targeted manual checks.**
+- Lighthouse a11y score (≥90) is an advisory route-level smoke signal, NOT the blocking
+  gate — Lighthouse itself separates automated scoring from required manual checks.
 - Pa11y: page-level scanning for WCAG AA violations
 - Run a11y tests on EVERY page route, not just the homepage
 
@@ -345,15 +361,18 @@ npm audit --audit-level=high
 pip-audit --strict --desc
 ```
 ### 8.3 Semgrep Gate
+The `returntocorp/semgrep-action` wrapper is deprecated (stated by the repo itself) —
+run Semgrep natively in CI:
 ```yaml
-- uses: returntocorp/semgrep-action@v1
-  with:
-    config: >-
-      p/default
-      p/javascript
-      p/typescript
-      p/python
+semgrep:
+  runs-on: ubuntu-latest
+  container: semgrep/semgrep
+  steps:
+    - uses: actions/checkout@v4
+    - run: semgrep ci --config p/default --config p/javascript --config p/typescript --config p/python
 ```
+(Open-source alternative engine: Opengrep, the LGPL-2.1 community fork — see
+`dev-security/references/static-analysis.md`.)
 ### 8.4 Security Regressions
 Test missing auth (expect 401) and verify error.code matches contract for every auth-protected endpoint.
 ### 8.5 Rules

@@ -174,3 +174,19 @@ jobs:
 - Polyglot repositories: CodeQL plus the language-native tools above.
 
 Use this file with `dev-testing` for blocking CI gates and with `dev-code-reviewer` for review-start criteria.
+
+## 2026 Landscape Update (verified 2026-07-02)
+
+- `returntocorp/semgrep-action` is deprecated (stated by the repo) — run Semgrep
+  natively in CI (`semgrep ci`).
+- **Opengrep** is an active LGPL-2.1 community fork of Semgrep CE (Jan 2025, 10+
+  vendor consortium): restores cross-file taint analysis and Windows support removed
+  from CE; ~weekly releases. Choose Opengrep for fully-open-source engines; Semgrep
+  platform for the commercial rule/taint stack.
+- Complement `npm audit` with **osv-scanner** for cross-ecosystem dependency checks.
+
+| Claim | Source | Checked |
+|---|---|---|
+| semgrep-action deprecated | https://github.com/returntocorp/semgrep-action | 2026-07-02 |
+| Opengrep fork status/governance | https://www.opengrep.dev/ ; https://semgrep.dev/docs/faq/comparisons/opengrep | 2026-07-02 |
+| osv-scanner scope | https://google.github.io/osv-scanner/ | 2026-07-02 |

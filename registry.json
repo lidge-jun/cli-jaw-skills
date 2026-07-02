@@ -812,12 +812,12 @@
       "name_en": "Dev-Debugging — Systematic Root Cause Analysis",
       "emoji": "🐛",
       "category": "orchestration",
-      "description": "모든 언어의 실제 런타임 디버깅에 필수 사용. 크래시, 무음 실패, 잘못된 출력, 빌드/테스트 실패, flaky 테스트, 성능 회귀, 통합 버그를 다룹니다. 5단계 원인 분석 방법: architecture check → investigate → analyze → hypothesize → implement. 트리거: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
-      "desc_ko": "모든 언어의 실제 런타임 디버깅에 필수 사용. 크래시, 무음 실패, 잘못된 출력, 빌드/테스트 실패, flaky 테스트, 성능 회귀, 통합 버그를 다룹니다. 5단계 원인 분석 방법: architecture check → investigate → analyze → hypothesize → implement. 트리거: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
-      "desc_en": "MUST USE for any real runtime debugging in any language. Covers crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, and integration bugs. A 5-phase root-cause method: architecture check → investigate → analyze → hypothesize → implement. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
+      "description": "모든 언어의 실제 런타임 디버깅에 필수 사용: 크래시, 무증상 실패, 잘못된 출력, 빌드/테스트 실패, 플레이키 테스트, 성능 회귀, 통합 버그. 분산/비동기/에이전트 실패의 trace-first 증거 수집과 타임트래블/리플레이 지침을 포함한 5단계 근본원인 방법론. 트리거: debug this, why is X failing, flaky test, root cause, error, stack trace, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_ko": "모든 언어의 실제 런타임 디버깅에 필수 사용: 크래시, 무증상 실패, 잘못된 출력, 빌드/테스트 실패, 플레이키 테스트, 성능 회귀, 통합 버그. 분산/비동기/에이전트 실패의 trace-first 증거 수집과 타임트래블/리플레이 지침을 포함한 5단계 근본원인 방법론. 트리거: debug this, why is X failing, flaky test, root cause, error, stack trace, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_en": "MUST USE for any real runtime debugging in any language: crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, integration bugs. 5-phase root-cause method with trace-first evidence for distributed/async/agent failures and time-travel/replay guidance. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression.",
       "requires": null,
       "install": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "dev-devops": {
       "name": "Dev DevOps",
@@ -877,12 +877,12 @@
       "name_en": "Dev-Security — Production Security Hardening",
       "emoji": "🛡️",
       "category": "orchestration",
-      "description": "보안 민감 코드에 필수 사용. XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model을 다룹니다. 트리거: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
-      "desc_ko": "보안 민감 코드에 필수 사용. XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model을 다룹니다. 트리거: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
-      "desc_en": "MUST USE for security-sensitive code. Covers XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, and threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
+      "description": "보안 민감 코드에 필수 사용: XSS, CSRF, SQL 인젝션, JWT, OAuth, 시크릿, OWASP Top 10:2025, ASVS 5.0, 에이전틱 AI 보안(LLM Top 10 2025 + Agentic Top 10 2026), AI 제안 의존성 슬롭스쿼팅 게이트, 공급망, 위협 모델. 트리거: auth/login/token 코드, 신뢰 경계 입력 검증, 의존성/릴리스 표면, security/threat_model task_tags.",
+      "desc_ko": "보안 민감 코드에 필수 사용: XSS, CSRF, SQL 인젝션, JWT, OAuth, 시크릿, OWASP Top 10:2025, ASVS 5.0, 에이전틱 AI 보안(LLM Top 10 2025 + Agentic Top 10 2026), AI 제안 의존성 슬롭스쿼팅 게이트, 공급망, 위협 모델. 트리거: auth/login/token 코드, 신뢰 경계 입력 검증, 의존성/릴리스 표면, security/threat_model task_tags.",
+      "desc_en": "MUST USE for security-sensitive code: XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP Top 10:2025, ASVS 5.0, agentic AI security (LLM Top 10 2025 + Agentic Top 10 2026), slopsquatting gate for AI-suggested dependencies, supply chain, threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
       "requires": null,
       "install": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "dev-testing": {
       "name": "Dev Testing",
@@ -890,12 +890,12 @@
       "name_en": "Dev Testing",
       "emoji": "🧪",
       "category": "orchestration",
-      "description": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용. unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, TDD strategy를 다룹니다. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
-      "desc_ko": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용. unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, TDD strategy를 다룹니다. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
-      "desc_en": "MUST USE for testing, QA, regression protection, and release verification. Covers unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
+      "description": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용: 단위/통합/API/컨트랙트(Pact V4, Schemathesis), Playwright E2E(AI 테스트 에이전트 정책 포함), property-based/뮤테이션 테스트, CI, 보안 스캔, 커버리지, TDD 전략. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_ko": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용: 단위/통합/API/컨트랙트(Pact V4, Schemathesis), Playwright E2E(AI 테스트 에이전트 정책 포함), property-based/뮤테이션 테스트, CI, 보안 스캔, 커버리지, TDD 전략. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_en": "MUST USE for testing, QA, regression protection, and release verification: unit, integration, API, contract (Pact/PactV4, Schemathesis), Playwright E2E (incl. AI test-agent policy), property-based and mutation testing, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA.",
       "requires": null,
       "install": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     "dev-uiux-design": {
       "name": "Dev UI/UX Design",
