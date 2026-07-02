@@ -13,7 +13,7 @@ cd <project-name>
 ```
 
 Creates:
-- React 19 + TypeScript via Vite 7
+- React 19 + TypeScript via Vite 8 (Rolldown/Oxc default)
 - Tailwind CSS v4 through `@tailwindcss/vite`
 - CSS-first theme tokens in `src/index.css`
 - Path aliases (`@/`) configured

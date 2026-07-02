@@ -249,7 +249,7 @@ Infrastructure provisioning needed?
 └── Starting fresh?
     └── OpenTofu recommended (open governance, state encryption, Terraform-compatible)
 
-⚠️ CDKTF is deprecated (2025-12, HashiCorp) — do NOT adopt for new projects.
+⚠️ CDKTF is deprecated as of 2025-12-10 (HashiCorp) — repo archived/read-only, no further updates/fixes/compatibility work. Do NOT adopt for new projects.
 ```
 
 ---

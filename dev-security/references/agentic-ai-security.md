@@ -1,4 +1,4 @@
-# Agentic AI Security — OWASP ASI01-ASI10 for Skill Authors and Coding Agents
+# Agentic AI Security — OWASP Top 10 for Agentic Applications 2026 (ASI01-ASI10) for Skill Authors and Coding Agents
 
 Agentic systems create new attack surfaces because prompts, tools, memory, and generated code can all be manipulated.
 Use this file when the system can read prompts, call tools, browse files, handle secrets, or execute generated actions.

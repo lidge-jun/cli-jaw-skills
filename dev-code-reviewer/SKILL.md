@@ -380,7 +380,7 @@ the diff is substantially AI-generated (agent commits, Copilot/Cursor bulk chang
 | Check | AI failure mode | Action |
 |-------|-----------------|--------|
 | Invented APIs | Plausible-but-nonexistent methods/options | Verify each unfamiliar API against the installed version's docs |
-| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `dev-security` |
+| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `dev-security` §6.5 |
 | Missing authz edges | Happy-path handlers without ownership checks | Trace every new endpoint against §3.5 BOLA check |
 | Shallow/mirroring tests | Tests restating the implementation, tautologies | Apply REVIEW-REGRESS-01; require behavior-level assertions |
 | Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `dev-testing` §6.7 detection table |

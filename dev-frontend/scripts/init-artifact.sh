@@ -28,14 +28,14 @@ if ! command -v pnpm >/dev/null 2>&1; then
 fi
 
 echo "Creating React 19 + Vite 7 artifact: $PROJECT_NAME"
-pnpm create vite@7 "$PROJECT_NAME" --template react-ts
+pnpm create vite@8 "$PROJECT_NAME" --template react-ts
 
 cd "$PROJECT_NAME"
 
 echo "Installing React 19, Vite 7, Tailwind CSS v4, and UI utilities..."
 pnpm install
 pnpm add react@^19 react-dom@^19 class-variance-authority clsx tailwind-merge lucide-react
-pnpm add -D vite@^7 @vitejs/plugin-react @tailwindcss/vite tailwindcss @types/node
+pnpm add -D vite@^8 @vitejs/plugin-react @tailwindcss/vite tailwindcss @types/node
 
 echo "Configuring Vite with @tailwindcss/vite..."
 cat > vite.config.ts <<'EOF'

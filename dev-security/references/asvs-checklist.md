@@ -1,4 +1,4 @@
-# ASVS 5.0 Level 1 and Level 2 Pre-Deploy Checklist
+# ASVS 5.0.0 Level 1 and Level 2 Pre-Deploy Checklist
 
 Use this checklist before deploying any security-sensitive feature.
 Level 1 is the minimum for ordinary authenticated applications.

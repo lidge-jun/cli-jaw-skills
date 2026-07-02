@@ -27,7 +27,7 @@ It activates by change surface whenever work primarily touches APIs, servers, se
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
 | `references/core/health-checks.md`    | Production/long-lived services | Liveness, readiness, startup probes, dependency checks                 |
 | `references/core/process-isolation.md` | CPU-bound or untrusted work    | worker_threads vs child_process vs separate service, communication, resource limits |
-| `references/core/caching.md`           | Performance optimization       | Redis patterns, CDN, connection pooling, cache invalidation            |
+| `references/core/caching.md`           | Performance optimization       | Redis-compatible (Valkey/Redis) patterns, CDN, connection pooling, cache invalidation            |
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
 | `references/stacks/python.md`          | Python projects                | FastAPI/Django, Pydantic, async patterns, testing                      |
 | `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, ORM comparison         |
@@ -329,7 +329,7 @@ See `references/core/api-design.md` for protocol-specific patterns (REST, GraphQ
 - Never cache error responses or personalized CDN responses; protect cached PII with encryption and access controls.
 - Add stampede protection for hot keys and monitor hit rate, pool exhaustion, and stale-read incidents.
 
-See `references/core/caching.md` for TTL guidance, Redis patterns, CDN rules, invalidation triggers, connection pooling, and code examples.
+See `references/core/caching.md` for TTL guidance, Redis-compatible cache patterns, CDN rules, invalidation triggers, connection pooling, and code examples.
 
 ---
 

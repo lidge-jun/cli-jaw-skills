@@ -287,7 +287,7 @@ When reviewing any PR that adds/modifies module structure, verify:
 | Barrel abuse | Biome `noBarrelFile` or ESLint `no-restricted-imports` | pattern for internal index files |
 | Dead files/exports/deps | knip | `npx knip` |
 | Monorepo package consistency | sherif | `npx sherif` |
-| Module size | custom script | `find src -name '*.ts' -exec wc -l {} + | awk '$1 > 400'` |
+| Module size | custom script | `find src -name '*.ts' -exec wc -l {} + \| awk '$1 > 400'` |
 
 Tool roles verified 2026-07-02 (Sources: `references/circular-dependencies.md`).
 

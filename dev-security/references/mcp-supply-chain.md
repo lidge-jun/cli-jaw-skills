@@ -11,7 +11,7 @@ Cross-ref: `dev-security` §8 (Agent Configuration Security), `references/agenti
 
 ## OWASP References
 
-**OWASP MCP Top 10 (2025):**
+**OWASP MCP secure-development and third-party vetting guides (no official "MCP Top 10" is verified; map MCP risks to LLM01/03/06 + Agentic Top 10 ASI02/04/05):**
 
 | ID | Risk | Agent Impact |
 |----|------|-------------|

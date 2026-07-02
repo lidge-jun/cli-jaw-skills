@@ -1,13 +1,13 @@
 # Kubernetes — Deployment & Orchestration Patterns
 
 Last reviewed: 2026-07-02
-Applies to: Kubernetes 1.32+, Gateway API v1.5
+Applies to: Kubernetes 1.32+, Gateway API v1.6+
 When to read: K8s deployment tasks
 Canonical owner: dev-devops §3
 
 ---
 
-## §1 Gateway API v1.5 (2026 Standard)
+## §1 Gateway API v1.6+ (verified 2026-07-02; TCPRoute/UDPRoute GA in v1.6)
 
 Gateway API is the successor for new Kubernetes traffic routing; Ingress remains GA but feature-frozen.
 
