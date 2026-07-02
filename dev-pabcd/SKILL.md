@@ -28,6 +28,12 @@ Do NOT:
 The `/interview` slash command is a user-facing shortcut that triggers the same transition.
 As the Boss agent, always use `cli-jaw orchestrate I` directly.
 
+**Interview MUST settle two classifications before P** (DEFAULT, INTERVIEW-CLASSIFY-01):
+the work class (dev §0.0) and the **loop archetype** (§11.4). Ask: "does a verifier
+define done for this work, or only better?" This applies in HITL and goal mode alike.
+If the archetype is discovered only after candidates have already been burned, treat
+that as an Interview failure, not a Build failure.
+
 ## §2. How It Works
 
 PABCD is a forward progression with Interview return.
@@ -82,7 +88,13 @@ The gate is **form-only**: it checks that the block is well-formed and that `did
 narrative (booleans/placeholders are rejected); C→D additionally requires a non-empty
 `checkOutput` and, if present, `exitCode:0`. It does NOT cross-check the narrative against
 runtime state — the goal is to force a deliberate, specific claim, not to defeat a malicious
-agent. Saying "현재는 B입니다" without running the command does nothing: the state machine only
+agent.
+
+**Evidence pointers (DEFAULT, ATTEST-EVIDENCE-01):** even though the gate checks form
+only, write `did` with artifact pointers: plan/devlog path, changed-file list, verifier
+command, exit code, and relevant `cli-jaw goal update` checkpoint when goal mode is
+active. That lets a later reader or stronger future gate re-check the claim against
+the repo. Saying "현재는 B입니다" without running the command does nothing: the state machine only
 moves on the command.
 
 Threat model = laziness, not malice. Accepted residuals (NOT bugs): a fabricated `did`, the
@@ -122,6 +134,19 @@ Read project docs and dev skills first. Write the complete plan internally, then
 Write a plan with two parts:
 - **Part 1**: Easy explanation — what will be built, in non-developer terms.
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
+
+**Loop-spec header (DEFAULT, C2+):** open the plan with a compact loop-spec:
+Loop archetype (§11.4, carried from Interview) · Trigger · Goal (user-visible outcome) ·
+Non-goals · Verifier (the command/gate and what it measures, not only pass/fail) · Stop
+condition · Memory artifact (worklog/devlog/checkpoint path) · Expected terminal states
+(§11.2) · Escalation condition. Goal mode also states the §11.5 resource scope.
+
+**Instrumentation before candidates:** when the archetype is open-ended optimization,
+the loop-spec MUST include a divergence plan: descriptor axes, cell/archetype
+assignments, candidate count, deterministic selection rule, and telemetry schema. If
+the verifier only reports win/lose or score-only output, B's first work item is the
+telemetry, not a candidate. A scalar-only verifier plus discarded candidates is the §10
+plateau signature reproduced by design.
 
 If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT ask questions in P.
 
@@ -179,7 +204,7 @@ Implement the plan. You write all code by default. Workers are read-only verifie
 Do not create `structure/` or `devlog/` unless approved in P or explicitly requested by the user.
 
 After implementing, output worker JSON for verification. The worker checks your code exists and integrates cleanly.
-- If NEEDS_FIX → you fix the issues → re-verify
+- If NEEDS_FIX → you fix the issues → re-verify (repair thresholds: §11.3)
 - If DONE → report results to the user
 
 ⛔ Wait for user approval. When approved, advance with the canonical B→C attestation form in §2.1.
@@ -203,6 +228,13 @@ Summarize the entire flow:
 - What was planned (P), audited (A), built (B), checked (C)
 - List of files changed
 - Any follow-up items
+
+**Pessimistic close-out (DEFAULT, LOOP-PESSIMIST-01):** for loop/multi-pass work, D also
+records the negative delta: what did NOT improve, which hypothesis died this cycle, and
+one sentence answering "what evidence would show the current direction is wrong?" The
+next P quotes this (§10 LOOP-CONTINUITY-01). Treat D→IDLE→P as a context/bias-flush
+boundary: the next cycle resumes from disk artifacts (worklog, devlog, checkpoints,
+death log), not from the transcript's accumulated assumptions.
 
 State returns to IDLE automatically.
 
@@ -347,3 +379,82 @@ Grounding: observed in a 14-discard optimization plateau where a prefix-only rep
 and a hard draw-protection invariant locked a 3.5/8 score. Single-incident induction —
 treat the constants as starting values, keep the per-domain death log, and revise these
 rules when a second domain's evidence contradicts them.
+
+## §11. Loop-Engineering Alignment
+
+PABCD is the macro loop: phase-level control with gates. Loop engineering supplies the
+inner-loop rules for prompts, verifiers, repair, exploration, and resource bounds inside
+each PABCD phase.
+
+### §11.1 Loop values (DEFAULT)
+
+- **Feedback must change the next action.** A result that does not alter the next step is
+  a retry, not a loop. Read the failure delta before acting again.
+- **The verifier outranks the prompt.** Prefer deterministic evidence (tests, exit
+  codes, diffs, telemetry) over model self-assessment; use `cli-jaw dispatch` employees
+  as independent verifiers when the class/risk warrants it.
+- **Memory lives on disk**, not only in the transcript: worklog `## Plan`, devlog,
+  attestations, goal checkpoints, and death logs. The next iteration must resume from
+  artifacts alone.
+- **Budget exhaustion is not done.** Never report a budget stop as success.
+- **Interview does not solve intent transfer.** It produces an initial loop-spec; later
+  evidence may force `cli-jaw orchestrate I` because intent is refined cyclically.
+
+### §11.2 Terminal-state vocabulary (DEFAULT)
+
+D is the success exit, not the only exit. D summaries must name the actual report state:
+`DONE` (verified success), `NOOP` (nothing needed), `BLOCKED` (external dependency),
+`UNSAFE` (needs a human risk decision), `NEEDS_HUMAN` (judgment only the user can make),
+or `BUDGET_EXHAUSTED` (resources ran out; adopt best-so-far and say so). These are
+report states, not extra FSM states: cli-jaw still closes via D or `cli-jaw orchestrate
+reset`, and the D summary states the real terminal state.
+
+### §11.3 Repair-loop discipline (C→B returns)
+
+The B/C inner loop is: implement → run verifier → read the failure delta → repair only
+the failing delta → re-verify.
+
+- **DEFAULT (LOOP-REPAIR-01):** 2 consecutive failed repairs of the same failure means
+  stop patching and enter root-cause mode (`dev-debugging`). 3 means replan
+  (`cli-jaw orchestrate P`) or return to Interview (`cli-jaw orchestrate I`).
+- **HEURISTIC (LOOP-DOOM-01):** 3 attestation failures in the same phase within one
+  work-phase means no progress; force an Interview return. The server may not enforce
+  this, so the Boss agent self-applies it.
+
+### §11.4 Loop archetype by problem type (DEFAULT, LOOP-ARCHETYPE-01)
+
+Classify the work-phase's problem type before choosing the inner loop shape:
+
+- **Spec-satisfaction**: the verifier defines done (tests, contracts, `npx tsc
+  --noEmit`). Use the §11.3 repair loop; it can converge.
+- **Open-ended optimization**: the verifier defines only better (scores, win rates,
+  adversarial opponents). Repair loops plateau here. Use an explore-and-select loop:
+  generate diverse candidates in parallel, evaluate them on the same instances, keep
+  best-so-far, regenerate from the winner, and stop on plateau (§10
+  LOOP-PHASE-DEATH-01) or budget. The terminal state is `BUDGET_EXHAUSTED` with the
+  best candidate adopted, not `DONE`.
+
+A repair loop applied to an optimization problem is a category error; the fix is loop
+shape, not more cycles.
+
+### §11.4a Analysis-before-regeneration (DEFAULT, LOOP-REANALYZE-01)
+
+Repair fixes actions; analysis revises the model that generates them. In an
+explore-and-select loop, every generation MUST begin with an analysis deliverable:
+
+1. **Updated problem/opponent model** from evidence (telemetry, replays, failure deltas):
+   what did the opponent/environment actually do, and what does it imply?
+2. **Capability-gap hypotheses**: what can the artifact not currently sense or do? A gap
+   hypothesis may expand the allowed patch surface; that is a P-level amendment, which
+   is why new capabilities do not emerge from a surface-bounded repair loop.
+
+Candidates are sourced from these hypotheses (§10 LOOP-CANDIDATE-ANCHOR-01), and the
+next P quotes them (§10 LOOP-CONTINUITY-01). Regenerating straight from scores is a
+repair loop wearing an explore-and-select label.
+
+### §11.5 Unattended-loop resource policy (DEFAULT)
+
+Goal-mode loop-specs must state tool/credential scope, token/cost budget, and wall-clock
+bound. Record resource decisions in the plan and evidence-backed `cli-jaw goal update`
+checkpoints. For C4 surfaces, an unattended loop with unstated scope is an
+ESCALATE-class omission: stop and ask before running it.
