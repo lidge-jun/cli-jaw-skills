@@ -194,10 +194,8 @@ When a request has **ambiguous scope or unspecified technology**, clarify before
 skip entirely when tech and scope are already clear.
 
 - Present 2-3 options as `<TechName> — <plain explanation>` with project-relevant
-  pros/cons; ⚠️ flag complex/expensive/risky options.
-- Recommend one, citing project context; let the user decide (warn once on a risky pick).
-- **Over-engineering guard**: prefer the simplest option that meets stated needs.
-- **Limit — one confirmation round**: options → recommendation → confirm → move on.
+  pros/cons (⚠️ flag risky ones); recommend one citing project context; user decides.
+- **Over-engineering guard** + **one confirmation round**: options → recommendation → confirm → move on.
 
 ---
 
@@ -257,7 +255,13 @@ One logical change per PR/changeset — unrelated cleanup and drive-by refactors
 
 ---
 
-## 1.5 Pre-Write Codebase Search Obligation
+## 1.5 Necessity Gate & Pre-Write Search Obligation
+
+**DEV-NECESSITY-01 (DEFAULT — ponytail discipline, verified 2026-07-02):** before writing
+ANY code, check the no-code options in order — do nothing / delete / configure / reuse —
+and state which you rejected and why. Frame tasks exclusions-first (what NOT to add)
+before the goal. Never lazy about STRICT domains: trust boundaries, data loss, security,
+accessibility.
 
 **Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence. This section does not apply on the §0.1 fast path (C0/C1 — no new abstractions are being created).
 

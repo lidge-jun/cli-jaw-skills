@@ -43,3 +43,4 @@ This table is not exhaustive — the project's own config is the canonical rule 
 | Claim | Source | Checked |
 |---|---|---|
 | Biome barrel-file rule exists (`noBarrelFile`) | https://biomejs.dev/linter/rules/no-barrel-file/ | 2026-07-02 |
+| ponytail necessity-gate discipline (DEV-NECESSITY-01 source) | https://github.com/DietrichGebert/ponytail | 2026-07-02 |
