@@ -109,3 +109,17 @@ polars_df = pl.from_pandas(pandas_df)
 ```
 
 ---
+
+## Sources (router currency claims, checked 2026-07-02)
+
+| Claim | Source |
+|---|---|
+| Airflow 3.x current (3.2.2, 2026-05-29); DAG processor/SequentialExecutor changes | https://airflow.apache.org/docs/apache-airflow/stable/release_notes.html |
+| dbt Fusion current, separately documented/licensed | https://docs.getdbt.com/docs/fusion/about-fusion |
+| SQLMesh active alternative | https://sqlmesh.readthedocs.io/en/stable/ |
+| GX Core naming (OSS Python library) | https://docs.greatexpectations.io/docs/core/introduction/try_gx/ |
+| Soda Core = OSS library w/ data-contracts positioning | https://docs.soda.io/ |
+| pandas 3.x current (3.0.4, 2026-06-28) | https://pandas.pydata.org/docs/whatsnew/index.html |
+| Polars 1.4x current | https://github.com/pola-rs/polars/releases |
+| Delta Lake active (4.3.0) — no "Iceberg won" | https://github.com/delta-io/delta/releases ; https://iceberg.apache.org/releases/ |
+| MLflow 3.x (3.14.0), Feast, DVC active | https://github.com/mlflow/mlflow/releases/latest ; https://github.com/feast-dev/feast/releases/latest ; https://github.com/iterative/dvc/releases/latest |

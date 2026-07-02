@@ -265,3 +265,11 @@ Infrastructure provisioning needed?
 | CDKTF (new projects) | Deprecated by HashiCorp | OpenTofu or Pulumi |
 | Unpinned versions | Provider update breaks infra silently | `required_providers` with `~>` |
 | `terraform apply -auto-approve` in prod | No human review | Manual approval gate |
+
+## Sources (router currency claims, checked 2026-07-02)
+
+| Claim | Source |
+|---|---|
+| CDKTF deprecated 2025-12-10, archived | https://developer.hashicorp.com/terraform/cdktf ; https://github.com/hashicorp/terraform-cdk |
+| OpenTofu v1.12.x, MPL-2.0, Linux Foundation | https://github.com/opentofu/opentofu/releases ; https://opentofu.org/ |
+| Terraform BSL since 1.6 | https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license |

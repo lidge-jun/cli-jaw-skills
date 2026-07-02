@@ -247,3 +247,14 @@ docker build --secret id=npm_token,src=.npmrc .
 | No image scan in CI | Ship known CVEs to production | Trivy/Scout gate with `--exit-code 1` |
 | `docker push` without signing | No supply chain verification | Cosign sign + attest |
 | Multi-purpose single stage | Build tools in production image | Multi-stage: build → runtime |
+
+## Sources (supply-chain baseline, checked 2026-07-02)
+
+| Claim | Source |
+|---|---|
+| Distroless active, Debian-based, Cosign keyless-signed | https://github.com/GoogleContainerTools/distroless |
+| Chainguard/Wolfi production option (rebuilds, SBOM, SLAs) | https://edu.chainguard.dev/chainguard/chainguard-images/overview/ |
+| Trivy v0.72.0 (2026-06-30) | https://github.com/aquasecurity/trivy/releases |
+| Docker Scout SBOM-based matching | https://docs.docker.com/scout/ |
+| Syft/Grype/Cosign active | https://github.com/anchore/syft/releases ; https://github.com/anchore/grype/releases ; https://github.com/sigstore/cosign/releases |
+| DORA 2025: AI as amplifier | https://dora.dev/research/ |

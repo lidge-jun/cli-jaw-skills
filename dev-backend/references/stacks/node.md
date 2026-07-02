@@ -176,3 +176,19 @@ Before importing ANY package:
 2. If not, recommend adding: `npm install <package>`
 3. Verify the import path is correct
 4. Never hallucinate package names
+
+## Sources (router version claims, checked 2026-07-02)
+
+| Claim | Source |
+|---|---|
+| Node 24 Active LTS / Node 22 Maintenance | https://nodejs.org/en/about/previous-releases |
+| Express 5.1 npm default (2025-03-31) | https://expressjs.com/en/blog/2025-03-31-v5-1-latest-release/ |
+| Fastify v5.9.x current | https://fastify.dev/ |
+| Hono multi-runtime Web Standards | https://hono.dev/docs/ |
+| Zod v4 baseline + migration guide | https://zod.dev/v4 ; https://zod.dev/v4/changelog |
+| tRPC v11 current | https://trpc.io/docs |
+| OpenAPI latest = 3.2.0 | https://spec.openapis.org/oas/latest.html |
+| OTel JS/Python: traces/metrics Stable, logs Development | https://opentelemetry.io/docs/languages/js/ ; https://opentelemetry.io/docs/languages/python/ |
+| RFC 9745 Deprecation / RFC 8594 Sunset | https://www.rfc-editor.org/rfc/rfc9745.html ; https://www.rfc-editor.org/rfc/rfc8594.html |
+| Redis relicense 2024 / Redis 8 AGPLv3 / Valkey | https://redis.io/blog/redis-adopts-dual-source-available-licensing/ ; https://redis.io/blog/redis-8-ga/ ; https://valkey.io/ |
+| Temporal = durable workflows | https://docs.temporal.io/ |

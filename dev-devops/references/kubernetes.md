@@ -336,3 +336,12 @@ spec:
 | Secrets in ConfigMap | Base64 is not encryption; exposed in logs | K8s Secret + External Secrets Operator |
 | `kubectl apply` from CI | No audit trail, no drift detection | GitOps via ArgoCD |
 | Manual `kubectl edit` | Drift from desired state | All changes via Git |
+
+## Sources (router currency claims, checked 2026-07-02)
+
+| Claim | Source |
+|---|---|
+| Gateway API v1.6.0 (2026-06-29), TCPRoute/UDPRoute GA | https://github.com/kubernetes-sigs/gateway-api/releases |
+| Ingress GA-but-frozen, not removed | https://kubernetes.io/docs/concepts/services-networking/ingress/ |
+| Flagger Gateway API HTTPRoute canaries | https://docs.flagger.app/tutorials/gatewayapi-progressive-delivery |
+| Argo Rollouts v1.9.0 (2026-03-20) active | https://github.com/argoproj/argo-rollouts/releases |

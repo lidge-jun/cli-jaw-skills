@@ -2,10 +2,9 @@
 name: dev-data
 description: "MUST USE for data engineering and analysis work — pipelines, ETL/ELT, data quality, SQL optimization, schema evolution, backfills, and reporting. Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필."
 metadata:
-  {
-    "short-description": "Data pipelines, ETL/ELT design, quality validation, SQL optimization, and analysis.",
-    "keywords": ["dashboard-db", "sqlite", "audit-log-schema", "connector-data"]
-  }
+  short-description: "Data pipelines, ETL/ELT design, quality validation, SQL optimization, and analysis."
+  keywords: "ETL, pipeline, data quality, SQL optimization, backfill, streaming, data contracts, dashboard-db, sqlite"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Data — Data Engineering & Analysis Guide
@@ -109,6 +108,12 @@ Before any transformation, validate incoming data:
 - **Incremental processing.** Process only new/changed records when possible. Full reloads only when schema changes.
 
 ### dbt Integration Patterns
+
+Engine landscape (verified 2026-07-02): **dbt Core** remains the default; **dbt Fusion**
+is the separately-documented/licensed current engine (check its feature matrix and
+license before adopting); **SQLMesh** is a credible active alternative with plan/apply
+workflows. Choose per license posture and team workflow — do not assume Fusion pricing
+without a primary source.
 
 When using dbt for transformations, follow the **staging → intermediate → mart** layer architecture:
 
@@ -241,7 +246,7 @@ When analysis involves statistics:
 | Sub-second, Kafka-centric | Kafka Streams (embedded library) | Low-Medium |
 | Minutes acceptable | Batch with frequent scheduling | Low |
 
-**Kafka essentials for data engineers:**
+**Kafka essentials for data engineers (Kafka 4.x / KRaft era — no ZooKeeper):**
 - Partition by expected throughput — avoid excessive partitions
 - Use Schema Registry for backwards-compatible evolution
 - Default to at-least-once delivery + idempotent consumers
@@ -262,14 +267,18 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 
 ### Tool Selection
 
-| Category | Options |
+| Category | Options (verified 2026-07-02) |
 |----------|---------|
-| **Orchestration** | Airflow, Prefect, Dagster |
-| **Transformation** | dbt, Spark, plain SQL |
-| **Streaming** | Kafka, Kinesis, Pub/Sub |
-| **Quality** | Great Expectations, dbt tests, Soda, custom validators |
-| **Monitoring** | Prometheus, Grafana, Datadog, Monte Carlo |
-| **Local analysis** | DuckDB (in-process SQL), Polars (fast DataFrame), pandas (exploration/ML) |
+| **Orchestration** | Airflow 3.x (standalone DAG processor; `SequentialExecutor` removed), Prefect 3, Dagster |
+| **Transformation** | dbt Core / dbt Fusion / SQLMesh, Spark, plain SQL |
+| **Streaming** | Kafka 4.x (KRaft), Kinesis, Pub/Sub |
+| **Quality** | GX Core (Great Expectations' OSS library), dbt tests, Soda Core (data contracts), custom validators |
+| **Monitoring** | Prometheus, Grafana, Datadog, Monte Carlo (data observability) |
+| **Local analysis** | DuckDB (in-process SQL), Polars (fast DataFrame), pandas 3.x (exploration/ML) |
+
+Lakehouse format: do NOT assume "Iceberg won" — Delta Lake and Apache Iceberg are both
+active; choose by ecosystem (engine/vendor support, catalog, existing stack), not by
+mindshare claims.
 
 ### Tool Decision Matrix
 
@@ -283,7 +292,7 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 | **ML interop** | Excellent (scikit-learn, etc.) | Good (`.to_pandas()`) | Good (`.fetchdf()`) |
 | **File format** | CSV, JSON, Excel | CSV, Parquet, Arrow-native | CSV, Parquet, JSON, S3 direct |
 
-**Decision rule:**
+**Decision rule (HEURISTIC — size bands are guidance, not hard cutoffs):**
 
 | Data size / workflow | Recommended tool |
 |----------------------|------------------|

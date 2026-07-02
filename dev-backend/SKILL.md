@@ -2,10 +2,9 @@
 name: dev-backend
 description: "MUST USE for backend, API, server, or database work — API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화."
 metadata:
-  {
-    "short-description": "Framework-agnostic backend guidance for APIs, architecture, data access, and operations.",
-    "keywords": ["API", "REST", "endpoint", "middleware", "database", "ORM", "cache", "queue", "error handling"]
-  }
+  short-description: "Framework-agnostic backend guidance for APIs, architecture, data access, and operations."
+  keywords: "API, REST, endpoint, middleware, database, ORM, cache, queue, error handling, observability"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Backend — Production-Grade Backend Engineering
@@ -80,6 +79,13 @@ When the request has **unspecified technology or unclear scope**, clarify before
 
 If the user already specifies clear tech (e.g. "FastAPI로 REST API 만들어줘"), **skip this entirely**.
 
+**Node/framework defaults (verified 2026-07-02):** production uses Active/Maintenance
+LTS — Node 24 (Active LTS) for new services, Node 22 (Maintenance). Framework: Fastify
+for greenfield Node APIs (schema/Pino/plugin structure); Express 5 for legacy/ecosystem
+compatibility; Hono for edge/serverless/multi-runtime Web-Standards APIs. New TS
+validation baseline is Zod v4 (read the migration guide before upgrading v3 projects).
+Sources: `references/stacks/node.md` § Sources.
+
 For new Node backend source files, prefer `.ts` when the repo supports TypeScript or is greenfield. Inherit `dev` TypeScript strict-compatibility rules.
 If backend boundaries are unclear, read existing source-of-truth docs/logs first, then document routes, services, repositories, data stores, and runtime commands in the repo's existing SOT before broad implementation.
 
@@ -104,17 +110,21 @@ See `references/core/architecture.md` for full decision matrices.
 | Protocol | Choose When | Avoid When |
 |----------|-------------|------------|
 | **REST** | Public/partner APIs, simple CRUD, caching matters | Clients need flexible data shapes |
-| **GraphQL** | Mobile/BFF, multiple resources per request, bandwidth-constrained | Simple CRUD, server-to-server, file uploads |
+| **GraphQL** | Mobile/BFF client aggregation, multiple resources per request | Simple CRUD, server-to-server, file uploads |
 | **gRPC** | Internal microservices, high-perf binary, bidirectional streaming | Browser clients (without gRPC-Web), public APIs |
-| **tRPC** | TypeScript monorepo, internal tools, rapid prototyping | Polyglot environments, public APIs |
+| **tRPC** (v11) | TypeScript shared end-to-end: monorepo, internal tools | Polyglot environments, public APIs |
 
-**Hybrid pattern (industry consensus):**
+**Hybrid pattern (verified 2026-07-02):**
 ```
-Public/Partner → REST (OpenAPI 3.1)
-Mobile/Web BFF → GraphQL (Apollo Federation)
+Public/Partner → REST (OpenAPI 3.1+; prefer 3.2 where tooling supports it)
+Mobile/Web BFF → GraphQL (client aggregation; Apollo Federation ONLY when multiple
+                 independently-owned subgraphs must compose into a supergraph)
 Internal services → gRPC (Protobuf contracts)
-TS internal tools → tRPC (zero-codegen type safety)
+TS internal tools → tRPC v11 (zero-codegen type safety)
 ```
+Deprecations: emit `Deprecation` (RFC 9745) and optional `Sunset` (RFC 8594) headers,
+but client adoption is uneven — always pair with OpenAPI/changelog dates and deprecated-
+endpoint traffic dashboards.
 
 See `references/core/api-design.md` for protocol-specific patterns.
 
@@ -209,11 +219,12 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 
 | Queue | When | Notes |
 |-------|------|-------|
-| **BullMQ** (Redis) | Node.js, need retries + priorities + rate limiting | Most mature Node queue; requires Redis |
+| **BullMQ** (Redis-compatible) | Node.js, need retries + priorities + rate limiting | Most mature Node queue; needs Redis/Valkey |
 | **Celery** (Redis/RabbitMQ) | Python, distributed workers, periodic tasks | De facto Python standard |
-| **pg-boss** (PostgreSQL) | Node.js, already have Postgres, moderate scale | No extra infra; SKIP_LOCKED-based |
+| **pg-boss** (PostgreSQL) | Node.js, Postgres is the durable system of record, moderate scale | No extra infra; SKIP_LOCKED-based |
 | **Simple DB queue** (polling) | Small scale (<100 jobs/min), any language | `status` column + `SELECT FOR UPDATE SKIP LOCKED` |
 | **SQS / Cloud Tasks** | Serverless, managed, very high scale | No infra to manage; at-least-once delivery |
+| **Temporal** | Durable multi-step workflows: sagas, human-in-loop, long-running AI/business processes | Workflow engine, NOT a default queue replacement |
 
 **Required Safeguards:**
 
@@ -263,8 +274,8 @@ Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain erro
 
 | Library | When to Use |
 |---------|-------------|
-| **neverthrow** | Default choice — simple Rust-like `Result<T, E>` |
-| **Effect** | Complex domains needing full effect system |
+| **neverthrow** | Default choice — small explicit `Result<T, E>` for recoverable domain errors |
+| **Effect** | Only when the app benefits from a full effect runtime: typed errors, retries, resources, concurrency, tracing, service composition |
 
 **Rule:** Use `Result` where recoverable/domain errors are first-class. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
 
@@ -308,6 +319,10 @@ See `references/core/api-design.md` for protocol-specific patterns (REST, GraphQ
 ## 6. Caching Strategy
 
 **Decision rules:**
+- Say **Redis-compatible**, not Redis-only (verified 2026-07-02): prefer **Valkey**
+  (Linux Foundation, BSD) for permissive OSS/self-hosted defaults; choose Redis when
+  managed-service, module, or license posture justifies it (Redis relicensed 2024;
+  Redis 8 added AGPLv3).
 - Cache only after correctness is proven on the uncached path.
 - Prefer cache-aside by default; use write-through only when strong consistency matters.
 - Every key has a namespace, version, stable identifier, TTL, and invalidation trigger.
@@ -322,6 +337,9 @@ See `references/core/caching.md` for TTL guidance, Redis patterns, CDN rules, in
 
 **Decision rules:**
 - Production services emit traces, metrics, and structured JSON logs with `requestId`, `traceId`, and `spanId`.
+- **OTel maturity (verified 2026-07-02):** traces and metrics are Stable in JS/Python;
+  **logs are still Development** — the baseline is trace/span-correlated structured
+  logs + OTel traces/metrics; adopt OTel Logs export only where that maturity is acceptable.
 - Start with OTel auto-instrumentation, then add custom spans only for business-critical or non-instrumented work.
 - Never log PII, secrets, full request/response bodies, or noisy stack traces outside error boundaries.
 - Page only on customer-impacting signals tied to SLOs; use warning alerts for capacity trends.
@@ -347,12 +365,16 @@ Treat templates as starting points, not gospel. Strip to essentials, then add wh
 
 ---
 
-## 9. API Performance Targets
+## 9. API Performance Targets (HEURISTIC defaults, not universal SLOs)
 
-| Metric | Target | Escalation |
+These are aggressive healthy-service starting budgets. Each product MUST define its own
+SLOs from user journeys and alert on error-budget burn, not raw percentile thresholds
+alone (Google SRE SLO practice; see observability.md Sources).
+
+| Metric | Default budget | Escalation |
 |--------|--------|-----------|
 | p50 response time (reads) | ≤ 50ms | Profile with tracing |
-| p95 response time (reads) | ≤ 200ms target, alert at >500ms (see observability.md) | Optimization target |
+| p95 response time (reads) | ≤ 200ms, alert at >500ms (see observability.md) | Optimization target |
 | p95 response time (writes) | ≤ 500ms | Acceptable for complex writes |
 | p99 response time | ≤ 1000ms | Investigate outliers |
 | Error rate | < 0.1% target, alert at >1% (see observability.md) | Optimization target |

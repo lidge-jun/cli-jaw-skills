@@ -2,10 +2,9 @@
 name: dev-devops
 description: "MUST USE for infrastructure and delivery work — container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags."
 metadata:
-  {
-    "short-description": "Container builds, deploy pipelines, K8s, IaC, SRE, edge/serverless, ML infra.",
-    "keywords": ["container", "kubernetes", "deploy", "iac", "sre", "pipeline"]
-  }
+  short-description: "Container builds, deploy pipelines, K8s, IaC, SRE, edge/serverless, ML infra."
+  keywords: "container, kubernetes, deploy, iac, sre, pipeline, supply chain, sbom, gateway api"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-DevOps — Production Infrastructure & Delivery
@@ -26,7 +25,7 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | `references/cross-platform-release.md` | Cross-platform release proof | CI matrix vs local OS proof, Windows App/RDP prompts, desktop verification boundaries |
 | `references/homebrew.md` | Homebrew distribution | Formula vs Cask, audit/test, livecheck, artifact trust, install/uninstall proof |
 | `references/platform-engineering.md` | Platform / DORA / provider routing | DORA capabilities, platform guardrails, provider table rows, SLSA handoff |
-| `references/kubernetes.md` | K8s deployment | Gateway API v1.5, Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
+| `references/kubernetes.md` | K8s deployment | Gateway API (v1.6+), Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
 | `references/ci-cd-deploy.md` | Deploy pipeline | GHA reusable workflows, deploy strategies, rollback, GitOps, progressive delivery |
 | `references/iac.md` | Infrastructure code | OpenTofu/Terraform modules, Pulumi, state encryption, blast radius isolation |
 | `references/sre-foundations.md` | Operations/incidents | SLO/SLI/error budget, burn-rate alerting, incident response, blameless postmortem |
@@ -56,7 +55,7 @@ instead of relying on stale memory or copied snippets.
 |------|--------|
 | Multi-stage | Separate build and runtime stages; final image has no build tools |
 | Base image | Pin version + SHA256 digest: `node:22-slim@sha256:abc...` |
-| Distroless | Prefer `gcr.io/distroless/*` for runtime; no shell, no package manager |
+| Minimal runtime base | Prefer `gcr.io/distroless/*` (Debian-based, keyless-signed) — no shell/package manager; OR Chainguard/Wolfi images when nightly rebuilds, SBOM attestations, patch SLAs, or compliance matter |
 | Non-root | `USER nonroot:nonroot` (distroless) or create dedicated user |
 | Dependency-first copy | `COPY package.json bun.lock ./` → install → `COPY . .` for layer caching |
 | BuildKit secrets | `RUN --mount=type=secret,id=token ...` — never use `ARG` for secrets |
@@ -64,12 +63,13 @@ instead of relying on stale memory or copied snippets.
 
 For canonical Dockerfile templates, read `references/docker.md` §1.
 
-### §1.2 Image Security (STRICT)
+### §1.2 Image Security & Supply-Chain Baseline (STRICT)
 
-CRITICAL/HIGH findings → block push. No exceptions. Read
-`references/docker.md` §4 for scan/SBOM/sign command examples, and
-`../dev-security/references/supply-chain-sbom.md` for deeper SBOM/signing
-policy.
+CRITICAL/HIGH findings → block push. No exceptions. The 2026 baseline is ONE workflow,
+not separate tips: minimal base image (§1.1) → SBOM generation (Syft / Docker Scout) →
+vulnerability scan (Trivy or Grype) → sign + attest (Cosign/Sigstore) → digest-based
+promote (§2.4). Read `references/docker.md` §4 for scan/SBOM/sign command examples, and
+`../dev-security/references/supply-chain-sbom.md` for deeper SBOM/signing policy.
 
 ### §1.3 Anti-Patterns
 
@@ -160,9 +160,12 @@ jobs:
 | Probes | Liveness + readiness + startup |
 | Namespace | Environment isolation (dev/staging/prod) |
 
-### §3.2 Gateway API v1.5 (2026 Standard)
+### §3.2 Gateway API (v1.6+, verified 2026-07-02)
 
-Gateway API is the successor for new routing while Ingress remains GA but feature-frozen. Role separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
+Gateway API is the successor for new routing while Ingress remains GA but feature-frozen
+(not planned for removal). v1.6.0 (2026-06) graduates TCPRoute and UDPRoute to GA. Role
+separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
+Progressive delivery pairs directly with it: Flagger supports Gateway API HTTPRoute canaries.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -217,12 +220,13 @@ spec:
 
 ### §4.2 Tool Selection (HEURISTIC)
 
-| Tool | Best For | 2026 Status |
+| Tool | Best For | Status (verified 2026-07-02) |
 |------|----------|-------------|
-| OpenTofu (HCL) | Multi-cloud IaC, Terraform successor | ✅ Recommended |
+| OpenTofu (HCL) | Open-source/licensing-neutral IaC default (MPL-2.0, Linux Foundation; v1.12.x) | ✅ Recommended for OSS neutrality |
+| Terraform / HCP Terraform (BSL) | Vendor support or HashiCorp platform integration required | ✅ Active (BSL license — check competitive-use terms) |
 | Pulumi (TS/Python) | Teams preferring programming languages | ✅ Active |
 | AWS CDK | AWS-only infrastructure | ✅ Active (AWS only) |
-| **CDKTF** | — | ❌ **Deprecated** (2025-12) |
+| **CDKTF** | — | ❌ Deprecated 2025-12-10; repo archived/read-only, no further fixes |
 
 ### §4.3 Anti-Patterns
 
@@ -251,6 +255,10 @@ spec:
 SLIs measure **user experience**, not infrastructure metrics. "CPU is fine ≠ users are fine."
 
 Error budget = 1 − SLO (99.9% → 0.1% budget).
+
+**DORA 2025 (verified 2026-07-02):** AI acts as an *amplifier* — returns depend on the
+underlying sociotechnical system. For AI-agent-heavy delivery, invest in golden paths,
+guardrails, observability, provenance, and review gates, not just faster merges.
 
 ### §5.2 Error Budget Policy (DEFAULT)
 
