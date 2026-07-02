@@ -17,6 +17,7 @@ This skill activates by change surface: new project setup, feature/module scaffo
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
+| `references/implementation-log.md` | C3+/multi-phase/cross-session work units | Full devlog routine: decade-numbered plan folders, P-concretize → A-audit → D-archive loop, mainstream design-doc/RFC mapping |
 | `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
 | `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
 

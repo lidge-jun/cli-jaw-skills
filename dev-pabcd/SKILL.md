@@ -127,6 +127,10 @@ If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT
 
 ### §3.1 Jawdev Document Numbering
 
+Full documentation routine (P concretizes the docs, A audits them as a hard gate, D
+archives to `_fin/`, plus the mainstream design-doc/RFC translation table):
+`dev-scaffolding/references/implementation-log.md`.
+
 Devlog plan artifacts use decade-range numbering to separate concerns:
 
 | Range | Purpose | Examples |
