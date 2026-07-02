@@ -86,3 +86,20 @@
 - [ ] `font-display: swap` + `preload` on primary font
 - [ ] Every `<img>`/`<video>` has `width`+`height`
 - [ ] Lighthouse Performance ≥ 90
+
+## Browser Connection Budgets (moved from SKILL.md §6, 2026-07-02)
+
+| Protocol | Limit |
+|---|---|
+| HTTP/1.1 | 6 connections per domain (Chrome/Firefox) |
+| HTTP/2 | 1 TCP connection, ~100 concurrent streams |
+| WebSocket | Shares the HTTP/1.1 connection pool |
+
+Rules: never open >2 SSE/WebSocket connections to the same origin from one page; use
+connection multiplexing (single WebSocket with channel/topic routing); if >6 parallel
+requests needed use HTTP/2, batched endpoints, or domain sharding (last resort);
+preflight OPTIONS counts against the limit — consolidate CORS-heavy calls.
+Banned: unbounded per-component WebSockets; independent polling from multiple components
+(centralize into one subscription, fan out via state); SSE re-created on every remount
+without cleanup. Ownership: browser-side budgets live here (dev-frontend); server-side
+connection lifecycle (heartbeats, drain, registry) is `dev-backend` §1.

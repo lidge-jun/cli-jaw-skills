@@ -259,3 +259,45 @@ test('dialog is accessible', () => {
 - **NEVER** `h-screen` for full-height. ALWAYS `min-h-[100dvh]`
 - **NEVER** `w-[calc(33%-1rem)]`. ALWAYS CSS Grid
 - DESIGN_VARIANCE levels 4-10: aggressive single-column fallback on `< 768px`
+
+## Behavior Rules (moved from SKILL.md §8-§10, 2026-07-02)
+
+### Custom Hooks
+Create a custom hook only when it owns reusable behavior. Good candidates: subscription
+lifecycle, reusable async state machine, shared form-field behavior, media/query/observer
+integration, keyboard/focus behavior, external store wrapper. Avoid thin aliases for
+`useState`/`useToggle`/`useDebounce` unless the repo standardizes them.
+Rules: name describes behavior, not implementation; explicit stable inputs, small return
+shape; side effects justified by an external system with correct cleanup; honest
+dependencies (`useEffectEvent` for non-reactive callbacks); never hide server/router/form
+ownership inside a generic hook.
+
+### React Performance
+Keep components pure, state local, classify state ownership, use server rendering/caching
+boundaries, split expensive client islands, measure before memoizing.
+
+| Tool | Use when |
+|------|----------|
+| `memo` | child render is expensive and props are stable |
+| `useMemo` | calculation is expensive or identity is required |
+| `useCallback` | callback identity required by memoized child or external API |
+| `useTransition` | interaction should stay responsive during non-urgent work |
+| `useOptimistic` | mutation UX benefits from reversible optimistic state |
+| `Activity` | hidden UI should preserve state without active Effects |
+| `Suspense` | dynamic/async boundary needs isolated loading behavior |
+
+With React Compiler enabled, remove defensive memoization unless measurement or semantics
+justify it. Split at route boundaries and heavy components (charts, editors, 3D).
+Inspect React Performance Tracks (Chrome DevTools) before adding memoization.
+
+### Form Handling
+Simple forms: controlled components + schema validation (Zod). Complex (multi-step,
+dynamic fields): react-hook-form + Zod resolver. Always show field-level errors with
+`role="alert"`.
+
+## Sources
+
+| Claim | Source | Checked |
+|---|---|---|
+| React 19.2 line: Activity, useEffectEvent, PPR, Performance Tracks | https://react.dev/blog/2025/10/01/react-19-2 | 2026-07-02 |
+| React Compiler stable/optional | https://react.dev/learn/react-compiler/introduction | 2026-07-02 |

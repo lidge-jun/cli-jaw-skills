@@ -1,7 +1,10 @@
 ---
 name: dev-frontend
 description: "MUST USE for any frontend, web UI, or visual implementation work — building, styling, or redesigning pages/components, responsive layouts, motion, component architecture, and production-surface polish. Triggers: frontend, UI, component, CSS, responsive, animation, React, Vue, Svelte, Tailwind, layout, styling, redesign, mockup, anti-slop, 프론트엔드, UI 작업, 반응형, 디자인 수정."
-metadata: { short-description: "Frontend implementation with responsive, accessible, anti-slop UI guidance.", keywords: [frontend, UI, component, CSS, responsive, layout, animation, design implementation] }
+metadata:
+  short-description: "Frontend implementation with responsive, accessible, anti-slop UI guidance."
+  keywords: "frontend, UI, component, CSS, responsive, layout, animation, design implementation"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Frontend — Domain-Correct Frontend Engineering
@@ -37,7 +40,8 @@ It activates by change surface whenever the work is primarily frontend, UI, styl
 | `references/core/mobile-ux.md`            | Consumer/landing pages with mobile traffic | Thumb zone, touch targets, sticky CTA, mobile section composition, bottom sheet, portrait media |
 | `references/core/seo-baseline.md`         | Public-facing sites, SSR/SSG           | SEO meta, JSON-LD, robots.txt, GEO strategies, OG/Twitter cards                      |
 | `references/core/a11y-patterns.md`        | Interactive widgets, modals, forms     | ARIA patterns, focus management, keyboard nav, screen reader testing                  |
-| `references/core/performance-budget.md`   | Launch / audit                         | CWV targets, bundle budgets, font loading, image optimization, build gates            |
+| `references/core/performance-budget.md`   | Launch / audit                         | CWV targets, bundle budgets, font loading, image optimization, build gates, browser connection budgets |
+| `references/core/preflight-full.md`       | Launch / audit                         | Full ~40-item pre-flight checklist (router §14 keeps only blocking gates)             |
 | `references/core/theme-switching.md`      | Dark mode / theme                      | CSS custom properties toggle, FOWT prevention, transition, component checklist         |
 | `references/core/i18n-global.md`          | Multi-language / RTL                   | RTL layout, pluralization, Intl API, locale switching, content expansion               |
 | See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
@@ -196,137 +200,89 @@ Read `references/core/anti-slop.md` for full rules. Key standards:
 
 ## 6. Performance Guardrails
 
-- Animate `transform` and `opacity` only — layout properties (`top`, `left`, `width`, `height`) cause jank
-- Grain/noise filters → fixed pseudo-elements only, keep off scrolling containers
-- `will-change` sparingly — remove after animation completes
-- Z-index only for systemic layers (navbar, modal, overlay)
+- Animate `transform` and `opacity` only — layout properties cause jank
+- Grain/noise filters → fixed pseudo-elements only, off scrolling containers
+- `will-change` sparingly (remove after animation); z-index only for systemic layers
 - Memoize perpetual animations in isolated components
-
-### Browser Connection Limits
-
-| Protocol | Limit |
-|---|---|
-| HTTP/1.1 | 6 connections per domain (Chrome/Firefox) |
-| HTTP/2 | 1 TCP connection, 100 concurrent streams |
-| WebSocket | Shares the HTTP/1.1 connection pool |
-
-Rules:
-- Never open >2 SSE/WebSocket connections to the same origin from one page
-- Use connection multiplexing (single WebSocket with channel/topic routing) over multiple connections
-- If >6 parallel requests needed: use HTTP/2, batch API endpoints, or domain sharding (last resort)
-- Preflight OPTIONS requests count against the connection limit; consolidate CORS-heavy calls
-
-Banned:
-- Opening unbounded WebSocket connections per component instance
-- Polling from multiple components independently (centralize into one subscription, fan out via state)
-- Creating new SSE connections on every remount without cleanup
+- **Browser connection budgets** (≤2 SSE/WS per origin per page, multiplex over
+  multiplying, no per-component polling): detail + limits table in
+  `references/core/performance-budget.md` (this skill owns browser-side budgets;
+  server connection lifecycle is owned by `dev-backend` §1)
 
 ---
 
 ## 7. Accessibility Baseline
 
-- Semantic HTML (`<button>`, `<nav>`, `<main>`)
-- Keyboard navigation for all interactive elements
-- WCAG AA minimum (4.5:1 normal text, 3:1 large text)
-- Visible focus indicators (`focus-visible:ring-2`)
-- `prefers-reduced-motion` support
-- Skip link or equivalent bypass for repeated navigation
-- Focus must not be hidden by sticky headers, sticky bottom bars, sheets, or overlays
-- Icon-only buttons need accessible names (`aria-label`, visible text, or labelled-by)
-- Charts, status messages, loading progress, and AI streaming states need screen-reader labels or live regions where appropriate
+- Semantic HTML (`<button>`, `<nav>`, `<main>`); keyboard navigation for all interactive elements
+- WCAG AA minimum (4.5:1 normal text, 3:1 large text); visible focus indicators; `prefers-reduced-motion`
+- Skip link; focus never hidden by sticky headers/bars/sheets/overlays
+- Icon-only buttons need accessible names; charts/status/loading/AI-streaming states need labels or live regions
 - Do not encode meaning by color alone
-- Modals, menus, comboboxes, bottom sheets, and command palettes must have a complete keyboard path
+- Modals, menus, comboboxes, bottom sheets, command palettes: complete keyboard path —
+  trap focus, restore on close, Escape; arrow-key navigation; honest `aria-expanded`/
+  `aria-haspopup`/`aria-activedescendant`; tab order follows visual flow
 - Stress-test Korean long labels and screen-reader names; clipped Hangul is a failure
-- Pointer targets follow WCAG 2.2 AA target-size rules; 44×44px is a conservative product baseline, not the only legal minimum
+- Pointer targets follow WCAG 2.2 AA target-size (24×24 CSS px minimum with exceptions);
+  44×44px is a conservative product baseline, not the legal minimum
+- Test with screen reader and keyboard-only navigation; deep patterns → `a11y-patterns.md`
 
 ---
 
-## 8. Custom Hooks
+## 8. React Behavior Rules (hooks · performance · forms)
 
-Create a custom hook only when it owns reusable behavior, not just because code is a few lines long.
+Full guidance moved to `references/stacks/react.md` § Behavior Rules. Router decisions:
 
-Good hook candidates: subscription lifecycle, reusable async state machine, form-field behavior shared across components, media/query/observer integration, keyboard/focus behavior, external store wrapper.
-
-Avoid hooks that are merely thin aliases for `useState`, `useToggle`, `useDebounce`, or one-off component logic unless the repo already standardizes them.
-
-Hook rules:
-- The hook name describes behavior, not implementation
-- Inputs are explicit and stable; return shape is small
-- Side effects are justified by an external system; cleanup is correct
-- Dependencies are honest; use `useEffectEvent` for non-reactive callbacks inside Effects
-- Do not hide server state, router state, or form ownership inside a generic hook
+| Decision | Rule |
+|----------|------|
+| New custom hook | Only when it owns reusable behavior (subscription lifecycle, async state machine, shared form-field behavior) — never a thin `useState` alias |
+| Memoization | Measure first; with React Compiler enabled, remove defensive `memo`/`useMemo`/`useCallback` unless semantics require identity |
+| Perf strategy | Pure components, local state, correct state ownership (§12 table), split expensive client islands |
+| Forms | Simple → controlled + schema (Zod); complex/multi-step → react-hook-form + resolver; field errors with `role="alert"` |
 
 ---
 
-## 9. React Performance
+## 12. 2026 Frontend Platform Rules (verified 2026-07-02)
 
-Default performance strategy: keep components pure, keep state local, classify state ownership correctly, use server rendering/caching boundaries, split expensive client islands, measure before memoizing.
+Use this section when modernizing or creating React/Next/Vite frontends. Prefer project
+conventions first. Version-detail depth lives in `references/stacks/react.md` / `nextjs.md`.
 
-| Tool | Use when |
-|------|----------|
-| `memo` | child render is expensive and props are stable |
-| `useMemo` | calculation is expensive or identity is required |
-| `useCallback` | callback identity is required by memoized child or external API |
-| `useTransition` | interaction should stay responsive while non-urgent work completes |
-| `useOptimistic` | mutation UX benefits from reversible optimistic state |
-| `Activity` | hidden UI should preserve state without active Effects |
-| `Suspense` | dynamic/async boundary needs isolated loading behavior |
+### React (19.2.x line)
 
-If React Compiler is enabled, remove defensive memoization unless measurement or semantics justify it. Split at route boundaries and heavy components (charts, editors, 3D).
+- **`<Activity>`** (stable): state-preserving hidden UI (tabs, drawers, route shells) — not for security hiding or active subscriptions.
+- **useEffectEvent**: non-reactive Effect logic needing latest props/state; never call during render or pass to children.
+- **Partial Pre-rendering**: static shell + explicit dynamic holes + Suspense; nothing request-specific in the shell.
+- **React Compiler** (stable, optional): measure before memoizing (§8).
+- **Performance gate**: inspect React Performance Tracks in Chrome DevTools before adding memoization or blaming rendering.
 
----
+### Next.js (16.x)
 
-## 10. Form Handling
+- Turbopack is the default bundler (webpack is opt-in `--webpack`).
+- **Cache Components** (`cacheComponents: true`): dynamic by default; cache only explicit `use cache` + `cacheLife` + `cacheTag`; PPR is expressed through Cache Components (the old `experimental.ppr` flag is gone).
+- Never cache user/session data without a user-scoped cache key.
+- Server Actions: validate server-side, authorize against the resource, revalidate affected tags.
 
-For simple forms, use controlled components with schema validation (Zod). For complex forms (multi-step, dynamic fields), use `react-hook-form` + Zod resolver. Always show field-level errors with `role="alert"`.
+### Modern CSS (Baseline check before shipping)
 
----
-
-## 11. Accessibility Quick-Wins
-
-Beyond the baseline (§7):
-- Focus management: trap focus in modals, restore on close, handle Escape
-- Arrow keys navigate lists and menus; Enter/Space activate buttons and links
-- Tab order follows visual flow
-- `aria-expanded`, `aria-haspopup`, `aria-activedescendant` on composite widgets
-- Test with screen reader and keyboard-only navigation
-
----
-
-## 12. 2026 Frontend Platform Rules
-
-Use this section when modernizing or creating React/Next/Vite frontends. Prefer project conventions first.
-
-### React 19.2+
-
-- **Activity**: Use `<Activity>` for state-preserving hidden UI (tabs, drawers, route shells). Do not use for security hiding or active subscriptions.
-- **useEffectEvent**: For non-reactive logic inside Effects that needs latest props/state without resubscribing. Never call during render or pass to children.
-- **Partial Pre-rendering**: Design pages as static shell + explicit dynamic holes + Suspense boundaries. No `Date.now()`, `Math.random()`, or request-specific data in the pre-rendered shell.
-- **React Compiler**: Do not cargo-cult `memo`/`useMemo`/`useCallback`. Measure first unless referential stability is semantically required.
-
-### Next.js 16
-
-- Turbopack is default. Do not add custom webpack config unless proven unsupported.
-- **Cache Components** (`cacheComponents: true`): dynamic rendering is default; cache only what you explicitly mark with `use cache` + `cacheLife` + `cacheTag`.
-- Never cache user/session-specific data without explicit user-scoped cache key.
-- Server Actions: validate input server-side, authorize against the resource, revalidate affected cache tags.
-
-### Modern CSS
-
-Prefer native CSS before JS layout observers or animation libraries:
-- **Container queries** for component-level responsive layout (not viewport)
-- **`:has()`** for parent/sibling state selection — keep selectors narrow
-- **CSS nesting** for modularity — keep shallow, avoid specificity tunnels
-- **Subgrid** when nested content must align to outer grid
-- **View Transitions** for meaningful state continuity — respect `prefers-reduced-motion`
-- **Modern units**: `dvh/svh/lvh` over `100vh`, logical properties over `left/right`
-- **Tailwind v4**: CSS-first configuration, use theme variables over hardcoded values
+Prefer native CSS before JS layout observers/animation libraries: container queries,
+`:has()`, subgrid (all Baseline widely-available), View Transitions (same-document,
+Baseline 2025 newly-available — provide fallback for cautious audiences),
+`text-wrap: balance/pretty`, `dvh/svh/lvh` units, logical properties, shallow CSS
+nesting. **Tailwind v4** (CSS-first config, theme variables). Record Baseline status
+(widely/newly/caution) for each modern feature used and decide fallback per audience.
 
 ### Build Tools
 
-- **Vite 7**: ESM-only, Node 20.19+/22.12+, baseline-widely-available target
-- **Rolldown**: experimental drop-in for Vite; pin versions, compare output before production
-- Do not introduce Webpack-era config unless the existing app is already Webpack-bound
+- **Vite 8**: Rolldown/Oxc is the integrated default bundler (`rolldown-vite` is only a
+  Vite 7 migration bridge). Node 20.19+/22.12+; Baseline target Chrome/Edge 111,
+  Firefox 114, Safari 16.4.
+- Detect Vite 7 vs 8 before editing config — don't assume Rollup/esbuild-era plugins.
+- Do not introduce Webpack-era config unless the app is already Webpack-bound.
+
+### Agent-visible runtime diagnostics (DEFAULT)
+
+Prefer dev servers that surface browser/runtime errors to the CLI/agent before relying
+on static review: Vite 8 forwards browser console to the dev server (auto-activates for
+coding agents); Next 16 ships DevTools MCP. Wire these before debugging rendered behavior.
 
 ### State Classification
 
@@ -377,99 +333,45 @@ For AI-native interfaces (chat, agent, copilot), design explicit states: empty �
 
 ## 13. Error Boundaries
 
-React Error Boundary pattern:
-- Wrap each major section (not the entire app) in an Error Boundary
-- Error boundary renders: friendly message + retry button + report link
-- Log error to monitoring service (Sentry, etc.) in componentDidCatch
-- Never show stack traces to end users
-
-Error state hierarchy:
-1. Field-level: inline validation message
-2. Form-level: summary at top of form
-3. Section-level: Error Boundary with retry
-4. Page-level: `error.tsx` / error page
-5. App-level: root Error Boundary → offline/crash page
+Wrap each major section (not the whole app); boundary renders friendly message + retry +
+report link; log to monitoring in `componentDidCatch`; never show stack traces to users.
+Error hierarchy: field-inline → form-summary → section Error Boundary → page `error.tsx`
+→ root boundary (offline/crash page).
 
 ---
 
-## 14. Pre-Flight Checklist
+## 14. Pre-Flight Gates
 
-Checklist items apply to production surfaces (`dev` §0.4 shared definition); prototypes,
-spikes, and internal demos are exempt unless the user asks for production polish.
+Gates apply to production surfaces (`dev` §0.4 shared definition); prototypes and
+internal demos are exempt unless production polish is requested.
+**Full ~40-item checklist: `references/core/preflight-full.md`** — run it for launches
+and audits. The blocking gates below are the minimum for every production delivery:
 
-Before delivering:
-- [ ] Domain-correct direction chosen and committed
-- [ ] Product surface, locale, density, asset need, soft 3D gate, and motion intensity classified
-- [ ] Anti-slop patterns enforced (§5)
-- [ ] Oversized hero text avoided unless this is a true hero surface
-- [ ] Required assets are real, semantic, rendered, and not generic decoration
-- [ ] Korean-first UI follows CJK typography and Korean UX writing rules
-- [ ] Soft 3D/miniature/character assets pass domain and semantic gates
-- [ ] Mobile layout collapse guaranteed with per-section-type rules (see layout-discipline.md § Responsive Transforms)
-- [ ] Full-height sections use `min-h-[100dvh]` not `h-screen`
-- [ ] Page containment: `max-w-[1400px] mx-auto` wrapper present (see responsive-viewport.md)
-- [ ] Tested at 768px (tablet) and 1024px (split-screen) in addition to mobile/desktop
-- [ ] Touch targets ≥ 44px on mobile; no hover-only interactions (see mobile-ux.md)
-- [ ] Responsive images use `srcset`/`sizes` or `<picture>` for art direction (see responsive-viewport.md)
-- [ ] Safe area padding for notched devices: `env(safe-area-inset-*)` on fixed elements
+- [ ] Design Read declared before code (dev-uiux-design §2); surface/locale/density/asset/motion classified (§0)
+- [ ] Anti-slop enforced (§5) — incl. emoji-as-icon ban (STRICT)
 - [ ] Loading, empty, and error states provided
-- [ ] State classified before adding store/Context/Effect/cache (§12)
-- [ ] Effects sync with external systems; derived state is not Effect-synced
-- [ ] Container queries considered before viewport-query or JS layout workarounds
-- [ ] View transitions respect reduced motion
-- [ ] shadcn components follow local registry and token conventions
-- [ ] AI UI states are honest: no fake streaming, citations, or tool calls
-- [ ] Forms validate with schema and show field-level errors (§10)
-- [ ] Focus management on modals and popovers (§11)
-- [ ] Desktop/mobile/narrow screenshots checked for overlap, clipping, and asset rendering
-- [ ] Interactive components isolated as Client Components (if RSC)
-- [ ] Design Read declared before code generation (see dev-uiux-design §2)
-- [ ] Eyebrow count ≤ ceil(sectionCount / 3) (see layout-discipline.md)
-- [ ] Section layout diversity: ≥4 different families per 8 sections
-- [ ] Color/shape/theme locks consistent across all sections (see consistency-locks.md)
-- [ ] SEO meta tags present for public pages (`<title>`, `<meta description>`, canonical, OG) — see `seo-baseline.md`
-- [ ] JSON-LD structured data matches page type
-- [ ] Accessibility: modals trap focus, live regions for dynamic content — see `a11y-patterns.md`
-- [ ] Lighthouse Performance ≥ 90, no JS bundle > 150KB compressed — see `performance-budget.md`
-- [ ] Hero image preloaded, below-fold images lazy-loaded
-- [ ] Theme toggle works: light/dark/system, no FOWT — see `theme-switching.md`
-- [ ] All colors use CSS custom properties (theme-ready)
-- [ ] i18n: no hardcoded strings, CSS logical properties, Intl API for dates/numbers — see `i18n-global.md`
-- [ ] Error Boundaries wrap major sections, not entire app (§13)
-- [ ] Stack-specific rules followed (see `references/stacks/`)
+- [ ] Accessibility baseline (§7): keyboard path, focus management, contrast, reduced motion
+- [ ] Mobile collapse per section type + touch targets ≥44px + `min-h-[100dvh]` + page containment
+- [ ] State classified before adding store/Context/Effect/cache (§12 table)
+- [ ] Forms: schema validation + field-level errors (§8)
+- [ ] Korean-first UI: CJK typography + `word-break: keep-all` + orphan screenshot check
+- [ ] AI UI states honest: no fake streaming, citations, or tool calls
+- [ ] Core Web Vitals are the performance gate (INP ≤200ms field data); Lighthouse
+      Performance score is an advisory smoke signal, not the blocker — budgets in `performance-budget.md`
+- [ ] Rendered verification run (§ Verification grounding): screenshots at mobile/tablet/desktop
+- [ ] Error Boundaries wrap major sections (§13); stack-specific rules followed (`references/stacks/`)
 
 ---
 
 ## 15. Backend Contract & Security Alignment
 
-Frontend does not operate in isolation. When consuming backend APIs or implementing security-sensitive UI:
-
-### 15.1 Contract Ownership
-
 | Responsibility | Owner |
 |---------------|-------|
 | Response envelope shape (`success`, `data`, `error`, `meta`) | `dev-backend` defines, `dev-testing` verifies |
-| Consumer-side fixture alignment | **Frontend** — keep mocks in sync with `fixtures/contracts/` |
-| Contract test triggers | Frontend payload changes → update contract tests BEFORE merging (see `dev-testing` §3) |
-| Error display mapping | Frontend maps `error.code` to user-facing messages; never parse `error.message` for logic |
+| Consumer-side fixture alignment | **Frontend** — keep mocks in sync with `fixtures/contracts/`; payload changes update contract tests BEFORE merging (`dev-testing` §3.5) |
+| Error display mapping | Frontend maps `error.code` to messages; never parse `error.message` for logic |
+| CSP/XSS/token storage | Policy: `dev-security` §5/§2. Frontend implements: no inline scripts/`eval`; sanitize `dangerouslySetInnerHTML` (DOMPurify) or avoid; `httpOnly` cookies over `localStorage`; never flash protected content |
 
-**When a frontend change touches API consumption:**
-1. Check if the response shape assumption still holds
-2. If changed, update or add a contract test first (see `dev-testing` §3.5)
-3. Align frontend mocks/fixtures with backend golden examples
-
-### 15.2 Security Responsibilities
-
-| Control | Policy Owner | Implementation Owner |
-|---------|-------------|---------------------|
-| CSP directives | `dev-security` §5 | Frontend (no inline scripts, no `eval`, no surprise 3rd-party scripts) |
-| CORS | `dev-security` §5 | Backend middleware (`dev-backend` §4) |
-| XSS prevention | `dev-security` §5 | Frontend (avoid `dangerouslySetInnerHTML`; if needed, sanitize with DOMPurify + CSP defense) |
-| Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
-| Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
-
-### 15.3 Testing Integration
-
-- Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
-- Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5
-- When backend error codes change, frontend error-mapping tests must be updated
+Playwright smoke validates rendered flows AFTER API + contract tests pass; frontend unit
+tests mock the same envelope shape as `dev-backend` §5; error-code changes update
+frontend error-mapping tests.

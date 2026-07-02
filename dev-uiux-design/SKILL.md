@@ -1,7 +1,10 @@
 ---
 name: dev-uiux-design
 description: "MUST USE for UI/UX direction and design judgment — vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로."
-metadata: { short-description: "Design judgment for vague briefs, UX states, typography, layout, logos, and brands.", keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo] }
+metadata:
+  short-description: "Design judgment for vague briefs, UX states, typography, layout, logos, and brands."
+  keywords: "design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo"
+  last-verified: "2026-07-02"
 ---
 
 # UI/UX Design: Intent Discovery, Patterns & Product Vocabulary
@@ -275,10 +278,14 @@ Rapid lookup: user word → concrete starting point.
 | 감성적으로 | Aesthetic | Editorial | No | 0–4px | 1–3 | Serif display |
 | 트렌디하게 | Trendy | Ask for reference | Either | 12px | 4–7 | Variable font |
 
-### Font Selection Guidelines
+### Font Selection Guidelines (STYLE_SAMPLE)
 
 - **Primary default**: Geist (modern SaaS, Vercel ecosystem)
-- **Korean-first**: Pretendard (한글 최적화, Toss/당근 등 국내 서비스 표준)
+- **Korean-first**: Pretendard — strong Korean-first default (Pretendard Variable
+  available); verify brand/product font rules before claiming any specific Korean
+  company standard
 - **Warm/editorial**: Outfit or Cabinet Grotesk
 - **Premium/luxury**: Satoshi or system thin weights
-- **Avoid defaulting to Inter** (DEFAULT) — it is the #1 AI-generated UI tell. Use it when the user explicitly requests it or the project already uses it.
+- **Avoid defaulting to Inter** (DEFAULT) — a widely recognized AI-generated-UI tell
+  (judgment rule, not a measured fact). Use it when the user requests it or the project
+  already uses it.

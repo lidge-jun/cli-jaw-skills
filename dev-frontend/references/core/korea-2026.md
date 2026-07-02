@@ -77,3 +77,20 @@ For Korean copy, read `ux-writing-ko.md`. The short version:
 - minimal honorifics
 - no translationese
 - no childish friendliness in high-trust flows
+
+## Verified 2026 Additions (2026-07-02)
+
+- **Pretendard** remains a strong Korean-first default; current release line includes
+  `Pretendard Variable` 1.3.9. Do not claim it as "the standard of Toss/당근" without a
+  product-specific source — verify brand font rules per product.
+- **W3C KLREQ** (Korean Layout Requirements) has a 2026-03-21 note version — the
+  authoritative reference for Korean line-breaking and orphan rules.
+- **Rendered screenshot gate**: after responsive changes, verify `word-break: keep-all`,
+  `text-wrap: balance` on short descriptors, and no lone particles/endings ("합니다.",
+  "화.") at target viewports. No browser API detects Korean orphans — screenshots are the gate.
+
+| Claim | Source | Checked |
+|---|---|---|
+| Pretendard Variable 1.3.9 | https://github.com/orioncactus/pretendard | 2026-07-02 |
+| KLREQ note 2026-03-21 | https://www.w3.org/TR/klreq/ | 2026-07-02 |
+| keep-all CJK behavior | https://developer.mozilla.org/en-US/docs/Web/CSS/word-break | 2026-07-02 |
