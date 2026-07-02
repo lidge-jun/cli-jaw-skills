@@ -1,15 +1,16 @@
 ---
 name: dev-testing
-description: "Testing guide for orchestrated sub-agents. Covers strategy selection, backend/API harnesses, contract verification, Playwright E2E, CI pipelines, TDD enforcement, security scanning, and coverage gates. Inject when testing or regression verification is required."
-license: Complete terms in LICENSE.txt
+description: "MUST USE for testing, QA, regression protection, and release verification — unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트."
 metadata:
   {
-    "keywords": ["connector-test", "api-test", "reminder-test", "board-test"]
+    "short-description": "Testing and QA router: strategy, harness choice, CI gates, TDD, and coverage.",
+    "keywords": ["test", "testing", "TDD", "coverage", "regression", "e2e", "playwright", "contract test", "CI"]
   }
 ---
 # Testing & QA
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
+This skill activates by change surface when work needs verification depth, regression coverage, or a reproducible test harness.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -68,6 +69,8 @@ source-fetch and evidence-status rules.
 - Use factories / builders for setup; avoid repeated inline blobs.
 - A fast real dependency beats a mock. A mock beats an untested branch.
 - If the failure is mysterious, **delegate methodology to `dev-debugging`**, then return here for the regression harness.
+- **STRICT (TEST-ANTI-FLAKE-01):** A time-based flake is a bug. Do not use sleep-based synchronization, retry-as-fix, or green-on-retry acceptance without a deterministic cause and harness correction.
+- Verification depth follows `dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
 ---
 ## 2. Backend & API Testing
 > Deep reference: `references/backend-testing.md`
@@ -133,13 +136,13 @@ Use Playwright after API and contract tests are already trustworthy. Browser tes
 **Helper Scripts Available**:
 - `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)
 Run scripts with `--help` first — treat as black boxes to avoid context window pollution.
-## Decision Tree: Choosing Your Approach
+### 4.1 Decision Tree: Choosing Your Approach
 ```
 User task → Static HTML? → Read file → find selectors → write Playwright script
          → Dynamic app? → Server running? → No: `python scripts/with_server.py --help`
                                            → Yes: Recon-then-action (navigate → screenshot → selectors → act)
 ```
-## Example: Using with_server.py
+### 4.2 Example: Using with_server.py
 ```bash
 # Single server:
 python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_automation.py
@@ -150,20 +153,21 @@ python scripts/with_server.py \
   --server "cd frontend && npm run dev" --port 5173 \
   -- python your_automation.py
 ```
-## Reconnaissance-Then-Action Pattern
-1. Wait for app-ready signal (prefer explicit app-ready signals over networkidle) → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
+### 4.3 Reconnaissance-Then-Action Pattern
+1. Wait for an explicit app-ready signal or locator assertion → 2. Screenshot/inspect DOM → 3. Identify selectors → 4. Execute actions
 
-## Best Practices
+### 4.4 Best Practices
 - **Use bundled scripts as black boxes** — run `--help` first, invoke directly.
 - Use `sync_playwright()` for synchronous scripts; always close the browser.
-- Use descriptive selectors: `text=`, `role=`, CSS, or IDs.
-- Add waits: `page.wait_for_selector()` or `page.wait_for_timeout()`.
-## Reference Files
+- Prefer locator-based interactions and web-first assertions: `expect(page.get_by_role("button", name="Save")).to_be_visible()`, then `click()` on that locator.
+- Prefer user-facing locators, especially `get_by_role()` with an accessible name. Use `get_by_label()`, `get_by_placeholder()`, or `get_by_test_id()` when role/name cannot express the target.
+- Avoid `networkidle`, hard sleeps, and `wait_for_timeout()` in tests. Wait on observable app-ready signals, locator actions, or `expect()` assertions.
+### 4.5 Reference Files
 - **examples/** - Examples showing common patterns:
   - `element_discovery.py` - Discovering buttons, links, and inputs on a page
   - `static_html_automation.py` - Using file:// URLs for local HTML
   - `console_logging.py` - Capturing console logs during automation
-### Browser Testing Rules
+### 4.6 Browser Testing Rules
 - Run **contract tests and API tests first** for broken-data bugs.
 - Use Playwright for **rendered truth**, not as a replacement for service tests.
 - Prefer one smoke flow per critical path over many brittle micro-flows.
@@ -271,7 +275,7 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
 - In sandbox/spike mode, write tests for bugs found — coverage grows organically. For production refactors, see §1.5 (tests required for behavior changes).
 
 ---
-## 6.6 Test-Induced Production Defense Detection
+## 6.7 Test-Induced Production Defense Detection
 
 **Rule:** Do not add production defensive code solely to satisfy unrealistic tests. A production guard is allowed only when the invalid state can occur at a real boundary or represents an explicit domain rule.
 
@@ -394,6 +398,30 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 - [ ] security scan / dependency scan
 - [ ] coverage thresholds and diff coverage
 - [ ] CI artifacts uploaded for failure analysis
+
+### 9.5 Limited-Oracle / Score-Objective Evaluation
+
+Use these rules when the true evaluator is scarce or costly and local checks are only
+proxies. PABCD loop response to repeated candidate deaths is owned by `dev-pabcd` §10
+Optimization-Loop Meta-Rules.
+
+- **STRICT (GATE-ORACLE-VALIDITY-01):** When the true evaluator/oracle is rate-limited
+  (limited submissions, paid runs) and local metrics are proxies, evaluator validity is a
+  prerequisite gate. Before trusting the proxy for accept/reject, quantify historical
+  divergence: cases where the proxy said better/equal but the oracle said worse. A proxy
+  with known optimistic bias must not be the sole acceptance evidence.
+- **DEFAULT (GATE-PREFIX-HORIZON-01):** Replay-based evidence (recorded logs, scripted
+  opponents) is prefix-valid only; it stops being valid when the candidate diverges from
+  the recorded trajectory. Candidates that diverge early need live adversarial evaluation
+  through a modeled opponent/environment, not replays. State the divergence turn/point
+  when citing replay evidence.
+- **DEFAULT (GATE-INVARIANT-EV-01):** Every hard invariant in an acceptance gate (a metric
+  that must not regress) needs an expected-value justification: protected value versus the
+  candidate-space it vetoes. If a hard invariant vetoes 3+ consecutive candidates that
+  target strictly larger gains, downgrade it to a soft cost and re-justify or remove.
+
+Grounding: observed in a 14-discard optimization plateau where a prefix-only replay gate
+and a hard draw-protection invariant locked a 3.5/8 score.
 ---
 ## 10. Pre-Flight Test Checklist
 ### 10.1 Change-Type Routing

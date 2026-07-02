@@ -1,8 +1,9 @@
 ---
 name: dev-architecture
-description: "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs."
+description: "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조."
 metadata:
   {
+    "short-description": "Module boundaries, circular deps, coupling taxonomy, and boundary defenses.",
     "keywords": ["module-boundary", "circular-dependency", "coupling", "barrel-file", "re-export", "architecture", "layered", "dependency-inversion"]
   }
 ---
@@ -47,9 +48,11 @@ evidence-status rules. Use browser verification only after candidate URLs exist.
 
 ### When to Split a Module
 
+Canonical file-size rule: **>400 LOC -> split (DEFAULT)**. Deviations require a stated reason.
+
 | Signal | Action |
 |--------|--------|
-| File exceeds 400 LOC | Split by responsibility |
+| File exceeds 400 LOC | Split by responsibility (DEFAULT) |
 | Module has 6+ direct dependents | Extract shared interface |
 | Two unrelated features share a file | Separate into own modules |
 | Circular import detected | Extract shared types/interfaces to a third module |
@@ -120,16 +123,8 @@ boundary-owned diagnostic hook with production value.
 | 4. Fix | Apply appropriate fix strategy (see references/) | Detection command passes |
 | 5. Verify | Re-run detection + confirm no regressions | Zero cycles in report |
 
-### Detection Commands (Quick Reference)
-
-| Ecosystem | Command | Flags |
-|-----------|---------|-------|
-| Node/TypeScript | `npx madge --circular --extensions ts,tsx src/` | Add `--warning` for near-cycles |
-| Node/TypeScript (alt) | `npx dpdm --circular src/index.ts` | Faster for single entry |
-| Python | `pydeps --no-output --show-cycles src/` | Use `--cluster` for package-level |
-| Go | `go vet ./...` (import cycle = compile error) | Always caught at build |
-| ESLint | `eslint-plugin-import` rule `import/no-cycle` | Set `maxDepth: 3` |
-| Rust | Compiler enforces — no runtime cycles possible | N/A |
+Detection commands are ecosystem-specific. See `references/circular-dependencies.md`
+for command templates, examples, and verification details.
 
 ### Banned Patterns
 
@@ -162,16 +157,19 @@ boundary-owned diagnostic hook with production value.
 
 ### Coupling Types (ordered by severity, worst first)
 
-| # | Type | Definition | Example | Severity | Fix Pattern |
-|---|------|-----------|---------|----------|-------------|
-| 1 | **Content** | Module reaches into another's internals | Accessing private fields, reading internal state | CRITICAL | Expose via public API/method |
-| 2 | **Common** | Multiple modules share global mutable state | Global config object mutated by services | CRITICAL | Dependency injection, immutable config |
-| 3 | **Control** | Module passes flag to control another's logic | `processOrder(order, isRetry=true)` | HIGH | Polymorphism, strategy pattern |
-| 4 | **Stamp** | Module passes large struct when only one field needed | `renderHeader(entireUserObject)` | HIGH | Pass only needed fields |
-| 5 | **External** | Multiple modules depend on same external format | Both parse same CSV format independently | HIGH | Single parser module, shared schema |
-| 6 | **Temporal** | Modules must execute in specific order | `init()` must run before `process()` | MEDIUM | Make ordering explicit (state machine, builder) |
-| 7 | **Sequential** | Output of A is input of B (pipeline) | ETL stages | LOW | Document the contract, validate at boundary |
-| 8 | **Functional** | Modules share a well-defined interface | Function call with typed params/return | LOW | This is GOOD coupling — the target state |
+| # | Type | Definition | Severity | Fix Pattern |
+|---|------|-----------|----------|-------------|
+| 1 | **Content** | Module reaches into another's internals | CRITICAL | Expose via public API/method |
+| 2 | **Common** | Multiple modules share global mutable state | CRITICAL | Dependency injection, immutable config |
+| 3 | **Control** | Module passes flag to control another's logic | HIGH | Polymorphism, strategy pattern |
+| 4 | **Stamp** | Module passes large struct when only one field needed | HIGH | Pass only needed fields |
+| 5 | **External** | Multiple modules depend on same external format | HIGH | Single parser module, shared schema |
+| 6 | **Temporal** | Modules must execute in specific order | MEDIUM | Make ordering explicit (state machine, builder) |
+| 7 | **Sequential** | Output of A is input of B | LOW | Document the contract, validate at boundary |
+| 8 | **Functional** | Modules share a well-defined interface | LOW | This is GOOD coupling — the target state |
+
+See `references/coupling-taxonomy.md` for examples, detection signals,
+refactoring patterns, and banned review responses.
 
 ### Review Decision Matrix
 
@@ -181,16 +179,6 @@ boundary-owned diagnostic hook with production value.
 | HIGH (Control, Stamp, External) | BLOCK unless justified | Require tech-debt ticket if merged |
 | MEDIUM (Temporal) | Allowed with documentation | Add ordering comments or state assertions |
 | LOW (Sequential, Functional) | ALLOWED | No action needed |
-
-### Banned Review Responses
-
-| Banned Response | Why Banned | Required Instead |
-|-----------------|-----------|------------------|
-| "It works so it's fine" | Working code can still be unmaintainable | Classify the coupling type and severity |
-| "We'll fix it later" (no ticket) | "Later" never comes | Create a concrete ticket with deadline |
-| "It's just one place" | One becomes ten | Fix now while it's one place |
-| "The tests pass" | Tests don't catch architectural decay | Static analysis + architectural review |
-| "It's internal, nobody else uses it" | Internal coupling compounds fastest | Apply same standards as public API |
 
 ---
 
@@ -266,26 +254,8 @@ by this section; **what the validation schema enforces** (content/policy) is own
 | Component folder re-exporting siblings | NO | Direct imports are clearer |
 | Monorepo package boundary (`@org/shared/index.ts`) | YES | Cross-package contract |
 
-### Import Rules
-
-| Rule | Example (Good) | Example (Bad) |
-|------|---------------|---------------|
-| Import from source, not barrel (internal) | `import { Button } from './Button'` | `import { Button } from '.'` |
-| Import from barrel (cross-package) | `import { Button } from '@ui/components'` | `import { Button } from '@ui/components/Button/Button'` |
-| Never re-export then modify | Barrel re-exports as-is | `export { Button as Btn } from './Button'` (renaming in barrel) |
-| No wildcard re-exports | `export { A, B } from './module'` | `export * from './module'` |
-| No circular barrel | Barrel has no non-re-export logic | Barrel imports from files that import from barrel |
-
-### Tree-Shaking Impact
-
-| Pattern | Tree-Shakeable? | Bundle Impact |
-|---------|----------------|---------------|
-| `export * from './heavy-module'` | NO (most bundlers) | Entire module included |
-| Named re-exports only | YES | Only used exports included |
-| Barrel with side effects | NO | Always included |
-| Direct import (no barrel) | YES | Optimal |
-
-See `references/barrel-discipline.md` for the safe barrel template and detailed guidance.
+See `references/barrel-discipline.md` for import examples, tree-shaking
+details, ESLint enforcement, and the safe barrel template.
 
 ---
 
@@ -303,7 +273,7 @@ When reviewing any PR that adds/modifies module structure, verify:
 - [ ] **Validation placement** — new validation is at system boundary, not internal functions
 - [ ] **Module size** — new/modified modules under 400 LOC
 - [ ] **No "utils" growth** — shared code placed in domain-specific module, not catch-all utils
-- [ ] **Dependency direction** — dependency graph flows inward (infrastructure -> application -> domain)
+- [ ] **Dependency direction** — dependencies point inward toward Domain: outer layers depend on inner layers (Presentation/Application/Infrastructure -> Domain), and inner layers never import outward
 - [ ] **No lazy-import hacks** — no `require()` inside function body to hide circular deps
 
 ### Automated Enforcement (CI Recommendations)

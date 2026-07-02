@@ -1,6 +1,8 @@
 ---
 name: dev-pabcd
-description: "PABCD orchestration workflow. Structured 5-phase development with user checkpoints. Injected during orchestration mode."
+description: "MUST USE for cli-jaw PABCD orchestration workflows — orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리."
+metadata:
+  short-description: "cli-jaw PABCD orchestration workflow for interview, phases, attest, and checkpoints."
 ---
 
 Structured 5-phase development. Advance only with user approval.
@@ -8,7 +10,7 @@ Structured 5-phase development. Advance only with user approval.
 > **C0/C1 work (e.g. small in-place patches):** See `dev` §0.0 Work Classifier and §0.1 Patch
 > Fast-Path first — full PABCD is mandatory for C4 and conditional for C3, not the baseline for every task.
 
-## Interview Trigger (MUST)
+## §1. Interview Trigger (MUST)
 
 When the user asks for an interview in any form — "인터뷰하자", "인터뷰 모드", "interview",
 "요구사항 정리", "스펙 정리해줘", "뭘 만들어야 하는지 정리", or any variation — you MUST
@@ -25,7 +27,7 @@ Do NOT:
 The `/interview` slash command is a user-facing shortcut that triggers the same transition.
 As the Boss agent, always use `cli-jaw orchestrate I` directly.
 
-## How It Works
+## §2. How It Works
 
 PABCD is a forward progression with Interview return.
 
@@ -48,8 +50,6 @@ cli-jaw orchestrate reset   → returns to IDLE (context cleared)
 ```
 Then re-enter with `cli-jaw orchestrate P`.
 
-Phases P, A, B require user approval before advancing. C and D proceed automatically once their work is done.
-
 Transition commands:
 ```
 cli-jaw orchestrate I       → enter Interview (from any state, context preserved)
@@ -61,11 +61,14 @@ cli-jaw orchestrate D       → enter Done (from C only, returns to IDLE)
 cli-jaw orchestrate reset   → return to IDLE (from any state)
 ```
 
-### Evidence gate (forward transitions)
+### §2.1 Evidence gate (forward transitions)
 
 The four forward transitions (P→A, A→B, B→C, C→D) require an **evidence attestation** — a
 real `cli-jaw orchestrate` command with an `--attest` JSON, not narration. The server gates the
 agent (identified by its boss token); a human's `/orchestrate X` keeps the free pass.
+P, A, and B also require user approval before advancing; C and D proceed automatically once
+their work is done. In goal mode, §4 rule 4 replaces user approval with evidence-backed
+checkpoints.
 
 ```
 cli-jaw orchestrate A --attest '{"from":"P","to":"A","did":"<the concrete plan you wrote: files/surfaces + devlog path>"}'
@@ -86,7 +89,7 @@ hidden `--force` emergency hatch, a `pendingAttestation` emitted in a prior turn
 that deliberately strips its own boss token to pose as a human. Closing the last one would risk
 the legitimate human-via-CLI free pass, so it is out of scope unless the threat model expands.
 
-## Phases
+## §3. Phases
 
 ### P — Plan
 
@@ -121,7 +124,7 @@ Write a plan with two parts:
 
 If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT ask questions in P.
 
-### Jawdev Document Numbering (decade ranges)
+### §3.1 Jawdev Document Numbering
 
 Devlog plan artifacts use decade-range numbering to separate concerns:
 
@@ -143,10 +146,10 @@ Rules:
 
 Present to the user:
 1. Part 1 summary (≤5 sentences) + diagram + devlog file path
-2. "혼자 결정하면 안 되는 비즈니스 로직이 있나요?" and "이 방향이 맞습니까?"
+2. "Is there any business logic I must not decide alone?" and "Is this direction correct?"
 
 ⛔ Present the plan. Revise on feedback.
-When user approves → `cli-jaw orchestrate A --attest '{"from":"P","to":"A","did":"<the plan you wrote>"}'` (forward transitions need an evidence attestation — see the Evidence gate section).
+When user approves, advance with the canonical P→A attestation form in §2.1.
 
 ### A — Plan Audit
 Spawn a worker to audit the plan (not code). The worker verifies:
@@ -163,7 +166,7 @@ Output worker JSON for the audit. Review results when they come back.
 - If FAIL → fix the plan → output worker JSON again to re-audit
 - If PASS → report results to the user
 
-⛔ Wait for user approval. When approved → `cli-jaw orchestrate B --attest '{"from":"A","to":"B","did":"<who audited the plan + the verdict>"}'`
+⛔ Wait for user approval. When approved, advance with the canonical A→B attestation form in §2.1.
 
 ### B — Build
 Implement the plan. You write all code by default. Workers are read-only verifiers unless dispatched with `--mutable` (see Pitfalls).
@@ -174,7 +177,7 @@ After implementing, output worker JSON for verification. The worker checks your 
 - If NEEDS_FIX → you fix the issues → re-verify
 - If DONE → report results to the user
 
-⛔ Wait for user approval. When approved → `cli-jaw orchestrate C --attest '{"from":"B","to":"C","did":"<what you built + verifier verdict>"}'`
+⛔ Wait for user approval. When approved, advance with the canonical B→C attestation form in §2.1.
 
 ### C — Check
 Final sanity check:
@@ -188,7 +191,7 @@ register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end the turn; the
 server re-invokes the boss on completion and PABCD state persists across turns.
 Local tsc/tests stay blocking.
 
-When done → `cli-jaw orchestrate D --attest '{"from":"C","to":"D","did":"<what you checked>","checkOutput":"<paste the real tsc/test tail>","exitCode":0}'` (C→D uniquely requires a pasted check tail).
+When done, advance with the canonical C→D attestation form in §2.1; C→D uniquely requires a pasted check tail.
 
 ### D — Done
 Summarize the entire flow:
@@ -202,19 +205,19 @@ Project root configuration is persistent. D completion resets the PABCD state, b
 does not clear configured `projectDirs`; use `cli-jaw project clear` only when the
 user explicitly asks to unset the project root.
 
-## Rules
+## §4. Rules
 
-1. One phase per response (the gate-and-wait turn boundary). Present work, then wait for
-   user approval at P, A, B gates. Goal-mode exception: when a goal is active this does not
-   permit ending a turn before D when more PABCD-phases remain in the current cycle — keep
-   going P→A→B→C→D, then close D and re-enter P for the next work-phase.
+1. One phase per response (the gate-and-wait turn boundary; canonical approval rule in §2.1).
+   Goal-mode exception: when a goal is active this does not permit ending a turn before D
+   when more PABCD-phases remain in the current cycle — keep going P→A→B→C→D, then close D
+   and re-enter P for the next work-phase.
 2. Sequence: P → A → B → C → D. Use `cli-jaw orchestrate reset` to restart.
 3. Workers verify (read-only). You write all code directly in B.
-4. Goal-mode precedence: when a jaw goal is active (dev §0.4), P/A/B approval gates are
-   satisfied by evidence-backed checkpoints (`cli-jaw goal update`) instead of waiting for
-   user approval. Phase order, audit conditions, and verification intensity are unchanged.
+4. Goal-mode precedence: when a jaw goal is active (dev §0.4), use §2.1 with
+   evidence-backed checkpoints (`cli-jaw goal update`) instead of user approval. Phase order,
+   audit conditions, and verification intensity are unchanged.
 
-## Terminology: work-phase vs PABCD-phase
+## §5. Terminology: work-phase vs PABCD-phase
 
 - **work-phase**: one outcome slice of a larger goal (e.g. "Phase 3: Management API"). A
   multi-phase goal has several work-phases done in sequence.
@@ -237,7 +240,7 @@ real diff-level plan, A really dispatches the audit, B really implements AND ver
 really runs tsc/tests/scrutiny, D really summarizes with evidence. Advancing the state is
 NOT the same as doing the phase; never rubber-stamp a phase to move on.
 
-## Repository Root Contract
+## §6. Repository Root Contract
 
 Before writing a PABCD plan or dispatching an employee, determine the actual
 working repository root with `pwd -P` from the target repo.
@@ -261,7 +264,7 @@ Rules:
 - Resolve all relative repo paths (`src/...`, `tests/...`, `structure/...`, `skills_ref/...`) against `Project root`.
 - If `Project root` is unknown, STOP and ask before dispatching.
 
-## Shared Plan (auto-injected)
+## §7. Shared Plan (auto-injected)
 
 When P completes, the plan is saved to the **worklog `## Plan` section** (single source of truth) and kept in `ctx.plan`. No project-root file is created.
 
@@ -271,7 +274,7 @@ When P completes, the plan is saved to the **worklog `## Plan` section** (single
 
 Audit: verify the imports in ..."` — no "read the plan" line needed.
 
-## Pitfalls (반드시 피해야 할 행동)
+## §8. Pitfalls
 
 ### Delegation Trap
 - B phase: **Boss writes all code by default**. Workers are READ-ONLY verifiers.
@@ -291,7 +294,7 @@ Audit: verify the imports in ..."` — no "read the plan" line needed.
   intensity scales with the work class (PABCD-AUTO-01).
 - The orchestrator does not enforce these gates today — YOU do.
 
-## PABCD Depth by Work Class
+## §9. PABCD Depth by Work Class
 
 | Class | Plan (P) | Audit (A) | Build (B) | Check (C) | Record (D) |
 |-------|----------|-----------|-----------|-----------|------------|
@@ -300,3 +303,31 @@ Audit: verify the imports in ..."` — no "read the plan" line needed.
 | C3 | Compact or full PABCD plan depending on persistence/risk | Required when public contract, architecture, persistence, cross-agent, or cross-session risk exists; otherwise focused audit | Boss writes, employees verify only when useful | Affected suite + docs consistency when docs/contracts changed | Summary + evidence; durable record only when state must persist |
 | C4 | Full PABCD plan (mandatory) | Required, independent | Boss writes, employee verifies | Full relevant gates | Durable risk/approval/evidence record |
 | C5 | Interview/research first | — | — | — | Reclassify, then follow the new class |
+
+## §10. Optimization-Loop Meta-Rules (plateau discipline)
+
+These rules apply to score/objective-maximization loops and repeated PABCD passes where
+candidates are being discarded by evidence gates. Gate validity itself is owned by
+`dev-testing` §9.5 Limited-Oracle / Score-Objective Evaluation.
+
+- **DEFAULT (LOOP-PHASE-DEATH-01):** Track each discarded candidate's killing PABCD-phase
+  (P/A/B/C/D) and change class: parameter-tweak, branch-toggle, state-space redesign, or
+  evaluator change. After 3 consecutive same-phase, same-class deaths, the next work-phase
+  MUST target the killing mechanism itself, usually the evaluation gate, not another
+  candidate of that class. N consecutive D-evidence collapses means the gate, not the
+  candidates, is probably the bottleneck.
+- **STRICT (LOOP-CONTINUITY-01):** P must begin by quoting the previous cycle's D
+  conclusions and next-direction. A new candidate that contradicts the recorded
+  next-direction requires an explicit stated reason.
+- **DEFAULT (LOOP-CANDIDATE-ANCHOR-01):** For score/objective-maximization work, source
+  divergence candidates from domain-state evidence such as logs, trajectories, and
+  opponent/instance analysis, not only from existing code parameters. If every candidate
+  is a threshold, guard, or suppression tweak on existing levers, treat that as
+  parameter-space anchoring and regenerate from the state space.
+- **HEURISTIC (LOOP-INSTANCE-CHECK-01):** Check whether evaluation instances are fixed and
+  enumerable: fixed opponents, fixed test maps, fixed graders. If yes, per-instance
+  specialization such as fingerprint plus playbook is a legitimate, evaluable widening
+  move; consider it before generic-strategy tweaks.
+
+Grounding: observed in a 14-discard optimization plateau where a prefix-only replay gate
+and a hard draw-protection invariant locked a 3.5/8 score.

@@ -1,9 +1,9 @@
 ---
 name: dev-devops
-description: "DevOps engineering guide for orchestrated sub-agents. Container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when task_tags include devops/infra/deploy or release_cd."
-license: Complete terms in LICENSE.txt
+description: "MUST USE for infrastructure and delivery work — container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags."
 metadata:
   {
+    "short-description": "Container builds, deploy pipelines, K8s, IaC, SRE, edge/serverless, ML infra.",
     "keywords": ["container", "kubernetes", "deploy", "iac", "sre", "pipeline"]
   }
 ---
@@ -62,32 +62,14 @@ instead of relying on stale memory or copied snippets.
 | BuildKit secrets | `RUN --mount=type=secret,id=token ...` — never use `ARG` for secrets |
 | `.dockerignore` | `.git`, `node_modules`, `.env*`, `*.log`, `dist/`, `coverage/`, `__pycache__/` |
 
-```dockerfile
-# syntax=docker/dockerfile:1
-FROM oven/bun:1.2 AS build
-WORKDIR /app
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
-COPY . .
-RUN bun run build
-
-FROM gcr.io/distroless/nodejs22-debian12
-COPY --from=build /app/dist /app
-USER nonroot:nonroot
-CMD ["app/server.js"]
-```
+For canonical Dockerfile templates, read `references/docker.md` §1.
 
 ### §1.2 Image Security (STRICT)
 
-| Step | Tool | Command |
-|------|------|---------|
-| Scan | Trivy or Docker Scout | `trivy image --severity CRITICAL,HIGH --exit-code 1 img:tag` |
-| SBOM | Syft | `syft img:tag -o spdx-json > sbom.spdx.json` |
-| Sign | Cosign/Sigstore | `cosign sign --key cosign.key img@sha256:...` |
-| Attest | Cosign | `cosign attest --predicate sbom.spdx.json --type spdxjson img@sha256:...` |
-| Filter FP | VEX | `trivy image --vex policy.vex.json img:tag` |
-
-CRITICAL/HIGH findings → block push. No exceptions.
+CRITICAL/HIGH findings → block push. No exceptions. Read
+`references/docker.md` §4 for scan/SBOM/sign command examples, and
+`../dev-security/references/supply-chain-sbom.md` for deeper SBOM/signing
+policy.
 
 ### §1.3 Anti-Patterns
 
@@ -180,7 +162,7 @@ jobs:
 
 ### §3.2 Gateway API v1.5 (2026 Standard)
 
-Gateway API replaces Ingress. Role separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
+Gateway API is the successor for new routing while Ingress remains GA but feature-frozen. Role separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -327,6 +309,7 @@ Two consecutive window misses → architecture review.
 | Test strategy & CI test stages | `dev-testing` §5 | Test pyramid, coverage gates |
 | Backend observability code patterns | `dev-backend` `observability.md` | OTel SDK setup, structured logging |
 | Security hardening (app-layer) | `dev-security` | OWASP, auth, input validation |
+| SBOM/signing depth | `dev-security` `references/supply-chain-sbom.md` | Supply-chain evidence policy beyond image scan gates |
 | Architecture module boundaries | `dev-architecture` | Coupling taxonomy, barrel discipline |
 | Scaffolding conventions | `dev-scaffolding` | File naming, project structure |
 | Frontend build/bundle | `dev-frontend` | Vite/webpack config, SSR |

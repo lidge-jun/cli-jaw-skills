@@ -8,7 +8,7 @@
 
 ```
 src/<feature-name>/
-├── index.js              # barrel export
+├── index.js              # public boundary export
 ├── <feature>.tool.js     # core logic
 ├── <feature>.test.js     # tests
 ├── <feature>.schema.js   # (if applicable)
@@ -113,4 +113,4 @@ When modifying this module, also update:
 
 ---
 
-*Target length: 300–500 lines. Expand each section as the feature grows.*
+*Keep this document concise, bounded, and task-oriented. Expand only when the feature's real surface area requires it.*

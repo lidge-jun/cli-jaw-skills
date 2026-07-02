@@ -1,13 +1,16 @@
 ---
 name: dev-scaffolding
-description: "Scaffold new projects or add feature modules following the Lidge Standard (Feature-based + Colocation + Public Boundary Export + devlog). Language-agnostic — auto-detects project type from config files. Also audits existing projects for structural compliance. Triggers: scaffold, new project, new feature, init project, audit structure, scaffolding, add module, project setup."
+description: "MUST USE for project setup, feature scaffolding, structural audits, or documentation scaffolding — applies the Lidge Standard, colocation, public boundary exports, repo-first convention reuse, and source-of-truth doc planning. Triggers: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가."
+metadata:
+  short-description: "Project and module scaffolding with repo-first convention reuse and structural audits."
 ---
 
 # Dev Scaffolding
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§10) for verification.
+Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§12) for verification.
+This skill activates by change surface: new project setup, feature/module scaffolding, structural audits, or documentation scaffolding.
 
 ## Modular References
 
@@ -74,7 +77,7 @@ Jawdev devlog method:
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
-Jawdev phase document naming uses decade-range prefixes. For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §P — that is the single source of truth.
+Jawdev phase document naming uses decade-range prefixes. For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §3.1 Jawdev Document Numbering — that is the single source of truth.
 - Plan unit folder: `devlog/_plan/YYMMDD_slug/`
 - The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
 - When adding a document, scan siblings and choose the next unused prefix in the correct decade.
@@ -138,7 +141,7 @@ When adding a new feature, create a folder under `src/` with these files:
 | TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts`             |
 | Python     | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py`          |
 | Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = boundary)* |
-| Rust       | `kebab-case/` | `mod.rs`       | `name_test.rs` | `mod.rs`               |
+| Rust       | `kebab-case/` | `name.rs`      | inline `#[cfg(test)]` or `tests/` | `lib.rs`/parent `mod name;` |
 
 The `index.*` file is the feature's **public boundary export**. Barrel discipline is owned
 by `dev-architecture` §5: external consumers import this boundary, internal code imports
@@ -247,7 +250,7 @@ When `role=docs` or when generating project documentation:
 3. Follow Jawdev source-of-truth conventions (§2.1) when applicable
 
 ### Devlog Documentation
-1. Follow decade numbering (§9 from dev-pabcd): 00-09 research, 10-19 phase 1, etc.
+1. Follow decade numbering (`dev-pabcd/SKILL.md` §3.1 Jawdev Document Numbering): 00-09 research, 10-19 phase 1, etc.
 2. Each devlog entry: title, date, what changed, why, evidence paths
 3. Cross-reference related devlog entries within the same _plan/ folder
 

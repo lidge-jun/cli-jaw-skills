@@ -1,7 +1,20 @@
 ---
 name: dev-security
-description: "Authoritative security guidance for backend, frontend touchpoints, agentic AI, and production hardening. Read for auth, validation, secrets, reviews, and pre-deploy verification."
-license: Complete terms in LICENSE.txt
+description: "MUST USE for security-sensitive code — XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags."
+metadata:
+  short-description: "Security as a build constraint: OWASP, auth hardening, secrets, supply chain."
+  keywords:
+    - xss
+    - csrf
+    - sql injection
+    - jwt
+    - oauth
+    - secrets
+    - owasp
+    - auth hardening
+    - supply chain
+    - threat model
+  injection_condition: "security-sensitive code, or security/threat_model task_tags"
 ---
 
 # Dev-Security — Production Security Hardening

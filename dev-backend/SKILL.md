@@ -1,10 +1,10 @@
 ---
 name: dev-backend
-description: "Backend engineering guide for orchestrated sub-agents. Framework-agnostic API design, clean architecture, database optimization, security hardening, systematic debugging. Modular: SKILL.md orchestrator + references/ for deep guidance. Injected when role=backend."
-license: Complete terms in LICENSE.txt
+description: "MUST USE for backend, API, server, or database work — API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화."
 metadata:
   {
-    "keywords": ["connector-api", "audit-log", "board-store", "reminders-store", "notes-store", "dashboard-api"]
+    "short-description": "Framework-agnostic backend guidance for APIs, architecture, data access, and operations.",
+    "keywords": ["API", "REST", "endpoint", "middleware", "database", "ORM", "cache", "queue", "error handling"]
   }
 ---
 
@@ -12,6 +12,7 @@ metadata:
 
 Build reliable, secure, and maintainable server-side applications.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
+It activates by change surface whenever work primarily touches APIs, servers, services, jobs, data access, schemas, migrations, or operational backend behavior.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -306,77 +307,26 @@ See `references/core/api-design.md` for protocol-specific patterns (REST, GraphQ
 
 ## 6. Caching Strategy
 
-**The cardinal rule:** cache only after correctness is proven. Never cache before you have tested the uncached path.
+**Decision rules:**
+- Cache only after correctness is proven on the uncached path.
+- Prefer cache-aside by default; use write-through only when strong consistency matters.
+- Every key has a namespace, version, stable identifier, TTL, and invalidation trigger.
+- Never cache error responses or personalized CDN responses; protect cached PII with encryption and access controls.
+- Add stampede protection for hot keys and monitor hit rate, pool exhaustion, and stale-read incidents.
 
-### Cache Key Design
-
-```
-{service}:{resource}:{identifier}:{version}
-user-service:profile:u_12345:v2
-```
-
-- Include version in keys to avoid stale data after schema changes
-- Use consistent hashing for cache keys — no random components
-- Namespace by service to prevent key collisions in shared Redis
-
-### TTL Selection (Starting Guidance, Tune Based on Workload)
-
-| Data Type | TTL | Rationale |
-|-----------|-----|-----------|
-| User session | 15-60 min | Security boundary |
-| User profile | 5-15 min | Balance freshness vs load |
-| Public config/feature flags | 1-5 min | Low write frequency |
-| Computed aggregations | 10-60 min | Expensive to recompute |
-| Static assets (CDN) | 1 year + cache-busting hash | Immutable content |
-
-### Invalidation Triggers
-
-| Event | Action |
-|-------|--------|
-| Data mutation (write/update/delete) | Invalidate related cache keys immediately |
-| Schema/version change | Bump version in cache key prefix |
-| Deployment | Warm critical caches during rollout |
-| User logout/password change | Purge all session and profile caches for that user |
-
-### Patterns
-
-| Pattern | When |
-|---------|------|
-| **Cache-aside** (default) | App reads cache → miss → read DB → write cache |
-| **Write-through** | App writes DB + cache atomically — strong consistency |
-| **Write-behind** | App writes cache → async DB write — high throughput, risk of loss |
-| **Read-through** | Cache library handles DB fetch on miss — simpler app code |
-
-**Cache safety rules:**
-- Set a TTL on every cache entry — prevents stale data
-- Add jitter or locking on expiry — prevents cache stampede
-- Encrypt cached PII with access controls
-- Exclude error responses from cache — prevents failure propagation
-
-See `references/core/caching.md` for Redis patterns, CDN configuration, and connection pooling.
+See `references/core/caching.md` for TTL guidance, Redis patterns, CDN rules, invalidation triggers, connection pooling, and code examples.
 
 ---
 
 ## 7. Observability (OpenTelemetry)
 
-Use OpenTelemetry for the three pillars of observability:
+**Decision rules:**
+- Production services emit traces, metrics, and structured JSON logs with `requestId`, `traceId`, and `spanId`.
+- Start with OTel auto-instrumentation, then add custom spans only for business-critical or non-instrumented work.
+- Never log PII, secrets, full request/response bodies, or noisy stack traces outside error boundaries.
+- Page only on customer-impacting signals tied to SLOs; use warning alerts for capacity trends.
 
-| Signal | Purpose | Backends |
-|--------|---------|----------|
-| **Traces** | Request flow across services | Jaeger, Tempo, Zipkin |
-| **Metrics** | Quantitative measurements | Prometheus, Grafana |
-| **Logs** | Event records with context | Loki, ELK, Uptrace |
-
-**Structured Logging Rules:**
-1. JSON format only in production — never free-text
-2. Every log includes `traceId`, `spanId`, `requestId`
-3. Log levels: `error` (needs action) · `warn` (degraded) · `info` (business events) · `debug` (dev only)
-4. **Never log PII, secrets, or full request bodies**
-5. Use OTel semantic conventions for field names
-
-Include traceId and spanId from OTel context in every structured log entry. Follow OTel semantic conventions for field names.
-
-See `references/core/observability.md` for auto-instrumentation setup, custom spans, and alerting.
+See `references/core/observability.md` for OTel setup, structured logging conventions, trace propagation, dashboards, RUM correlation, and alerting guidance.
 
 ---
 

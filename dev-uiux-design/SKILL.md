@@ -1,12 +1,12 @@
 ---
 name: dev-uiux-design
-description: "UI/UX intent discovery, design vocabulary, product personalities, UX state patterns, typography line break judgment, favicon/product logo design, and logo trust section design. Use when user design direction is vague, when building onboarding/empty/error states, when setting up favicons or product logos, or when referencing a product aesthetic."
-keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo]
+description: "MUST USE for UI/UX direction and design judgment — vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로."
+metadata: { short-description: "Design judgment for vague briefs, UX states, typography, layout, logos, and brands.", keywords: [design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo] }
 ---
 
 # UI/UX Design: Intent Discovery, Patterns & Product Vocabulary
 
-Use this skill when:
+Activates by change surface when:
 - User's design direction is vague ("깔끔하게", "모던하게", "just make it look good")
 - Building onboarding, empty state, error state, or loading state UI
 - User references a product aesthetic ("Notion 느낌", "Linear처럼")
@@ -15,7 +15,7 @@ Use this skill when:
 - Setting up favicons, product logos, or brand identity elements
 - Handling logo dark mode variants, OG images, or social sharing meta
 
-Read this BEFORE `aesthetics.md` when the user cannot articulate a clear design direction.
+Read this before style-specific references when the user cannot articulate a clear design direction.
 For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
 
 **Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `dev-frontend` §5 / `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
@@ -41,6 +41,7 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
 | `references/design-isms.md` | User names a style/movement | 11 design movements with CSS signatures |
+| `references/design-read-example.md` | Learning or reviewing Design Read format | Filled-in Design Read + dial setting example |
 | `references/product-personalities.md` | User references a product | 8 product DNA profiles with exact tokens |
 | `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
 | `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
@@ -57,14 +58,37 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 
 ---
 
+## UX State Contract (UX-STATE-01)
+
+For onboarding, empty, loading, error, or progressive-disclosure work, answer the state meaning before styling. Deep patterns live in `references/ux-states.md`.
+
+- Onboarding teaches the first meaningful action, not the whole product.
+- Empty explains why the state exists and names the next action.
+- Loading chooses skeleton for known structure, spinner/progress for short unknown waits, and avoids fake completion.
+- Error exposes retry, recovery, or escalation; never dead-end the user.
+- Progressive disclosure names what stays hidden, why, and where it becomes available.
+
+## IA Chooser (UX-IA-01)
+
+Default navigation architecture by work shape; read `references/responsive-nav.md` for responsive details.
+
+| Work shape | Default IA |
+|------------|------------|
+| Dense desktop repeated work | Sidebar + command palette |
+| Medium sectioned work | Tabs or segmented navigation |
+| Mobile-primary consumer flow | Bottom nav, sheet, or thumb-zone actions |
+| Wizard/auth/setup | Stepper or stacked linear flow |
+
 ## 1. User Intent Discovery Protocol
 
-When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), run this 6-step Socratic Scaffolding flow before generating any UI. Never produce generic output from vague input.
+When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), do not produce generic output. Run the compact ambiguity flow (UX-INTENT-01):
+1. Produce the Design Read from §2 using available signals.
+2. If one decision still blocks the direction, ask ONE best clarifying fork with binary/ternary choices.
+3. Proceed from the answer; if the user does not answer and the task can continue, choose the most domain-correct default and state the assumption.
 
 > Skip this section if the user provided explicit design specs or this is a ≤5-line patch.
 
-**Rules:**
-- Ask a maximum of 6 questions before proposing a concrete direction.
+**Optional deepening:** use the ladder below only when the first fork fails or the user explicitly wants guided exploration.
 - Use binary/ternary choices, not open-ended questions.
 - Reference known products — users recognize what they want faster than they articulate it.
 - If the diagram skill is available, offer: "참고로 스타일 비교를 다이어그램으로 보여드릴 수도 있어요."
@@ -150,6 +174,8 @@ When the user gives feedback without specifics, translate:
 Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
 
 ### Output format (mini DESIGN.md)
+
+Filled-in example: `references/design-read-example.md`.
 
 ```yaml
 ---

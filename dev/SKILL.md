@@ -1,20 +1,16 @@
 ---
 name: dev
-description: "Common development guidelines for all orchestrated sub-agents. Enforces modular development, systematic debugging, verification-before-completion, change logging, and code quality standards. Always injected by orchestrator."
-metadata:
-  {
-    "keywords": ["connector", "dashboard"]
-  }
+description: "MUST USE for every coding task — classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding."
+metadata: { "short-description": "Universal dev discipline: work classifier, overlays, verification gate, safety rules.", "keywords": ["develop", "implement", "refactor", "feature", "code quality", "verification"] }
 ---
 
 # Dev — Common Development Guidelines
 
-Core rules applied to every sub-agent, regardless of role.
+Rules applied to every sub-agent, regardless of role.
 
 ## §0.0 Work Classifier (C0-C5)
 
-**Classify every task before choosing process depth** (DEV-CLASS-01). The class selects how much
-planning, reading, and verification the task deserves — never apply maximum process by default.
+**Classify every task before choosing process depth** (DEV-CLASS-01). The class selects planning, reading, and verification depth — never apply maximum process by default.
 
 | Class | Name | Signals | Default Process |
 |-------|------|---------|-----------------|
@@ -25,9 +21,7 @@ planning, reading, and verification the task deserves — never apply maximum pr
 | C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Full PABCD (mandatory) + full relevant gates + durable risk/evidence record |
 | C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
 
-**Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A
-conventional route→service→storage slice still counts as C2 even though it spans files;
-C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
+**Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A conventional route→service→storage slice still counts as C2 even though it spans files; C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
 
 **C4-promotion triggers override any fast path** (DEV-ESCALATE-01): security, data
 deletion/migration, destructive ops, public contract change, release surface, permission
@@ -38,24 +32,17 @@ classed **ESCALATE** (§0.2).
 
 ## §0.1 Patch Fast-Path (C0/C1)
 
-For **C0/C1 work** (bounded by "one file, no new abstractions, local behavior" — a ≤5-line
-in-place edit is an example, not a limit):
+For **C0/C1 work** (one file, no new abstractions, local behavior — a ≤5-line
+edit is an example, not a limit):
 - Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
 - Keep: §3 verification gate, §4 change documentation when a worklog/changelog file is provided, §5 safety rules (imports/exports), §7.2 static analysis
 - Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
 
-This is scope guidance, not an exemption. Conventions visible in the touched file still
-apply even when proactive discovery is skipped. Promotion is **behavioral**, not
-territorial: a patch escalates when it can alter the behavior of an auth/payment/deletion
-or other DEV-ESCALATE-01 path — not merely because the file lives in such an area. A
-zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit
-touching the executed logic of such a path is not C0/C1 — reclassify and read the
-relevant reference.
+This is scope guidance, not an exemption. Conventions visible in the touched file still apply even when proactive discovery is skipped. Promotion is **behavioral**, not territorial: a patch escalates when it can alter an auth/payment/deletion or other DEV-ESCALATE-01 path — not merely because the file lives there. A zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit touching executed logic in such a path is not C0/C1 — reclassify and read the relevant reference.
 
 ## §0.2 Rule Classes
 
-Every rule in the dev skill family carries one severity class. When a rule's class is not
-marked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEFAULT.
+Every rule in the dev skill family carries one severity class. When unmarked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEFAULT.
 
 - **STRICT** — always applies; violating it blocks completion (safety, broken builds, secrets).
 - **DEFAULT** — apply unless a documented, stated reason says otherwise.
@@ -119,14 +106,13 @@ In goal mode, multi-phase / "loop"/"루프" work runs one FULL PABCD cycle per w
 work-phase independently — C0-C1 fast-path applies to that work-phase's class, not the
 whole goal. Do each PABCD-phase's real work; never rubber-stamp a phase to advance.
 
-**Production surface (shared definition):** a surface is production when it is deployed
-for real users beyond the author; prototypes, spikes, and internal demos are not. Skills
-that scope rules to "production-surface" concerns (e.g. `dev-backend` §5 envelope/OTel,
-`dev-frontend` §14 checklist) condition on this definition.
+**Production surface (shared definition):** deployed for real users beyond the author;
+prototypes, spikes, and internal demos are not. Skills that scope rules to
+"production-surface" concerns condition on this definition.
 
 ## Companion Skills
 
-This skill covers universal guidelines. For domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
+This skill covers universal guidelines. **STRICT (DEV-ROUTE-01):** for domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
 
 | Skill File                   | Injected When                     | Covers                                                                                         |
 | ---------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -139,7 +125,7 @@ This skill covers universal guidelines. For domain-specific work, also read the 
 | `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, quality thresholds, antipattern detection, giving/receiving feedback           |
 | `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Circular deps, module boundaries, coupling taxonomy, barrel/re-export discipline               |
 | `dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, product personalities, typography, layout patterns         |
-| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, barrel export, devlog, documentation generation                    |
+| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, public boundary export, devlog, documentation generation           |
 | `dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD workflow, phase gates, devlog decade numbering, interview mode                           |
 
 ### Skill Ownership Map
@@ -154,7 +140,7 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 | Barrel / re-export | dev-architecture | dev-scaffolding |
 | Pre-write search | dev §1.5 | dev-code-reviewer |
 | Edge-first testing | dev-testing §6 | — |
-| Test-induced defense | dev-testing §6.6 | dev-code-reviewer |
+| Test-induced defense | dev-testing §6.7 | dev-code-reviewer |
 | Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
 | Process isolation | dev-backend refs/ | dev-code-reviewer |
 | Long-lived connections | dev-backend §1 | dev-frontend |
@@ -167,9 +153,13 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 
 When updating a rule, update the canonical owner first, then verify stubs still point correctly.
 
-**When your task spans multiple domains** (e.g., building an API endpoint that returns analyzed data), read each relevant skill file before starting.
+**When your task spans multiple domains**, read each relevant skill file before starting.
 
 ---
+
+## Family Invariants (apply to every `dev-*` skill)
+
+**FAMILY-SLOP-01 / FAMILY-CITE-01 / FAMILY-PROOF-01:** no filler, placeholders, fake fallbacks, speculative wrappers, or broad defensive clutter without a named boundary reason; code findings, plans, reviews, contradictions, and verification claims cite exact files/lines or command/artifact evidence; no completion claim without fresh proof from the §3 verification gate.
 
 ## Documentation Verification (Context7)
 
@@ -189,6 +179,7 @@ Before using any external library API, verify current syntax via Context7 MCP:
 For current versions, release notes, CVEs, package/source checks, provider
 behavior, or browser-verifiable public evidence, read the active `search` skill
 and follow its query-rewrite, source-fetch, and evidence-status rules.
+Sub-agents dispatched via `codex exec` are also bound by this policy; include it in the dispatch prompt.
 
 ---
 
@@ -254,7 +245,7 @@ Give every file, function, and class a single, clear responsibility.
 
 | Metric              | Threshold   | Action                                   |
 | ------------------- | ----------- | ---------------------------------------- |
-| File length         | >400 lines  | Split into focused modules (per dev-architecture) |
+| File length         | >400 lines  | Split into focused modules (canonical owner: dev-architecture §1) |
 | Function length     | >50 lines   | Extract helper functions                 |
 | Class methods       | >20 methods | Split by responsibility                  |
 | Nesting depth       | >4 levels   | Flatten with early returns or extraction |
@@ -284,6 +275,8 @@ Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, 
 ## 1.5 Pre-Write Codebase Search Obligation
 
 **Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence. This section does not apply on the §0.1 fast path (C0/C1 — no new abstractions are being created).
+
+**Read before editing (DEV-READ-FIRST-01).** Any C2+ edit to existing code reads the target file and its direct caller/consumer when the change crosses a boundary before writing. C0/C1 fast path still applies.
 
 | Artifact being created | Required searches | Preferred outcome |
 |---|---|---|
@@ -338,6 +331,8 @@ Verify every completion claim with evidence. Run the relevant command fresh, rea
 3. **Read** — Full output. Check exit code. Count failures.
 4. **Confirm** — Does the output actually support the claim?
 5. **Report** — State the claim with evidence attached.
+
+**Per-class verification floor (DEV-VERIFY-FLOOR-01):** C0/C1 use the smallest proof; C2 adds focused integration/contract checks for the touched slice; C3 runs affected suites and contract/docs checks; C4 runs full relevant gates plus negative cases and durable evidence.
 
 | Claim                   | Requires                              | Not Sufficient                |
 | ----------------------- | ------------------------------------- | ----------------------------- |
@@ -404,7 +399,7 @@ Watch for these anti-patterns and fix immediately. For the full detection catalo
 | **Deep nesting**           | >4 levels of if/for/try             | Early returns, guard clauses, extract |
 | **Magic numbers**          | Hardcoded `86400`, `1024`, `3`      | Named constants with clear intent     |
 | **Stringly typed**         | Strings where enums/types belong    | Define explicit types or enums        |
-| **Missing error handling** | No catch at trust boundaries        | Add try/catch at boundaries (controller, API edge, event handler). Internal code propagates errors — see dev-architecture §4. |
+| **Missing error handling** | No catch at trust boundaries        | Add try/catch at trust boundaries; internal code propagates errors — see dev-architecture §4. |
 | **Floating promises**      | async call without `await`          | Always `await` or handle rejection    |
 | **Copy-paste code**        | Same logic in 2+ places             | Extract shared function, import it    |
 

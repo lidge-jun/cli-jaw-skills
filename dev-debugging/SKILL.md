@@ -1,11 +1,16 @@
 ---
 name: dev-debugging
-description: "Systematic debugging methodology for all orchestrated sub-agents. 5-phase root cause analysis: architecture check → investigate → analyze → hypothesize → implement. Injected when encountering errors or during debugging phase."
+description: "MUST USE for any real runtime debugging in any language — crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, and integration bugs. A 5-phase root-cause method: architecture check → investigate → analyze → hypothesize → implement. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석."
+metadata:
+  {
+    "short-description": "5-phase systematic root-cause debugging method for real failures in any language.",
+    "keywords": ["debug", "error", "stack trace", "root cause", "flaky", "regression", "crash", "bisect"]
+  }
 ---
 
 # Dev-Debugging — Systematic Root Cause Analysis
 
-This skill is the **thinking process** for fixing bugs. It enforces a structured
+This skill is the **thinking process** for fixing bugs. It activates by change surface for errors and diagnoses, and enforces a structured
 5-phase methodology for every technical issue — test failures, runtime errors,
 build failures, performance regressions, integration bugs.
 
@@ -97,8 +102,9 @@ probe can be built in reasonable time.
    recent changes most of the time.
 
 4. **Trace data flow** — where does the bad value originate? Trace backward from
-   the failure point through the call stack until you find the source. Fix at the
-   source, not the symptom.
+   the failure point through the call stack until you find the source. Follow the
+   full causal chain from trigger → boundary → bad state → failure. Removing the
+   visible symptom is not a fix unless the defect that creates the bad state is gone.
 
 5. **Instrument component boundaries** — for multi-layer systems (API → service →
    database, CI → build → deploy), log input/output at each boundary BEFORE
@@ -136,20 +142,27 @@ before treating external material as proof.
 
 ### Phase 3: Hypothesis and Testing
 
-1. **State hypothesis explicitly** — "X is the root cause because evidence Y
-   shows Z." Write it down. If you can't articulate it clearly, you don't
-   understand it yet.
+1. **List competing hypotheses first** — write at least three plausible root-cause
+   hypotheses before investigating any single one. Include the evidence that would
+   support or reject each hypothesis. If fewer than three are plausible, state why.
 
-2. **Design a test to disprove** — falsification is stronger than confirmation.
+2. **State the leading hypothesis explicitly** — "X is the root cause because
+   evidence Y shows Z." If you can't articulate it clearly, you don't understand
+   it yet.
+
+3. **Design a test to disprove** — falsification is stronger than confirmation.
    What would you expect to see if your hypothesis is wrong?
 
-3. **Test one variable** — smallest possible change, one variable at a time.
+4. **Test one variable** — smallest possible change, one variable at a time.
    Never fix multiple things at once.
 
-4. **If it fails** → form a new hypothesis. Revert the failed change and
+5. **If it fails** → move to another listed hypothesis. Revert the failed change and
    start from clean state. Stacking fixes obscures the root cause.
 
-5. **Admit ignorance** — "I don't understand X" is a valid finding. Research
+6. **Keep the rejection record** — preserve rejected hypotheses and the evidence
+   that rejected them. The final report must include them, not just the winning cause.
+
+7. **Admit ignorance** — "I don't understand X" is a valid finding. Research
    further rather than guessing. Record the open question explicitly.
 
 ### Phase 4: Implementation
@@ -166,7 +179,8 @@ before treating external material as proof.
 4. **Check for similar patterns** — does the same bug class exist elsewhere in
    the codebase? Search for it. Fix all instances, not just the one you found.
 
-5. **Document** — commit message explains root cause AND fix. Not "fixed bug"
+5. **Document** — final report and commit message explain root cause AND fix,
+   including rejected hypotheses and rejection evidence. Not "fixed bug"
    but "fix: race condition in session middleware caused by missing await on
    Redis write."
 
@@ -221,6 +235,53 @@ Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 
 Root cause pattern: Missing input validation lets undefined values propagate into business logic. Instrument controller/service/repository boundaries to find where the bad value enters. Compare with a working endpoint that validates input with a schema. Fix: add schema validation at the entry point, write a test that sends invalid input and expects 400.
 
+Worked example:
+
+```bash
+curl -i -X POST http://localhost:3000/api/orders \
+  -H 'content-type: application/json' \
+  -d '{"sku":"book-1"}'
+```
+
+Observed failure:
+
+```text
+HTTP/1.1 500 Internal Server Error
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at calculateTotal (src/orders/service.ts:42:21)
+    at createOrder (src/orders/controller.ts:27:18)
+```
+
+Competing hypotheses before narrowing:
+
+1. Request validation allows missing `quantity`.
+2. Controller mapping drops `quantity` before service call.
+3. Repository returns an order row with `quantity = null`.
+
+Boundary instrumentation:
+
+```bash
+DEBUG=orders:* npm run dev
+curl -s -X POST http://localhost:3000/api/orders \
+  -H 'content-type: application/json' \
+  -d '{"sku":"book-1"}' | jq .
+```
+
+Sample log output:
+
+```text
+orders:controller input {"sku":"book-1"}
+orders:controller mapped {"sku":"book-1"}
+orders:service input {"sku":"book-1"}
+orders:repository skipped insert due service error
+```
+
+Rejections: repository-null is rejected because the repository is never reached.
+Controller-drop is rejected because controller input already lacks `quantity`.
+Root cause: entry validation accepts a payload missing a required domain field.
+Fix at the entry boundary: schema rejects missing `quantity`; regression test posts
+the same payload and expects HTTP 400 with a stable `error.code`.
+
 ### Scenario B: React Hydration Mismatch
 
 Root cause pattern: Server renders a value (e.g., date, locale string) that differs from client-side rendering due to environment differences (UTC vs. local timezone). Compare with components that defer environment-dependent rendering to useEffect. Fix: move environment-dependent formatting into a client component.
@@ -259,7 +320,7 @@ Root cause pattern: Test passes in isolation but fails in suite due to shared mu
 
 Don't just say "I'm stuck." Provide: **symptom** (exact error), **reproduction
 steps**, **evidence gathered** (logs, traces, bisect results), **hypotheses
-tested** (what you tried, why it failed), **remaining hypotheses** (untested),
+tested** (including rejected hypotheses and rejection evidence), **remaining hypotheses** (untested),
 and a **recommendation** for next steps.
 
 ---
@@ -311,6 +372,6 @@ For security-sensitive bugs (auth bypass, data leak, injection), follow the inci
 
 When context is limited, preserve: (1) Phase 0 — is it a bug or a design problem?,
 (2) Core principle — no fixes without root cause,
-(3) 5 Phases — architecture check → investigate → analyze → hypothesize → implement,
+(3) phases 0-4 — architecture check → investigate → analyze → hypothesize → implement,
 (4) Repeated Failure Rule — after repeated failures, reassess, (5) one variable at a time,
 (6) evidence over intuition, (7) failing test first.

@@ -747,12 +747,12 @@
       "name_en": "Dev Common",
       "emoji": "🔧",
       "category": "orchestration",
-      "description": "Common development guidelines. Modular dev, systematic debugging, verification-before-completion, code quality signals.",
-      "desc_ko": "Common development guidelines. Modular dev, systematic debugging, verification-before-completion, code quality signals.",
-      "desc_en": "Common development guide. Modular dev, self-reference patterns, skills_ref exploration, changelog.",
+      "description": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_ko": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_en": "MUST USE for every coding task. Classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
       "requires": null,
       "install": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     "dev-architecture": {
       "name": "Dev Architecture",
@@ -760,12 +760,12 @@
       "name_en": "Dev Architecture",
       "emoji": "🏗️",
       "category": "orchestration",
-      "description": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
-      "desc_ko": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
-      "desc_en": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
+      "description": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel 또는 re-export 변경, 검증 위치 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_ko": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel 또는 re-export 변경, 검증 위치 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_en": "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-backend": {
       "name": "Dev Backend",
@@ -773,12 +773,12 @@
       "name_en": "Dev Backend",
       "emoji": "⚙️",
       "category": "orchestration",
-      "description": "Backend development guide. API design, architecture patterns, database optimization, error handling, security, logging.",
-      "desc_ko": "Backend development guide. API design, architecture patterns, database optimization, error handling, security, logging.",
-      "desc_en": "Backend role guide. Express.js patterns, SQLite, error handling, security basics.",
+      "description": "백엔드, API, 서버, 데이터베이스 작업에 필수 사용. API 설계, 아키텍처, 데이터베이스 최적화, 보안 강화, 오류 처리, 미들웨어, 관측성, 큐, 장기 연결을 다룹니다. 트리거: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화.",
+      "desc_ko": "백엔드, API, 서버, 데이터베이스 작업에 필수 사용. API 설계, 아키텍처, 데이터베이스 최적화, 보안 강화, 오류 처리, 미들웨어, 관측성, 큐, 장기 연결을 다룹니다. 트리거: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화.",
+      "desc_en": "MUST USE for backend, API, server, or database work. Covers API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-code-reviewer": {
       "name": "Dev Code Reviewer",
@@ -786,12 +786,12 @@
       "name_en": "Dev Code Reviewer",
       "emoji": "🔍",
       "category": "orchestration",
-      "description": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
-      "desc_ko": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
-      "desc_en": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
+      "description": "코드 리뷰와 리뷰 준비 상태에 필수 사용. 리뷰 프로세스, 품질 기준, 안티패턴 탐지, 리뷰 판정, 피드백 주고받기를 다룹니다. 트리거: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_ko": "코드 리뷰와 리뷰 준비 상태에 필수 사용. 리뷰 프로세스, 품질 기준, 안티패턴 탐지, 리뷰 판정, 피드백 주고받기를 다룹니다. 트리거: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_en": "MUST USE for code review and review-readiness. Covers review process, quality thresholds, antipattern detection, review verdicts, and giving/receiving feedback. Triggers: review this, code review, PR review, check my diff, before merge, antipattern, review-readiness, 리뷰, 코드 리뷰, 머지 전에 확인.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-data": {
       "name": "Dev Data",
@@ -799,12 +799,12 @@
       "name_en": "Dev Data",
       "emoji": "📊",
       "category": "orchestration",
-      "description": "Data engineering and analysis guide. Pipelines, ETL/ELT, data quality, SQL optimization, reporting, architecture decisions.",
-      "desc_ko": "Data engineering and analysis guide. Pipelines, ETL/ELT, data quality, SQL optimization, reporting, architecture decisions.",
-      "desc_en": "Data role guide. ETL pipelines, CSV/JSON processing, SQL queries, analysis.",
+      "description": "데이터 엔지니어링과 분석 작업에 필수 사용. 파이프라인, ETL/ELT, 데이터 품질, SQL 최적화, 스키마 진화, 백필, 리포팅을 다룹니다. 트리거: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필.",
+      "desc_ko": "데이터 엔지니어링과 분석 작업에 필수 사용. 파이프라인, ETL/ELT, 데이터 품질, SQL 최적화, 스키마 진화, 백필, 리포팅을 다룹니다. 트리거: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필.",
+      "desc_en": "MUST USE for data engineering and analysis work. Covers pipelines, ETL/ELT, data quality, SQL optimization, schema evolution, backfills, and reporting. Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-debugging": {
       "name": "Dev-Debugging — Systematic Root Cause Analysis",
@@ -812,12 +812,12 @@
       "name_en": "Dev-Debugging — Systematic Root Cause Analysis",
       "emoji": "🐛",
       "category": "orchestration",
-      "description": "This skill is the thinking process for fixing bugs. It enforces a structured",
-      "desc_ko": "This skill is the thinking process for fixing bugs. It enforces a structured",
-      "desc_en": "This skill is the thinking process for fixing bugs. It enforces a structured",
+      "description": "모든 언어의 실제 런타임 디버깅에 필수 사용. 크래시, 무음 실패, 잘못된 출력, 빌드/테스트 실패, flaky 테스트, 성능 회귀, 통합 버그를 다룹니다. 5단계 원인 분석 방법: architecture check → investigate → analyze → hypothesize → implement. 트리거: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_ko": "모든 언어의 실제 런타임 디버깅에 필수 사용. 크래시, 무음 실패, 잘못된 출력, 빌드/테스트 실패, flaky 테스트, 성능 회귀, 통합 버그를 다룹니다. 5단계 원인 분석 방법: architecture check → investigate → analyze → hypothesize → implement. 트리거: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_en": "MUST USE for any real runtime debugging in any language. Covers crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, and integration bugs. A 5-phase root-cause method: architecture check → investigate → analyze → hypothesize → implement. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-devops": {
       "name": "Dev DevOps",
@@ -825,12 +825,12 @@
       "name_en": "Dev DevOps",
       "emoji": "🚀",
       "category": "orchestration",
-      "description": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
-      "desc_ko": "컨테이너 빌드, 배포 파이프라인, Kubernetes, IaC, SRE, 엣지/서버리스, ML 인프라.",
-      "desc_en": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
+      "description": "인프라와 전달 작업에 필수 사용. 컨테이너 빌드, 배포 파이프라인, Kubernetes, Infrastructure as Code, SRE 기반, 엣지/서버리스, ML 인프라를 다룹니다. 트리거: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags.",
+      "desc_ko": "인프라와 전달 작업에 필수 사용. 컨테이너 빌드, 배포 파이프라인, Kubernetes, Infrastructure as Code, SRE 기반, 엣지/서버리스, ML 인프라를 다룹니다. 트리거: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags.",
+      "desc_en": "MUST USE for infrastructure and delivery work. Covers container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, and ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-frontend": {
       "name": "Dev Frontend",
@@ -838,12 +838,12 @@
       "name_en": "Dev Frontend",
       "emoji": "🎨",
       "category": "orchestration",
-      "description": "프런트엔드 역할 가이드. 독창적 UI/UX 구현, 컴포넌트 설계, 미적 기준.",
-      "desc_ko": "프런트엔드 역할 가이드. 독창적 UI/UX 구현, 컴포넌트 설계, 미적 기준.",
-      "desc_en": "Frontend role guide. Unique UI/UX implementation, component design, aesthetic standards.",
+      "description": "프런트엔드, 웹 UI, 시각 구현 작업에 필수 사용. 페이지/컴포넌트 구축, 스타일링, 리디자인, 반응형 레이아웃, 모션, 컴포넌트 아키텍처, 프로덕션 표면 polish를 다룹니다. 트리거: frontend, UI, component, CSS, responsive, animation, React, Vue, Svelte, Tailwind, layout, styling, redesign, mockup, anti-slop, 프론트엔드, UI 작업, 반응형, 디자인 수정.",
+      "desc_ko": "프런트엔드, 웹 UI, 시각 구현 작업에 필수 사용. 페이지/컴포넌트 구축, 스타일링, 리디자인, 반응형 레이아웃, 모션, 컴포넌트 아키텍처, 프로덕션 표면 polish를 다룹니다. 트리거: frontend, UI, component, CSS, responsive, animation, React, Vue, Svelte, Tailwind, layout, styling, redesign, mockup, anti-slop, 프론트엔드, UI 작업, 반응형, 디자인 수정.",
+      "desc_en": "MUST USE for any frontend, web UI, or visual implementation work. Covers building, styling, or redesigning pages/components, responsive layouts, motion, component architecture, and production-surface polish. Triggers: frontend, UI, component, CSS, responsive, animation, React, Vue, Svelte, Tailwind, layout, styling, redesign, mockup, anti-slop, 프론트엔드, UI 작업, 반응형, 디자인 수정.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-pabcd": {
       "name": "Dev PABCD",
@@ -851,12 +851,12 @@
       "name_en": "Dev PABCD",
       "emoji": "🎯",
       "category": "orchestration",
-      "description": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
-      "desc_ko": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
-      "desc_en": "PABCD orchestration workflow for structured multi-step development with human checkpoints between phases.",
+      "description": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용. orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, multi-phase development를 다룹니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
+      "desc_ko": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용. orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, multi-phase development를 다룹니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
+      "desc_en": "MUST USE for cli-jaw PABCD orchestration workflows. Covers orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리.",
       "requires": null,
       "install": null,
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     "dev-scaffolding": {
       "name": "Dev Scaffolding",
@@ -864,12 +864,12 @@
       "name_en": "Dev Scaffolding",
       "emoji": "🏗️",
       "category": "orchestration",
-      "description": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
-      "desc_ko": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
-      "desc_en": "Scaffold projects following the Lidge Standard: feature-based layout, colocation, barrel exports, devlog structure.",
+      "description": "프로젝트 설정, 기능 스캐폴딩, 구조 감사, 문서 스캐폴딩에 필수 사용. Lidge Standard, colocation, public boundary exports, repo-first convention reuse, source-of-truth doc planning을 적용합니다. 트리거: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
+      "desc_ko": "프로젝트 설정, 기능 스캐폴딩, 구조 감사, 문서 스캐폴딩에 필수 사용. Lidge Standard, colocation, public boundary exports, repo-first convention reuse, source-of-truth doc planning을 적용합니다. 트리거: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
+      "desc_en": "MUST USE for project setup, feature scaffolding, structural audits, or documentation scaffolding. Applies the Lidge Standard, colocation, public boundary exports, repo-first convention reuse, and source-of-truth doc planning. Triggers: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-security": {
       "name": "Dev-Security — Production Security Hardening",
@@ -877,12 +877,12 @@
       "name_en": "Dev-Security — Production Security Hardening",
       "emoji": "🛡️",
       "category": "orchestration",
-      "description": "Treat security as a build constraint, not a cleanup step.",
-      "desc_ko": "Treat security as a build constraint, not a cleanup step.",
-      "desc_en": "Treat security as a build constraint, not a cleanup step.",
+      "description": "보안 민감 코드에 필수 사용. XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model을 다룹니다. 트리거: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
+      "desc_ko": "보안 민감 코드에 필수 사용. XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, threat model을 다룹니다. 트리거: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
+      "desc_en": "MUST USE for security-sensitive code. Covers XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, and threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "dev-testing": {
       "name": "Dev Testing",
@@ -890,12 +890,12 @@
       "name_en": "Dev Testing",
       "emoji": "🧪",
       "category": "orchestration",
-      "description": "디버깅 phase 전용. Playwright 웹앱 테스팅, 정찰-행동 패턴.",
-      "desc_ko": "디버깅 phase 전용. Playwright 웹앱 테스팅, 정찰-행동 패턴.",
-      "desc_en": "Debugging phase only. Playwright web app testing, recon-action pattern.",
+      "description": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용. unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, TDD strategy를 다룹니다. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_ko": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용. unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, TDD strategy를 다룹니다. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_en": "MUST USE for testing, QA, regression protection, and release verification. Covers unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA, 테스트, 회귀 테스트, 품질 게이트.",
       "requires": null,
       "install": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     "dev-uiux-design": {
       "name": "Dev UI/UX Design",
@@ -903,12 +903,12 @@
       "name_en": "Dev UI/UX Design",
       "emoji": "🎯",
       "category": "orchestration",
-      "description": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
-      "desc_ko": "UI/UX 의도 발견, 디자인 어휘, 제품 성격, UX 상태 패턴. 디자인 방향이 모호하거나 온보딩/빈상태/에러상태 구현 시 사용.",
-      "desc_en": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+      "description": "UI/UX 방향과 디자인 판단에 필수 사용. 모호한 시각 브리프, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, brand identity choices를 다룹니다. 트리거: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로.",
+      "desc_ko": "UI/UX 방향과 디자인 판단에 필수 사용. 모호한 시각 브리프, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, brand identity choices를 다룹니다. 트리거: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로.",
+      "desc_en": "MUST USE for UI/UX direction and design judgment. Covers vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "develop-web-game": {
       "name": "웹 게임 개발",

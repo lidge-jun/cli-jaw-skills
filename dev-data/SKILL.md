@@ -1,8 +1,9 @@
 ---
 name: dev-data
-description: "Data engineering and analysis guide for orchestrated sub-agents. Data pipelines, ETL/ELT design, data quality validation, SQL optimization, and analysis patterns. Injected when role=data."
+description: "MUST USE for data engineering and analysis work — pipelines, ETL/ELT, data quality, SQL optimization, schema evolution, backfills, and reporting. Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필."
 metadata:
   {
+    "short-description": "Data pipelines, ETL/ELT design, quality validation, SQL optimization, and analysis.",
     "keywords": ["dashboard-db", "sqlite", "audit-log-schema", "connector-data"]
   }
 ---
@@ -10,6 +11,7 @@ metadata:
 # Dev-Data — Data Engineering & Analysis Guide
 
 Production-grade data engineering patterns for building reliable data systems.
+Activates by change surface for data pipelines, analytics, SQL-heavy work, schema evolution, backfills, and reporting.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -17,10 +19,12 @@ Production-grade data engineering patterns for building reliable data systems.
 
 - Building data pipelines or ETL/ELT processes
 - Processing CSV, JSON, Parquet, or Excel files
-- Writing SQL queries or designing database schemas
+- Writing analytical SQL, warehouse/lakehouse queries, or transformation models
 - Setting up data quality checks or validation
 - Performing data analysis, aggregation, or reporting
 - Choosing between batch and streaming architectures
+
+**Do not activate for plain app CRUD SQL, OLTP query tuning, or transactional schema design.** Route those to `dev-backend/references/stacks/database.md`. This skill owns analytics, ETL/ELT, pipelines, data quality, and reporting.
 
 ## External/current data evidence
 
@@ -29,6 +33,19 @@ behavior, provider data API changes, or public benchmark/source claims, read the
 active `search` skill and follow its query-rewrite, source-fetch, and
 evidence-status rules. Use browser fetch/open/text/get-dom/snapshot only after
 candidate URLs exist and the claim needs browser-verifiable source evidence.
+
+---
+
+## Pre-Flight Checklist
+
+Before delivering:
+- [ ] Input contract defined: source, schema, expected columns/types, and owner
+- [ ] Pipeline is idempotent and restartable from the last successful checkpoint
+- [ ] Data-quality checks cover nulls, uniqueness, ranges, freshness, and row counts
+- [ ] Volume and latency justify the chosen engine: pandas, Polars, DuckDB, SQL warehouse, Spark/Flink
+- [ ] Invalid records have a dead-letter/quarantine path with enough context to debug
+- [ ] PII/governance classification is complete or delegated to `dev-security`/§7
+- [ ] Output format and downstream contract are explicit
 
 ---
 
@@ -316,6 +333,8 @@ See `references/governance.md` for detailed implementation patterns, row-level s
 ---
 
 ## 8. Query Performance Guidelines
+
+Ownership note: this section covers analytical SQL, warehouse/lakehouse queries, and pipeline transforms. Plain app CRUD SQL, OLTP schema design, and transactional query tuning belong to `dev-backend/references/stacks/database.md`.
 
 - Every query that runs in production: EXPLAIN ANALYZE before deploy
 - Slow query threshold: > 100ms for OLTP, > 5s for OLAP/analytics
