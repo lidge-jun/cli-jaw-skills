@@ -3,7 +3,7 @@ name: dev-pabcd
 description: "MUST USE for cli-jaw PABCD orchestration workflows — orchestrate, phase, attest/attestation, interview mode, goal mode, checkpoints, and multi-phase development. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD, 요구사항 정리, 인터뷰, 스펙 정리. Operate state transitions only when the user explicitly requests orchestration or an active PABCD phase is injected — do not transition state merely because a document mentions phases, goals, or checkpoints."
 metadata:
   short-description: "cli-jaw PABCD orchestration workflow for interview, phases, attest, and checkpoints."
-  last-verified: "2026-07-02"
+  last-verified: "2026-07-03"
 ---
 
 Structured 5-phase development. Advance only with user approval.
@@ -315,9 +315,12 @@ When P completes, the plan is saved to the **worklog `## Plan` section** (single
 
 - In A and B, the orchestrator **auto-injects the full plan body** at the top of every `cli-jaw dispatch` task under `## Approved Plan`.
 - Workers never read a plan file. Your task body should contain only the actual audit/verify instruction — the plan is prepended for you.
-- Example: `cli-jaw dispatch --agent "Backend" --task "Project root: /absolute/path/to/current/repo
-
-Audit: verify the imports in ..."` — no "read the plan" line needed.
+- Example: write the brief file (`Project root: /absolute/path/to/current/repo` + the
+  audit instruction) with your file tool, then
+  `cli-jaw dispatch --agent "Backend" --task-file /tmp/audit-brief.md --async` — no
+  "read the plan" line needed; the runId returns immediately and the result re-enters
+  as employee-results context. Omit `--async` only for a quick (<2 min) blocking verify.
+  Parallel fan-out: `--batch --agents-file <path> --async`; role overlays: `--task-tags "testing,security"`.
 
 ## §8. Pitfalls
 
