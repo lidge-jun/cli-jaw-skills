@@ -676,6 +676,21 @@
       "install": null,
       "version": "1.0.0"
     },
+    "design": {
+      "name": "Design Workspace",
+      "name_ko": "Design Workspace",
+      "name_en": "Design Workspace",
+      "emoji": "🎨",
+      "category": "devtools",
+      "description": "cli-jaw Design workspace: 오른쪽 sidebar에서 design page 생성/preview/export. Claude Design 스타일 toolbar + full viewport.",
+      "desc_ko": "cli-jaw Design workspace: 오른쪽 sidebar에서 design page 생성/preview/export. Claude Design 스타일 toolbar + full viewport.",
+      "desc_en": "cli-jaw Design workspace: create, preview, and export design pages from the right sidebar. Claude Design-style toolbar + full viewport.",
+      "requires": {
+        "bins": ["cli-jaw"]
+      },
+      "install": null,
+      "version": "1.0.0"
+    },
     "deep-research": {
       "name": "Deep Research",
       "name_ko": "Deep Research",
