@@ -62,6 +62,7 @@ source-fetch and evidence-status rules.
 | DB query / migration / transaction | real DB integration test | fake repository for SQL correctness |
 | frontend consuming backend JSON | contract test | manual-only verification |
 | rendered critical flow | Playwright smoke | asserting internal React state |
+| rendered artifact (visual correctness) | render-grounding loop (dev-pabcd C-RENDER-GROUNDING-01) | static parse / tsc alone |
 ### 1.5 General Rules
 - Write tests for **new features, bug fixes, refactors, and behavior changes**.
 - Prefer **one behavioral concern per test**.

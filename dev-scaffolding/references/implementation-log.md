@@ -2,8 +2,9 @@
 
 Canonical spec for the per-implementation-unit documentation routine that rides the
 PABCD cycle. Companion to `dev-pabcd/SKILL.md` §3.1 (numbering) and
-`dev-scaffolding/SKILL.md` §2.1 (folder proposal rules). Read when a work unit is
-C3+, multi-phase, or must survive across sessions/agents.
+`dev-scaffolding/SKILL.md` §2.1 (folder proposal rules). Read before any development
+work: unit residence is universal (UNIT-RESIDENCE-01) — the full routine below is for
+C2+/multi-phase work; C0-C1 leaves a numbered record doc (see the last section).
 
 ## The unit: one implementation unit = one plan folder
 
@@ -28,16 +29,19 @@ ordering and the audit trail.
 
 | Phase | Documentation action | Gate |
 |-------|---------------------|------|
-| P | CONCRETIZE: write `00_plan.md` (objective, measured baseline, work-phase map, risks) + research docs `01+`; phase design docs at **diff-level precision** (exact paths, NEW/MODIFY/DELETE, before/after for MODIFY) | plan exists as files, not chat |
+| P | CONCRETIZE: write `00_plan.md` (objective, measured baseline, dependency-ordered work-phase map, risks) + research docs `01+`; decade docs for **EVERY roadmap phase** at **diff-level precision** (exact paths, NEW/MODIFY/DELETE, before/after for MODIFY) — DIFFLEVEL-ROADMAP-01 | plan exists as files, not chat |
 | A | AUDIT THE DOCS: an independent reviewer checks the plan docs — paths/signatures real, research coverage complete, phases sized, no ownership violations, no contradictions vs research | FAIL → fix docs → re-audit |
 | B | Implementation cites the doc it executes; deviations are edited back into the doc BEFORE coding past them | doc and code never diverge silently |
-| C | Gate results (commands + tails) recorded into the unit | evidence lives next to the plan |
+| C | Gate results (commands + tails) recorded into the unit; general SoT docs patched to match the change (SOT-SYNC-01 — recommend creating one if absent) | evidence lives next to the plan |
 | D | Attestation/summary appended to `00_plan.md`; on unit completion the folder moves `_plan/` → `_fin/` | durable closure record |
 
-Multi-cycle units: one full PABCD per work-phase; each phase's design doc is written
-in P of ITS cycle (pre-scaffold the decade files up front, fill per cycle). The
-attestation log in `00_plan.md` is the continuity spine — each new P quotes the
-previous D conclusion from it (see `dev-pabcd` §10 LOOP-CONTINUITY-01).
+Multi-cycle units: one full PABCD per work-phase; ALL phase design docs are written
+to diff-level in the FIRST P (or the design-only Phase-0 pass) —
+DIFFLEVEL-ROADMAP-01. P of each later cycle re-verifies its pre-written doc against
+the current codebase (stale check) and amends it BEFORE building; it never writes
+the doc fresh mid-unit. The attestation log in `00_plan.md` is the continuity spine
+— each new P quotes the previous D conclusion from it (see `dev-pabcd` §10
+LOOP-CONTINUITY-01).
 
 ## Mapping to mainstream developer practice (translation table)
 
@@ -64,10 +68,13 @@ Two deliberate differences from common practice, kept on purpose:
    here it is a hard gate because the executor (an agent) will otherwise
    confidently build from a flawed plan.
 
-## When NOT to use this
+## Ceremony scales; residence does not
 
-C0-C2 work does not get a unit folder (dev-pabcd §9: response-level plan +
-verification record is enough). The routine is mandatory for C4, and for C3 when
-state must persist across turns/agents or contracts/architecture need a durable
-audit trail. Over-documenting small work is process slop — the classifier decides,
-not habit.
+Every piece of work lands in an implementation unit (UNIT-RESIDENCE-01). The full
+routine above (master plan + all-phase diff-level docs + doc audit) is mandatory for
+C4, for any multi-phase unit regardless of class, and for C3 when state must persist
+across turns/agents or contracts/architecture need a durable audit trail. C0-C1
+fast-path work skips the ceremony but still leaves a numbered record doc in its
+owning unit (what changed · why the fast path applied · verification evidence);
+create a minimal unit folder if none exists. Over-documenting small work is process
+slop — but "small" scales the ceremony down, never the record away.

@@ -28,11 +28,13 @@ Do NOT:
 The `/interview` slash command is a user-facing shortcut that triggers the same transition.
 As the Boss agent, always use `cli-jaw orchestrate I` directly.
 
-**Interview MUST settle two classifications before P** (DEFAULT, INTERVIEW-CLASSIFY-01):
-the work class (dev §0.0) and the **loop archetype** (§11.4). Ask: "does a verifier
-define done for this work, or only better?" This applies in HITL and goal mode alike.
-If the archetype is discovered only after candidates have already been burned, treat
-that as an Interview failure, not a Build failure.
+**Interview MUST settle three things before P** (DEFAULT, INTERVIEW-CLASSIFY-01):
+the work class (dev §0.0), the **loop archetype** (§11.4) — ask "does a verifier
+define *done* for this work, or only *better*?" — and the **unit residence**
+(UNIT-RESIDENCE-01, §3.1): which implementation unit (`devlog/_plan/YYMMDD_slug/`)
+this work belongs to, an existing unit or a new one. This applies in HITL and goal
+mode alike. An archetype discovered mid-loop — after candidates have already been
+burned — is an Interview failure, not a Build failure.
 
 ## §2. How It Works
 
@@ -116,18 +118,25 @@ For broad changes or unfamiliar repositories, P phase MUST include:
 - Detected repo conventions: docs, plans, architecture notes, source-of-truth logs, naming, tests
 - Whether existing `structure/`, `devlog/`, `docs/`, `plans/`, or equivalent logs were read and will be reused
 - Whether `structure/` or `devlog/` is proposed
+- The SoT sync target (SOT-SYNC-01): which general source-of-truth doc
+  (`structure/`, architecture/INDEX docs) this unit will patch in C — or, if the
+  repo has none, the plan recommends creating one (dev-scaffolding §2.1)
 
 Do not create new project-level source-of-truth folders during B unless approved in P or explicitly requested by the user.
 
-Design phases before mapping them to PABCD. A phase should normally be a user-visible
-or consumer-visible outcome unit: "create an item", "edit an item", "share a report",
-or "compare three runnable prototypes". DB/API/UI/test work are subtasks inside that
-outcome, not top-level phases by default. A simple task can finish in one PABCD with
-several small phases; larger work splits into multiple PABCD passes — one full
-P→A→B→C→D per work-phase, closed by D and re-entered at P for the next work-phase (see
-Terminology / Rule 4). Layer-only phases are allowed only when independently verifiable and
-explicitly justified. Do not plan a whole database/API foundation as one PABCD before any
-usable outcome exists.
+Design phases before mapping them to PABCD. **Slice and order phases by
+dependency/architecture structure (STRICT, PHASE-SPLIT-01)** — the orthodox
+unlimited-time build order: foundations (schema, contracts, core data flow) → core
+capabilities → integration → hardening/polish — so each phase consumes the verified
+output of the previous one. DB/API/UI/test work inside a phase are subtasks, not
+top-level phases by default, and every phase must still close with something
+independently verifiable (build, tests, or a demonstrable surface). Effort-based
+bucketing is FORBIDDEN: never split or order phases by estimated effort or payoff
+speed — no "quick win vs heavy" buckets, no impact/effort matrices, no time-boxed
+slices. Phase boundaries encode the system's build order, not the schedule. A simple
+task can finish in one PABCD with several small phases; larger work splits into
+multiple PABCD passes — one full P→A→B→C→D per work-phase, closed by D and
+re-entered at P for the next work-phase (see Terminology / Rule 4).
 
 Read project docs and dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
 
@@ -150,11 +159,39 @@ plateau signature reproduced by design.
 
 If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT ask questions in P.
 
-### §3.1 Jawdev Document Numbering
+### §3.1 Implementation-Unit Documents
 
 Full documentation routine (P concretizes the docs, A audits them as a hard gate, D
 archives to `_fin/`, plus the mainstream design-doc/RFC translation table):
 `dev-scaffolding/references/implementation-log.md`.
+
+**Difflevel roadmap plan (STRICT, DIFFLEVEL-ROADMAP-01):** for any multi-phase unit
+(2+ work-phases), the FIRST P — or the dedicated design-only Phase-0 pass (§5) —
+must deliver the entire roadmap concretized: `00_plan.md` (objective, constraints,
+dependency-ordered work-phase map) PLUS every phase's decade doc written to full
+diff-level precision (exact paths, NEW/MODIFY/DELETE, before/after diffs) — each one
+a copy-paste-executable PRD, not an outline. Scaffolding empty decade files to "fill
+per cycle" does NOT satisfy this rule. Each later cycle's P starts from its
+pre-written doc: re-verify it against the current codebase (stale check — earlier
+phases may have moved lines, signatures, or files), amend the doc, then execute.
+LOOP-CONTINUITY-01 (§10) applies on top.
+
+**Lexicographic separation (STRICT, LEXICO-SPLIT-01):** every document in a unit
+carries a numeric lexicographic prefix — bare semantic filenames (`PLAN.md`,
+`DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, an unnumbered `mvpplan/`-style folder) are an
+A-phase FAIL, not a style nit. Research/spec material (00-range) and implementation
+phase designs (decade ranges) are SEPARATE documents: no diffs inside a research
+doc, no survey prose padding a phase doc — a document that mixes both fails the
+audit.
+
+**Unit residence (STRICT, UNIT-RESIDENCE-01):** every piece of development work
+belongs to an implementation unit (`devlog/_plan/YYMMDD_slug/`). Ceremony scales
+with class (§9); residence does not. C0-C1 fast-path work skips the PABCD ceremony
+but MUST leave a numbered record doc in its owning unit — next free index in the
+matching decade, e.g. `40_hotfix_dropdown_crash.md` — stating what changed, why the
+fast path applied (class call), and the verification evidence. No owning unit →
+create a minimal unit folder holding only that record. Interview settles residence
+before P (§1).
 
 Devlog plan artifacts use decade-range numbering to separate concerns:
 
@@ -169,7 +206,8 @@ Rules:
 - 00-range durable research is **mandatory for C4**, and for C3 only when state must persist
   across turns/agents, public contract or architecture decisions need durable audit, or the
   user/repo already uses devlog planning for that task; optional for C0-C2 and
-  low-persistence C3 (a response-level plan plus verification record is enough).
+  low-persistence C3 (a response-level plan is enough — but the work still leaves its
+  numbered record in a unit, UNIT-RESIDENCE-01).
 - Default: sequential within decade (`00`, `01`, `02`...).
 - Overflow (>10 docs in a range): use sub-index (`00_0_name.md`, `00_1_name.md`).
 - NEVER use bare filenames like `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`.
@@ -190,7 +228,11 @@ Spawn a worker to audit the plan (not code). The worker verifies:
 - No new `structure/`, `devlog/`, docs, or AGENTS files are introduced without user approval
 - New JS/TS files follow TypeScript preference rules unless the plan states why JS is required
 - New TypeScript is strict-compatible or limitations are stated
-- New devlog phase documents use the numbered Jawdev filename convention.
+- New devlog phase documents use the numbered lexicographic filename convention;
+  bare-named or research/implementation-mixed docs are a FAIL (LEXICO-SPLIT-01).
+- Multi-phase units satisfy DIFFLEVEL-ROADMAP-01: every roadmap phase has a
+  diff-level decade doc (no outline-only or missing phases), and the phase map is
+  dependency-ordered, not effort-bucketed (PHASE-SPLIT-01).
 
 Output worker JSON for the audit. Review results when they come back.
 - If FAIL → fix the plan → output worker JSON again to re-audit
@@ -213,8 +255,31 @@ After implementing, output worker JSON for verification. The worker checks your 
 Final sanity check:
 1. Verify all files saved and consistent
 2. Run `npx tsc --noEmit` (if TypeScript project)
-3. Update project structure docs if applicable
+3. **SoT sync (DEFAULT, SOT-SYNC-01):** locate the repo's general source-of-truth
+   docs (`structure/`, architecture/INDEX docs) — found in P, patched HERE so SoT
+   and code never diverge silently; if the repo has none, recommend creating one
+   (dev-scaffolding §2.1) in the D summary
 4. Report completion summary
+
+**DEFAULT (C-RENDER-GROUNDING-01):** when the work-phase produces an artifact whose
+correctness only shows when run or rendered (HTML page, SVG, game, UI, chart,
+animation, script with observable visual/interactive output), C MUST include a
+render-grounding loop before C→D: (1) **RUN** it in its natural execution
+environment — headless-browser screenshot for web, SVG→PNG render, execute scripts,
+drive games/wizards until the first interactive state change; (2) **OBSERVE** the
+output — actually read the screenshot/console back; a produced-but-unread screenshot
+is not observation; (3) **FIX** what the observation reveals, then re-run and
+re-observe. Trigger on artifact type + change ("could this look or behave wrong in a
+way that only shows when it runs?"), never on task depth alone. Stop after ONE clean
+observation; re-render only after a change. Well-formed (tsc/lint/parse passing) is
+not correct — static gates do not satisfy this rule. Defaults (HEURISTIC — deviate
+with a stated reason): 1280x720 viewport; stateful artifacts driven until the first
+interactive state change. Evidence scales with class: C2-C3 record the observation
+in the attestation narrative; C4 (STRICT) additionally persists the screenshot to
+the devlog. The render observation is valid `checkOutput` evidence for C→D and the
+`did` must reference it. Excluded: pure logic/config/prose covered by its own test
+suite. (Adopted 2026-07-05 from fablize verification-grounding; devlog
+`260705_pabcd_render_grounding`.)
 
 Long external gates (CI runs, deploys) inside cli-jaw: do not block the turn —
 register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end the turn; the
@@ -275,10 +340,13 @@ passing C and D. Depth scales per work-phase class (see "PABCD Depth by Work Cla
 the P→D **sequence** is never skipped for a work-phase.
 
 **Loop / multi-pass tasks**: a "loop"/"루프" request (or work too large for one cycle) runs
-as MULTIPLE PABCD passes — one per work-phase. Pre-plan the full slice map and scaffold
-per-phase decade docs (10_phase1, 20_phase2, ...) up front. The first pass MAY be a
-design-only PABCD pass (Phase 0): a code-free whole-system design/documentation cycle
-before the first implementation work-phase.
+as MULTIPLE PABCD passes — one per work-phase. Pre-plan the full slice map and WRITE
+all per-phase decade docs (10_phase1, 20_phase2, ...) to diff-level up front
+(DIFFLEVEL-ROADMAP-01, §3.1) — scaffolding empty files is not pre-planning. Each
+later cycle's P re-verifies its pre-written doc against the current codebase and
+amends it before building. The first pass MAY be a design-only PABCD pass (Phase 0):
+a code-free whole-system design/documentation cycle that produces exactly this
+difflevel roadmap before the first implementation work-phase.
 
 **Faithful execution (anti-skip)**: do the real work of each PABCD-phase — P writes the
 real diff-level plan, A really dispatches the audit, B really implements AND verifies, C
@@ -346,11 +414,13 @@ When P completes, the plan is saved to the **worklog `## Plan` section** (single
 
 | Class | Plan (P) | Audit (A) | Build (B) | Check (C) | Record (D) |
 |-------|----------|-----------|-----------|-----------|------------|
-| C0-C1 | None/inline | Optional | Direct fix | Smallest proof | One-line summary |
+| C0-C1 | None/inline | Optional | Direct fix | Smallest proof | One-line summary as a numbered record doc in the owning unit (UNIT-RESIDENCE-01) |
 | C2 | Compact plan | Micro-audit | Boss writes, focused tests | Targeted gate | Summary |
 | C3 | Compact or full PABCD plan depending on persistence/risk | Required when public contract, architecture, persistence, cross-agent, or cross-session risk exists; otherwise focused audit | Boss writes, employees verify only when useful | Affected suite + docs consistency when docs/contracts changed | Summary + evidence; durable record only when state must persist |
 | C4 | Full PABCD plan (mandatory) | Required, independent | Boss writes, employee verifies | Full relevant gates | Durable risk/approval/evidence record |
 | C5 | Interview/research first | — | — | — | Reclassify, then follow the new class |
+
+Render-artifact work-phases add C-RENDER-GROUNDING-01 (§3 C) to the Check column at C2+; C4 escalates its evidence to STRICT (persisted screenshot).
 
 ## §10. Optimization-Loop Meta-Rules (plateau discipline)
 

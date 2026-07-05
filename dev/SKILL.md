@@ -39,7 +39,9 @@ run when tuning trigger/classification behavior; track false promotions and demo
 For **C0/C1 work** (one file, no new abstractions, local behavior — a ≤5-line
 edit is an example, not a limit):
 - Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
-- Keep: §3 verification gate, §4 change documentation when a worklog/changelog file is provided, §5 safety rules (imports/exports), §7.2 static analysis
+- Keep: §3 verification gate, §4 change documentation — including the numbered
+  record doc in the owning implementation unit, mandatory for ALL work
+  (UNIT-RESIDENCE-01, `dev-pabcd` §3.1), §5 safety rules (imports/exports), §7.2 static analysis
 - Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
 
 This is scope guidance, not an exemption. Conventions visible in the touched file still apply even when proactive discovery is skipped. Promotion is **behavioral**, not territorial: a patch escalates when it can alter an auth/payment/deletion or other DEV-ESCALATE-01 path — not merely because the file lives there. A zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit touching executed logic in such a path is not C0/C1 — reclassify and read the relevant reference.
@@ -205,7 +207,7 @@ Before broad changes, inspect existing conventions: source layout (`src/`, `app/
 `packages/`), source-of-truth docs (`structure/`, `docs/`, `adr/`, `devlog/`, `plans/`),
 agent context files (`AGENTS.md`, `CLAUDE.md`, tool instruction files), JS/TS setup
 (`package.json`, `tsconfig*`, linter config, sibling extensions), and naming/test/
-phase-document patterns (Jawdev decade numbering — see `dev-pabcd`).
+phase-document patterns (decade numbering — see `dev-pabcd`).
 
 MUST follow existing conventions when they are clear.
 MUST read existing `structure/`, `devlog/`, or other source-of-truth logs before broad implementation.
@@ -251,7 +253,7 @@ One logical change per PR/changeset — unrelated cleanup and drive-by refactors
 - Use ES Modules in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
 - One default export per file when it has a primary purpose (JS/TS convention; other languages follow their idioms).
 - Follow existing naming/directory conventions; check sibling files before creating new ones.
-- Jawdev/devlog phase documents use decade-range numbering (00-09 research, 10-19 phase 1, …); never bare `PLAN.md`/`PHASES.md`/`RCA.md`. Full convention: `dev-pabcd`.
+- Devlog phase documents use decade-range numbering (00-09 research, 10-19 phase 1, …); never bare `PLAN.md`/`PHASES.md`/`RCA.md` (LEXICO-SPLIT-01). Full convention: `dev-pabcd`.
 
 ---
 

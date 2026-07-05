@@ -42,17 +42,20 @@ Apply for new projects or when a repo has no clear structural convention of its 
 Before scaffolding inside an existing repo:
 1. Detect existing architecture, docs, plans, changelog, ADR, agent-context, source-of-truth, and devlog conventions.
 2. Read existing `structure/`, `devlog/`, `docs/`, `plans/`, or equivalent source-of-truth logs before proposing new structure.
-3. Reuse clear conventions instead of imposing the Lidge/Jawdev default.
+3. Reuse clear conventions instead of imposing the Lidge/source-of-truth default.
 4. Show a compact tree before broad additions.
 5. Do not create `structure/`, `devlog/`, `docs/`, `AGENTS.md`, or similar project-level folders without approval.
 
-MUST preserve mature repo conventions over the Lidge/Jawdev default.
+MUST preserve mature repo conventions over the Lidge/source-of-truth default.
 
-## 2.1 Lightweight Jawdev Source of Truth
+## 2.1 Lightweight Source of Truth (implementation-unit devlog)
 
-Use this only when:
+The implementation-unit devlog routine (`devlog/_plan/` units — `dev-pabcd` §3.1,
+UNIT-RESIDENCE-01) is the DEFAULT for any repo you do development work in — a
+process rule, not a named style to be requested. Propose the `structure/`
+architecture docs when:
 - The repo is immature, undocumented, or inconsistent; or
-- The user asks for Jawdev/Lidge-style structure; or
+- The user asks for a durable source-of-truth structure; or
 - A broad change needs a durable plan/current-architecture record.
 
 Default proposal:
@@ -73,23 +76,32 @@ Also detect optional lightweight source-of-truth files such as `CONTEXT.md`,
 the repo already uses that convention or the user approves. Create an ADR only for a
 decision that is hard to reverse, surprising without context, or has a real tradeoff.
 
-Jawdev devlog method:
-- Split large work into phase-level documents instead of one huge plan.
+**SoT sync (DEFAULT, SOT-SYNC-01):** before patching a repo, FIND its general
+source-of-truth docs first (`structure/`, `architecture.md`, INDEX/context docs)
+and read them; any unit that changes architecture, contracts, or structure patches
+the SoT doc in the SAME unit (C gate, dev-pabcd §3 C). If the repo has no SoT doc,
+recommend creating one — once, via the proposal flow above — rather than silently
+working without a source of truth.
+
+Implementation-unit devlog method:
+- Split large work into phase-level documents instead of one huge plan —
+  dependency-ordered (PHASE-SPLIT-01), ALL written to diff-level up front
+  (DIFFLEVEL-ROADMAP-01; both defined in `dev-pabcd`).
 - Keep diff-level plans in files, not chat: exact paths, NEW/MODIFY/DELETE, before/after diffs for MODIFY, complete content for NEW.
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
-Jawdev phase document naming uses decade-range prefixes. For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §3.1 Jawdev Document Numbering — that is the single source of truth.
+Phase document naming uses decade-range prefixes (LEXICO-SPLIT-01). For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §3.1 Implementation-Unit Documents — that is the single source of truth.
 - Plan unit folder: `devlog/_plan/YYMMDD_slug/`
 - The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
 - When adding a document, scan siblings and choose the next unused prefix in the correct decade.
 
-Before creating any `structure/`/`devlog/` folders, ask concisely: state that no source-of-truth docs were found, show the proposed tree, give a specific recommendation, and confirm you will not create them without approval.
+Before creating any `structure/`/`devlog/` folders, ask concisely: state that no source-of-truth docs were found, show the proposed tree, give a specific recommendation, and confirm you will not create them without approval. This gate governs INTRODUCING the convention to a repo (the first `devlog/` or `structure/`); once `devlog/_plan/` exists, creating unit subfolders — including the minimal record unit mandated by UNIT-RESIDENCE-01 — is routine and needs no approval dialogue.
 
 ## 2.2 Project Skeleton
 
 For a new project, propose the source-of-truth structure in the plan.
-If the user explicitly asks for Lidge/Jawdev standard, create it.
+If the user explicitly asks for the full source-of-truth standard (§8), create it.
 Otherwise ask once before adding `structure/` and `devlog/`.
 
 When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and per-feature public boundary exports (per `dev-architecture` §5; file names from language detection, §3). Defer exact layout to the framework's own generator when one exists.
@@ -160,7 +172,7 @@ Principle: "flat until you can't" — start flat, sub-folder only when a folder 
 | Python files        | snake_case + suffix   | `stock_price_tool.py`        |
 | Go files            | snake_case            | `stock_price.go`             |
 | Rust files          | snake_case            | `stock_price.rs`             |
-| devlog plan folders | `YYMMDD_slug/`        | `260510_jawdev_phase_doc_naming/` |
+| devlog plan folders | `YYMMDD_slug/`        | `260510_phase_doc_naming/` |
 | devlog phase docs   | decade-prefixed `NN_slug.md`, `00_*` is the index | `00_plan.md`, `10_phase1_skill_contract.md` |
 | Functions (JS/TS)   | camelCase             | `getStockPrice()`            |
 | Functions (Python)  | snake_case            | `get_stock_price()`          |
@@ -179,10 +191,10 @@ Principle: "flat until you can't" — start flat, sub-folder only when a folder 
 
 ## 8. str_func Rules
 
-`str_func` is part of the full Lidge/Jawdev standard, not the lightweight default.
+`str_func` is part of the full Lidge standard, not the lightweight default.
 
 Use it when:
-- The user explicitly asks for full Lidge/Jawdev structure.
+- The user explicitly asks for the full Lidge structure.
 - The repo already maintains `str_func` docs.
 - A broad feature needs durable module-level function documentation.
 
@@ -249,10 +261,10 @@ When `role=docs` or when generating project documentation:
 ### Structure Documentation
 1. Generate `structure/README.md` or update existing structure docs
 2. Include: directory tree, module responsibility map, dependency flow
-3. Follow Jawdev source-of-truth conventions (§2.1) when applicable
+3. Follow source-of-truth conventions (§2.1) when applicable
 
 ### Devlog Documentation
-1. Follow decade numbering (`dev-pabcd/SKILL.md` §3.1 Jawdev Document Numbering): 00-09 research, 10-19 phase 1, etc.
+1. Follow decade numbering (`dev-pabcd/SKILL.md` §3.1, LEXICO-SPLIT-01): 00-09 research, 10-19 phase 1, etc.
 2. Each devlog entry: title, date, what changed, why, evidence paths
 3. Cross-reference related devlog entries within the same _plan/ folder
 
