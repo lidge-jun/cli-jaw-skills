@@ -23,9 +23,9 @@
       "name_en": "Agent Eval Skill",
       "emoji": "📊",
       "category": "devtools",
-      "description": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
+      "description": "Head-to-head comparison of coding agents (Claude Code, Aider, Codex, etc.) on custom tasks with pass rate, cost, time, and consistency metrics",
       "desc_ko": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
-      "desc_en": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
+      "desc_en": "Head-to-head comparison of coding agents (Claude Code, Aider, Codex, etc.) on custom tasks with pass rate, cost, time, and consistency metrics",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -62,9 +62,9 @@
       "name_en": "Agent Setup Wizard",
       "emoji": "🧙",
       "category": "devtools",
-      "description": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
+      "description": "Interactive installer for agent skills and rules across any AI coding agent framework. Guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.",
       "desc_ko": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
-      "desc_en": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
+      "desc_en": "Interactive installer for agent skills and rules across any AI coding agent framework. Guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -127,9 +127,9 @@
       "name_en": "Android Clean Architecture",
       "emoji": "📱",
       "category": "devtools",
-      "description": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
+      "description": "Clean Architecture patterns for Android and Kotlin Multiplatform projects — module structure, dependency rules, UseCases, Repositories, and data layer patterns.",
       "desc_ko": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
-      "desc_en": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
+      "desc_en": "Clean Architecture patterns for Android and Kotlin Multiplatform projects — module structure, dependency rules, UseCases, Repositories, and data layer patterns.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -145,7 +145,8 @@
       "desc_en": "REST API design review: naming conventions, HTTP methods, pagination, error formats, versioning, breaking changes, rate limiting.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-backend"
     },
     "apple-notes": {
       "name": "Apple Notes",
@@ -179,9 +180,9 @@
       "name_en": "Architecture Decision Records",
       "emoji": "📐",
       "category": "devtools",
-      "description": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
+      "description": "Capture architectural decisions made during coding sessions as structured ADRs. Auto-detects decision moments, records context, alternatives considered, and rationale. Maintains an ADR log so future developers understand why the codebase is shaped the way it is.",
       "desc_ko": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
-      "desc_en": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
+      "desc_en": "Capture architectural decisions made during coding sessions as structured ADRs. Auto-detects decision moments, records context, alternatives considered, and rationale. Maintains an ADR log so future developers understand why the codebase is shaped the way it is.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -214,7 +215,8 @@
         ]
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "desktop-control"
     },
     "autonomous-loops": {
       "name": "Autonomous Loops Skill",
@@ -222,9 +224,9 @@
       "name_en": "Autonomous Loops Skill",
       "emoji": "🔄",
       "category": "devtools",
-      "description": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
+      "description": "Patterns and architectures for autonomous Claude Code loops — from simple sequential pipelines to RFC-driven multi-agent DAG systems.",
       "desc_ko": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
-      "desc_en": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
+      "desc_en": "Patterns and architectures for autonomous Claude Code loops — from simple sequential pipelines to RFC-driven multi-agent DAG systems.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -240,7 +242,8 @@
       "desc_en": "Turn a one-line objective into a step-by-step construction plan that any coding agent can execute cold.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-pabcd"
     },
     "brainstorming": {
       "name": "Brainstorming",
@@ -314,9 +317,9 @@
       "name_en": "Carrier Relationship Management",
       "emoji": "🚚",
       "category": "devtools",
-      "description": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
+      "description": "Manage carrier portfolios, negotiate freight rates, track carrier performance, allocate freight, and maintain strategic carrier relationships. Includes scorecarding frameworks, RFP processes, market intelligence, and compliance vetting. Use when managing carriers, negotiating rates, evaluating carrier performance, or building freight strategies.",
       "desc_ko": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
-      "desc_en": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
+      "desc_en": "Manage carrier portfolios, negotiate freight rates, track carrier performance, allocate freight, and maintain strategic carrier relationships. Includes scorecarding frameworks, RFP processes, market intelligence, and compliance vetting. Use when managing carriers, negotiating rates, evaluating carrier performance, or building freight strategies.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -345,7 +348,8 @@
       "desc_en": "Build applications with the Anthropic Claude API and SDKs.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "status": "claude-specific"
     },
     "claude-devfleet": {
       "name": "Claude DevFleet Multi-Agent Orchestration",
@@ -353,12 +357,13 @@
       "name_en": "Claude DevFleet Multi-Agent Orchestration",
       "emoji": "⚓",
       "category": "devtools",
-      "description": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
+      "description": "Orchestrate multi-agent coding tasks via Claude DevFleet — plan projects, dispatch parallel agents in isolated worktrees, monitor progress, and read structured reports.",
       "desc_ko": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
-      "desc_en": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
+      "desc_en": "Orchestrate multi-agent coding tasks via Claude DevFleet — plan projects, dispatch parallel agents in isolated worktrees, monitor progress, and read structured reports.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "status": "claude-specific"
     },
     "clickhouse-io": {
       "name": "ClickHouse Analytics Patterns",
@@ -396,9 +401,9 @@
       "name_en": "Codebase Onboarding",
       "emoji": "🗺️",
       "category": "devtools",
-      "description": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
+      "description": "Analyze an unfamiliar codebase and generate a structured onboarding guide with architecture map, key entry points, conventions, and a starter CLAUDE.md.",
       "desc_ko": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
-      "desc_en": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
+      "desc_en": "Analyze an unfamiliar codebase and generate a structured onboarding guide with architecture map, key entry points, conventions, and a starter CLAUDE.md.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -422,9 +427,9 @@
       "name_en": "Compose Multiplatform Patterns",
       "emoji": "📱",
       "category": "devtools",
-      "description": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
+      "description": "Compose Multiplatform and Jetpack Compose patterns for KMP projects — state management, navigation, theming, performance, and platform-specific UI.",
       "desc_ko": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
-      "desc_en": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
+      "desc_en": "Compose Multiplatform and Jetpack Compose patterns for KMP projects — state management, navigation, theming, performance, and platform-specific UI.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -461,9 +466,9 @@
       "name_en": "Content-Hash File Cache Pattern",
       "emoji": "🔑",
       "category": "devtools",
-      "description": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
+      "description": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
       "desc_ko": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
-      "desc_en": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
+      "desc_en": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -505,7 +510,8 @@
       "desc_en": "Patterns for structuring long-running agent workflows with loop selection, quality gates, and failure recovery.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-pabcd"
     },
     "continuous-learning": {
       "name": "Continuous Learning",
@@ -526,9 +532,9 @@
       "name_en": "Continuous Learning v2.1 — Instinct-Based Architecture",
       "emoji": "📚",
       "category": "devtools",
-      "description": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
+      "description": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination.",
       "desc_ko": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
-      "desc_en": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
+      "desc_en": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -539,9 +545,9 @@
       "name_en": "Cost-Aware LLM Pipeline",
       "emoji": "💰",
       "category": "devtools",
-      "description": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
+      "description": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
       "desc_ko": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
-      "desc_en": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
+      "desc_en": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -591,9 +597,9 @@
       "name_en": "Customs & Trade Compliance",
       "emoji": "🛃",
       "category": "devtools",
-      "description": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
+      "description": "Customs documentation, tariff classification, duty optimization, restricted party screening, and regulatory compliance across multiple jurisdictions. Includes HS classification logic, Incoterms application, FTA utilization, and penalty mitigation. Use when handling customs clearance, tariff classification, trade compliance, import/export documentation, or duty optimization.",
       "desc_ko": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
-      "desc_en": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
+      "desc_en": "Customs documentation, tariff classification, duty optimization, restricted party screening, and regulatory compliance across multiple jurisdictions. Includes HS classification logic, Incoterms application, FTA utilization, and penalty mitigation. Use when handling customs clearance, tariff classification, trade compliance, import/export documentation, or duty optimization.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -635,7 +641,8 @@
       "desc_en": "Schema design, normalization (1NF–BCNF), index optimization, migration strategies, partitioning, database selection guide.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-data"
     },
     "database-migrations": {
       "name": "Database Migration Patterns",
@@ -648,7 +655,8 @@
       "desc_en": "Safe, reversible database schema changes for production systems.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-data"
     },
     "debugging-checklist": {
       "name": "Debugging Checklist",
@@ -661,7 +669,8 @@
       "desc_en": "Reproduce → isolate → log → hypothesis verification debugging checklist.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-debugging"
     },
     "debugging-helpers": {
       "name": "Debugging Helpers",
@@ -674,7 +683,8 @@
       "desc_en": "Systematic debugging helpers.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-debugging"
     },
     "design": {
       "name": "Design Workspace",
@@ -686,7 +696,9 @@
       "desc_ko": "cli-jaw Design workspace: 오른쪽 sidebar에서 design page 생성/preview/export. Claude Design 스타일 toolbar + full viewport.",
       "desc_en": "cli-jaw Design workspace: create, preview, and export design pages from the right sidebar. Claude Design-style toolbar + full viewport.",
       "requires": {
-        "bins": ["cli-jaw"]
+        "bins": [
+          "cli-jaw"
+        ]
       },
       "install": null,
       "version": "1.0.0"
@@ -702,7 +714,8 @@
       "desc_en": "Multi-step research agent. Search → analyze → summarize.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "search"
     },
     "dependency-install-helper": {
       "name": "Dependency Install Helper",
@@ -728,7 +741,8 @@
       "desc_en": "Production deployment workflows and CI/CD best practices.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-devops"
     },
     "desktop-control": {
       "name": "Desktop Control",
@@ -966,7 +980,8 @@
       "desc_en": "Security-focused diff review. Analyze security impact of code changes.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "differential-review/skills/differential-review/SKILL.md"
     },
     "dispatching-parallel-agents": {
       "name": "Dispatching Parallel Agents",
@@ -1070,7 +1085,8 @@
       "desc_en": "Docker and Docker Compose best practices for containerized development.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-devops"
     },
     "documentation-lookup": {
       "name": "Documentation Lookup (Context7)",
@@ -1078,12 +1094,13 @@
       "name_en": "Documentation Lookup (Context7)",
       "emoji": "📖",
       "category": "devtools",
-      "description": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
+      "description": "Use up-to-date library and framework docs via Context7 MCP instead of training data. Activates for setup questions, API references, code examples, or when the user names a framework.",
       "desc_ko": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
-      "desc_en": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
+      "desc_en": "Use up-to-date library and framework docs via Context7 MCP instead of training data. Activates for setup questions, API references, code examples, or when the user names a framework.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "search"
     },
     "docx": {
       "name": "DOCX",
@@ -1130,9 +1147,9 @@
       "name_en": "Energy Procurement",
       "emoji": "⚡",
       "category": "devtools",
-      "description": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
+      "description": "Electricity and gas procurement, tariff optimization, demand charge management, renewable PPA evaluation, and multi-facility energy cost management. Includes market structure analysis, hedging strategies, load profiling, and sustainability reporting frameworks. Use when procuring energy, optimizing tariffs, managing demand charges, evaluating PPAs, or developing energy strategies.",
       "desc_ko": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
-      "desc_en": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
+      "desc_en": "Electricity and gas procurement, tariff optimization, demand charge management, renewable PPA evaluation, and multi-facility energy cost management. Includes market structure analysis, hedging strategies, load profiling, and sustainability reporting frameworks. Use when procuring energy, optimizing tariffs, managing demand charges, evaluating PPAs, or developing energy strategies.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1161,7 +1178,8 @@
       "desc_en": "Compiler/runtime error → cause + fix suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-debugging"
     },
     "eval-harness": {
       "name": "Eval Harness",
@@ -1169,9 +1187,9 @@
       "name_en": "Eval Harness",
       "emoji": "📊",
       "category": "devtools",
-      "description": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
+      "description": "Evaluation framework for agent sessions implementing eval-driven development (EDD) principles.",
       "desc_ko": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
-      "desc_en": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
+      "desc_en": "Evaluation framework for agent sessions implementing eval-driven development (EDD) principles.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1187,7 +1205,8 @@
       "desc_en": "Neural search for web content, code, companies, and people via the Exa MCP server.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "search"
     },
     "fal-image-edit": {
       "name": "Fal Image Edit",
@@ -1229,9 +1248,9 @@
       "name_en": "Flutter/Dart Code Review Best Practices",
       "emoji": "🦋",
       "category": "devtools",
-      "description": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
+      "description": "Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.",
       "desc_ko": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
-      "desc_en": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
+      "desc_en": "Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1242,9 +1261,9 @@
       "name_en": "FoundationModels: On-Device LLM (iOS 26)",
       "emoji": "📲",
       "category": "devtools",
-      "description": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
+      "description": "Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.",
       "desc_ko": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
-      "desc_en": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
+      "desc_en": "Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1491,7 +1510,8 @@
       "desc_en": "Detect hardcoded secrets, weak crypto, and insecure defaults.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "insecure-defaults/skills/insecure-defaults/SKILL.md"
     },
     "inventory-demand-planning": {
       "name": "Inventory Demand Planning",
@@ -1499,9 +1519,9 @@
       "name_en": "Inventory Demand Planning",
       "emoji": "📦",
       "category": "devtools",
-      "description": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
+      "description": "Demand forecasting, safety stock optimization, replenishment planning, and promotional lift estimation at multi-location retailers. Includes forecasting method selection, ABC/XYZ analysis, seasonal transition management, and vendor negotiation frameworks. Use when forecasting demand, setting safety stock, planning replenishment, managing promotions, or optimizing inventory levels.",
       "desc_ko": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
-      "desc_en": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
+      "desc_en": "Demand forecasting, safety stock optimization, replenishment planning, and promotional lift estimation at multi-location retailers. Includes forecasting method selection, ABC/XYZ analysis, seasonal transition management, and vendor negotiation frameworks. Use when forecasting demand, setting safety stock, planning replenishment, managing promotions, or optimizing inventory levels.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1733,7 +1753,8 @@
       "desc_en": "Lint rule explanation + pattern examples + minimal fix suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-debugging"
     },
     "liquid-glass-design": {
       "name": "Liquid Glass Design System (iOS 26)",
@@ -1741,9 +1762,9 @@
       "name_en": "Liquid Glass Design System (iOS 26)",
       "emoji": "💎",
       "category": "devtools",
-      "description": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
+      "description": "iOS 26–27 Liquid Glass design system — dynamic glass material with blur, reflection, interactive morphing, adjustable intensity, and layering for SwiftUI, UIKit, and WidgetKit.",
       "desc_ko": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
-      "desc_en": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
+      "desc_en": "iOS 26–27 Liquid Glass design system — dynamic glass material with blur, reflection, interactive morphing, adjustable intensity, and layering for SwiftUI, UIKit, and WidgetKit.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1759,7 +1780,8 @@
       "desc_en": "Log grouping + first failure identification + action suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-debugging"
     },
     "logistics-exception-management": {
       "name": "Logistics Exception Management",
@@ -1767,9 +1789,9 @@
       "name_en": "Logistics Exception Management",
       "emoji": "🚨",
       "category": "devtools",
-      "description": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
+      "description": "> Freight exception handling: shipment delays, damages, losses, carrier disputes. Includes escalation protocols, carrier-specific behaviors, claims procedures, and judgment frameworks.",
       "desc_ko": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
-      "desc_en": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
+      "desc_en": "> Freight exception handling: shipment delays, damages, losses, carrier disputes. Includes escalation protocols, carrier-specific behaviors, claims procedures, and judgment frameworks.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1824,7 +1846,8 @@
       "desc_en": "uv+ruff+ty+pytest Python best practices.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "modern-python/skills/modern-python/SKILL.md"
     },
     "nano-banana-pro": {
       "name": "이미지 생성 (Gemini)",
@@ -1869,9 +1892,9 @@
       "name_en": "Next.js and Turbopack",
       "emoji": "▲",
       "category": "devtools",
-      "description": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
+      "description": "Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, production builds, Server Fast Refresh, and when to fall back to webpack.",
       "desc_ko": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
-      "desc_en": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
+      "desc_en": "Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, production builds, Server Fast Refresh, and when to fall back to webpack.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1967,9 +1990,9 @@
       "name_en": "Nutrient Document Processing",
       "emoji": "📄",
       "category": "productivity",
-      "description": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
+      "description": "Process, convert, OCR, extract, redact, sign, and fill documents using the Nutrient DWS API. Works with PDFs, DOCX, XLSX, PPTX, HTML, and images.",
       "desc_ko": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
-      "desc_en": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
+      "desc_en": "Process, convert, OCR, extract, redact, sign, and fill documents using the Nutrient DWS API. Works with PDFs, DOCX, XLSX, PPTX, HTML, and images.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2152,9 +2175,9 @@
       "name_en": "Plankton Code Quality",
       "emoji": "🦠",
       "category": "devtools",
-      "description": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
+      "description": "Write-time code quality enforcement using Plankton — auto-formatting, linting, and agent-powered fixes on every file edit via hooks.",
       "desc_ko": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
-      "desc_en": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
+      "desc_en": "Write-time code quality enforcement using Plankton — auto-formatting, linting, and agent-powered fixes on every file edit via hooks.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2208,9 +2231,9 @@
       "name_en": "Production Scheduling",
       "emoji": "🏭",
       "category": "devtools",
-      "description": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
+      "description": "> Production scheduling, job sequencing, line balancing, changeover optimization, and bottleneck resolution in discrete and batch manufacturing. Includes TOC/drum-buffer-rope, SMED, OEE analysis, disruption response frameworks, and ERP/MES interaction patterns.",
       "desc_ko": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
-      "desc_en": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
+      "desc_en": "> Production scheduling, job sequencing, line balancing, changeover optimization, and bottleneck resolution in discrete and batch manufacturing. Includes TOC/drum-buffer-rope, SMED, OEE analysis, disruption response frameworks, and ERP/MES interaction patterns.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2252,7 +2275,8 @@
       "desc_en": "Multi-language property-based testing (Hypothesis/fast-check etc.).",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "property-based-testing/skills/property-based-testing/SKILL.md"
     },
     "python-patterns": {
       "name": "Python Development Patterns",
@@ -2299,9 +2323,9 @@
       "name_en": "Quality & Non-Conformance Management",
       "emoji": "⚠️",
       "category": "devtools",
-      "description": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
+      "description": "> Quality control, non-conformance investigation, root cause analysis, corrective action, and supplier quality management in regulated manufacturing. Includes NCR lifecycle, CAPA systems, SPC interpretation, and audit methodology across FDA, IATF 16949, and AS9100 environments.",
       "desc_ko": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
-      "desc_en": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
+      "desc_en": "> Quality control, non-conformance investigation, root cause analysis, corrective action, and supplier quality management in regulated manufacturing. Includes NCR lifecycle, CAPA systems, SPC interpretation, and audit methodology across FDA, IATF 16949, and AS9100 environments.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2317,7 +2341,8 @@
       "desc_en": "Use this skill when a feature is too large for a single agent pass and must be split into independently verifiable work units.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-pabcd"
     },
     "react-best-practices": {
       "name": "React Best Practices",
@@ -2343,7 +2368,8 @@
       "desc_en": "Code review feedback reception and response patterns.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-code-reviewer"
     },
     "regex-vs-llm-structured-text": {
       "name": "Regex vs LLM for Structured Text Parsing",
@@ -2351,9 +2377,9 @@
       "name_en": "Regex vs LLM for Structured Text Parsing",
       "emoji": "🔤",
       "category": "devtools",
-      "description": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
+      "description": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
       "desc_ko": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
-      "desc_en": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
+      "desc_en": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2389,7 +2415,8 @@
       "desc_en": "Internal agent code review. Severity-based blocking.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-code-reviewer"
     },
     "research-worker": {
       "name": "Research Worker",
@@ -2410,9 +2437,9 @@
       "name_en": "Returns & Reverse Logistics",
       "emoji": "📦",
       "category": "devtools",
-      "description": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
+      "description": "> Returns authorization, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management. Includes grading frameworks, disposition economics, fraud pattern recognition, and vendor recovery processes.",
       "desc_ko": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
-      "desc_en": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
+      "desc_en": "> Returns authorization, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management. Includes grading frameworks, disposition economics, fraud pattern recognition, and vendor recovery processes.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2423,9 +2450,9 @@
       "name_en": "Rules Distill",
       "emoji": "📏",
       "category": "devtools",
-      "description": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
+      "description": "Scan skills to extract cross-cutting principles and distill them into rules — append, revise, or create new rule files.",
       "desc_ko": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
-      "desc_en": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
+      "desc_en": "Scan skills to extract cross-cutting principles and distill them into rules — append, revise, or create new rule files.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2475,15 +2502,10 @@
       "name_en": "Search Hub",
       "emoji": "🔎",
       "category": "research",
-      "description": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
+      "description": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing. Optional binaries: progrok, cli-jaw.",
       "desc_ko": "웹, 실시간, X/Twitter, 한국어 원문 민감 검색, 딥리서치 라우팅을 위한 통합 검색 허브.",
       "desc_en": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
-      "requires": {
-        "optional_bins": [
-          "progrok",
-          "cli-jaw"
-        ]
-      },
+      "requires": {},
       "install": null,
       "version": "1.0.0"
     },
@@ -2498,7 +2520,8 @@
       "desc_en": "Language-specific security vulnerability pattern review.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-security"
     },
     "security-ownership-map": {
       "name": "Security Ownership Map",
@@ -2524,7 +2547,8 @@
       "desc_en": "Per-repo threat model generation (STRIDE/DREAD).",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-security"
     },
     "senior-architect": {
       "name": "Senior Architect",
@@ -2537,7 +2561,8 @@
       "desc_en": "Architecture decision records (ADR), pattern selection (monolith, microservices, CQRS, event sourcing), dependency analysis, tech stack decisions.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-architecture"
     },
     "sentry": {
       "name": "Sentry",
@@ -2578,9 +2603,9 @@
       "name_en": "Skill Stocktake",
       "emoji": "📋",
       "category": "devtools",
-      "description": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
+      "description": "Audit skills and commands for quality. Supports Quick Scan (changed only) and Full Stocktake modes with batch evaluation.",
       "desc_ko": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
-      "desc_en": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
+      "desc_en": "Audit skills and commands for quality. Supports Quick Scan (changed only) and Full Stocktake modes with batch evaluation.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2707,7 +2732,8 @@
         "env": []
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "static-analysis/skills/codeql/SKILL.md"
     },
     "strategic-compact": {
       "name": "Strategic Compact",
@@ -2758,9 +2784,9 @@
       "name_en": "Swift Actors for Thread-Safe Persistence",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
+      "description": "Thread-safe data persistence in Swift using actors — in-memory cache with file-backed storage, eliminating data races by design.",
       "desc_ko": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
-      "desc_en": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
+      "desc_en": "Thread-safe data persistence in Swift using actors — in-memory cache with file-backed storage, eliminating data races by design.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2771,9 +2797,9 @@
       "name_en": "Swift 6.2 Approachable Concurrency",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
+      "description": "Swift 6.2 Approachable Concurrency — single-threaded by default, @concurrent for explicit background offloading, isolated conformances for main actor types.",
       "desc_ko": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
-      "desc_en": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
+      "desc_en": "Swift 6.2 Approachable Concurrency — single-threaded by default, @concurrent for explicit background offloading, isolated conformances for main actor types.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2784,9 +2810,9 @@
       "name_en": "Swift Protocol-Based Dependency Injection for Testing",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
+      "description": "Protocol-based dependency injection for testable Swift code — mock file system, network, and external APIs using focused protocols and Swift Testing.",
       "desc_ko": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
-      "desc_en": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
+      "desc_en": "Protocol-based dependency injection for testable Swift code — mock file system, network, and external APIs using focused protocols and Swift Testing.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2797,9 +2823,9 @@
       "name_en": "SwiftUI Patterns",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
+      "description": "SwiftUI architecture patterns, state management with @Observable, view composition, navigation, performance optimization, and modern iOS/macOS UI best practices.",
       "desc_ko": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
-      "desc_en": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
+      "desc_en": "SwiftUI architecture patterns, state management with @Observable, view composition, navigation, performance optimization, and modern iOS/macOS UI best practices.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2815,7 +2841,8 @@
       "desc_en": "RED-GREEN-REFACTOR TDD cycle enforcement.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-testing"
     },
     "team-builder": {
       "name": "Team Builder",
@@ -2857,12 +2884,13 @@
       "desc_ko": "HashiCorp Terraform HCL/모듈/프로바이더 IaC.",
       "desc_en": "HashiCorp Terraform HCL/modules/providers IaC.",
       "requires": {
-        "binaries": [
+        "bins": [
           "terraform"
         ]
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "terraform/code-generation/skills/azure-verified-modules/SKILL.md"
     },
     "theme-factory": {
       "name": "Theme Factory",
@@ -2875,7 +2903,8 @@
       "desc_en": "Apply reusable themes to document/slide/HTML outputs.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-uiux-design"
     },
     "things-mac": {
       "name": "Things 3 (macOS)",
@@ -2969,7 +2998,8 @@
       "desc_en": "Design token generation, color palettes, typography scales, component architecture, WCAG accessibility, developer handoff.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-uiux-design"
     },
     "ux-researcher": {
       "name": "UX Researcher",
@@ -3012,7 +3042,8 @@
       "desc_en": "Systematic quality check for code changes across six phases.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-testing"
     },
     "video": {
       "name": "Video Rendering",
@@ -3043,7 +3074,7 @@
       "desc_ko": "yt-dlp 래퍼. 유튜브/미디어 다운로드.",
       "desc_en": "yt-dlp wrapper. YouTube/media download.",
       "requires": {
-        "binaries": [
+        "bins": [
           "yt-dlp"
         ]
       },
@@ -3120,7 +3151,8 @@
       "workflow": "vision_coordinate",
       "provider": "openai",
       "status": "active",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "desktop-control"
     },
     "weather": {
       "name": "날씨",
@@ -3146,7 +3178,8 @@
       "desc_en": "Structured browser web-ai workflow for ChatGPT, Gemini, and Grok.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "search"
     },
     "web-artifacts-builder": {
       "name": "Web Artifacts Builder",
@@ -3193,7 +3226,8 @@
       "workflow": "routing_guide",
       "provider": "n/a",
       "status": "active",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "browser"
     },
     "whatsapp": {
       "name": "Whatsapp",
@@ -3219,7 +3253,8 @@
       "desc_en": "2-5 minute task decomposition. File paths/code/verification included.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "dev-pabcd"
     },
     "x-api": {
       "name": "X API",
