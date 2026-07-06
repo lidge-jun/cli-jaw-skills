@@ -391,4 +391,26 @@ RAG components, persistent memory, delegated credentials, or autonomous actions,
 `dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
 Agentic Applications 2026.
 
+### AI Slop Cleanup Checklist (REVIEW-SLOP-01)
+
+When targeting a post-implementation cleanup pass ("remove slop", "clean AI code",
+"deslop"), or >=3 slop items are caught during normal review, apply this checklist.
+Safety invariant: lock behavior with green tests BEFORE removing any code.
+
+**Stylistic:** (1) Obvious comments (restating code, trivial docstrings, commented-out
+code; KEEP: why-comments, ticket links, regex explanations). (2) Over-defensive code
+(null checks for guaranteed values, broad `except Exception`/empty `catch {}`; KEEP:
+boundary validation). (3) Excessive complexity (deep nesting >3, nested ternaries,
+if/elif for type discrimination -> match/case, `object` annotation -> Protocol/TypeVar).
+
+**Structural:** (4) Needless abstraction (pass-through wrappers, single-use helpers,
+speculative indirection). (5) Boundary violations (wrong-layer imports, hidden
+coupling; delegate to dev-architecture). (6) Oversized modules (>250 pure LOC is a
+slop-cleanup smell, not a split mandate; dev-architecture owns >400L canonical split).
+
+**Hidden cost:** (7) Performance equivalences (O(n^2) where O(n) exists, repeated
+computation). (8) Scope leaks (mutable global state, scattered env reads).
+
+**Coverage:** (9) Missing behavior tests for changed paths.
+
 ---
