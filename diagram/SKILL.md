@@ -2,7 +2,7 @@
 name: diagram
 description: "SVG diagrams, charts, and interactive visualizations for chat UI"
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 capabilities:
   - "SVG: structural diagrams, comparisons, timelines, mockups, art"
   - "Mermaid: flowchart, sequence, ER, state, timeline, mindmap, gantt, pie, radar, git graph"
@@ -71,22 +71,25 @@ Route on the verb, not the noun. Same subject gets different diagrams. Prefer Me
 | "write / draft / compose email, message, document" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `compose-block` schema |
 | "table / rows / sortable data / filterable data" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `dataframe` schema |
 | "patch / diff / unified diff" | `structured-renderers` skill | Non-diagram native display: load `structured-renderers` for `diff` routing |
-| "show data / chart" | `chart-json` for simple bar/line/pie; diagram-html for advanced charts | For `chart-json`, load `structured-renderers`; use Chart.js / D3 / ECharts iframe widgets when custom JS, maps, advanced chart types, or richer interactivity are required |
-| "simulate / interactive" | diagram-html | Matter.js / Canvas / sliders |
-| "interactive map (with pan/zoom/markers)" | diagram-html | Leaflet iframe widget — see `reference/module-map.md` |
-| "static country/state choropleth" | diagram-html | D3 + TopoJSON — see `reference/module-chart.md` |
+| "show data / chart" | `chart-json` for simple bar/line/pie; diagram-file for advanced charts | For `chart-json`, load `structured-renderers`; use file-backed Chart.js / D3 / ECharts iframe widgets when custom JS, maps, advanced chart types, or richer interactivity are required |
+| "simulate / interactive" | diagram-file | File-backed Matter.js / Canvas / sliders widget |
+| "large widget / iterative widget editing" | diagram-file | Default for all HTML widgets: write the full widget HTML to `~/.cli-jaw/widgets/<chatId>/<widgetId>.html`, then emit an id-only file-backed fence |
+| "interactive map (with pan/zoom/markers)" | diagram-file | File-backed Leaflet iframe widget — see `reference/module-map.md` |
+| "static country/state choropleth" | diagram-file | File-backed D3 + TopoJSON widget — see `reference/module-chart.md` |
 
 Default to illustrative SVG for "how does X work?" — don't default to flowchart. Default to Mermaid when the type is in the table above — don't hand-roll an SVG when `classDiagram`/`sequenceDiagram`/`stateDiagram` already exists.
 
+`diagram-file` is the default for all HTML widget types. Use `diagram-html` only as a fallback when the chatId cannot be determined or for very small throwaway widgets that do not warrant a file.
+
 ### Native Web UI renderer boundary
 
-Before producing `diagram-html`, check whether a native renderer is a better fit:
+Before producing a `diagram-file` HTML widget, check whether a native renderer is a better fit:
 
 - Load `structured-renderers` for `search-results`, `compose-block`, `dataframe`, `chart-json`, and `diff` schemas.
 - Use `chart-json` for simple single-series bar/line/pie charts.
-- Stay in `diagram` and use `diagram-html` for maps, multi-series charts, advanced chart types, custom JavaScript, external libraries, or richer interaction.
+- Stay in `diagram` and use `diagram-file` for maps, multi-series charts, advanced chart types, custom JavaScript, external libraries, or richer interaction.
 
-These renderers are lighter than `diagram-html`, survive sanitizer/hydration, and avoid iframe overhead. They are final-answer-only structured fences; during streaming they remain inert code blocks. Keep JSON complete, compact, and schema-versioned. See the active `structured-renderers` skill for canonical schemas and examples.
+These renderers are lighter than HTML widgets, survive sanitizer/hydration, and avoid iframe overhead. They are final-answer-only structured fences; during streaming they remain inert code blocks. Keep JSON complete, compact, and schema-versioned. See the active `structured-renderers` skill for canonical schemas and examples.
 
 ### Mermaid gotchas (read before using beta/experimental types)
 
@@ -96,7 +99,7 @@ These renderers are lighter than `diagram-html`, survive sanitizer/hydration, an
   - **C4 Component** → Mermaid `flowchart` with `subgraph` grouping
   - **C4 Dynamic** → Mermaid `sequenceDiagram`
   - **C4 Deployment** → Mermaid `architecture-beta`
-- **`sankey-beta` / `xychart-beta`** — known to break scale-down at narrow chat widths. Prefer `diagram-html` + ECharts sankey for flow diagrams, Chart.js for simple XY.
+- **`sankey-beta` / `xychart-beta`** — known to break scale-down at narrow chat widths. Prefer `diagram-file` + ECharts sankey for flow diagrams, Chart.js for simple XY.
 - **`radar-beta`** is the keyword as of Mermaid v11.6+ (not bare `radar` — the beta suffix is still required at the time of writing per [mermaid/syntax/radar](https://mermaid.js.org/syntax/radar.html)). `treemap-beta`, `block-beta`, `architecture-beta`, `packet-beta`, `kanban` are still beta but functional — test each in cli-jaw Web UI before finalizing. If the installed Mermaid version drops the `-beta` suffix, update the routing table accordingly.
 - **`sandbox` securityLevel iframe background bug** ([mermaid #5034](https://github.com/mermaid-js/mermaid/issues/5034)) — affects host rendering, not your output. No action needed from the agent.
 - **Theme**: all stable Mermaid types pick up the host dark/light theme automatically via cli-jaw's `themeVariables`. Do NOT set explicit colors in `%%{init: ...}%%` unless overriding for semantic reasons.
@@ -135,11 +138,19 @@ These renderers are lighter than `diagram-html`, survive sanitizer/hydration, an
 
 ## Delivery Mechanism (read before producing anything)
 
-All three formats — inline SVG, ` ```mermaid `, ` ```diagram-html ` — are **rendered inline in the chat response**. The jaw frontend parses your reply text and mounts them automatically. `diagram-html` goes into a sandboxed `<iframe>` that the host creates; you do **not** create the iframe.
+All four formats — inline SVG, ` ```mermaid `, ` ```diagram-file `, ` ```diagram-html ` — are **rendered inline in the chat response**. The jaw frontend parses your reply text and mounts them automatically. `diagram-file` and `diagram-html` go into sandboxed `<iframe>` elements that the host creates; you do **not** create the iframe.
+
+### File-backed widgets (`diagram-file`)
+
+Use ` ```diagram-file ` as the default for all HTML widget output, including charts, maps, simulations, controls, games, and custom JavaScript widgets. Write the full widget HTML first to `~/.cli-jaw/widgets/<chatId>/<widgetId>.html`, following the same HTML rules as `diagram-html`: the host renders it through the validator and sandboxed iframe, with the same CDN allowlist and theme token expectations.
+
+The fence body is id-only: `{"id": "<widgetId>"}`. A bare widget id string is also accepted. Do not put paths in the fence; the host resolves `<current chatId>/<widgetId>.html` by convention. The file-backed cap is 2 MB, while inline `diagram-html` remains capped at 512 KB. File-backed widgets are mutable: editing the saved HTML updates every message that references the same id. Save under a new id when a frozen version is needed.
+
+Determine the current chatId from runtime context when available. If it is not determinable, use inline `diagram-html` as the fail-safe. `diagram-html` is also acceptable for very small throwaway widgets that do not warrant a file.
 
 | ❌ Don't | ✅ Do |
 |---|---|
-| Save to `.svg` / `.html` / `.png` file (Write tool, `cat >`, fs.writeFile) | Paste raw block directly into your reply |
+| Save SVG/Mermaid outputs to `.svg` / `.png` files unless explicitly asked | Paste SVG/Mermaid blocks directly into your reply |
 | Wrap `diagram-html` in your own `<iframe>` / `<html>` / `<body>` / `<head>` | Start at `<div>` / `<canvas>` / `<style>` — host injects the shell |
 | Send via `/api/channel/send` or Telegram/Discord — it is NOT an attachment | Let the renderer handle it; diagrams are response text |
 | Reference an external image URL and call it a diagram | Output the SVG/widget code itself |
@@ -171,8 +182,8 @@ Rules:
 ### 2. Mermaid (simple flowcharts, ERDs)
 Use standard ` ```mermaid ` code blocks. The existing renderer handles these.
 
-### 3. Interactive HTML Widget (charts, controls, simulations)
-Wrap in ` ```diagram-html ` code block. Rendered inside a sandboxed iframe.
+### 3. Interactive HTML Widget (fallback form: charts, controls, simulations)
+Use ` ```diagram-file ` by default. Wrap in a ` ```diagram-html ` code block only when the chatId cannot be determined or the widget is a very small throwaway. Rendered inside a sandboxed iframe.
 
 ```
 ` ` `diagram-html
@@ -237,7 +248,7 @@ These are stripped by DOMPurify — NEVER use in inline `<svg>`:
 - `xlink:href` — use `href="#fragment"` on `<use>` only (no external URLs)
 - All `on*` event handlers (onclick, onerror, etc.) — stripped by DOMPurify
 
-> **Note**: `diagram-html` content runs inside a sandboxed iframe where
+> **Note**: `diagram-file` and fallback `diagram-html` content run inside a sandboxed iframe where
 > `<script>`, `on*` handlers, and CDN imports ARE allowed. The restrictions
 > above apply only to inline SVG rendered in the main document.
 
@@ -267,7 +278,7 @@ Use CSS class names — see `reference/color-palette.md`:
 - See `reference/svg-components.md` for templates and detailed SVG rules.
 
 ### Style-First, Script-Last
-For `diagram-html` widgets:
+For `diagram-file` widgets and fallback `diagram-html` widgets:
 1. All `<style>` and `<link>` tags first
 2. HTML structure
 3. `<script>` tags last
@@ -308,7 +319,7 @@ This ensures visual content appears before scripts execute (important during str
 - SMIL tags (`<animate>`, `<set>`, `<animateMotion>`) are stripped — do not use
 - Inline SVG is static only — no animation
 
-### diagram-html (sandboxed iframe)
+### diagram-file and diagram-html (sandboxed iframe)
 All CSS/JS animation is available:
 
 **CSS Transition** (preferred for hover/state changes):

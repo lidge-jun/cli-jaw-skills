@@ -13,6 +13,11 @@ Build distinctive, production-grade interfaces that fit the product domain, loca
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 It activates by change surface whenever the work is primarily frontend, UI, styling, responsive layout, or animation.
 
+> **Role separation:** For design judgment — typography/color/layout direction, UX decision
+> gates, product personalities, or vague visual briefs — load `dev-uiux-design` first. This
+> skill implements the chosen direction; `dev-uiux-design` makes the design decisions.
+> Implementation anti-slop enforcement stays here; design taste/pattern judgment lives there.
+
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 ## Modular References

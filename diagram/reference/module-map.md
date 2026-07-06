@@ -101,4 +101,4 @@ Use **Mermaid** when:
 
 ## CSP Note (host-managed)
 
-When your `diagram-html` block contains the string `leaflet` or `L.tileLayer` or `tile.openstreetmap.org`, the cli-jaw host iframe-renderer automatically expands `img-src` and `style-src` to allow OpenStreetMap tiles, Leaflet CDN marker icons, and Leaflet CSS. You do not need to request a CSP change — just use Leaflet correctly and the host does the rest.
+When your `diagram-file` widget contains the string `leaflet` or `L.tileLayer` or `tile.openstreetmap.org`, the cli-jaw host iframe-renderer automatically expands `img-src` and `style-src` to allow OpenStreetMap tiles, Leaflet CDN marker icons, and Leaflet CSS. The same host behavior applies to fallback `diagram-html`. You do not need to request a CSP change — just use Leaflet correctly and the host does the rest.

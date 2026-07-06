@@ -9,7 +9,7 @@
 | D3.js | 7.8.5 | `https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js` | custom SVG graphics, choropleth, force layout |
 | TopoJSON | 3.0.2 | `https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js` | D3 geo data (+ `connect-src cdn.jsdelivr.net`) |
 
-**Chart library routing**: In cli-jaw Web UI final answers, prefer the native `chart-json` fence for simple bar/line/pie charts. Chart.js is the default inside `diagram-html` for anything it supports beyond `chart-json`. Switch to ECharts only when the chart type is in ECharts' column above (heatmap, sankey, radar, treemap, etc.). D3 is for custom SVG-based visuals that neither Chart.js nor ECharts cover.
+**Chart library routing**: In cli-jaw Web UI final answers, prefer the native `chart-json` fence for simple bar/line/pie charts. Chart.js is the default inside `diagram-file` for anything it supports beyond `chart-json`. Switch to ECharts only when the chart type is in ECharts' column above (heatmap, sankey, radar, treemap, etc.). D3 is for custom SVG-based visuals that neither Chart.js nor ECharts cover.
 
 ## Web UI `chart-json` Shortcut
 
@@ -26,7 +26,7 @@ Use `chart-json` when the answer needs a compact, final-answer chart with simple
 }
 ```
 
-Use `diagram-html` instead when the visualization needs custom JavaScript, multiple coordinated charts, advanced Chart.js options, ECharts-only chart types, D3 transforms, maps, live controls, or non-basic interactivity.
+Use `diagram-file` instead when the visualization needs custom JavaScript, multiple coordinated charts, advanced Chart.js options, ECharts-only chart types, D3 transforms, maps, live controls, or non-basic interactivity. Use `diagram-html` only as the inline fallback when chatId is unavailable or the widget is a very small throwaway.
 
 ## Theme Token Usage
 
@@ -220,7 +220,7 @@ new Chart(document.getElementById('c'), {
 |-----------|-----|
 | Simple bar/line/pie/scatter | Quick Chart Template above |
 | ECharts-only types (sankey/treemap/gauge/funnel/candlestick) | Full ECharts template |
-| Interactive controls needed | diagram-html with slider/select |
+| Interactive controls needed | diagram-file with slider/select |
 | Custom D3 visualization | D3 template |
 
 ## Interactive Table Widget
@@ -228,8 +228,8 @@ new Chart(document.getElementById('c'), {
 | Row count | Approach |
 |-----------|----------|
 | < 50 rows | Markdown table |
-| 50-500 rows | diagram-html sortable table |
-| 500+ rows | diagram-html with virtual scroll |
+| 50-500 rows | diagram-file sortable table |
+| 500+ rows | diagram-file with virtual scroll |
 
 ### Sortable table pattern
 

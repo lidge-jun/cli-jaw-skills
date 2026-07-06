@@ -1,8 +1,31 @@
 # Rich Widget Reference (Physics, Math, 3D, Audio, Games)
 
-Beyond Chart.js and D3, `diagram-html` iframes support additional libraries
-for physics simulations, math visualization, 3D rendering, audio, and interactive mini-games.
+Beyond Chart.js and D3, HTML widgets support additional libraries for physics
+simulations, math visualization, 3D rendering, audio, and interactive mini-games.
+Deliver these widgets with `diagram-file` by default; `diagram-html` is only the
+inline fallback when chatId is unavailable or the widget is a very small throwaway.
 All libraries below work with the current sandbox (`allow-scripts`, no CSP changes needed).
+
+## Primary workflow: file-backed widgets (`diagram-file`)
+
+Use `diagram-file` for all HTML widget output. Write the complete widget HTML first, then emit an id-only fence. Do not include paths in the fence; the host resolves the current chat's widget directory by convention.
+
+Example workflow:
+
+```bash
+mkdir -p ~/.cli-jaw/widgets/<chatId>
+$EDITOR ~/.cli-jaw/widgets/<chatId>/<widgetId>.html
+```
+
+Then emit:
+
+````markdown
+```diagram-file
+{"id":"<widgetId>"}
+```
+````
+
+The saved HTML follows the same rules as `diagram-html`: sandboxed iframe rendering, validator checks, CDN allowlist, and `window.__jawTheme` / `window.__jawTokens` theme integration. The file-backed cap is 2 MB. The id is mutable: editing `~/.cli-jaw/widgets/<chatId>/<widgetId>.html` updates every message that references that id. Save a new id for a frozen version. Use inline `diagram-html` only when the chatId cannot be determined or the widget is too small and disposable to warrant a file.
 
 ## Library Versions (CDN)
 
