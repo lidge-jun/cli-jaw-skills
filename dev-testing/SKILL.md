@@ -72,6 +72,13 @@ source-fetch and evidence-status rules.
 - **STRICT (TEST-ANTI-FLAKE-01):** A time-based flake is a bug. Do not use sleep-based synchronization, retry-as-fix, or green-on-retry acceptance without a deterministic cause and harness correction.
 - Verification depth follows `dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
 
+### 1.5a Limited-Oracle / Score-Objective Evaluation
+
+When the real evaluator is scarce, paid, rate-limited, or opaque and local tests are
+proxy metrics for a score/objective, apply §9.5 (single owner of GATE-ORACLE-VALIDITY-01,
+GATE-PREFIX-HORIZON-01, GATE-INVARIANT-EV-01, GATE-HOLDOUT-LEAKAGE-01,
+GATE-AGREEMENT-STATS-01). Pairs with `dev-pabcd` §10 Optimization-Loop Meta-Rules.
+
 ### 1.6 Property-Based & Mutation Testing (verified 2026-07-02)
 
 | Technique | Use for | Default tools | When |
@@ -421,9 +428,9 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 
 ### 9.5 Limited-Oracle / Score-Objective Evaluation
 
-Use these rules when the true evaluator is scarce or costly and local checks are only
-proxies. PABCD loop response to repeated candidate deaths is owned by `dev-pabcd` §10
-Optimization-Loop Meta-Rules.
+Use these rules when the true evaluator is scarce, paid, rate-limited, or opaque and
+local checks are only proxy metrics for a score/objective. PABCD loop response to
+repeated candidate deaths is owned by `dev-pabcd` §10 Optimization-Loop Meta-Rules.
 
 - **STRICT (GATE-ORACLE-VALIDITY-01):** When the true evaluator/oracle is rate-limited
   (limited submissions, paid runs) and local metrics are proxies, evaluator validity is a
@@ -439,6 +446,16 @@ Optimization-Loop Meta-Rules.
   that must not regress) needs an expected-value justification: protected value versus the
   candidate-space it vetoes. If a hard invariant vetoes 3+ consecutive candidates that
   target strictly larger gains, downgrade it to a soft cost and re-justify or remove.
+- **DEFAULT (GATE-HOLDOUT-LEAKAGE-01):** Fixed evaluation sets become training data
+  under adaptive reuse. Rotate or quarantine repeatedly used sets, keep a blind final
+  set, and treat repeated score-driven tuning on the same instances as leakage risk.
+  Grounding: Blum and Hardt, "The Ladder: A Reliable Leaderboard for Machine
+  Learning Competitions" (arXiv:1502.04585), and Dwork et al., "The reusable holdout:
+  Preserving validity in adaptive data analysis" (arXiv:1506.02629).
+- **HEURISTIC (GATE-AGREEMENT-STATS-01):** For proxy-vs-oracle validation, report
+  agreement statistics that expose error shape: sign-discordance, bias, and worst-case
+  error. Correlation alone is not enough; Bland-Altman style agreement analysis is the
+  grounding model.
 
 Grounding: observed in a 14-discard optimization plateau where a prefix-only replay gate
 and a hard draw-protection invariant locked a 3.5/8 score.
