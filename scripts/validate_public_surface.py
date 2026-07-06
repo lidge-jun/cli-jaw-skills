@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_SKILLS = 227
+EXPECTED_SKILLS = 228
 KNOWN_LONG_SKILLS = {
     "docx/SKILL.md",
     "hwp/SKILL.md",
@@ -53,11 +53,11 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["227", "47 skills", "28 skills", "2 skills"]:
+    for needle in ["228", "47 skills", "28 skills", "2 skills"]:
 
         if needle not in readme:
             raise SystemExit(f"README missing public-surface count: {needle}")
-    for needle in ["canonical", "og:image", "twitter:card", "227"]:
+    for needle in ["canonical", "og:image", "twitter:card", "228"]:
         if needle not in docs:
             raise SystemExit(f"docs missing marker: {needle}")
 

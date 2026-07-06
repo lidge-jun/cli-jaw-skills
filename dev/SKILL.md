@@ -267,6 +267,8 @@ accessibility.
 
 **Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence. This section does not apply on the §0.1 fast path (C0/C1 — no new abstractions are being created).
 
+**Structure map first (DEFAULT — DEV-MAP-FIRST-01):** for C2+ work in unfamiliar territory, run `cli-jaw map <dir>` (ranked structure map — see the `repo-map` skill) before deep Grep dives; then use Grep/Read to confirm the narrowed targets. Works on subtrees for large monorepos. Guidance, not enforced.
+
 **Read before editing (DEV-READ-FIRST-01).** Any C2+ edit to existing code reads the target file and its direct caller/consumer when the change crosses a boundary before writing. C0/C1 fast path still applies.
 
 | Artifact being created | Required searches | Preferred outcome |

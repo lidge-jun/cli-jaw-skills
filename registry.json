@@ -3298,6 +3298,16 @@
       },
       "install": null,
       "version": "1.0.0"
+    },
+    "repo-map": {
+      "name": "Repo-Map — Ranked Structure Map",
+      "name_ko": "Repo-Map — Ranked Structure Map",
+      "name_en": "Repo-Map — Ranked Structure Map",
+      "emoji": "🗺️",
+      "category": "devtools",
+      "description": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
+      "desc_ko": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
+      "desc_en": "Ranked structure map before exploring unfamiliar code: cli-jaw map <path> [--budget N]. Lists per-file definitions ordered by reference gravity; subtree scoping for large monorepos. Run before deep Grep dives. Triggers: repo map, structure map, codebase overview, project structure."
     }
   }
 }
