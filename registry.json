@@ -421,6 +421,18 @@
       "install": null,
       "version": "1.0.0"
     },
+    "codex-imagegen": {
+      "name": "Codex Native Image Gen",
+      "name_ko": "Codex 네이티브 이미지 생성",
+      "name_en": "Codex Native Image Gen",
+      "emoji": "🖼️",
+      "category": "ai-media",
+      "description": "Codex CLI 네이티브 이미지 생성. API key 없이 uploads 저장·웹 인레이·명시적 채널 전달.",
+      "desc_ko": "Codex CLI 네이티브 이미지 생성. API key 없이 uploads 저장·웹 인레이·명시적 채널 전달.",
+      "desc_en": "Codex CLI-native image generation without an API key, with uploads, web inlay, and explicit channel delivery contracts.",
+      "install": null,
+      "version": "1.0.0"
+    },
     "compose-multiplatform-patterns": {
       "name": "Compose Multiplatform Patterns",
       "name_ko": "Compose Multiplatform Patterns",
