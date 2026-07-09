@@ -329,6 +329,34 @@ the instruction), then `cli-jaw dispatch --agent "Backend" --task-file
 `--async` only for a quick (<2 min) blocking verify. Fan-out: `--batch --agents-file
 <path> --async`; overlays: `--task-tags "testing,security"`.
 
+### §7.1 Parallel dispatch: isolation, specialists, decorrelated review
+
+- **DEFAULT (DISPATCH-ISOLATION-01):** Parallel employee lanes in the same
+  work-phase are context-isolated: each dispatch task names an explicit access
+  list — which prior outputs (paths or pasted excerpts) this lane may read — and
+  nothing else from peer lanes is visible. Never paste one lane's in-progress
+  trajectory or draft output into another outside the access list: the first
+  finished trajectory otherwise steers every later lane into redundant agreement
+  (orchestration collapse) and the parallelism buys nothing. This generalizes the
+  §11.8 star topology from divergence lanes to ALL parallel dispatch. Durable
+  cross-cycle artifacts (worklog `## Plan`, devlog, D summaries) stay shared;
+  widening an access list is a stated decision in the dispatch task.
+- **HEURISTIC (SPECIALIST-CRUX-01):** When P or A identifies a narrow crux outside
+  the main line's domain — a derivation, a protocol subtlety, a domain constant, a
+  security property — dispatch a specialist lane to re-derive that crux from first
+  principles before merging the work that depends on it. The specialist's return
+  names its assumptions, the derivation or trace, and the exact decision its
+  verdict changes.
+- **HEURISTIC (REVIEW-DECORRELATE-01):** When the runtime offers more than one
+  model family, run the A reviewer — and any §11.3 clean-slate re-examination after
+  repeated failed repairs — on a different model family than the one that produced
+  the plan or build. Same-family reviewers share blind spots; decorrelating the
+  reviewer is the cheapest independence upgrade available.
+
+(Adopted 2026-07-07 from the Sakana Fugu learned-orchestrator report,
+arXiv:2606.21228; canonical record: pabcd_initiative devlog
+`260707_fugu_orchestration_adoption`.)
+
 ## §8. Pitfalls
 
 **Delegation Trap** — B phase: Boss writes all code by default; workers are READ-ONLY
@@ -395,6 +423,15 @@ candidates are being discarded by evidence gates. Gate validity itself is owned 
   competitor run achieves the objective on a fixed instance we fail, the next
   generation's first analysis deliverable is the behavioral diff of the two traces
   before any new candidate — the cheapest capability-gap detector.
+- **HEURISTIC (LOOP-FANOUT-TIMING-01):** Spend parallel fan-out late, not early.
+  While coarse levers still move the metric, stay single-track (N=1); once coarse
+  levers stabilize or plateau and the search shifts to fine-grained candidates,
+  parallel candidate lanes and specialist re-derivation start paying for their
+  cost. Fan-out also buys outcome consistency (cross-run variance reduction), not
+  only peak score. (Adopted 2026-07-07 from Sakana Fugu, arXiv:2606.21228:
+  orchestration gains on a 123-experiment autonomous training loop concentrated
+  after mid-run, once coarse configuration search gave way to fine
+  optimizer/schedule tuning.)
 
 Grounding: a 14-discard plateau where a prefix-only replay gate and a hard invariant
 locked a 3.5/8 score. Single-incident induction: treat constants as starting values
@@ -498,3 +535,56 @@ isolation, evaluate on the same instances, keep/discard by recorded metric); aft
 the plateau breaks or a candidate is kept/discarded, turn divergence off (N=1 loop).
 Divergence never bypasses human confirmation in HITL; in goal mode the hook only
 keeps the turn alive and tells the agent to re-plan — never asking or moving phases.
+
+### §11.8 Divergence cost tiers (DEFAULT, DIVERGE-TIER-01)
+
+Divergence (§11.7) defaults to CONCEPTUAL candidates, not implemented ones. Choose the
+cheapest tier that can kill the wrong option:
+
+- **Tier 0 — inline brainstorm.** The Boss session itself lists options with
+  trade-offs inside the plan/interview. No dispatch. Default for ordinary uncertainty.
+- **Tier 1 — conceptual candidate docs (the divergence default).** 2-3 parallel
+  `cli-jaw dispatch` employee lanes each produce ONE one-page candidate direction
+  doc (no code, no worktrees) with mandatory front-matter: `assumptions`, `risks`,
+  `kill-criteria`, `evidence-needed`. Lane research stays read-only; the doc write
+  is scoped to the worklog/devlog plan archive. The BOSS session (collapse owner)
+  performs critique/triage directly — it holds the most context; a separate
+  cross-critique round is waste. Collapse gate: N candidate docs with filled
+  front-matter AND per-candidate provenance — search provenance per §11.7 for
+  externally-sourced candidates; for candidates grounded in the local codebase a
+  repo-evidence path is acceptable, an EXPLICIT §11.8 AMENDMENT to §11.7's
+  search-only wording. The mandatory front-matter keeps the gate otherwise
+  stricter than §11.7. Cross-critique rounds are NOT a gate condition.
+- **Tier 2 — implementation spike (rare escalation).** Parallel worktree
+  implementations judged by the same verifier, ONLY when both hold: (a) the choice is
+  load-bearing and Tier-1 candidates genuinely conflict on it, and (b) judging
+  requires running code (performance assumptions, live API contracts, deceptive local
+  metrics). Expected frequency: 0-1 per unit. Tier-2 entry is a recorded P-level
+  decision in the worklog/devlog plan.
+
+Budget rationale: employee tokens may be near-free, but wall-clock and the Boss's
+triage attention are not. Tier inflation (defaulting to Tier 2 because employees are
+cheap) is a discipline violation; so is tier deflation that lets a load-bearing
+conflict collapse from paper arguments alone.
+
+Unknowns lane: the first Tier-1 dispatch of a research-heavy or unfamiliar-surface
+unit SHOULD be a blindspot/unknowns pass (known unknowns, unknown knowns recoverable
+from references, unknown unknowns from codebase/web search), so candidates are sourced
+from evidence, not parameter tweaks (§10 LOOP-CANDIDATE-ANCHOR-01).
+
+Topology: candidates and critiques never flow employee-to-employee; exchange is
+file-mediated through the worklog/devlog archive, and the Boss schedules rounds and
+owns the collapse (star-shaped exchange). Employees MAY use their own CLI sub-agents
+internally per the agent-spawn doctrine; that internal parallelism does not change
+the star-shaped candidate exchange or move collapse ownership.
+
+### §11.9 Crux-matched collapse (DEFAULT, COLLAPSE-AGGREGATOR-01)
+
+Collapse and synthesis ownership follows the disputed crux. When parallel candidates
+disagree, the synthesis verdict comes from whoever is strongest on the domain of the
+disagreement — the Boss dispatches a crux-matched aggregator lane when it is not
+itself strongest there (the lane returns a verdict; the Boss still owns the collapse
+decision per §11.8 topology). A fixed aggregator caps the exercise at that
+aggregator's own ceiling for the domain. The collapse record names each candidate's
+partial correctness, each candidate's failure mode, and why the winner's evidence
+resolves the crux. (Adopted 2026-07-07 from Sakana Fugu, arXiv:2606.21228.)
