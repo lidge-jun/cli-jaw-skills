@@ -289,6 +289,12 @@ Gate quick-reference (strict vs goal mode):
 **work-phase** = one outcome slice of a larger goal (e.g. "Phase 3: Management API");
 **PABCD-phase** = one letter P/A/B/C/D inside a single orchestration cycle.
 
+Work-phases need not be slices of one feature: successive cycles in the SAME session
+may target completely different features or plans under the same goal
+(LOOP-UNIT-CHAIN-01). "This needs its own PABCD" is a plan statement — append the unit
+to the slice map and run it as the next cycle, never a reason to end the goal or defer
+to a new session.
+
 **Invariant: one work-phase = one full PABCD cycle.** Run P→A→B→C→D, close D (→ IDLE),
 then `cli-jaw orchestrate P` for the next work-phase. Never run B for several
 work-phases back-to-back or commit out of B without passing C and D. Depth scales per
@@ -299,6 +305,9 @@ as MULTIPLE PABCD passes — one per work-phase. Pre-plan the full slice map and
 all per-phase decade docs (10_phase1, 20_phase2, ...) to diff-level up front
 (DIFFLEVEL-ROADMAP-01, §3.1; re-verify/amend per cycle). The first pass MAY be a
 design-only Phase-0 cycle producing exactly this difflevel roadmap.
+The slice map is APPEND-friendly (LOOP-UNIT-CHAIN-01): an independent unit discovered
+mid-loop becomes a NEW work-phase appended to the map via a P-phase amendment, then
+runs as the next cycle in the same session.
 
 **Faithful execution (anti-skip)**: do the real work of each PABCD-phase — P writes
 the real plan, A really dispatches the audit, B really implements AND verifies, C
@@ -452,6 +461,12 @@ verifiers, repair, exploration, and resource bounds inside each phase.
 - **Memory lives on disk**, not only in the transcript: worklog `## Plan`, devlog,
   attestations, goal checkpoints, death logs — the next iteration resumes from artifacts.
 - **Budget exhaustion is not done.** Never report a budget stop as success.
+- **Context pressure is not budget exhaustion.** Compaction is survivable BY DESIGN
+  because memory lives on disk: an approaching context limit means checkpoint durable
+  state (worklog, goalplan, devlog) and continue after the flush — never grounds to
+  close the goal, shrink the plan, or report `DONE`/`BUDGET_EXHAUSTED`.
+  `BUDGET_EXHAUSTED` requires a bound the plan actually stated (tokens, cost,
+  wall-clock).
 - **Interview does not solve intent transfer.** It yields an initial loop-spec; later
   evidence may force `cli-jaw orchestrate I` — intent refines cyclically.
 
@@ -518,7 +533,10 @@ re-entry or after a D close: do not redefine the objective downward (P/goalplan
 criteria are the bar); audit completion against current repo state, not memory; read
 durable state first (worklog/devlog/goalplan ledger) to recover remaining
 work-phases/criteria; and IDLE is not the end while work remains — under an active
-goal, start the next work-phase at P.
+goal, start the next work-phase at P. Work-phases chain HETEROGENEOUS units in one
+session (LOOP-UNIT-CHAIN-01): an independent feature discovered mid-loop is appended
+to the plan and started at P, not deferred to a new session or used to justify
+closing the goal.
 
 ### §11.7 Divergence/collapse (DEFAULT)
 

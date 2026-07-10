@@ -111,6 +111,10 @@ In goal mode, multi-phase / "loop"/"루프" work runs one FULL PABCD cycle per w
 (depth scaled by §0.0 class); after D, re-enter P for the next work-phase. Classify EACH
 work-phase independently — C0-C1 fast-path applies to that work-phase's class, not the
 whole goal. Do each PABCD-phase's real work; never rubber-stamp a phase to advance.
+Work-phases chain HETEROGENEOUS units: a completely different feature or "the next
+plan" is simply the next cycle at P in the SAME session (LOOP-UNIT-CHAIN-01,
+`dev-pabcd` §5/§11.6) — "needs its own PABCD" never means ending the goal or waiting
+for a new session.
 
 **Production surface (shared definition):** deployed for real users beyond the author;
 prototypes, spikes, and internal demos are not. Skills that scope rules to
