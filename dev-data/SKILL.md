@@ -1,16 +1,16 @@
 ---
-name: dev-data
-description: "MUST USE for data engineering and analysis work — pipelines, ETL/ELT, data quality, SQL optimization, schema evolution, backfills, and reporting. Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, dashboard-db, sqlite, audit-log-schema, connector-data, 데이터 파이프라인, 데이터 품질, 백필."
+name: cxc-dev-data
+description: "MUST USE for data engineering and analysis work — pipelines, ETL/ELT, data quality, SQL optimization, schema evolution, backfills, and reporting. Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, validation, batch vs streaming, 데이터 파이프라인, 데이터 품질, 백필."
 metadata:
-  short-description: "Data pipelines, ETL/ELT design, quality validation, SQL optimization, and analysis."
-  keywords: "ETL, pipeline, data quality, SQL optimization, backfill, streaming, data contracts, dashboard-db, sqlite"
   last-verified: "2026-07-02"
+  short-description: "Data pipelines, ETL/ELT design, data quality validation, SQL optimization, and analysis patterns."
 ---
 
 # Dev-Data — Data Engineering & Analysis Guide
 
-Production-grade data engineering patterns for building reliable data systems.
 Activates by change surface for data pipelines, analytics, SQL-heavy work, schema evolution, backfills, and reporting.
+
+Production-grade data engineering patterns for building reliable data systems.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -109,11 +109,7 @@ Before any transformation, validate incoming data:
 
 ### dbt Integration Patterns
 
-Engine landscape (verified 2026-07-02): **dbt Core** remains the default; **dbt Fusion**
-is the separately-documented/licensed current engine (check its feature matrix and
-license before adopting); **SQLMesh** is a credible active alternative with plan/apply
-workflows. Choose per license posture and team workflow — do not assume Fusion pricing
-without a primary source.
+Engine landscape (verified 2026-07-02): dbt Core remains the default; dbt Fusion is the separately-documented/licensed current engine (check feature matrix + license before adopting); SQLMesh is a credible active alternative. Lakehouse format: choose Delta vs Iceberg by ecosystem — both active; never claim a "winner".
 
 When using dbt for transformations, follow the **staging → intermediate → mart** layer architecture:
 
@@ -187,6 +183,10 @@ A data contract must include:
 - **consumers**: list of downstream teams/systems
 
 Changes to a contracted schema require **versioning and consumer notification**.
+
+### Migration & Backfill Sequencing
+
+**Rule (DATA-MIGRATION-01):** Treat schema changes and data backfills as separate steps. Production evolution uses expand → backfill → dual read/write when needed → contract; require a dry run, idempotency proof, and reconciliation counts before declaring the migration complete.
 
 ---
 
@@ -267,24 +267,20 @@ See `references/streaming.md` for Kafka configuration, CDC patterns, and windowi
 
 ### Tool Selection
 
-| Category | Options (verified 2026-07-02) |
+| Category | Options |
 |----------|---------|
 | **Orchestration** | Airflow 3.x (standalone DAG processor; `SequentialExecutor` removed), Prefect 3, Dagster |
-| **Transformation** | dbt Core / dbt Fusion / SQLMesh, Spark, plain SQL |
-| **Streaming** | Kafka 4.x (KRaft), Kinesis, Pub/Sub |
+| **Transformation** | dbt, Spark, plain SQL |
+| **Streaming** | Kafka, Kinesis, Pub/Sub |
 | **Quality** | GX Core (Great Expectations' OSS library), dbt tests, Soda Core (data contracts), custom validators |
-| **Monitoring** | Prometheus, Grafana, Datadog, Monte Carlo (data observability) |
-| **Local analysis** | DuckDB (in-process SQL), Polars (fast DataFrame), pandas 3.x (exploration/ML) |
-
-Lakehouse format: do NOT assume "Iceberg won" — Delta Lake and Apache Iceberg are both
-active; choose by ecosystem (engine/vendor support, catalog, existing stack), not by
-mindshare claims.
+| **Monitoring** | Prometheus, Grafana, Datadog, Monte Carlo |
+| **Local analysis** | DuckDB (in-process SQL), Polars (fast DataFrame), pandas only for explicit compatibility exceptions |
 
 ### Tool Decision Matrix
 
 | Factor | pandas | Polars | DuckDB |
 |--------|--------|--------|--------|
-| **Best for** | <100MB, exploration, ML prep | >100MB, batch ETL, performance | SQL analytics, ad-hoc queries |
+| **Best for** | Required pandas-only downstream compatibility | Batch ETL, performance, DataFrame workflows | SQL analytics, ad-hoc queries, small exploration |
 | **Execution** | Single-threaded, eager | Multi-threaded Rust, lazy eval | Vectorized, auto disk spill |
 | **Speed (groupby/join)** | Baseline | 5-10x faster | Matches Polars on SQL-native |
 | **Memory** | Full load into RAM | Streaming, lazy chains | Spill-to-disk for out-of-core |
@@ -292,14 +288,15 @@ mindshare claims.
 | **ML interop** | Excellent (scikit-learn, etc.) | Good (`.to_pandas()`) | Good (`.fetchdf()`) |
 | **File format** | CSV, JSON, Excel | CSV, Parquet, Arrow-native | CSV, Parquet, JSON, S3 direct |
 
-**Decision rule (HEURISTIC — size bands are guidance, not hard cutoffs):**
+**Decision rule:**
 
 | Data size / workflow | Recommended tool |
 |----------------------|------------------|
-| Small (<100MB), interactive exploration | pandas |
+| Small (<100MB), interactive exploration | DuckDB for SQL-first, Polars for DataFrame-first |
 | Medium (100MB-10GB), batch transforms | Polars |
 | SQL-first analytics, any size | DuckDB |
 | Blended workflow | Polars transforms, DuckDB aggregations (zero-copy via Arrow) |
+| pandas-only library boundary | pandas, with the compatibility exception stated |
 
 See `references/tools.md` for full patterns and code examples.
 See `references/ml-pipeline.md` for ML training pipelines, experiment tracking (MLflow 3.x), feature stores (Feast), and data versioning (DVC/Delta Lake).
@@ -377,3 +374,36 @@ Data engineering does not exist in isolation. Cross-reference these skills when 
 - Data contract changes (§4 Data Contracts) must notify downstream consumers including frontend teams
 
 ---
+
+## Data Change Review Checklist (DATA-REVIEW-01, DEFAULT)
+
+Source: sol research (dev-skill reinforcement audit, Euler findings).
+
+When reviewing or implementing changes that affect data pipelines, schemas,
+or data stores, check these domain-specific concerns:
+
+### Schema Changes
+- [ ] Is the change backward-compatible? (additive fields, optional columns)
+- [ ] Are existing consumers updated or tolerant of the new schema?
+- [ ] Is there a migration path for existing data?
+- [ ] Are destructive changes (DROP, RENAME, type narrowing) reversible?
+- [ ] Is the schema change tested with representative production-scale data?
+
+### Pipeline Changes
+- [ ] Are late/out-of-order events handled correctly?
+- [ ] Is the pipeline idempotent for replays?
+- [ ] Are timezone/DST transitions handled (especially for daily aggregations)?
+- [ ] Is numeric precision preserved across transforms (float → decimal)?
+- [ ] Are nondeterministic transforms (sampling, shuffling) reproducible with seeds?
+
+### Quality Gates
+- [ ] Is there a before/after reconciliation report (row counts, checksums)?
+- [ ] Are null/missing value rates within expected bounds?
+- [ ] Are downstream consumers notified of schema or semantic changes?
+- [ ] Is the blast radius documented (which dashboards, models, exports break)?
+
+### Backfill Safety
+- [ ] Is the backfill cost estimated (compute, I/O, lock duration)?
+- [ ] Is there a rollback plan for partial backfill failure?
+- [ ] Are concurrent writes handled during backfill?
+- [ ] Is the backfill window documented and approved?

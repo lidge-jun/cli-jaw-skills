@@ -1,10 +1,9 @@
 ---
-name: dev-uiux-design
-description: "MUST USE for UI/UX direction and design judgment — vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로."
+name: cxc-dev-uiux-design
+description: "MUST USE for UI/UX direction and design judgment — vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Pairs with cxc-dev-frontend: this skill decides the design direction, then load cxc-dev-frontend to implement it. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로."
 metadata:
-  short-description: "Design judgment for vague briefs, UX states, typography, layout, logos, and brands."
-  keywords: "design-intent, onboarding, empty-state, error-state, design-ism, product-personality, korean-ux, layout-patterns, typography-line-breaks, logo-trust-sections, favicon, logo, brand-identity, og-image, dark-mode-logo"
   last-verified: "2026-07-02"
+  short-description: "Design judgment for vague briefs, UX states, typography, layout patterns, logos, and brand vocabulary."
 ---
 
 # UI/UX Design: Intent Discovery, Patterns & Product Vocabulary
@@ -19,11 +18,11 @@ Activates by change surface when:
 - Handling logo dark mode variants, OG images, or social sharing meta
 
 Read this before style-specific references when the user cannot articulate a clear design direction.
-For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`.
+For anti-slop detection and banned patterns, defer to `dev-frontend/references/core/anti-slop.md`, especially the 2026 gradient budget and one-note theme bans.
 
 **Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `dev-frontend` §5 / `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
 
-**Role separation:** This skill provides design **judgment** (when/why). `dev-frontend` provides **implementation** (CSS/HTML how). When both have a reference on the same topic (e.g., typography, logos), read this skill first for the decision, then dev-frontend for the code.
+**Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop pattern judgment, and design-system decisions. `dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, and rendered verification. After choosing the design direction here, load `dev-frontend` for concrete implementation.
 
 **External/current design evidence:** For live product-reference claims, current
 design-system docs, browser API behavior, accessibility guidance that may have
@@ -43,12 +42,12 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
-| `references/design-isms.md` | User names a style/movement | 11 design movements with CSS signatures |
+| `references/design-isms.md` | User names a style/movement | 15 design movements with CSS signatures, incl. Liquid Glass + Liquid Editorial default kit (2025-2026) + AI Serif Editorial + Organic Capsule (verified 2026-07-09) |
 | `references/design-read-example.md` | Learning or reviewing Design Read format | Filled-in Design Read + dial setting example |
-| `references/product-personalities.md` | User references a product | 8 product DNA profiles with exact tokens |
+| `references/product-personalities.md` | User references a product | 10 product DNA profiles with exact tokens, incl. 2026 AI-product pastel + OpenAI warm-sans organic + Anthropic serif bookish |
 | `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
 | `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
-| `references/color-system.md` | Generating colors/palette | OKLCH-based palette generation, dark mode, accessibility |
+| `references/color-system.md` | Generating colors/palette | OKLCH-based palette generation, hue budget, tinted neutrals, dark mode, accessibility |
 | `references/design-system-bootstrap.md` | New project / design system | Token architecture, component hierarchy, **DESIGN.md format** (google-labs-code/design.md) |
 | `references/responsive-nav.md` | Responsive or navigation work | Breakpoints, container queries, nav patterns by density |
 | `references/ux-preflight.md` | **Before delivery** | UX state verification checklist |
@@ -58,6 +57,9 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 | `references/visual-hierarchy.md` | Any layout / composition decision | 6 levers: size scale, weight contrast, color emphasis, spacing, position, density |
 | `references/form-patterns.md` | Forms, wizards, auth, file upload | Validation timing, multi-step, password UX, file upload, search/filter |
 | `references/mobile-native-ux.md` | Native mobile app UX decisions | iOS HIG vs Material 3, gestures, deep linking, Korean privacy, app store UX |
+| `references/intent-discovery-ladder.md` | UX-INTENT-01 optional deepening (Steps 1-6) | Mood/lightness/density/shape/viewport/reference ladder, vague request disambiguation |
+| `references/anti-rationalization.md` | **Before C-phase verification** | Agent-shortcut excuse/rebuttal table (UX-ANTI-RATIONAL-01) |
+| `references/korean-design-vocabulary.md` | Korean design briefs or Korean-first UI | Korean descriptor → CSS token translation, quick-match table, font selection guidelines |
 
 ---
 
@@ -68,36 +70,26 @@ they will trade choice for one obvious next action. Before shipping any user-fac
 decision point — option, setting, step, confirmation, input field, mode — justify its
 existence the ponytail way, in order:
 
-1. **Do nothing**: can a correct default remove this decision entirely? (A settings
-   page is a collection of defaults you failed to choose.)
-2. **Delete**: does the step/field earn its completion-rate cost? Every added decision
-   point taxes conversion and comprehension (Hick's law).
-3. **Absorb**: can the system take the complexity instead of the user (Tesler's law) —
-   auto-detect, infer, remember last choice?
-4. **Demote**: still needed for some users → progressive disclosure (advanced section,
-   "more options"), never a top-level fork.
+1. **Do nothing**: can a correct default remove this decision entirely?
+2. **Delete**: does the step/field earn its completion-rate cost (Hick's law)?
+3. **Absorb**: can the system take the complexity instead of the user (Tesler's law)?
+4. **Demote**: still needed for some users → progressive disclosure, never a top-level fork.
 
-Every screen has ONE primary action. If two actions compete visually, the design has
-not decided what the screen is for.
-
-**Surface-conditional (do not over-apply):** laziness means *fewer decisions* on
-consumer/one-shot flows (D1-D3), but *fewer repeated motions* on repeated-work tools
-(D4-D8: density, keyboard paths, batch actions — collapsing an expert's controls into
-wizards is the inverse failure). Route by the product-density profile first.
-
-**STRICT exemptions (never one-click away):** destructive/irreversible actions,
-consent/privacy/legal choices, payments confirmation, and accessibility affordances
-are never collapsed into magic defaults.
+Every screen has ONE primary action. Surface-conditional: consumer/one-shot flows
+minimize DECISIONS; repeated-work tools (dense profiles) minimize repeated MOTIONS —
+collapsing expert controls into wizards is the inverse failure. STRICT exemptions:
+destructive/irreversible actions, consent/privacy/legal, payments confirmation, and
+accessibility affordances are never collapsed into magic defaults.
 
 ## UX State Contract (UX-STATE-01)
 
-For onboarding, empty, loading, error, or progressive-disclosure work, answer the state meaning before styling. Deep patterns live in `references/ux-states.md`.
+For onboarding, empty, loading, error, or progressive-disclosure work, the body must answer the state meaning before styling. Deep patterns live in `references/ux-states.md`.
 
 - Onboarding teaches the first meaningful action, not the whole product.
 - Empty explains why the state exists and names the next action.
 - Loading chooses skeleton for known structure, spinner/progress for short unknown waits, and avoids fake completion.
 - Error exposes retry, recovery, or escalation; never dead-end the user.
-- Progressive disclosure names what stays hidden, why, and where it becomes available.
+- Progressive disclosure names what stays hidden, why it stays hidden, and where it becomes available.
 
 ## IA Chooser (UX-IA-01)
 
@@ -115,9 +107,43 @@ Default navigation architecture by work shape; read `references/responsive-nav.m
 When the user's design request is vague ("깔끔하게 해줘", "모던하게", "just make it look good"), do not produce generic output. Run the compact ambiguity flow (UX-INTENT-01):
 1. Produce the Design Read from §2 using available signals.
 2. If one decision still blocks the direction, ask ONE best clarifying fork with binary/ternary choices.
-3. Proceed from the answer; if the user does not answer and the task can continue, choose the most domain-correct default and state the assumption.
+3. Proceed from the answer; if the user does not answer and the task can continue, choose the most domain-correct default and state the assumption. On EXPRESSIVE surfaces (landing/consumer/creative/AI-product), that default is the No-Brief Default Direction below (UX-DEFAULT-ISM-01); quiet surfaces keep quiet domain-correct defaults.
 
 > Skip this section if the user provided explicit design specs or this is a ≤5-line patch.
+
+### No-Brief Default Direction (UX-DEFAULT-ISM-01, DEFAULT — kit content STYLE_SAMPLE)
+
+This is the UX-INTENT-01 step-3 FALLBACK, never a bypass: it fires only after
+the Design Read and after the one blocking fork is resolved or unanswered, and
+the applied direction is ALWAYS stated as an explicit assumption in the
+deliverable. A named, specific, domain-gated direction replaces generic LLM
+defaults; it must NOT reintroduce generic glassmorphism / centered-card /
+beige-default taste under a new label.
+
+Default kit for expressive surfaces: **Liquid Editorial** (2026 composite,
+decided 2026-07-07 from Tier-2 trend research — see `references/design-isms.md`
+§1.13 for the full signature):
+
+- Structure: type-led editorial composition (oversized authored headline
+  scale, grotesk default, serif display only with editorial rationale per
+  UX-TYPE-01), tactile/photographic texture over flat gradient washes,
+  asymmetric content-weighted layout.
+- Material accent: Liquid Glass or near-opaque pill chrome ONLY on floating
+  functional layers (nav/toolbars/chip clusters); pill-chip content units;
+  content layer stays solid (`dev-frontend` FE-LIQUID-LAYER-01). Children
+  inside pill chrome carry no capsule borders/outlines at rest — emphasis via
+  fills/tints only (`dev-frontend` FE-PILL-NEST-01); top-bar scroll states per
+  `dev-frontend` `top-bar.md` FE-TOPBAR-STATE-01.
+- Motion: feedback baseline + one signature moment (pointer-proximity chips or
+  scroll-driven reveal) + >= 1 supporting scroll reveal on landing-bucket
+  surfaces (floor 2, ceiling ~4 — `dev-frontend` `motion.md`
+  FE-MOTION-BUCKET-01); feedback-only elsewhere, per motion domain gates.
+- Color: OKLCH-derived single accent + tinted neutrals (hue budget,
+  `references/color-system.md`).
+
+Domain gate (STRICT): dashboards, admin, ops, finance, gov, B2B repeated-work
+tools NEVER receive this kit by default — "fancy" never overrides domain
+correctness (§ IA Chooser + `dev-frontend` product-density profiles).
 
 **Optional deepening:** use the ladder below only when the first fork fails or the user explicitly wants guided exploration.
 - Use binary/ternary choices, not open-ended questions.
@@ -125,84 +151,20 @@ When the user's design request is vague ("깔끔하게 해줘", "모던하게", 
 - If the diagram skill is available, offer: "참고로 스타일 비교를 다이어그램으로 보여드릴 수도 있어요."
 - If the user names a specific product reference, skip remaining steps and map directly via `references/product-personalities.md`.
 
-### Step 1 — Mood
-
-Ask: "전체적인 분위기가 어떤 느낌이면 좋을까요?" / "What overall feeling should the product have?"
-
-| Option | Signals | Product References |
-|--------|---------|-------------------|
-| 전문적/신뢰감 (Professional) | swiss, flat, restrained | Linear, Vercel, GitHub |
-| 따뜻한/친근한 (Warm/Friendly) | rounded, warm-neutrals, illustrations | Notion, Airbnb, Toss |
-| 고급스러운/세련된 (Premium) | generous-whitespace, thin-type, restrained-color | Apple, Stripe, Aesop |
-| 재미있는/활기찬 (Fun/Energetic) | bright-colors, playful-shapes, bold-type | Figma, Discord |
-| 대담한/독특한 (Bold/Distinctive) | brutalism, asymmetry, experimental | Gumroad, Nothing |
-
-### Step 2 — Lightness
-
-Ask: "밝은 화면이 좋으신가요, 어두운 화면이 좋으신가요?" / "Light or dark background?"
-
-| Option | CSS |
-|--------|-----|
-| 밝은 배경 (Light) | `bg-white text-gray-900` |
-| 어두운 배경 (Dark) | `bg-gray-950 text-gray-100` |
-| 둘 다 (Both / auto) | `prefers-color-scheme` aware |
-
-### Step 3 — Density
-
-Ask: "화면에 정보가 많이 보이는 게 좋으신가요, 여유롭게 보이는 게 좋으신가요?" / "Dense or spacious?"
-
-| Option | VISUAL_DENSITY | Tokens |
-|--------|---------------|--------|
-| 빽빽하게 (Dense) | 8–10 | `text-sm py-1 px-2 gap-1` |
-| 보통 (Normal) | 4–7 | `text-base py-3 px-4 gap-4` |
-| 여유롭게 (Spacious) | 1–3 | `text-lg py-8 px-8 gap-8` |
-
-### Step 4 — Shape
-
-Ask: "모서리가 각진 느낌이 좋으신가요, 둥근 느낌이 좋으신가요?" / "Sharp or rounded?"
-
-| Option | CSS | Signals |
-|--------|-----|---------|
-| 각진 (Sharp) | `rounded-none` / 0–2px | Vercel, brutalism, swiss |
-| 살짝 둥근 (Slightly rounded) | `rounded-md` / 6–8px | Linear, Notion, material |
-| 많이 둥근 (Very rounded) | `rounded-2xl` / 16–24px | Figma, iOS, Toss |
-
-### Step 5 — Viewport Priority
-
-Ask: "주로 어떤 화면에서 볼 건가요?" / "What's the primary viewing device?"
-
-| Option | Responsive Strategy | Key Constraint |
-|--------|-------------------|----------------|
-| 데스크탑 위주 (Desktop-first) | Desktop layout → tablet → mobile collapse | Data density OK, hover interactions OK |
-| 모바일 위주 (Mobile-first) | Mobile layout → tablet → desktop expansion | Thumb zone, touch targets, minimal density |
-| 둘 다 중요 (Both equally) | Design mobile AND desktop as separate compositions, not one adapted from the other | Most work — section order/composition may differ |
-
-Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
-
-### Step 6 — Reference
-
-Ask: "혹시 '이런 느낌이면 좋겠다' 하는 사이트나 앱이 있으신가요?" / "Any website or app that feels like what you want?"
-
-This single question often resolves all ambiguity. If the user names a product, map it via `references/product-personalities.md`.
-
-### Vague Request Disambiguation
-
-When the user gives feedback without specifics, translate:
-
-| User says | Action |
-|-----------|--------|
-| "더 좋게" / "make it better" | Ask: "레이아웃? 색상? 타이포? 여백?" — identify the dimension |
-| "더 전문적으로" / "more professional" | Increase whitespace, reduce color count to 2–3, tighten grid alignment |
-| "더 모던하게" / "more modern" | Negative letter-spacing on headings, offer dark mode, reduce radius to 8px |
-| "더 재미있게" / "more exciting" | Add one bold accent color, increase type contrast, add micro-animation on hover |
-| "너무 심심해" / "too boring" | Add asymmetric layout, introduce one unexpected element, vary section rhythm |
-| "너무 복잡해" / "too busy" | Reduce element count, increase whitespace, limit to 2 colors |
+For the full 6-step guided ladder (Mood → Lightness → Density → Shape → Viewport →
+Reference) and vague-request disambiguation table, read
+`references/intent-discovery-ladder.md`. Load it only when the compact flow above
+needs deeper guided exploration.
 
 ---
 
 ## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see dev §0.1 Patch Fast-Path.)
 
 Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
+
+Inspect provided visual references with `view_image` before writing the Design
+Read. Asset production and rendered verification are owned by `dev-frontend`
+and `cxc-dev-testing` respectively.
 
 ### Output format (mini DESIGN.md)
 
@@ -248,72 +210,173 @@ Reasoning: <one sentence explaining why these values match the brief>
 
 Inference rules:
 - Corporate/gov/utility → VARIANCE 2-4, MOTION 1-3, density D2-D3
-- Marketing/landing → VARIANCE 4-7, MOTION 3-5, density D2-D3
-- Creative/portfolio/editorial → VARIANCE 6-9, MOTION 4-7, density D1-D3
-- Dashboard/SaaS/admin → VARIANCE 2-4, MOTION 1-2, density D4-D5
+- Marketing/landing → VARIANCE 4-7, MOTION 5-7 (scroll-motion floor applies, FE-MOTION-BUCKET-01), density D2-D3
+- Creative/portfolio/editorial → VARIANCE 6-9, MOTION 5-7 (landing-bucket scroll floor applies, FE-MOTION-BUCKET-01), density D1-D3
+- Dashboard/SaaS/admin → VARIANCE 2-4, MOTION 1-2 (scroll-driven = 0), density D4-D5
 - "Complex" in brief → increase density profile (functional depth), NOT VARIANCE or MOTION
 - "Simple" in brief → decrease all three proportionally
 
 "복잡하다" = high DESIGN_VARIANCE is WRONG. Complexity means more features/data/flows, not more visual tricks (carousels, parallax, animations).
 
+### Dial Presets (UX-DIAL-PRESET-01, STYLE_SAMPLE)
+
+Source: taste-skill v2 (62k stars). Exact tuples for common use cases.
+Presets are authoritative specializations that may exceed the inference ranges
+above (e.g. Agency motion 8 exceeds the general landing 5-7 range). When a
+preset exists for the exact use case, use it directly; adjust from Design Read.
+
+| Use case | V | M | D | Notes |
+|----------|---|---|---|-------|
+| Landing (SaaS mainstream) | 7 | 6 | 4 | |
+| Landing (Agency/creative) | 9 | 8 | 3 | |
+| Landing (Premium consumer) | 7 | 6 | 3 | |
+| Portfolio (Designer/studio) | 8 | 7 | 3 | |
+| Portfolio (Developer) | 6 | 5 | 4 | |
+| Editorial / Blog | 6 | 4 | 3 | |
+| Public-sector service | 3 | 2 | 4 | |
+| Dashboard / SaaS admin | 3 | 2 | 5 | |
+| Finance / ops | 2 | 1 | 7 | density D6-D7 |
+| Game | 8 | 7 | 4 | domain-specific |
+| Korean consumer app | 5 | 4 | 5 | CJK density |
+
+**Redesign arithmetic** (DEFAULT):
+- Preserve redesign: V = match existing, M = match + 1, D = match existing
+- Overhaul redesign: V = existing + 2, M = existing + 2, D = match existing
+- "Complex" in brief: increase density (D), NOT variance or motion
+- "Simple" in brief: decrease variance and motion; density stays or increases
+
+Score existing surface using preset rules. Clamp all arithmetic to 1-10 / D1-D8.
+Example: existing SaaS 7/6/4 preserve -> 7/7/4; overhaul -> 9/8/4.
+
+**Audience-first ownership** (UX-AUDIENCE-01, DEFAULT):
+The audience picks the aesthetic, not the model's taste. When audience signal
+and model preference conflict, audience wins. The dial presets above encode
+audience expectations — a public-sector audience expects trust-first restraint;
+an agency audience expects high variance. Override with stated rationale only.
+
+**Motion honesty** (FE-MOTION-HONESTY-01, DEFAULT, pointer to motion.md):
+If MOTION_INTENSITY > 4, the shipped page must actually move. A declared dial
+without matching motion output is a lie. See dev-frontend/references/core/motion.md.
+
 ### Anti-Default Discipline
 Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
+When no brief exists at all, the sanctioned replacement for these generic
+defaults is the named kit in §1 UX-DEFAULT-ISM-01 — deliberate, domain-gated,
+and stated as an assumption; it is not an exemption from this discipline.
 
-If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
+If the brief is ambiguous, follow UX-INTENT-01: Design Read → ONE clarifying fork → proceed.
 
 ### DESIGN.md persistence
 If the project needs persistent design tokens across sessions, save the Design Read as a full `DESIGN.md` in the project root. Format spec: `references/design-system-bootstrap.md § DESIGN.md Format`.
 
 ---
 
-## 3. Korean Request Translation
+## 2.5 Visual Concept Exploration (UX-CONCEPT-GEN-01, DEFAULT)
 
-Map common Korean design descriptors to concrete tokens. When the user uses these words, translate before implementing.
+Before implementing a C2+ new/redesigned expressive or brand-visible UI
+surface, generate visual concept candidates BEFORE frontend code. C0/C1
+patches and utility CRUD/dashboard screens are exempt.
 
-| Korean | Literal | CSS/Token Translation |
-|--------|---------|----------------------|
-| 깔끔하게 | cleanly | Generous whitespace (24-48px gaps), strict grid, max 2-3 colors, saturation < 60%, 1px borders or none, 4-8px radius, single font, no/subtle shadows |
-| 모던하게 | modern | Geometric sans-serif (Geist/Outfit), negative letter-spacing on headings, dark mode or high-contrast light, 8-16px radius, spring micro-interactions |
-| 고급스럽게 | luxurious | Very generous whitespace (48-96px padding), thin weights (300-400), serif for headings, low-saturation palette, slow animations (800ms+), 0-4px radius |
-| 심플하게 | simply | Max 3-4 element types per screen, 1-2 colors, single font, 2-3 size steps, hidden/minimal navigation, zero decoration |
-| 트렌디하게 | trendy | Glassmorphism, bento grid, gradient mesh, variable fonts — ask for a reference site |
-| 따뜻하게 | warmly | Warm hue range (stone/amber/orange), 12-20px radius, warm-tinted shadows rgba(180,140,100,0.1), serif or rounded sans |
-| 차가운 | cold/cool | Cool grays (slate/zinc), blue-tinted whites, geometric sans, thin weights, 0-8px radius |
-| 감성적으로 | emotionally | Editorial/lifestyle, serif display + sans body, muted/pastel colors, generous line-height, photography-heavy |
+### Concept Decision Tree
 
-**Clarifying questions per term:**
-- 깔끔: "Notion처럼 따뜻한 깔끔함인지, Vercel처럼 차가운 깔끔함인지요?"
-- 모던: "다크 모드 + 날카로움(Linear)인지, 화이트 + 미니멀(Vercel)인지요?"
-- 고급: "브랜드 고급감(Apple/Stripe)인지, 패션 럭셔리(Art Deco)인지요?"
-- 심플: "기능이 적은 건지, 기능은 많지만 화면이 심플해 보이길 원하는 건지요?"
+1. Is the surface C2+ and expressive or brand-visible?
+   - No: skip concept generation and state why.
+   - Yes: continue.
 
+2. Probe ima2 availability: `ima2 status`, attempt `ima2 serve` if
+   down, `$imagegen` only as true fallback. State the chosen
+   generator.
+
+### Compact ima2 Recipe
+
+Canonical command:
+`ima2 gen "<detailed prompt>" --quality high --size 1536x1024 -o ./concepts/01.png`
+
+- Add a reference image with `--ref ./reference.png`.
+- Every prompt specifies surface, audience, composition, palette, typography,
+  material, and constraints.
+- Batch one prompt with `ima2 gen -n 5 -d ./concepts/`.
+- For distinct prompts, launch `ima2 gen ... &` in parallel and monitor with
+  `ima2 ps --json`.
+- Fall back to `$imagegen` only after `ima2 status`, `ima2 serve`, and the
+  subsequent status re-check all fail.
+
+3. Is the direction already concrete (named ism, reference screenshot,
+   finished design, governing design system)?
+   - Yes: lock that direction → generate 3-5 contextual execution
+     variants.
+   - No: use UX-IMAGE-FIRST-01 → generate 3-5 distinct ism directions,
+     compare, lock one direction, then refine with 2-4 variants.
+
+### Image-First Direction Discovery (UX-IMAGE-FIRST-01, DEFAULT)
+
+Fires when the brief has no named ism, product reference, or concrete design
+direction. Generate 5 maximally different ism directions, varying layout
+family, palette, type stance, material, and hero grammar. Every prompt must be
+detailed enough to reconstruct the layout. Compare candidates on hero
+composition, palette coherence, typographic voice, and density fit. Pick the
+winning ISM, not the winning image, then refine it with 2-4 variants.
+Interactive mode: the user picks the ism. Autonomous mode: state the selection
+reasoning in the devlog.
+
+4. Evaluate candidates on: domain/audience fit, hero/composition,
+   palette coherence, typographic voice, density and context fit.
+
+5. SYNTHESIZE — do not pick one winner. Build an element ledger: for
+   each token (palette, composition, type, material, signature visual),
+   note WHICH variant did it best and WHY. Use FE-ASSET-SELECT-01
+   scorecard as rubric.
+
+| Token | Best variant | Rationale | DESIGN.md value |
+|-------|-------------|-----------|-----------------|
+| Palette | #3 | warmest coherence | primary: #2c2420, accent: #c4956a |
+| Hero | #1 | strongest asymmetric composition | editorial offset |
+| Type | #2 | best grotesk weight contrast | heading: 300, body: 400 |
+
+Synthesis IS the direction lock: it assembles the best tokens from multiple candidates into one coherent DESIGN.md. The lock is the assembled token set, not any single render.
+
+6. Lock DESIGN.md from the synthesis. Each token cites its source
+   variant. Interactive mode: show candidates + synthesis for
+   confirmation. Autonomous mode: record selection rationale and
+   proceed.
+
+Generation mechanics,
+batching (FE-ASSET-PARALLEL-01),
+cutout preparation,
+hero constraints (FE-HERO-SPLIT-01),
+and asset selection are owned by
+`dev-frontend/references/core/asset-requirements.md`.
+
+Precedence: UX-CONCEPT-GEN-01 governs PRE-CODE concept stage. After
+code exists, `iterative-design.md` governs POST-CODE rounds.
+`prototype-variants.md` runs AFTER the concept lock for structural
+variants.
+
+Skip (state the skip): a finished implementation-ready design skips concept
+generation entirely. A reference screenshot or style direction requires
+contextual execution variants rather than a skip. A governing design system
+skips generation unless a new brand-visible composition remains unresolved.
+C0/C1 patches and utility CRUD/dashboard surfaces also skip. Generator
+unavailability is a skip only after the complete fallback sequence above.
 ---
 
-## 4. Quick-Match Table
+## 2.6 Asset Production Handoff (UX-ASSET-GEN-01)
 
-Rapid lookup: user word → concrete starting point.
+After concept direction is locked,
+follow `dev-frontend/references/core/asset-requirements.md` for asset
+generation, background removal (FE-ASSET-BG-01), batching, selection,
+and integration.
 
-| User (KO) | User (EN) | Start From | Dark? | Radius | Density | Font |
-|------------|-----------|------------|-------|--------|---------|------|
-| 깔끔하게 | Clean | Notion or Vercel | No | 8px | 4–7 | Geist / Pretendard |
-| 모던하게 | Modern | Linear or Vercel | Yes | 6px | 4–7 | Geist / Outfit |
-| 고급스럽게 | Premium | Apple or Stripe | Either | 0–4px | 1–3 | Satoshi / system thin-300 |
-| 심플하게 | Simple | Vercel | Either | 0px | 1–3 | Geist |
-| 따뜻하게 | Warm | Notion or Toss | No | 12px | 4–7 | Pretendard / Cabinet Grotesk |
-| 재미있게 | Fun | Figma | No | 16px+ | 4–7 | Custom grotesque |
-| 전문적으로 | Professional | Linear or GitHub | Either | 6px | 4–7 | Geist / Outfit |
-| 대담하게 | Bold | Neobrutalism | No | 0px | 4–7 | Black 900 |
-| 감성적으로 | Aesthetic | Editorial | No | 0–4px | 1–3 | Serif display |
-| 트렌디하게 | Trendy | Ask for reference | Either | 12px | 4–7 | Variable font |
+Concept images are composition/style evidence,
+not shipped assets.
+Production assets are generated after concept lock
+and must pass integration requirements
+(`dev-frontend` `asset-requirements.md`).
 
-### Font Selection Guidelines (STYLE_SAMPLE)
+## 3. Korean Design Vocabulary + Quick-Match + Font Selection
 
-- **Primary default**: Geist (modern SaaS, Vercel ecosystem)
-- **Korean-first**: Pretendard — strong Korean-first default (Pretendard Variable
-  available); verify brand/product font rules before claiming any specific Korean
-  company standard
-- **Warm/editorial**: Outfit or Cabinet Grotesk
-- **Premium/luxury**: Satoshi or system thin weights
-- **Avoid defaulting to Inter** (DEFAULT) — a widely recognized AI-generated-UI tell
-  (judgment rule, not a measured fact). Use it when the user requests it or the project
-  already uses it.
+Korean descriptor → CSS token translation, quick-match table (user word → starting
+point), clarifying questions per term, and font selection guidelines (UX-TYPE-01,
+Pretendard for Korean-first, Inter avoidance) are extracted to
+`references/korean-design-vocabulary.md`. Read it when the brief uses Korean
+aesthetic words or when choosing fonts for Korean-first UI.
