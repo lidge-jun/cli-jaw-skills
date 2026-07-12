@@ -1,67 +1,54 @@
 ---
-name: cxc-dev
-description: "MUST USE for every coding task — classifies work depth (C0-C5), defines modular limits, pre-write search, verification-before-completion, and safety rules. Always-on discipline (agent-followed, not hook-enforced) that routes to surface-specific dev-* routers by change surface. Also surfaces browse/QA native tool routing so the model uses agbrowse and Codex browser plugins instead of installing Playwright directly. Triggers: any code change, refactor, bug fix, feature, test, review, scaffolding, browse, browser, QA, 브라우저, 브라우즈, 페이지 열어, URL 확인, 화면 확인, 스크린샷, QA 확인, 플레이라이트."
+name: dev
+description: "MUST USE for every coding task — classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding."
 metadata:
+  short-description: "Universal dev discipline: work classifier, overlays, verification gate, safety rules."
+  keywords: "develop, implement, refactor, feature, code quality, verification"
   last-verified: "2026-07-02"
-  short-description: "Universal dev discipline: work classifier, modular limits, verification gate, safety rules."
-  keywords: ["develop", "implement", "refactor", "feature", "code quality", "verification", "browse", "browser", "QA", "agbrowse", "브라우저", "페이지 확인", "화면 QA", "플레이라이트"]
 ---
 
 # Dev — Common Development Guidelines
 
-Core rules applied to every coding task, regardless of surface.
+Rules applied to every sub-agent, regardless of role.
 
 ## §0.0 Work Classifier (C0-C5)
 
-**Classify every task before choosing process depth** (DEV-CLASS-01). The class selects how much
-planning, reading, and verification the task deserves — never apply maximum process by default.
+**Classify every task before choosing process depth** (DEV-CLASS-01). The class selects planning, reading, and verification depth — never apply maximum process by default.
 
 | Class | Name | Signals | Default Process |
 |-------|------|---------|-----------------|
 | C0 | Trivial Text | Typo, comment, copy, log string — zero behavior change | Direct fix + smallest proof (§0.1) |
 | C1 | Single-File Local | One file, local behavior, no new abstractions | Fast path (§0.1) + targeted check |
-| C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests + micro-audit |
-| C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; add subagent audit when scope or risk warrants |
+| C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests + micro-audit (orchestration mode) |
+| C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; employee audit per `dev-pabcd` Phase Skip conditions |
 | C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Full PABCD (mandatory) + full relevant gates + durable risk/evidence record |
-| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Interview-first via the `pabcd` skill, then reclassify |
+| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
 
-**C5 is temporary** — it cannot enter implementation until Interview resolves ambiguity
-and the task is reclassified C0-C4.
-
-**Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A
-conventional route→service→storage slice still counts as C2 even though it spans files;
-C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
+**Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A conventional route→service→storage slice still counts as C2 even though it spans files; C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
 
 **C4-promotion triggers override any fast path** (DEV-ESCALATE-01): security, data
 deletion/migration, destructive ops, public contract change, release surface, permission
 model, new dependency/framework. Any of these promotes the **affected part** of the task
 to C4-level care — split it out rather than inflating the whole slice. Promotion alone
 does not force a user question; stopping to ask is required only for rules individually
-classed **ESCALATE** (§0.2).
+classed **ESCALATE** (§0.2). Classifier eval cases: `evals/classifier_cases.json` —
+run when tuning trigger/classification behavior; track false promotions and demotions separately.
 
 ## §0.1 Patch Fast-Path (C0/C1)
 
-For **C0/C1 work** (bounded by "one file, no new abstractions, local behavior" — a ≤5-line
-in-place edit is an example, not a limit):
+For **C0/C1 work** (one file, no new abstractions, local behavior — a ≤5-line
+edit is an example, not a limit):
 - Skip: §0.5 convention discovery, §1.5 pre-write search, reference file reading
-- Keep: §3 verification gate, §4 change documentation, §5 safety rules (imports/exports),
-  §7.2 static analysis. C0 patches (typo, config, one-line fix) are exempt from
-  numbered implementation-unit records. C1 patches record in the owning unit only
-  when a unit already exists (UNIT-RESIDENCE-01, `pabcd` Implementation-Unit Documents).
-- Role skills: read only the `SKILL.md` routing table — skip references unless the table explicitly routes to one
+- Keep: §3 verification gate, §4 change documentation — including the numbered
+  record doc in the owning implementation unit, mandatory for ALL work
+  (UNIT-RESIDENCE-01, `dev-pabcd` §3.1), §5 safety rules (imports/exports), §7.2 static analysis
+- Role skills: read only the SKILL.md routing table — skip references unless the table explicitly routes to one
 
-This is scope guidance, not an exemption. Conventions visible in the touched file still
-apply even when proactive discovery is skipped. Promotion is **behavioral**, not
-territorial: a patch escalates when it can alter the behavior of an auth/payment/deletion
-or other DEV-ESCALATE-01 path — not merely because the file lives in such an area. A
-zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit
-touching the executed logic of such a path is not C0/C1 — reclassify and read the
-relevant reference.
+This is scope guidance, not an exemption. Conventions visible in the touched file still apply even when proactive discovery is skipped. Promotion is **behavioral**, not territorial: a patch escalates when it can alter an auth/payment/deletion or other DEV-ESCALATE-01 path — not merely because the file lives there. A zero-behavior edit (comment, typo, log string) inside an auth file stays C0; any edit touching executed logic in such a path is not C0/C1 — reclassify and read the relevant reference.
 
 ## §0.2 Rule Classes
 
-Every rule in the dev skill family carries one severity class. When a rule's class is not
-marked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEFAULT.
+Every rule in the dev skill family carries one severity class. When unmarked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEFAULT.
 
 - **STRICT** — always applies; violating it blocks completion (safety, broken builds, secrets).
 - **DEFAULT** — apply unless a documented, stated reason says otherwise.
@@ -70,179 +57,173 @@ marked, treat prohibitions (⛔/MUST/NEVER) as STRICT and everything else as DEF
   choices but MUST NOT become universal requirements (DEV-STYLE-SAMPLE-01).
 - **ESCALATE** — stop and ask the user before proceeding.
 
-## §0.3 Methodology Overlays
+## §0.3 Methodology Overlays (task_tags)
 
-Methodologies are **conditional overlays, never universal**. They activate when the routing
-skill's description matches the work surface, when the user explicitly asks for the method,
-when repo convention requires it, or when a strict trigger applies — required evidence
-applies only when the strict trigger applies (low-risk/local work uses the smallest
+Methodologies are **conditional overlays, never universal**. They activate via dispatch
+`task_tags`, explicit user request, repo convention, or a matching strict trigger — required
+evidence applies only when the strict trigger applies (low-risk/local work uses the smallest
 proof that validates the claim, with the reduced scope stated).
 
-| Overlay | Loads | Strict trigger |
-|---------|-------|----------------|
-| `tdd` / `testing` | `dev-testing` | User/repo enforces TDD, or regression risk |
-| `bdd_acceptance` | `dev-testing`, `dev` | Ambiguous acceptance behavior |
-| `ddd` / `clean_arch` / `hexagonal` / `architecture` | `dev-architecture`, `dev-backend` | Real boundary pressure at C3/C4 |
-| `vertical_slice` | `dev-architecture`, `dev-backend`, `dev-frontend`, `dev-testing` | Thin end-to-end slice (C2) |
-| `adr_rfc` | `dev-architecture`, `dev-scaffolding` | Significant decision, domain vocabulary, or ADR source-of-truth work |
-| `review` / `code_review` | `dev-code-reviewer` | Review requested or C3/C4 |
-| `threat_model` / `security` | `dev-security` | C4 security/data/tooling risk |
-| `observability` / `observability_pipeline` | `dev-backend` (+`dev-data`, `dev-devops` for operational gates) | App instrumentation, production/runtime hooks, incident/release gates |
-| `debugging` / `debugging_rca` | `dev-debugging` | Repeated failure needs root cause |
-| `migration_backfill` | `dev-data`, `dev-backend`, `dev-testing` | Production or non-trivial data |
-| `product_discovery` (+`_ui`) | `dev` (+`dev-uiux-design`) | Ambiguous behavior/user value/metric/prototype intent |
-| `release_cd` | `dev-testing`, `dev-scaffolding`, `dev-devops` (+`dev-backend` for app hooks) | Release/CI/CD surface, rollback/smoke gates, app readiness hooks |
-| `devops` / `infra` / `deploy` | `dev-devops` | Container/K8s/IaC/deploy pipeline/SRE |
-| `mobile_native` | `dev-frontend` + `dev-uiux-design` + `dev-backend` (refs) | RN/Flutter/Swift/Kotlin native app |
-| `ml` / `ai` / `llm` / `rag` | `dev-backend` + `dev-data` + `dev-testing` (+`dev-devops`) | ML serving, RAG, pipeline, evaluation |
-| `frontend_ui` | `dev-frontend` + `dev-uiux-design` | UI/design intent or runnable prototype variant work |
-| `crud_fullstack` | `dev-backend`, `dev-frontend`, `dev-testing` | Full-stack slice with coupled UI + API verification |
+| Tag | Loads | Strict trigger |
+|-----|-------|----------------|
+| `tdd` / `testing` | dev-testing | User/repo enforces TDD, or regression risk |
+| `bdd_acceptance` | dev-testing, dev | Ambiguous acceptance behavior |
+| `ddd` / `clean_arch` / `hexagonal` / `architecture` | dev-architecture, dev-backend | Real boundary pressure at C3/C4 |
+| `vertical_slice` | dev-architecture, dev-backend, dev-frontend, dev-testing | Thin end-to-end slice (C2) |
+| `adr_rfc` | dev-architecture, dev-scaffolding | Significant decision, domain vocabulary, or ADR source-of-truth work |
+| `review` / `code_review` | dev-code-reviewer | Review requested or C3/C4 |
+| `threat_model` / `security` | dev-security | C4 security/data/tooling risk |
+| `observability` / `observability_pipeline` | dev-backend (+dev-data) | Production, incident, release, long-lived runtime |
+| `debugging` / `debugging_rca` | dev-debugging | Repeated failure needs root cause |
+| `migration_backfill` | dev-data, dev-backend, dev-testing | Production or non-trivial data |
+| `product_discovery` (+`_ui`) | dev (+dev-uiux-design) | Ambiguous behavior/user value/metric/prototype intent |
+| `release_cd` | dev-testing, dev-backend, dev-scaffolding, dev-devops | Release/CI/CD surface |
+| `devops` / `infra` / `deploy` | dev-devops | Container/K8s/IaC/deploy pipeline/SRE |
+| `mobile_native` | dev-frontend + dev-uiux-design + dev-backend (refs) | RN/Flutter/Swift/Kotlin native app |
+| `ml` / `ai` / `llm` / `rag` | dev-backend + dev-data + dev-testing (+dev-devops) | ML serving, RAG, pipeline, evaluation |
+| `frontend_ui` | dev-frontend + dev-uiux-design | UI/design intent or runnable prototype variant work |
+| `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
 
-For C2 ordinary product slices, read `references/product/crud-product-development.md`
-only when building a conventional feature slice.
+Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
+`frontend|backend|data|docs` (PROMPT-ROUTING-01).
+
+The boss sets `task_tags` at dispatch. With no tags, only strict triggers (self-assessed
+by the employee, reduced scope stated) activate overlays — legacy dispatches without the
+field behave identically. `task_tags` must be an array; a bare string is coerced to a
+single tag, and unknown tags are surfaced in the prompt, not silently dropped.
+
+### Ordinary product reference (on-demand)
+
+For C2 ordinary product slices, the recipe lives in
+`references/product/crud-product-development.md` — read it when building a conventional
+feature slice, not for every task.
 
 ## §0.4 Workflow Modes
 
 The same rules flex by execution mode — know which one you are in:
-ordinary chat (direct work, C0-C2 typical) · PABCD mode (`pabcd` skill) ·
-goal mode (`create_goal`, evidence-backed checkpoints) · subagent
-(scoped writes when explicitly delegated) · read-only review (no mutation,
-findings only) · docs-only work (no code gates, docs consistency checks instead).
+ordinary chat (direct work, C0-C2 typical) · strict PABCD (`orchestrate P/A/B/C/D`) ·
+goal mode (self-advancing gates, evidence-backed checkpoints) · isolated employee
+(read-only verifier by default) · mutable employee (`--mutable`, scoped writes) ·
+read-only review (no mutation, findings only) · docs-only work (no code gates, docs
+consistency checks instead).
 
-PABCD, goal, divergence, and repeated work-phase mechanics are canonical in
-`pabcd` and `cxc-loop`. Load those skills when the selected process requires
-them; classify each work-phase independently.
+In goal mode, multi-phase / "loop"/"루프" work runs one FULL PABCD cycle per work-phase
+(depth scaled by §0.0 class); after D, re-enter P for the next work-phase. Classify EACH
+work-phase independently — C0-C1 fast-path applies to that work-phase's class, not the
+whole goal. Do each PABCD-phase's real work; never rubber-stamp a phase to advance.
+Work-phases chain HETEROGENEOUS units: a completely different feature or "the next
+plan" is simply the next cycle at P in the SAME session (LOOP-UNIT-CHAIN-01,
+`dev-pabcd` §5/§11.6) — "needs its own PABCD" never means ending the goal or waiting
+for a new session.
 
-**Production surface (shared definition):** a surface is production when it is deployed
-for real users beyond the author; prototypes, spikes, and internal demos are not. Skills
-that scope rules to production-surface concerns (for example `dev-backend` observability
-or `dev-frontend` production checklists) condition on this definition.
+**Production surface (shared definition):** deployed for real users beyond the author;
+prototypes, spikes, and internal demos are not. Skills that scope rules to
+"production-surface" concerns condition on this definition.
 
 ## Companion Skills
 
-This skill covers universal guidelines. **STRICT (DEV-ROUTE-01): you MUST read the
-matching `dev-*` router `SKILL.md` before writing code in that surface.** Routing is not
-optional discovery — for any change whose surface appears below, reading that router's
-`SKILL.md` (its routing table; references only when the change needs that depth) is a
-precondition for writing code there. Skipping it is a STRICT violation (dev §0.2), the
-same severity as a broken build. When a change spans multiple surfaces, read each
-matching router first.
+This skill covers universal guidelines. **STRICT (DEV-ROUTE-01):** for domain-specific work, also read the matching role skill's `SKILL.md` before writing code in that domain:
 
-| Change surface | Primary router | Also load |
-|---------------|----------------|-----------|
-| Backend / API / server | `dev-backend` | `dev-security` for auth/input |
-| Frontend / UI / web | `dev-frontend` | `dev-uiux-design` for direction |
-| Database / schema / data | `dev-data` | `dev-backend` for migrations |
-| Tests / QA | `dev-testing` | `dev-frontend` for browser QA |
-| Security / auth / secrets | `dev-security` | surface-specific router |
-| Architecture / modules / deps | `dev-architecture` | `dev-scaffolding` for new structure |
-| Debugging / crashes / perf | `dev-debugging` | surface-specific router |
-| DevOps / deploy / infra | `dev-devops` | `dev-security` for credentials |
-| Scaffolding / docs / setup | `dev-scaffolding` | `dev-architecture` for boundaries |
-| Code review | `dev-code-reviewer` | `dev-security` + `dev-testing` |
-| Diagrams / charts | `dev-diagram-viewer` | — |
-
-### Subagent Skill Injection (DEV-SKILL-INJECT-01)
-Attach `cxc-dev` and every relevant surface skill explicitly to governed subagents.
-Prefer resolvable skill links; use plugin-native mentions or v1 `items` when needed.
-Hooks may normalize recognized plaintext mentions but never infer omitted skills.
-Attach `cxc-search` for search tasks; the same search policy binds delegated agents.
-
-Surface-to-owner mappings live in `references/skill-ownership.md`; router trigger
-metadata remains canonical in each skill's `agents/openai.yaml`.
-
-### Capability Routing Hub
-Use `dev` plus repo tools for local facts; load `search`, `pabcd`, `loop`, `recall`,
-`cxc-qa`, or the matching `dev-*` owner for their named domains. `skill-hub` is deprecated.
-
-### Browse / QA Tool Routing
-
-**STRICT (DEV-BROWSE-NATIVE-01): for ad-hoc browse and exploratory QA tasks (브라우저
-열기, 페이지 확인, URL 검증, 화면 QA, 스크린샷), do NOT install Playwright, puppeteer,
-or browser drivers.** Use `tool_search` for the native browser tools first — they are
-stable and enabled by default (`structure/60_native_capabilities.md` §3). Intentional
-Playwright E2E test suites (플레이라이트 E2E 테스트 스위트) are `dev-testing` §4's
-domain and not covered by this rule.
-
-Two scoped ladders exist — the ordering is intentional, not contradictory:
-
-| Context | Ladder | Order (start at 1; state why when skipping) | Owner |
-|---------|--------|----------------------------------------------|-------|
-| Public-web proof (search, research, URL verification) | SEARCH-BROWSE-01 | 1. `agbrowse` (scripted HTTP/CDP) → 2. `browser:control-in-app-browser` → 3. `chrome:control-chrome` → 4. `computer-use:computer-use` | `cxc-search` Tier 2 |
-| QA of agent-built/served surfaces | QA-TOOL-LADDER-01 | 1. `browser:control-in-app-browser` → 2. `chrome:control-chrome` → 3. `computer-use:computer-use` → 4. `agbrowse` (public-URL shape checks only) | `dev-testing` §4.6 |
-
-Full ladder protocols and rationale live in their owners above.
+| Skill File                   | Injected When                     | Covers |
+| ---------------------------- | --------------------------------- | ------ |
+| `dev-frontend/SKILL.md`      | `role=frontend`                   | UI implementation, responsive, anti-slop |
+| `dev-backend/SKILL.md`       | `role=backend`                    | API/architecture, data access, ops |
+| `dev-data/SKILL.md`          | `role=data`                       | Pipelines, data quality, analytics SQL |
+| `dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP, auth, secrets, supply chain |
+| `dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright, contracts, CI |
+| `dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root-cause method, instrumentation |
+| `dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, severity, antipatterns |
+| `dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Cycles, coupling, barrels, validation placement |
+| `dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, UX states |
+| `dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, devlog |
+| `dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD phases, gates, attestation |
 
 ### Skill Ownership Map
-Canonical rule ownership and stub locations live in `references/skill-ownership.md`.
-Update the canonical owner first and keep stubs as pointers; multi-domain tasks load
-every relevant owner skill before work begins.
+
+Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST NOT duplicate canonical content.
+
+| Rule Area | Canonical Owner | Stub Locations |
+|-----------|----------------|----------------|
+| Circular dependencies | dev-architecture | dev, dev-code-reviewer |
+| Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
+| Coupling taxonomy | dev-architecture | dev-code-reviewer |
+| Barrel / re-export | dev-architecture | dev-scaffolding |
+| Pre-write search | dev §1.5 | dev-code-reviewer |
+| Edge-first testing | dev-testing §6 | — |
+| Test-induced defense | dev-testing §6.7 | dev-code-reviewer |
+| Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
+| Process isolation | dev-backend refs/ | dev-code-reviewer |
+| Code quality signals / antipatterns | dev-code-reviewer §3 | dev §6 |
+| Long-lived connections (server lifecycle) | dev-backend §1 | dev-frontend |
+| Browser connection budgets | dev-frontend refs/performance-budget | — |
+| Async task queue | dev-backend §2 | — |
+| Debugging methodology | dev-debugging | dev-code-reviewer |
+| Data pipeline patterns | dev-data | dev-backend |
+| Design intent discovery | dev-uiux-design | dev-frontend |
+| Project scaffolding / docs | dev-scaffolding | dev-pabcd |
+| Orchestration workflow | dev-pabcd | — |
+
+When updating a rule, update the canonical owner first, then verify stubs still point correctly.
+
+**When your task spans multiple domains**, read each relevant skill file before starting.
 
 ---
 
-## Family Invariants (apply to every `cxc-*` skill)
+## Family Invariants (apply to every `dev-*` skill)
 
-These hold for every dev-family skill and every response they govern. `dev` is the canonical
-owner; other routers reference this section rather than restating it. They are agent-followed
-wording (no Codex hook enforces skill text — `structure/00_philosophy.md` §1), not runtime gates.
+**FAMILY-SLOP-01 / FAMILY-CITE-01 / FAMILY-PROOF-01:** no filler, placeholders, fake fallbacks, speculative wrappers, or broad defensive clutter without a named boundary reason; code findings, plans, reviews, contradictions, and verification claims cite exact files/lines or command/artifact evidence; no completion claim without fresh proof from the §3 verification gate.
 
-- **Anti-slop output (FAMILY-SLOP-01).** No filler, no performative narration, no decorative
-  rationale. Ship no placeholders, TODO-only deliverables, fake fallbacks, speculative wrapper
-  layers, or broad defensive clutter without a named boundary reason. Code-smell catalog lives
-  in §6 + `dev-code-reviewer` §3; this rule is about not emitting slop in the first place.
-- **file:line evidence (FAMILY-CITE-01).** When reporting code findings, plans, reviews, or
-  contradictions, cite `path:line`. Plans list exact paths + the verification command; review
-  and audit findings carry `path:line`; verification claims carry the command + its output or
-  artifact path. This mirrors the structure doctrine (`structure/00_philosophy.md:135-141`).
-- **Completion proof (FAMILY-PROOF-01).** No completion claim without fresh proof — see the
-  §3 verification gate for the long form. Every other router inherits that gate; it is not
-  re-stated per skill.
+**FAMILY-FRESH-01 (DEFAULT):** version-pinned or time-sensitive claims live in
+`references/` with a Sources row (URL + checked date); routers carry only a
+frontmatter `last-verified` stamp. Treat claims older than the stamp as re-verify-first.
 
----
+## Documentation Verification (Context7)
 
-## External Evidence and Recall Routing
+Before using any external library API, verify current syntax via Context7 MCP
+(`resolve-library-id` → `query-docs`). **Verify when:** API not verified this session,
+pinned version, uncertain behavior, or a major release in the past 6 months.
+**Skip for:** language built-ins, standard library, syntax verified this session.
+If Context7 is unavailable, fall back to web search for official docs — never rely
+on training data alone for library-specific APIs.
 
-| Need | Route |
-|---|---|
-| External library syntax or pinned-version behavior | Context7 `resolve-library-id` → `query-docs`; otherwise official docs |
-| Current versions, releases, CVEs, providers, or public evidence | Load `cxc-search` and follow its evidence rules |
-| HTTP-first URL proof | `agbrowse fetch <url> --json`; full ladder: `cxc-search` Tier 2 |
+### External/current evidence
 
-### Recall Lookup Scope (DEV-RECALL-01, MUST)
-| Trigger | Route |
-|---|---|
-| Prior term/file/decision is unfamiliar or context was lost | `cxc chat search "<terms>" --days 0` and `cxc memory search "<topic>"` |
-| Both searches miss | Ask the user and report what was searched; full flags: `cxc-recall` |
+For current versions, release notes, CVEs, package/source checks, or provider behavior,
+read the active `search` skill and follow its query-rewrite, source-fetch, and
+evidence-status rules. Sub-agents are bound by this policy too — include it in dispatch prompts.
 
 ---
 
 ## 0. Intent Clarification
 
-Clarify only ambiguous scope or technology. Present 2-3 project-specific options,
-flag risk, recommend one, and confirm once; skip clarification when intent is clear.
+When a request has **ambiguous scope or unspecified technology**, clarify before coding;
+skip entirely when tech and scope are already clear.
+
+- Present 2-3 options as `<TechName> — <plain explanation>` with project-relevant
+  pros/cons (⚠️ flag risky ones); recommend one citing project context; user decides.
+- **Over-engineering guard** + **one confirmation round**: options → recommendation → confirm → move on.
 
 ---
 
 ## 0.5 Repository Convention Discovery
 
-Before broad changes, inspect source layout, source-of-truth docs, agent instructions,
-toolchain config, and sibling naming/test/module patterns. Devlogs use decade-range
-numbering, never bare `PLAN.md`/`PHASES.md`/`RCA.md` (LEXICO-SPLIT-01; see `pabcd`).
-
-Discover conventions in order: repo instructions/SoT docs → toolchain/config → owning
-module → direct callers → 2-3 sibling examples.
+Before broad changes, inspect existing conventions: source layout (`src/`, `app/`,
+`packages/`), source-of-truth docs (`structure/`, `docs/`, `adr/`, `devlog/`, `plans/`),
+agent context files (`AGENTS.md`, `CLAUDE.md`, tool instruction files), JS/TS setup
+(`package.json`, `tsconfig*`, linter config, sibling extensions), and naming/test/
+phase-document patterns (decade numbering — see `dev-pabcd`).
 
 MUST follow existing conventions when they are clear.
-MUST read existing source-of-truth docs before broad implementation.
-MUST NOT create docs folders, instruction files, or new tooling silently in an existing repo.
-
-If the repo is immature, undocumented, or inconsistent, propose a lightweight source-of-truth structure and ask for approval before creating it.
+MUST read existing `structure/`, `devlog/`, or other source-of-truth logs before broad implementation.
+MUST NOT create `structure/`, `devlog/`, `AGENTS.md`, docs folders, or new tooling silently in an existing repo.
+If the repo is immature/undocumented, propose a lightweight source-of-truth structure and ask before creating it.
 
 ### Broad Change Preview
 
-For directory changes, 5+ files, cross-surface work, new modules/services, or new
-project docs, preview current signals, a compact tree (max ~40 lines), planned
-touch points, and whether existing conventions are reused or need approval.
+**Broad change** = creates/reorganizes directories, touches 5+ files, spans multiple
+top-level packages, adds a feature/module/service, or adds source-of-truth structure.
+Before one, show: detected signals · compact tree (≤40 lines, omit `node_modules`/`dist`/
+`build`/`.git`) · planned edits (files to create/modify) · convention decision (reuse vs ask).
 
 ---
 
@@ -252,18 +233,18 @@ Give every file, function, and class a single, clear responsibility.
 
 **Hard limits (DEFAULT — exceed only with a stated reason):**
 
-| Metric | Threshold | Action |
-| ------ | --------- | ------ |
-| File length | >400 lines | Split into focused modules (canonical owner: `dev-architecture` §1) |
-| Function length | >50 lines | Extract helper functions |
-| Class methods | >20 methods | Split by responsibility |
-| Nesting depth | >4 levels | Flatten with early returns or extraction |
-| Function parameters | >5 | Use an options/config object |
-| PR changeset | >500 lines | Split into focused PRs |
+| Metric              | Threshold   | Action                                   |
+| ------------------- | ----------- | ---------------------------------------- |
+| File length         | >400 lines  | Split into focused modules (canonical owner: dev-architecture §1) |
+| Function length     | >50 lines   | Extract helper functions                 |
+| Class methods       | >20 methods | Split by responsibility                  |
+| Nesting depth       | >4 levels   | Flatten with early returns or extraction |
+| Function parameters | >5          | Use an options/config object             |
+| PR changeset        | >500 lines  | Split into focused PRs                   |
 
 ### Blast Radius Limits
 
-Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, unrelated cleanup, and drive-by refactors go in separate PRs.
+One logical change per PR/changeset — unrelated cleanup and drive-by refactors go separately.
 
 | Change Scope | Max Blast Radius | Exceeds → |
 |---|---|---|
@@ -273,11 +254,10 @@ Each PR/changeset MUST be scoped to one logical change. Opportunistic rewrites, 
 | Dependency upgrade | Isolated PR | Never bundle with features |
 
 **Rules:**
-- Use ES Module (`import`/`export`) in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
-- One default export per file when the file has a primary purpose (JS/TS convention; other languages follow their idioms).
-- Follow existing naming conventions in the project. Check sibling files before creating new ones.
-- New files must match the directory structure and naming patterns already in use.
-- Devlog phase documents use decade-range numbering (LEXICO-SPLIT-01, `pabcd` Implementation-Unit Documents). Never use bare filenames like `PLAN.md`, `PHASES.md`, or `RCA.md`.
+- Use ES Modules in JS/TS projects — CommonJS `require()` breaks tree-shaking and static analysis.
+- One default export per file when it has a primary purpose (JS/TS convention; other languages follow their idioms).
+- Follow existing naming/directory conventions; check sibling files before creating new ones.
+- Devlog phase documents use decade-range numbering (00-09 research, 10-19 phase 1, …); never bare `PLAN.md`/`PHASES.md`/`RCA.md` (LEXICO-SPLIT-01). Full convention: `dev-pabcd`.
 
 ---
 
@@ -291,14 +271,9 @@ accessibility.
 
 **Rule:** Before creating a new function, helper, type, component, constant, route, fixture, or module, search the codebase for an existing owner or equivalent implementation. No new abstraction may be introduced without search evidence. This section does not apply on the §0.1 fast path (C0/C1 — no new abstractions are being created).
 
-**Structure map first (DEFAULT — DEV-MAP-FIRST-01):** for C2+ work in unfamiliar territory,
-run `cxc map <dir>` (repo-map skill, tree-sitter + PageRank overview) before deep `rg`
-dives; then use `rg`/ast-grep to confirm the narrowed targets. Guidance, not hook-enforced.
+**Structure map first (DEFAULT — DEV-MAP-FIRST-01):** for C2+ work in unfamiliar territory, run `cli-jaw map <dir>` (ranked structure map — see the `repo-map` skill) before deep Grep dives; then use Grep/Read to confirm the narrowed targets. Works on subtrees for large monorepos. Guidance, not enforced.
 
-**Read before editing (DEV-READ-FIRST-01).** Beyond new-abstraction creation, any C2+ edit to
-existing code reads the target file (and its direct caller/consumer when the change crosses a
-boundary) before writing. Do not propose or apply a change to code you have not read. The §0.1
-fast path still applies to C0/C1.
+**Read before editing (DEV-READ-FIRST-01).** Any C2+ edit to existing code reads the target file and its direct caller/consumer when the change crosses a boundary before writing. C0/C1 fast path still applies.
 
 | Artifact being created | Required searches | Preferred outcome |
 |---|---|---|
@@ -322,20 +297,15 @@ fast path still applies to C0/C1.
 
 ## 2. Systematic Debugging
 
-Root-cause method, instrumentation, hypothesis testing, emergency stop triggers,
-and postmortems are canonical in `dev-debugging/SKILL.md`. Reproduce and isolate
-before editing for any non-obvious defect. Load `dev-debugging` for runtime failures,
-unclear causality, or after 2 failed repair attempts.
+Investigate the root cause before applying any fix — guessing compounds rework.
+Full methodology (boundary instrumentation, competing hypotheses, postmortem):
+`dev-debugging/SKILL.md` (canonical owner).
 
-**Repeated-friction rule (DEV-FRICTION-01, DEFAULT).** When the same shell command
-class fails twice with the same normalized error, do not retry a third time
-unchanged: switch approach (different tool, different flags, or root-cause the
-environment). Repeated identical failures are friction evidence, not bad luck.
-
-**Repeated-edit-shape rule (DEV-EDIT-SHAPE-01, DEFAULT).** Three same-shaped edits
-in a row (same structural transform on different sites) mean you are hand-running
-a codemod: stop and switch to `$cxc-ast-grep` (or a scripted rewrite) so the
-remaining sites are transformed deterministically.
+**Emergency stop triggers** — any of these means return to root-cause investigation:
+"quick fix now, investigate later" · "just try changing X" · "don't fully understand
+but might work" · proposing solutions before investigating · "one more attempt" after
+2+ failures. **3+ failed fixes = architectural problem**: pause, question the pattern
+itself, and discuss with the user before further fixes.
 
 ---
 
@@ -351,33 +321,34 @@ Verify every completion claim with evidence. Run the relevant command fresh, rea
 4. **Confirm** — Does the output actually support the claim?
 5. **Report** — State the claim with evidence attached.
 
-| Claim | Requires | Not Sufficient |
-| ----- | -------- | -------------- |
-| "Tests pass" | Test command output: 0 failures | Previous run, "should pass" |
-| "Build succeeds" | Build command: exit 0 | "Linter passed" |
-| "Bug fixed" | Original symptom verified resolved | "Code changed, assumed fixed" |
-| "Feature complete" | Each requirement checked line-by-line | "Tests pass" |
-| "Subagent completed" | VCS diff shows actual changes | Subagent report says "success" |
-| "Regression test works" | Red-green cycle verified | Test passes once |
+**Per-class verification floor (DEV-VERIFY-FLOOR-01):** C0/C1 use the smallest proof; C2 adds focused integration/contract checks for the touched slice; C3 runs affected suites and contract/docs checks; C4 runs full relevant gates plus negative cases and durable evidence.
 
-**Per-class verification floor (DEV-VERIFY-FLOOR-01).** The gate above is universal; the
-minimum *scope* scales with the work class (§0.0). This is the floor, not a cap:
+| Claim                   | Requires                              | Not Sufficient                |
+| ----------------------- | ------------------------------------- | ----------------------------- |
+| "Tests pass"            | Test command output: 0 failures       | Previous run, "should pass"   |
+| "Build succeeds"        | Build command: exit 0                 | "Linter passed"               |
+| "Bug fixed"             | Original symptom verified resolved    | "Code changed, assumed fixed" |
+| "Feature complete"      | Each requirement checked line-by-line | "Tests pass"                  |
+| "Agent completed"       | VCS diff shows actual changes         | Agent report says "success"   |
+| "Regression test works" | Red-green cycle verified              | Test passes once              |
 
-| Class | Minimum verification |
-| ----- | -------------------- |
-| C0/C1 | Smallest proof for the change (build/type-check or the one relevant test) |
-| C2 | Focused integration/contract test for the touched slice + targeted build/typecheck + UI smoke if UI changed (CRUD per-operation negatives: see `dev-testing` references/core/crud-test-matrix.md) |
-| C3 | Affected suites + docs/contract consistency when a public contract changed |
-| C4 | Full relevant gates + negative cases + durable evidence record |
+**Agent delegation:** When sub-agents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
 
-**Subagent delegation:** When subagents report success, verify independently: check VCS diff → verify changes exist → confirm behavior.
+**Long external waits (cli-jaw runtime):** don't block the turn polling CI/deploys/
+web-ai sessions — register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end
+the turn; the server re-invokes the boss on completion. Local tests/tsc/builds stay blocking.
+
+**Red flags — unverified claims creeping in:** "should"/"probably"/"seems to" ·
+satisfaction before verification · partial/previous-run evidence · trusting agent
+success reports · "just this once".
 
 ---
 
 ## 4. Change Documentation
-When a worklog or changelog is provided, add one factual entry per changed file:
-`### [filename] — [reason]`, then `Changes`, `Impact`, and `Verification`
-(command + result). Keep entries concise.
+
+When a worklog/changelog file is provided, record one factual entry per changed file:
+`### [filename] — [reason]` with **Changes** (what/why), **Impact** (dependent modules),
+and **Verification** (command + result).
 
 ---
 
@@ -395,38 +366,52 @@ When a worklog or changelog is provided, add one factual entry per changed file:
 
 Anti-pattern detection (god class, long method, deep nesting, magic numbers, stringly
 typed, missing boundary error handling, floating promises, copy-paste) is canonically
-owned by `cxc-dev-code-reviewer` §3 — read it when writing or reviewing code.
-Thresholds mirror §1 hard limits; boundary-error placement follows `cxc-dev-architecture` §4.
+owned by `dev-code-reviewer/SKILL.md` §3 — read it when writing or reviewing code.
+Thresholds mirror §1 hard limits; boundary-error placement follows dev-architecture §4.
 
 ---
 
 ## 7. Type Safety & Static Analysis
 
-Default to strict, explicit types in new code, use TypeScript for new JS/TS
-source when the repo supports it, and run the project's configured static
-analysis as part of §3 verification. Do not introduce new type/lint tooling or
-convert a JS repo to TS without user approval.
+### 7.0 JS/TS Source File Default
 
-Escape hatches (`any`, casts, `type: ignore`) must be narrow, explained near the
-code, and verified by the strongest local checker available. Detailed language
-rules, command examples, and rule mappings live in
-`references/static-analysis.md`. Per-toolchain gate commands and type-annotation
-rules live in `references/static-analysis-gate.md`.
+New JS/TS source files prefer TypeScript (`.ts`/`.tsx`) when the repo supports it or
+is greenfield; use `.js` only for clearly JS-only repos, build constraints, or explicit
+user request. Never introduce TS tooling, convert existing JS, or change `tsconfig`
+without approval. New TypeScript MUST be strict-compatible from the first patch:
+no implicit `any` (explicit `any` needs justification), prefer `unknown` + narrowing,
+type exported params/returns, handle null/undefined deliberately. Verify with the
+project's typecheck (or `tsc --noEmit`); if strict compatibility can't be verified, say so.
+
+### 7.1 Type Annotations
+
+Add explicit types to all function signatures, return types, and non-trivial variables.
+TypeScript: `strict: true`, no implicit `any` (explicit `any` needs a justification
+comment). Python: hints on all params/returns. Enable the language's strict/pedantic
+mode when one exists. Per-language rules table: `references/static-analysis-gate.md`.
+
+### 7.2 Static Analysis Gate
+
+After every code change, run the project's static analysis toolchain as part of the
+verification gate (§3) — zero errors on changed files is the floor. Per-toolchain
+commands and the anti-pattern ↔ lint-rule mapping live in
+`references/static-analysis-gate.md`; check project config for the canonical rule set.
+If no tool is configured, recommend one — but do not add tooling without approval.
+
+### 7.3 Escape Hatches
+
+When bypassing the type system is unavoidable: comment why, scope minimally (narrowest
+cast point), prefer assertion functions over raw casts. TS `as unknown as T` needs a
+linked issue/TODO; Python `# type: ignore[code]` must name the exact error code.
 
 ---
 
 ## 8. Token Budget Awareness
 
-When multiple skills are active, token consumption grows quickly. Always read
-active `SKILL.md` files, read `references/` only when the task touches that
-topic, and do not preload unrelated references (HEURISTIC). Each subagent gets
-its own active-skill context, so load only what the sub-task needs.
+**Tiered reference loading:** (1) always read injected skills' SKILL.md routers;
+(2) read `references/` files only when the task touches that topic; (3) do not
+preload all references (HEURISTIC) — e.g. a caching task reads `caching.md` only.
+**Sub-agents:** each receives its own copy of injected skills — inject only what
+that sub-task needs.
 
 ---
-
-## 9. Skill Discovery (DEV-SKILL-DISCOVERY-01, DEFAULT)
-
-For uncovered capabilities, check `references/skill-catalog.md`, then run
-`cxc skill search <query>` (jaw first; `--source all` adds clawhub and hermes).
-Load only the needed result with `cxc skill show <id>`; its adapter preserves
-`cxc-dev` authority, and built-in codexclaw skills win name conflicts.

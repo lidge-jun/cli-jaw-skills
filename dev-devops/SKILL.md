@@ -1,23 +1,16 @@
 ---
-name: cxc-dev-devops
-description: "MUST USE for DevOps, infrastructure, or delivery work — container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, and ML infrastructure. Triggers: 'Dockerfile', 'container build', 'deploy', 'CI/CD', 'Kubernetes', 'K8s', 'Terraform', 'Pulumi', 'Helm', 'SRE', 'SLI', 'SLO', 'error budget', 'serverless', 'edge', '배포', '인프라', '쿠버네티스'."
+name: dev-devops
+description: "MUST USE for infrastructure and delivery work — container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags."
 metadata:
+  short-description: "Container builds, deploy pipelines, K8s, IaC, SRE, edge/serverless, ML infra."
+  keywords: "container, kubernetes, deploy, iac, sre, pipeline, supply chain, sbom, gateway api"
   last-verified: "2026-07-02"
-  short-description: "Container, deploy, Kubernetes, IaC, and SRE guidance for production delivery."
 ---
 
 # Dev-DevOps — Production Infrastructure & Delivery
 
-> **Backend handoff rule:** When a deploy/SRE gate needs app behavior, `dev-backend` implements
-> the hook (health handler, readiness dependency check, trace/span/log fields, migration
-> compatibility, shutdown hook). `dev-devops` defines the operational gate, rollout/rollback
-> behavior, alert policy, and release proof. This skill owns deployment strategy, rollback
-> proof, observability operations, health/readiness operational gates, SLOs, incident response,
-> and infrastructure/runtime delivery.
-
-
 Build reliable, secure, and automated infrastructure and delivery pipelines.
-This skill is a routing role that activates by **change-surface**: whenever the work primarily touches containers, CI/CD, deployment, cloud/runtime infrastructure, Kubernetes, IaC, release engineering, or SRE operations, use this skill and then load the relevant references.
+This skill has modular references for specialized guidance — read the relevant ones before coding.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -53,6 +46,7 @@ the active `search` skill and follow its source-fetch and evidence-status rules
 instead of relying on stale memory or copied snippets.
 
 ---
+
 ## §1 Container Builds
 
 ### §1.1 Dockerfile Rules (STRICT)
@@ -61,7 +55,7 @@ instead of relying on stale memory or copied snippets.
 |------|--------|
 | Multi-stage | Separate build and runtime stages; final image has no build tools |
 | Base image | Pin version + SHA256 digest: `node:22-slim@sha256:abc...` |
-| Distroless | Prefer `gcr.io/distroless/*` for runtime; no shell, no package manager |
+| Minimal runtime base | Prefer `gcr.io/distroless/*` (Debian-based, keyless-signed) — no shell/package manager; OR Chainguard/Wolfi images when nightly rebuilds, SBOM attestations, patch SLAs, or compliance matter |
 | Non-root | `USER nonroot:nonroot` (distroless) or create dedicated user |
 | Dependency-first copy | `COPY package.json bun.lock ./` → install → `COPY . .` for layer caching |
 | BuildKit secrets | `RUN --mount=type=secret,id=token ...` — never use `ARG` for secrets |
@@ -69,12 +63,13 @@ instead of relying on stale memory or copied snippets.
 
 For canonical Dockerfile templates, read `references/docker.md` §1.
 
-### §1.2 Image Security (STRICT)
+### §1.2 Image Security & Supply-Chain Baseline (STRICT)
 
-CRITICAL/HIGH findings → block push. No exceptions. Read
-`references/docker.md` §4 for scan/SBOM/sign command examples, and
-`../dev-security/references/supply-chain-sbom.md` for deeper SBOM/signing
-policy.
+CRITICAL/HIGH findings → block push. No exceptions. The 2026 baseline is ONE workflow,
+not separate tips: minimal base image (§1.1) → SBOM generation (Syft / Docker Scout) →
+vulnerability scan (Trivy or Grype) → sign + attest (Cosign/Sigstore) → digest-based
+promote (§2.4). Read `references/docker.md` §4 for scan/SBOM/sign command examples, and
+`../dev-security/references/supply-chain-sbom.md` for deeper SBOM/signing policy.
 
 ### §1.3 Anti-Patterns
 
@@ -136,8 +131,6 @@ jobs:
 
 ### §2.5 Secret Management (STRICT)
 
-**Rule (DEVOPS-AUTH-01):** Prefer OIDC, workload identity federation, trusted publishing, or other short-lived credential flows before static long-lived tokens. When static tokens are unavoidable, scope narrowly, store in the managed secret system, and rotate on schedule or incident.
-
 | Source | Usage |
 |--------|-------|
 | GHA Secrets / Vault / AWS SM | CI pipeline secrets |
@@ -151,10 +144,6 @@ jobs:
 - Actions updates deploy repo (image digest PR/commit) → ArgoCD reconciles
 - Self-heal: ArgoCD auto-reverts drift
 - Environment protection: GitHub Environments for prod approval gate
-
-### §2.7 Release Proof Contract (STRICT)
-
-**Rule (DEVOPS-RELEASE-PROOF-01):** A release claim must name the artifact digest, workflow/builder identity, deploy target/environment, smoke-test evidence, and rollback evidence. Keep the proof at router level; detailed package, platform, and SLSA mechanics live in `package-release.md`, `cross-platform-release.md`, and `platform-engineering.md`.
 
 ---
 
@@ -171,9 +160,12 @@ jobs:
 | Probes | Liveness + readiness + startup |
 | Namespace | Environment isolation (dev/staging/prod) |
 
-### §3.2 Gateway API (v1.6+, verified 2026-07-02 — TCPRoute/UDPRoute GA in v1.6)
+### §3.2 Gateway API (v1.6+, verified 2026-07-02)
 
-Gateway API is the successor for new routing while Ingress remains GA but feature-frozen. Role separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
+Gateway API is the successor for new routing while Ingress remains GA but feature-frozen
+(not planned for removal). v1.6.0 (2026-06) graduates TCPRoute and UDPRoute to GA. Role
+separation: platform team owns `GatewayClass` + `Gateway`, app team owns `HTTPRoute`.
+Progressive delivery pairs directly with it: Flagger supports Gateway API HTTPRoute canaries.
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -228,10 +220,10 @@ spec:
 
 ### §4.2 Tool Selection (HEURISTIC)
 
-| Tool | Best For | 2026 Status |
+| Tool | Best For | Status (verified 2026-07-02) |
 |------|----------|-------------|
-| OpenTofu (HCL) | Open-source/licensing-neutral IaC default (MPL-2.0, Linux Foundation) | ✅ Recommended for OSS neutrality |
-| Terraform / HCP Terraform (BSL) | Vendor support or HashiCorp platform integration | ✅ Active (check BSL competitive-use terms) |
+| OpenTofu (HCL) | Open-source/licensing-neutral IaC default (MPL-2.0, Linux Foundation; v1.12.x) | ✅ Recommended for OSS neutrality |
+| Terraform / HCP Terraform (BSL) | Vendor support or HashiCorp platform integration required | ✅ Active (BSL license — check competitive-use terms) |
 | Pulumi (TS/Python) | Teams preferring programming languages | ✅ Active |
 | AWS CDK | AWS-only infrastructure | ✅ Active (AWS only) |
 | **CDKTF** | — | ❌ Deprecated 2025-12-10; repo archived/read-only, no further fixes |
@@ -264,7 +256,9 @@ SLIs measure **user experience**, not infrastructure metrics. "CPU is fine ≠ u
 
 Error budget = 1 − SLO (99.9% → 0.1% budget).
 
-**DORA 2025 (verified 2026-07-02):** AI acts as an *amplifier* — returns depend on the underlying sociotechnical system. For AI-agent-heavy delivery invest in golden paths, guardrails, observability, provenance, and review gates.
+**DORA 2025 (verified 2026-07-02):** AI acts as an *amplifier* — returns depend on the
+underlying sociotechnical system. For AI-agent-heavy delivery, invest in golden paths,
+guardrails, observability, provenance, and review gates, not just faster merges.
 
 ### §5.2 Error Budget Policy (DEFAULT)
 

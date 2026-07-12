@@ -1,15 +1,16 @@
 ---
-name: cxc-dev-architecture
+name: dev-architecture
 description: "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조."
 metadata:
+  short-description: "Module boundaries, circular deps, coupling taxonomy, and boundary defenses."
+  keywords: "module-boundary, circular-dependency, coupling, barrel-file, re-export, architecture, layered, dependency-inversion, event-driven"
   last-verified: "2026-07-02"
-  short-description: "Module boundaries, circular deps, coupling taxonomy, and boundary-only defensive programming."
 ---
 
 # Dev-Architecture — Module Boundaries & Structural Integrity
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
-> **Read the `dev` skill first** for universal development discipline before applying architecture rules.
+> **Always read `dev/SKILL.md` first** for project-wide conventions before applying architecture rules.
 
 Enforces architectural rules that prevent structural decay: circular dependencies, implicit coupling, barrel abuse, and misplaced validation. These rules are mechanical — an AI coding agent can follow them without subjective judgment.
 
@@ -35,33 +36,6 @@ evidence-status rules. Use browser verification only after candidate URLs exist.
 
 ## 1. Module Boundaries
 
-### Structural Decision Gate
-
-**Severity: HIGH**
-**Rule (ARCH-DECISION-01):** When changing module boundaries, seams, layering, shared packages, or public exports above C0/C1 local-patch scope, name the structural decision before editing.
-
-Required decision record, inline in the plan or in the repo's ADR/source-of-truth file:
-- Context: what pressure forced the boundary change.
-- Rejected alternative: at least one plausible option not chosen, with why.
-- Chosen move: split, extract, merge, invert dependency, introduce adapter, or change public export.
-- Consequences: new dependency direction, public contract impact, migration cost, and follow-up verification.
-
-Route durable, surprising, hard-to-reverse, or cross-team choices to the repo's ADR/current-architecture source of truth instead of leaving them only in chat. `dev-scaffolding` owns where those durable docs live; this skill owns the boundary decision content.
-
-### Pre-Change Structural Map
-
-**Severity: HIGH**
-**Rule (ARCH-MAP-01):** Before recommending or applying a split/extract/merge for boundary work above C0/C1, produce a compact structural map from code evidence.
-
-Map fields:
-- Core modules involved.
-- Direct dependents and dependencies.
-- Current and intended dependency direction.
-- Public boundaries touched (`index.*`, package exports, route/API contracts, CLI entry points).
-- Blast-radius class (local module, feature, package, app, cross-app/monorepo).
-
-Do not choose the fix first and backfill the map. The map is the evidence that tells whether the right move is colocation, extraction, dependency inversion, adapter introduction, or no structural change.
-
 ### Layered Architecture Boundaries
 
 | Layer | May Import | MUST NOT Import | Example |
@@ -82,6 +56,8 @@ Canonical file-size rule: **>400 LOC -> split (DEFAULT)**. Deviations require a 
 | Two unrelated features share a file | Separate into own modules |
 | Circular import detected | Extract shared types/interfaces to a third module |
 | Module name contains "and" or "utils" | Split by actual concern |
+| 3+ apps/services import the same feature folder | Promote to a monorepo package with its own manifest + public boundary |
+| Package needs its own release cadence, CI matrix, or version | Split at package level, not folder level |
 
 ### Banned Patterns
 
@@ -182,16 +158,19 @@ for command templates, examples, and verification details.
 
 ### Coupling Types (ordered by severity, worst first)
 
-| # | Type | Definition | Example | Severity | Fix Pattern |
-|---|------|-----------|---------|----------|-------------|
-| 1 | **Content** | Module reaches into another's internals | Accessing private fields, reading internal state | CRITICAL | Expose via public API/method |
-| 2 | **Common** | Multiple modules share global mutable state | Global config object mutated by services | CRITICAL | Dependency injection, immutable config |
-| 3 | **Control** | Module passes flag to control another's logic | `processOrder(order, isRetry=true)` | HIGH | Polymorphism, strategy pattern |
-| 4 | **Stamp** | Module passes large struct when only one field needed | `renderHeader(entireUserObject)` | HIGH | Pass only needed fields |
-| 5 | **External** | Multiple modules depend on same external format | Both parse same CSV format independently | HIGH | Single parser module, shared schema |
-| 6 | **Temporal** | Modules must execute in specific order | `init()` must run before `process()` | MEDIUM | Make ordering explicit (state machine, builder) |
-| 7 | **Sequential** | Output of A is input of B (pipeline) | ETL stages | LOW | Document the contract, validate at boundary |
-| 8 | **Functional** | Modules share a well-defined interface | Function call with typed params/return | LOW | This is GOOD coupling — the target state |
+| # | Type | Definition | Severity | Fix Pattern |
+|---|------|-----------|----------|-------------|
+| 1 | **Content** | Module reaches into another's internals | CRITICAL | Expose via public API/method |
+| 2 | **Common** | Multiple modules share global mutable state | CRITICAL | Dependency injection, immutable config |
+| 3 | **Control** | Module passes flag to control another's logic | HIGH | Polymorphism, strategy pattern |
+| 4 | **Stamp** | Module passes large struct when only one field needed | HIGH | Pass only needed fields |
+| 5 | **External** | Multiple modules depend on same external format | HIGH | Single parser module, shared schema |
+| 6 | **Temporal** | Modules must execute in specific order | MEDIUM | Make ordering explicit (state machine, builder) |
+| 7 | **Sequential** | Output of A is input of B | LOW | Document the contract, validate at boundary |
+| 8 | **Functional** | Modules share a well-defined interface | LOW | This is GOOD coupling — the target state |
+
+See `references/coupling-taxonomy.md` for examples, detection signals,
+refactoring patterns, and banned review responses.
 
 ### Review Decision Matrix
 
@@ -201,9 +180,6 @@ for command templates, examples, and verification details.
 | HIGH (Control, Stamp, External) | BLOCK unless justified | Require tech-debt ticket if merged |
 | MEDIUM (Temporal) | Allowed with documentation | Add ordering comments or state assertions |
 | LOW (Sequential, Functional) | ALLOWED | No action needed |
-
-See `references/coupling-taxonomy.md` for examples, detection signals,
-refactoring patterns, and banned review responses.
 
 ---
 
@@ -306,13 +282,14 @@ When reviewing any PR that adds/modifies module structure, verify:
 | Check | Tool | CI Command |
 |-------|------|------------|
 | Layer/dependency rules (preferred CI gate) | dependency-cruiser | `npx depcruise --validate .dependency-cruiser.cjs src/` |
+| Import boundaries | eslint-plugin-boundaries | ESLint with boundaries config |
 | Circular deps (quick visualization) | madge | `npx madge --circular --extensions ts,tsx src/ && echo "OK"` |
+| Barrel abuse | Biome `noBarrelFile` or ESLint `no-restricted-imports` | pattern for internal index files |
 | Dead files/exports/deps | knip | `npx knip` |
 | Monorepo package consistency | sherif | `npx sherif` |
-| Import boundaries | eslint-plugin-boundaries | ESLint with boundaries config |
-| Layer violations | dependency-cruiser | `npx depcruise --validate .dependency-cruiser.cjs src/` |
-| Barrel abuse | custom ESLint rule | `no-restricted-imports` pattern for internal index files |
-| Module size | custom script | `find src -name '*.ts' -exec wc -l {} + | awk '$1 > 400'` |
+| Module size | custom script | `find src -name '*.ts' -exec wc -l {} + \| awk '$1 > 400'` |
+
+Tool roles verified 2026-07-02 (Sources: `references/circular-dependencies.md`).
 
 ---
 
@@ -354,37 +331,3 @@ Is the data source external (HTTP, file, queue, DB, user input)?
     YES -> Validate (defense in depth)
     NO  -> Trust the type system, no validation needed
 ```
-
----
-
-## Structural Index Concept (ARCH-INDEX-01, DEFAULT)
-
-Source: sol research (wednesday-solutions/ai-agent-skills AST dependency graph).
-
-Instead of reconstructing a module map for every task, maintain a lightweight
-structural index that agents can query:
-
-- Use `cxc map <dir>` for on-demand symbol-level maps (already shipped).
-- For larger repos, consider a persistent dependency graph artifact (e.g.,
-  `dependency-cruiser` JSON, Nx project graph, or a custom SQLite index).
-- The index should track: module → exports, module → imports, symbol → callers.
-- Freshness: re-generate on significant structural changes (new modules, moved files).
-- Query before editing: "what depends on this module?" should be answerable from
-  the index without a full codebase scan.
-
-This is a guidance concept, not a shipped tool. The agent should check for existing
-index artifacts before running ad-hoc scans.
-
-## Architecture Conformance Tests (ARCH-CONFORMANCE-01, DEFAULT)
-
-Source: sol research (HoangNguyen0403/agent-skills-standard compliance auditing).
-
-Architecture rules that exist only as prose are invisible to CI. For C3+ work
-where boundary violations would cause real harm:
-
-- Generate tool-specific configs from architecture decisions (dependency-cruiser
-  rules, ESLint boundaries plugin, Nx enforce-module-boundaries, Go `depguard`).
-- Include at least one allowed-edge and one forbidden-edge test fixture.
-- The CI gate should FAIL on new violations while allowing a baselined set of
-  legacy violations (ratcheting: new cycles fail, old ones are migrated).
-- Return a machine-readable report (JSON or SARIF) that agents can consume.

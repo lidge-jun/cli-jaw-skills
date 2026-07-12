@@ -1,23 +1,17 @@
 ---
-name: cxc-dev-backend
-description: "MUST USE for backend, API, server, or database work — API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: 'backend', 'API', 'REST', 'GraphQL', 'schema', 'migration', 'query optimization', 'middleware', 'OTel', 'caching', 'Result pattern', 'server', '백엔드', 'API 작업', '마이그레이션', '쿼리 최적화'."
+name: dev-backend
+description: "MUST USE for backend, API, server, or database work — API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, OTel, caching, Result pattern, server, 백엔드, API 작업, 마이그레이션, 쿼리 최적화."
 metadata:
-  last-verified: "2026-07-02"
   short-description: "Framework-agnostic backend guidance for APIs, architecture, data access, and operations."
-  keywords: ["API", "REST", "endpoint", "middleware", "database", "ORM", "cache", "queue", "error handling"]
+  keywords: "API, REST, endpoint, middleware, database, ORM, cache, queue, error handling, observability"
+  last-verified: "2026-07-02"
 ---
 
 # Dev-Backend — Production-Grade Backend Engineering
 
-> **Ownership boundary:** This skill owns API design, app architecture, database optimization,
-> error handling, middleware, queues, long-lived connections, and app-level observability/health
-> hooks. Deployment strategy, rollback proof, rollout shape, SLOs, alert routing, incident
-> response, and operational readiness gates are owned by `dev-devops`. Backend exposes the
-> app-level hooks that DevOps operational gates consume.
-
-
 Build reliable, secure, and maintainable server-side applications.
-This skill is a routing role that activates by **change-surface**: whenever the work primarily touches APIs, servers, services, jobs, data access, schemas, migrations, or operational backend behavior, use this skill and then read the relevant references.
+This skill has modular references for specialized guidance — read the relevant ones before coding.
+It activates by change surface whenever work primarily touches APIs, servers, services, jobs, data access, schemas, migrations, or operational backend behavior.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -27,19 +21,19 @@ This skill is a routing role that activates by **change-surface**: whenever the 
 | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | `references/core/crud-api.md`          | C2 ordinary CRUD/resource endpoints | Route/schema/service/query basics, five operations, error+permission mapping |
 | `references/core/api-design.md`        | New/changed API style, or C3+ API work (C2 ordinary slice: `crud-api.md` alone suffices) | REST conventions, response envelopes, HTTP status, pagination, GraphQL, gRPC, tRPC |
-| `references/core/api-lifecycle.md`     | API versioning, deprecation, migration | Versioning strategy, RFC 9745/8594 lifecycle, breaking-change gates |
-| `references/core/architecture.md`      | New features at C3+ (C2 ordinary slice: `crud-api.md` alone suffices) | Layered architecture, DDD, SOLID, when to split, monolith vs micro |
+| `references/core/api-lifecycle.md`   | API versioning, deprecation, migration | Versioning strategy, RFC 9745/8594 lifecycle, oasdiff CI gate          |
+| `references/core/architecture.md`      | New features at C3+ (C2 ordinary slice: `crud-api.md` alone suffices) | Layered architecture, DDD, SOLID, when to split, monolith vs micro     |
 | `references/core/anti-slop-backend.md` | New endpoints, classes, or modules | Banned patterns: god classes, raw SQL in services, magic numbers, etc. |
 | `references/core/observability.md`     | Production deployments         | OpenTelemetry, structured logging, distributed tracing, alerting       |
-| `references/core/health-checks.md`     | Production/long-lived services | Liveness, readiness, startup probes, dependency checks                 |
+| `references/core/health-checks.md`    | Production/long-lived services | Liveness, readiness, startup probes, dependency checks                 |
 | `references/core/process-isolation.md` | CPU-bound or untrusted work    | worker_threads vs child_process vs separate service, communication, resource limits |
-| `references/core/caching.md`           | Performance optimization       | Redis patterns, CDN, connection pooling, cache invalidation            |
+| `references/core/caching.md`           | Performance optimization       | Redis-compatible (Valkey/Redis) patterns, CDN, connection pooling, cache invalidation            |
 | `references/stacks/node.md`            | Node.js/TypeScript projects    | Express/Fastify, middleware, Zod validation, ESM, error handling       |
 | `references/stacks/python.md`          | Python projects                | FastAPI/Django, Pydantic, async patterns, testing                      |
 | `references/stacks/database.md`        | Database design/optimization   | PostgreSQL, MongoDB, indexing, N+1, migrations, ORM comparison         |
-| `references/core/ml-serving.md`        | ML model deployment, GPU inference | vLLM/SGLang runtime selection, FastAPI+GPU patterns, dynamic batching, quantization |
-| `references/core/llm-integration.md`   | RAG, LLM API integration, prompt engineering | Chunking, hybrid search, vector DB, structured output, LangChain/LlamaIndex 2026 |
-| `references/core/mobile-api.md`        | Mobile app API patterns        | BFF, push notifications, offline sync, mobile auth, API optimization   |
+| `references/core/ml-serving.md`      | ML model deployment, GPU inference | vLLM/SGLang runtime selection, FastAPI+GPU patterns, dynamic batching, quantization |
+| `references/core/llm-integration.md` | RAG, LLM API integration, prompt engineering | Chunking, hybrid search, vector DB, structured output, LangChain/LlamaIndex 2026 |
+| `references/core/mobile-api.md`          | Mobile app API patterns        | BFF, push notifications, offline sync, mobile auth, API optimization   |
 
 Read `api-design.md` + `anti-slop-backend.md` first, then the relevant stack file.
 For C2 ordinary slices, `crud-api.md` alone suffices; read `api-design.md`/`architecture.md` for new API styles or C3+ work.
@@ -50,6 +44,7 @@ evidence, read the active `search` skill and follow its query-rewrite,
 source-fetch, and evidence-status rules.
 
 ---
+
 ## 0. Stack Detection & Architecture Clarification
 
 ### Auto-detect (existing projects)
@@ -84,7 +79,12 @@ When the request has **unspecified technology or unclear scope**, clarify before
 
 If the user already specifies clear tech (e.g. "FastAPI로 REST API 만들어줘"), **skip this entirely**.
 
-**Node/framework defaults (verified 2026-07-02):** production uses Active/Maintenance LTS — Node 24 (Active) for new services. Framework: Fastify for greenfield Node APIs; Express 5 for legacy/ecosystem compatibility; Hono for edge/serverless/multi-runtime Web-Standards APIs. New TS validation baseline: Zod v4 (read the migration guide before upgrading v3 projects).
+**Node/framework defaults (verified 2026-07-02):** production uses Active/Maintenance
+LTS — Node 24 (Active LTS) for new services, Node 22 (Maintenance). Framework: Fastify
+for greenfield Node APIs (schema/Pino/plugin structure); Express 5 for legacy/ecosystem
+compatibility; Hono for edge/serverless/multi-runtime Web-Standards APIs. New TS
+validation baseline is Zod v4 (read the migration guide before upgrading v3 projects).
+Sources: `references/stacks/node.md` § Sources.
 
 For new Node backend source files, prefer `.ts` when the repo supports TypeScript or is greenfield. Inherit `dev` TypeScript strict-compatibility rules.
 If backend boundaries are unclear, read existing source-of-truth docs/logs first, then document routes, services, repositories, data stores, and runtime commands in the repo's existing SOT before broad implementation.
@@ -110,17 +110,21 @@ See `references/core/architecture.md` for full decision matrices.
 | Protocol | Choose When | Avoid When |
 |----------|-------------|------------|
 | **REST** | Public/partner APIs, simple CRUD, caching matters | Clients need flexible data shapes |
-| **GraphQL** | Mobile/BFF, multiple resources per request, bandwidth-constrained | Simple CRUD, server-to-server, file uploads |
+| **GraphQL** | Mobile/BFF client aggregation, multiple resources per request | Simple CRUD, server-to-server, file uploads |
 | **gRPC** | Internal microservices, high-perf binary, bidirectional streaming | Browser clients (without gRPC-Web), public APIs |
-| **tRPC** | TypeScript monorepo, internal tools, rapid prototyping | Polyglot environments, public APIs |
+| **tRPC** (v11) | TypeScript shared end-to-end: monorepo, internal tools | Polyglot environments, public APIs |
 
-**Hybrid pattern (verified 2026-07-02 — OpenAPI 3.1+, prefer 3.2 where tooling supports; tRPC v11; Apollo Federation ONLY for multi-subgraph supergraphs):**
+**Hybrid pattern (verified 2026-07-02):**
 ```
-Public/Partner → REST (OpenAPI 3.1)
-Mobile/Web BFF → GraphQL (Apollo Federation)
+Public/Partner → REST (OpenAPI 3.1+; prefer 3.2 where tooling supports it)
+Mobile/Web BFF → GraphQL (client aggregation; Apollo Federation ONLY when multiple
+                 independently-owned subgraphs must compose into a supergraph)
 Internal services → gRPC (Protobuf contracts)
-TS internal tools → tRPC (zero-codegen type safety)
+TS internal tools → tRPC v11 (zero-codegen type safety)
 ```
+Deprecations: emit `Deprecation` (RFC 9745) and optional `Sunset` (RFC 8594) headers,
+but client adoption is uneven — always pair with OpenAPI/changelog dates and deprecated-
+endpoint traffic dashboards.
 
 See `references/core/api-design.md` for protocol-specific patterns.
 
@@ -164,10 +168,6 @@ Use SSE/WebSocket only for push notifications about job status — not for the o
 | Holding connection open for >5s synchronous work | Return 202 + job ID; notify via push when done |
 | No reconnection logic on client side | Implement exponential backoff with jitter |
 
-### Server Runtime Safety (DEFAULT)
-
-**Rule (BACKEND-RUNTIME-01):** Production server runtimes set explicit read, write, request/idle, and graceful-shutdown timeouts; drain on SIGTERM/deploy by stopping new accepts, letting in-flight work finish within the shutdown budget, then closing; and propagate the request ID from ingress into structured logs, traces, queued work, and outbound calls where the stack supports it.
-
 ---
 
 ## 2. Layered Architecture (Default; Allow Serverless Handlers, Vertical Slices, and Small Scripts When Appropriate)
@@ -186,10 +186,6 @@ Routes → Controllers → Services → Repositories → Database
 - Controllers: parse input, call services, format output. No business rules.
 - Services: receive/return plain data (not `req`/`res`). All logic here.
 - Repositories: abstract DB access. Services access data through repositories only.
-
-### Boundary Parsing Contract (DEFAULT)
-
-**Rule (BACKEND-BOUNDARY-01):** Parse once at ingress/trust boundaries; inside that boundary, typed values are proof. Do not duplicate schema validation, null defense, or defensive parsing in services unless data crosses a new trust boundary. Canonical boundary-defense ownership stays in `dev-architecture` §4; this is the backend stub.
 
 ### Repository Pattern (Interface Abstraction)
 
@@ -223,9 +219,9 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 
 | Queue | When | Notes |
 |-------|------|-------|
-| **BullMQ** (Redis) | Node.js, need retries + priorities + rate limiting | Most mature Node queue; requires Redis |
+| **BullMQ** (Redis-compatible) | Node.js, need retries + priorities + rate limiting | Most mature Node queue; needs Redis/Valkey |
 | **Celery** (Redis/RabbitMQ) | Python, distributed workers, periodic tasks | De facto Python standard |
-| **pg-boss** (PostgreSQL) | Node.js, already have Postgres, moderate scale | No extra infra; SKIP_LOCKED-based |
+| **pg-boss** (PostgreSQL) | Node.js, Postgres is the durable system of record, moderate scale | No extra infra; SKIP_LOCKED-based |
 | **Simple DB queue** (polling) | Small scale (<100 jobs/min), any language | `status` column + `SELECT FOR UPDATE SKIP LOCKED` |
 | **SQS / Cloud Tasks** | Serverless, managed, very high scale | No infra to manage; at-least-once delivery |
 | **Temporal** | Durable multi-step workflows: sagas, human-in-loop, long-running AI/business processes | Workflow engine, NOT a default queue replacement |
@@ -279,7 +275,7 @@ Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain erro
 | Library | When to Use |
 |---------|-------------|
 | **neverthrow** | Default choice — small explicit `Result<T, E>` for recoverable domain errors |
-| **Effect** | Only when the app benefits from a full effect runtime: typed errors, retries, resources, concurrency, tracing |
+| **Effect** | Only when the app benefits from a full effect runtime: typed errors, retries, resources, concurrency, tracing, service composition |
 
 **Rule:** Use `Result` where recoverable/domain errors are first-class. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
 
@@ -323,22 +319,27 @@ See `references/core/api-design.md` for protocol-specific patterns (REST, GraphQ
 ## 6. Caching Strategy
 
 **Decision rules:**
-- Say **Redis-compatible**, not Redis-only (verified 2026-07-02): prefer **Valkey** (Linux Foundation, BSD) for permissive OSS/self-hosted defaults; choose Redis when managed-service, module, or license posture justifies it.
+- Say **Redis-compatible**, not Redis-only (verified 2026-07-02): prefer **Valkey**
+  (Linux Foundation, BSD) for permissive OSS/self-hosted defaults; choose Redis when
+  managed-service, module, or license posture justifies it (Redis relicensed 2024;
+  Redis 8 added AGPLv3).
 - Cache only after correctness is proven on the uncached path.
 - Prefer cache-aside by default; use write-through only when strong consistency matters.
 - Every key has a namespace, version, stable identifier, TTL, and invalidation trigger.
 - Never cache error responses or personalized CDN responses; protect cached PII with encryption and access controls.
 - Add stampede protection for hot keys and monitor hit rate, pool exhaustion, and stale-read incidents.
 
-See `references/core/caching.md` for TTL guidance, Redis patterns, CDN rules, invalidation triggers, connection pooling, and code examples.
+See `references/core/caching.md` for TTL guidance, Redis-compatible cache patterns, CDN rules, invalidation triggers, connection pooling, and code examples.
 
 ---
 
 ## 7. Observability (OpenTelemetry)
 
 **Decision rules:**
-- **OTel maturity (verified 2026-07-02):** traces/metrics are Stable in JS/Python; **logs are still Development** — baseline is trace/span-correlated structured logs + OTel traces/metrics.
 - Production services emit traces, metrics, and structured JSON logs with `requestId`, `traceId`, and `spanId`.
+- **OTel maturity (verified 2026-07-02):** traces and metrics are Stable in JS/Python;
+  **logs are still Development** — the baseline is trace/span-correlated structured
+  logs + OTel traces/metrics; adopt OTel Logs export only where that maturity is acceptable.
 - Start with OTel auto-instrumentation, then add custom spans only for business-critical or non-instrumented work.
 - Never log PII, secrets, full request/response bodies, or noisy stack traces outside error boundaries.
 - Page only on customer-impacting signals tied to SLOs; use warning alerts for capacity trends.
@@ -364,12 +365,16 @@ Treat templates as starting points, not gospel. Strip to essentials, then add wh
 
 ---
 
-## 9. API Performance Targets (HEURISTIC defaults — define product SLOs from user journeys and alert on error-budget burn, not raw percentiles alone)
+## 9. API Performance Targets (HEURISTIC defaults, not universal SLOs)
 
-| Metric | Target | Escalation |
+These are aggressive healthy-service starting budgets. Each product MUST define its own
+SLOs from user journeys and alert on error-budget burn, not raw percentile thresholds
+alone (Google SRE SLO practice; see observability.md Sources).
+
+| Metric | Default budget | Escalation |
 |--------|--------|-----------|
 | p50 response time (reads) | ≤ 50ms | Profile with tracing |
-| p95 response time (reads) | ≤ 200ms target, alert at >500ms (see observability.md) | Optimization target |
+| p95 response time (reads) | ≤ 200ms, alert at >500ms (see observability.md) | Optimization target |
 | p95 response time (writes) | ≤ 500ms | Acceptable for complex writes |
 | p99 response time | ≤ 1000ms | Investigate outliers |
 | Error rate | < 0.1% target, alert at >1% (see observability.md) | Optimization target |
@@ -389,16 +394,13 @@ When the app serves web pages (SSR/SSG):
 - Structured data: provide JSON-LD data in API responses when frontend needs it
 - Redirect chains: max 1 hop (301 for permanent, 308 for POST-preserving)
 
-## 11. Deployment Handoff
+## 11. Deployment Patterns
 
-Deployment strategy, rollout shape, rollback proof, and feature-flag rollout policy are
-owned by `dev-devops`. Backend owns the app compatibility hooks that make safe deployment
-possible:
-
-- Database migrations: backward-compatible (expand-then-contract), separated from code deploy
-- Feature-flag checks in application code (rollout policy lives in `dev-devops`)
-- Health/readiness endpoint behavior when requested by the deployment surface
-- Graceful-shutdown hooks for drain sequencing
+- Blue-green: deploy to inactive environment, verify health + smoke tests, swap traffic
+- Canary: route 5% → 25% → 100% with automated rollback on error rate spike
+- Rollback: always keep previous version deployed and ready to swap back
+- Database migrations: separate from code deploy, backward-compatible (expand-then-contract)
+- Feature flags: use for gradual rollout of risky changes
 
 ---
 
@@ -413,9 +415,9 @@ Before delivering:
 - [ ] Error handler returns proper HTTP codes via `AppError` hierarchy
 - [ ] No raw SQL in service layer
 - [ ] No hardcoded secrets
-- [ ] Migration code is backward-compatible when release sequencing requires it
+- [ ] Migrations have rollback
 - [ ] Observability: traces and structured logs wired (see `references/core/observability.md`)
-- [ ] Health/readiness handlers exist when the runtime/deploy surface requires them; operational gates live in `dev-devops`
+- [ ] Health endpoints: `/health` (liveness) and `/ready` (readiness) — see `references/core/health-checks.md`
 - [ ] API performance: p95 reads ≤ 200ms, slow queries logged with EXPLAIN (§9)
 - [ ] SEO endpoints: sitemap.xml + robots.txt if serving web pages (§10)
 - [ ] Security review: delegate to `dev-security/SKILL.md` for production readiness
