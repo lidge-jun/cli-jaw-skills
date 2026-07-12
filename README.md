@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml/badge.svg" alt="Pages"></a>
-  <img src="https://img.shields.io/badge/skills-228-111827" alt="228 skills">
+  <img src="https://img.shields.io/badge/skills-229-111827" alt="229 skills">
   <img src="https://img.shields.io/badge/reference_assets-47-2563eb" alt="47 skills with references">
 </p>
 
@@ -26,7 +26,7 @@ while maintainers can review the full library in one place.
 
 | Surface | Status |
 |---------|--------|
-| Skill library | 228 top-level `SKILL.md` files |
+| Skill library | 229 top-level `SKILL.md` files |
 | Reference material | 47 skills include `reference/` or `references/` folders |
 | Helper scripts | 28 skills include `scripts/` folders |
 | Templates | 2 skills include `templates/` folders |

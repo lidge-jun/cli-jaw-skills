@@ -6,8 +6,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_SKILLS = 228
+EXPECTED_SKILLS = 229
 KNOWN_LONG_SKILLS = {
+    "dev-pabcd/SKILL.md",
+    "dev-testing/SKILL.md",
     "docx/SKILL.md",
     "hwp/SKILL.md",
     "pptx/SKILL.md",
@@ -53,11 +55,11 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["228", "47 skills", "28 skills", "2 skills"]:
+    for needle in ["229", "47 skills", "28 skills", "2 skills"]:
 
         if needle not in readme:
             raise SystemExit(f"README missing public-surface count: {needle}")
-    for needle in ["canonical", "og:image", "twitter:card", "228"]:
+    for needle in ["canonical", "og:image", "twitter:card", "229"]:
         if needle not in docs:
             raise SystemExit(f"docs missing marker: {needle}")
 
@@ -71,7 +73,7 @@ def main() -> None:
 
     validate_registry()
 
-    print(f"validated {len(skills)} skills; known long Office skills are tracked")
+    print(f"validated {len(skills)} skills; known long skills are tracked")
 
 
 if __name__ == "__main__":
