@@ -10,6 +10,8 @@ metadata:
 # Dev-Code-Reviewer — Code Review Guide
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+
+> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 > **Always read `dev/SKILL.md` first** for project-wide conventions before applying review rules.
 
 Systematic code review patterns for finding real issues, not bikeshedding.
@@ -35,6 +37,10 @@ Review as a skeptical, independent outsider. Executor claims, passing tests, AI 
 | `references/ai-assisted-review.md` | Using AI review tools in PR workflow | AI review workflow, severity classification, re-review policy, exclusions, metrics |
 
 ## External/current review evidence
+
+`dev-testing` owns test adequacy and QA execution.
+`dev-debugging` owns RCA when review discovers a runtime failure.
+`dev-architecture` owns coupling and boundary placement.
 
 For dependency CVEs, release-note claims, package maintainer/source checks,
 provider behavior, or other current/public evidence used in a review, read the
@@ -183,8 +189,9 @@ Dead code is a maintenance tax — remove rather than comment out.
 
 ### Security
 
-Security review items are canonical in §3.5. Use that checklist for hardcoded
-secrets, injection, validation, auth, authorization, and logging findings.
+This section owns the mandatory review pre-scan; `dev-security` owns security
+policy and deep analysis. Use this checklist for hardcoded secrets, injection,
+validation, auth, authorization, and logging findings.
 
 ### Performance
 

@@ -10,6 +10,8 @@ Structured 5-phase development. Advance only with user approval.
 > **C0/C1 work:** see `dev` §0.0 Work Classifier and §0.1 Patch Fast-Path first — full
 > PABCD is mandatory for C4 and conditional for C3, not the baseline for every task.
 
+> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+
 ## §1. Interview Trigger (MUST)
 
 When the user asks for an interview in any form — "인터뷰하자", "인터뷰 모드", "interview",

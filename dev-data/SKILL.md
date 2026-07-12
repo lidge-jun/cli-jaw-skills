@@ -14,6 +14,8 @@ Activates by change surface for data pipelines, analytics, SQL-heavy work, schem
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
+> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+
 ## When to Activate
 
 - Building data pipelines or ETL/ELT processes

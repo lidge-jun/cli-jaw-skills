@@ -16,9 +16,20 @@ It activates by change surface whenever the work is primarily frontend, UI, styl
 > **Role separation:** For design judgment — typography/color/layout direction, UX decision
 > gates, product personalities, or vague visual briefs — load `dev-uiux-design` first. This
 > skill implements the chosen direction; `dev-uiux-design` makes the design decisions.
-> Implementation anti-slop enforcement stays here; design taste/pattern judgment lives there.
+> Implementation anti-slop tell detection and enforcement stays here (concrete rendered tells
+> in UI); design-level concept/taste judgment lives in `dev-uiux-design`.
+
+> **Role boundary (canonical — identical in `dev` and `dev-uiux-design`):**
+> `dev` owns universal process, evidence, and safety rules. `dev-uiux-design` owns
+> design intent, direction, and concept judgment. `dev-frontend` owns concrete frontend
+> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
+> output/process hygiene (FAMILY-SLOP-01), `dev-uiux-design` = concept/taste judgment
+> (is this direction generic or domain-wrong?), `dev-frontend` = rendered implementation
+> tell detection and removal (FE-AI-TELL-01).
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+
+> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## Modular References
 
@@ -26,7 +37,7 @@ It activates by change surface whenever the work is primarily frontend, UI, styl
 | ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- |
 | `references/core/crud-ui.md`              | C2 list/detail/form product screens  | State coverage (loading/empty/error/permission), forms, objective UX gates         |
 | `references/core/anti-slop.md`            | New components or UI redesign        | 2026 AI slop patterns, Korean slop, oversized text, fake assets, default UI smells |
-| `references/core/aesthetics.md`           | Visual design decisions              | Domain-correct visual direction, typography, color, composition                    |
+| `references/core/aesthetics.md`           | Implementing an established visual direction | Domain-correct typography, color, and composition constraints                    |
 | `references/core/product-density.md`      | Apps, tools, dashboards              | Density profiles for landing, consumer app, SaaS, ops, finance, devtools          |
 | `references/core/asset-requirements.md`   | Any public/product/visual surface    | Required screenshots, images, diagrams, charts, generated bitmaps, or 3D assets   |
 | `references/core/visual-verification.md`  | Changes affecting rendered layout    | Screenshot, viewport, text fit, state, asset, and motion verification              |
@@ -59,6 +70,11 @@ It activates by change surface whenever the work is primarily frontend, UI, styl
 
 Start with `anti-slop.md`, `aesthetics.md`, `responsive-viewport.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
 For C2 ordinary app screens (form/table/list/detail), `crud-ui.md` alone suffices; add the style references above for marketing/visual surfaces or C3+ work.
+
+- UI/rendering bug RCA: load `dev-debugging`.
+- Build pipeline, bundle config, or deployment: load `dev-devops`.
+- Project setup or file placement conventions: load `dev-scaffolding`.
+- Data-driven dashboards, reporting views, or data format expectations: load `dev-data`.
 
 When frontend choices depend on current framework, design-system, browser API,
 library behavior, browser-rendered source evidence, or package/source freshness,
@@ -126,17 +142,26 @@ Two different kinds of rules live in this skill (see `dev` §0.2):
   requirements, must not override an existing design system (Design System Detection stays
   MANDATORY), and must never be enforced as universal taste (UX-STYLE-01).
 
-## 2. Design Thinking
+## 2. Design Direction Intake
 
-Before coding, commit to a domain-correct direction:
+> When the user cannot articulate a clear design direction, load `dev-uiux-design` first.
+> It owns intent discovery and direction selection. This section validates and implements
+> the chosen direction; it does not choose independently.
+
+Before coding, validate the design direction from `dev-uiux-design` (or a concrete brief):
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Surface**: Is this a working tool, dashboard, public service, AI workflow, game, landing page, or editorial surface?
-- **Tone**: Pick a specific direction. For product tools this often means quiet, dense, trustworthy, and fast rather than loud.
+- **Tone**: Confirm the direction. For product tools this often means quiet, dense, trustworthy, and fast rather than loud.
 - **Constraints**: Framework, performance budget, accessibility requirements.
-- **Signature**: What ONE thing will make this unforgettable?
+- **Signature**: What ONE visual signature will make this unforgettable?
 
 When user intent is vague ("깔끔하게", "모던하게", "just make it look good"), read the `dev-uiux-design` skill and run the User Intent Discovery Protocol before making routing decisions.
 If the user cannot answer these questions, use the `dev-uiux-design` skill's structured preference elicitation flow. Offer product references ("Notion 느낌? Linear 느낌?") and visual comparisons.
+
+**Concept pass before code (pointer — canonical: `dev-uiux-design` UX-CONCEPT-GEN-01):**
+for C2+ expressive or brand-visible surfaces, load the design skill's concept-generation
+protocol before implementation. It owns direction discovery, concept branching, synthesis,
+and direction lock. Resume here after `DESIGN.md` is locked.
 
 Intentionality over intensity. Bold maximalism, refined minimalism, dense utility, and friendly consumer UI can all work when they match the domain.
 

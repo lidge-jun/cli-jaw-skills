@@ -171,6 +171,14 @@ When updating a rule, update the canonical owner first, then verify stubs still 
 
 ## Family Invariants (apply to every `dev-*` skill)
 
+> **Role boundary (canonical — identical in `dev-frontend` and `dev-uiux-design`):**
+> `dev` owns universal process, evidence, and safety rules. `dev-uiux-design` owns
+> design intent, direction, and concept judgment. `dev-frontend` owns concrete frontend
+> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
+> output/process hygiene (FAMILY-SLOP-01), `dev-uiux-design` = concept/taste judgment
+> (is this direction generic or domain-wrong?), `dev-frontend` = rendered implementation
+> tell detection and removal (FE-AI-TELL-01).
+
 **FAMILY-SLOP-01 / FAMILY-CITE-01 / FAMILY-PROOF-01:** no filler, placeholders, fake fallbacks, speculative wrappers, or broad defensive clutter without a named boundary reason; code findings, plans, reviews, contradictions, and verification claims cite exact files/lines or command/artifact evidence; no completion claim without fresh proof from the §3 verification gate.
 
 **FAMILY-FRESH-01 (DEFAULT):** version-pinned or time-sensitive claims live in

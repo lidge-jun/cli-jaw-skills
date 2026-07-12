@@ -10,6 +10,8 @@ metadata:
 # Dev-Architecture — Module Boundaries & Structural Integrity
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+
+> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 > **Always read `dev/SKILL.md` first** for project-wide conventions before applying architecture rules.
 
 Enforces architectural rules that prevent structural decay: circular dependencies, implicit coupling, barrel abuse, and misplaced validation. These rules are mechanical — an AI coding agent can follow them without subjective judgment.
@@ -331,6 +333,10 @@ Is the data source external (HTTP, file, queue, DB, user input)?
     YES -> Validate (defense in depth)
     NO  -> Trust the type system, no validation needed
 ```
+- Coupling and boundary review: see `dev-code-reviewer`.
+- Debugging escalation for boundary or coupling issues: see `dev-debugging`.
+- Infrastructure architecture and deployment boundaries: see `dev-devops`.
+
 ## Structural Index Concept (ARCH-INDEX-01, DEFAULT)
 
 Source: sol research (wednesday-solutions/ai-agent-skills AST dependency graph).
