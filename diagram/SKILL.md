@@ -5,7 +5,7 @@ metadata:
   version: "1.3.0"
 capabilities:
   - "SVG: structural diagrams, comparisons, timelines, mockups, art"
-  - "Mermaid: flowchart, sequence, ER, state, timeline, mindmap, gantt, pie, radar, git graph"
+  - "Mermaid: flowchart, sequence, ER, state, timeline, mindmap, gantt, pie, radar, git graph, block, venn-beta"
   - "Native chart shortcut: chart-json for simple single-series bar, line, and pie charts"
   - "Charts (Chart.js): bar, line, pie, scatter, doughnut, polar"
   - "Charts (ECharts): heatmap, sankey, radar, treemap, gauge, funnel, candlestick, chord"
@@ -66,7 +66,14 @@ Route on the verb, not the noun. Same subject gets different diagrams. Prefer Me
 | "kanban board" | Mermaid v11.12+ (beta, test before use) | ` ```mermaid ` `kanban` |
 | "cloud/infra architecture" | Mermaid (beta) | ` ```mermaid ` `architecture-beta` |
 | "hierarchy / proportional size" | Mermaid (beta) | ` ```mermaid ` `treemap-beta` |
-| "free-form block layout" | Mermaid (beta) | ` ```mermaid ` `block-beta` |
+| "free-form block layout" | Mermaid | ` ```mermaid ` `block` |
+| "packet / network frame" | Mermaid | ` ```mermaid ` `packet` |
+| "ishikawa / fishbone / cause-effect" | Mermaid | ` ```mermaid ` `ishikawa` |
+| "swimlane / lane-based workflow" | Mermaid | ` ```mermaid ` `swimlane-beta` |
+| "requirement / traceability" | Mermaid | ` ```mermaid ` `requirementDiagram` |
+| "sankey / flow quantity" | Mermaid | ` ```mermaid ` `sankey` |
+| "XY chart / scatter / line" | Mermaid | ` ```mermaid ` `xychart` |
+| "venn / overlap / set intersection" | Mermaid (beta) | ` ```mermaid ` `venn-beta` |
 | "show sources / search results / citations" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `search-results` schema |
 | "write / draft / compose email, message, document" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `compose-block` schema |
 | "table / rows / sortable data / filterable data" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `dataframe` schema |
@@ -100,7 +107,8 @@ These renderers are lighter than HTML widgets, survive sanitizer/hydration, and 
   - **C4 Dynamic** → Mermaid `sequenceDiagram`
   - **C4 Deployment** → Mermaid `architecture-beta`
 - **`sankey-beta` / `xychart-beta`** — known to break scale-down at narrow chat widths. Prefer `diagram-file` + ECharts sankey for flow diagrams, Chart.js for simple XY.
-- **`radar-beta`** is the keyword as of Mermaid v11.6+ (not bare `radar` — the beta suffix is still required at the time of writing per [mermaid/syntax/radar](https://mermaid.js.org/syntax/radar.html)). `treemap-beta`, `block-beta`, `architecture-beta`, `packet-beta`, `kanban` are still beta but functional — test each in cli-jaw Web UI before finalizing. If the installed Mermaid version drops the `-beta` suffix, update the routing table accordingly.
+- **Now stable (no suffix needed):** `block`, `packet`, `kanban`, `sankey`, `xychart`, `ishikawa`.
+- **Still beta (suffix required):** `radar-beta`, `architecture-beta`, `treemap-beta`, `venn-beta`, `wardley-beta`, `treeView-beta`, `cynefin-beta`, `swimlane-beta`. Test beta types in the cli-jaw Web UI before finalizing.
 - **`sandbox` securityLevel iframe background bug** ([mermaid #5034](https://github.com/mermaid-js/mermaid/issues/5034)) — affects host rendering, not your output. No action needed from the agent.
 - **Theme**: all stable Mermaid types pick up the host dark/light theme automatically via cli-jaw's `themeVariables`. Do NOT set explicit colors in `%%{init: ...}%%` unless overriding for semantic reasons.
 
@@ -192,7 +200,7 @@ Use ` ```diagram-file ` by default. Wrap in a ` ```diagram-html ` code block onl
     Fallback text
   </canvas>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"
   onerror="document.body.innerHTML='<p>Chart library failed to load.</p>'">
 </script>
 <script>
@@ -352,3 +360,4 @@ For detailed patterns, see:
 - `reference/module-mockup.md` — UI mockup patterns
 - `reference/module-art.md` — Decorative SVG patterns
 - `reference/module-domain-cards.md` — Domain card templates (weather, finance, sports, product) + real-time data pipeline
+- `reference/structured-renderers.md` — native renderer delegation notes

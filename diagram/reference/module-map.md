@@ -6,26 +6,26 @@ Use Leaflet for interactive maps: tile-based panning/zooming, markers, popups, p
 
 | Library | Version | CDN URL |
 |---|---|---|
-| Leaflet JS | 1.9.4 | `https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js` |
-| Leaflet CSS | 1.9.4 | `https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css` |
+| Leaflet JS | 1.x | `https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.min.js` |
+| Leaflet CSS | 1.x | `https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.min.css` |
 
 ## Minimal Template
 
 ```html
 <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  href="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.min.css" />
 <div id="map" role="img" aria-label="Interactive map of Seoul"
   style="width:100%; height:420px; border-radius: 8px; overflow: hidden;">
   Interactive map of Seoul. Requires JavaScript.
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.min.js"
   onerror="document.body.innerHTML='<p style=&quot;color:#999&quot;>Leaflet failed to load.</p>'">
 </script>
 <script>
   // Explicit marker icon URLs — belt-and-suspenders against Leaflet's CSS-based auto-detect,
   // which can fail if leaflet.css loads slowly or is blocked. Pin to the same CDN as the script.
   // Uses non-deprecated prototype.options pattern (L.Icon.Default.imagePath is deprecated as of Leaflet 1.x).
-  const LEAFLET_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/';
+  const LEAFLET_CDN = 'https://cdn.jsdelivr.net/npm/leaflet@1/dist/images/';
   Object.assign(L.Icon.Default.prototype.options, {
     iconUrl:       LEAFLET_CDN + 'marker-icon.png',
     iconRetinaUrl: LEAFLET_CDN + 'marker-icon-2x.png',
@@ -34,8 +34,7 @@ Use Leaflet for interactive maps: tile-based panning/zooming, markers, popups, p
 
   const map = L.map('map', { zoomControl: true }).setView([37.5665, 126.9780], 12);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    subdomains: ['a', 'b', 'c'],
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
@@ -49,16 +48,28 @@ Use Leaflet for interactive maps: tile-based panning/zooming, markers, popups, p
 
 ## Leaflet Rules
 
-- **Tile source**: use OpenStreetMap standard tiles only — `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png` with `subdomains: ['a','b','c']`. Any other tile server (Mapbox, Stamen, Thunderforest, Esri) is blocked by CSP and must not be used.
+- **Tile source**: use OpenStreetMap standard tiles only — `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. Any other tile server (Mapbox, Stamen, Thunderforest, Esri) is blocked by CSP and must not be used.
 - **Container**: outer `<div>` needs explicit height (px or vh), `role="img"`, `aria-label`, and fallback text for screen readers. Width: 100% of widget. Recommended height: 360–480px.
 - **Map creation**: `L.map(id, options).setView([lat, lng], zoom)`. Latitude first, then longitude (opposite of some APIs). Initial zoom 10–14 for city scale, 4–6 for country scale, 2 for world.
 - **Markers**: `L.marker([lat, lng]).addTo(map).bindPopup('...')`. Default icon URLs MUST be set explicitly via `Object.assign(L.Icon.Default.prototype.options, { iconUrl, iconRetinaUrl, shadowUrl })` right after the Leaflet script loads — do NOT rely on Leaflet's CSS-based auto-detection (fragile if `leaflet.css` load is delayed), and do NOT use the deprecated `L.Icon.Default.imagePath` property. Do NOT override icon URLs with other external domains.
-- **Popups**: HTML strings inside `bindPopup(...)` are sanitized by Leaflet itself. Keep them small and text-first. No scripts inside popups.
+- **Popups**: keep popup content small and text-first. No scripts inside popups.
+
+**Security:** `bindPopup()` renders string content as raw HTML. Never pass untrusted
+or user-supplied content directly. Use `textContent` assignment or DOMPurify for
+dynamic content:
+
+```js
+// Safe: text-only
+const div = document.createElement('div');
+div.textContent = untrustedString;
+marker.bindPopup(div);
+```
+
 - **Layers**: `L.polyline`, `L.polygon`, `L.circle`, `L.geoJSON(data)` all work. Pass GeoJSON data **inlined in the script** — do not fetch from external URLs (blocked by `connect-src`).
 - **Theme integration**: Leaflet doesn't have a dark mode built in. For dark cli-jaw theme, invert the tile layer with CSS — see "Dark mode" below.
 - **Attribution**: the `© OpenStreetMap contributors` attribution is required by the ODbL license. Do not remove it.
 - **`onerror` required** on the script tag, same rule as every other CDN script.
-- **Do not** use Leaflet plugins (Leaflet.draw, Leaflet.heat, markercluster, etc.) in this phase — core 1.9.4 only.
+- **Do not** use Leaflet plugins (Leaflet.draw, Leaflet.heat, markercluster, etc.) in this phase — core 1.x only.
 
 ## Dark Mode
 

@@ -4,8 +4,8 @@
 
 | Library | Version | CDN URL | Use case |
 |---|---|---|---|
-| Chart.js | 4.4.1 | `https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js` | bar / line / pie / scatter / doughnut / polar |
-| ECharts | 6.0.0 | `https://cdnjs.cloudflare.com/ajax/libs/echarts/6.0.0/echarts.min.js` | heatmap / sankey / radar / treemap / gauge / funnel / candlestick / chord |
+| Chart.js | 4.x | `https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js` | bar / line / pie / scatter / doughnut / polar |
+| ECharts | 6.x | `https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js` | heatmap / sankey / radar / treemap / gauge / funnel / candlestick / chord / beeswarm / scatter jitter / broken axes / matrix coordinates |
 | D3.js | 7.8.5 | `https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js` | custom SVG graphics, choropleth, force layout |
 | TopoJSON | 3.0.2 | `https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js` | D3 geo data (+ `connect-src cdn.jsdelivr.net`) |
 
@@ -55,7 +55,7 @@ const chartColors = {
     Fallback text for screen readers.
   </canvas>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"
   onerror="document.body.innerHTML='<p style=&quot;color:' + (window.__jawTokens?.['--text-dim'] || '#999') + '&quot;>Chart library failed to load.</p>'">
 </script>
 <script>
@@ -219,7 +219,7 @@ new Chart(document.getElementById('c'), {
 | Data shape | Use |
 |-----------|-----|
 | Simple bar/line/pie/scatter | Quick Chart Template above |
-| ECharts-only types (sankey/treemap/gauge/funnel/candlestick) | Full ECharts template |
+| ECharts-only types and layouts (sankey/treemap/gauge/funnel/candlestick/chord/beeswarm/scatter jitter/broken axes/matrix coordinates) | Full ECharts template |
 | Interactive controls needed | diagram-file with slider/select |
 | Custom D3 visualization | D3 template |
 
@@ -360,7 +360,9 @@ window.addEventListener('jaw-theme-change', (e) => {
 
 ## Apache ECharts 6
 
-Use ECharts when Chart.js can't represent the data: **heatmap, sankey, radar, treemap, gauge, funnel, candlestick, parallel, boxplot, chord**. ECharts 6 added a dedicated `chord` series (new in 6.0) for ribbon-style relationship diagrams — prefer it over the older `graph` + `layout: 'circular'` workaround.
+Use ECharts when Chart.js can't represent the data: **heatmap, sankey, radar, treemap, gauge, funnel, candlestick, parallel, boxplot, chord, beeswarm, scatter jitter, broken axes, and matrix coordinates**. ECharts 6 added a dedicated `chord` series for ribbon-style relationship diagrams — prefer it over the older `graph` + `layout: 'circular'` workaround.
+
+ECharts 6 also supports native dark mode and dynamic theme switching. In cli-jaw widgets, continue registering a host-token-derived theme and let the host recreate the iframe on theme changes so the chart stays aligned with the cli-jaw palette.
 
 ### Theme helper (reuse for every ECharts widget)
 
@@ -393,7 +395,7 @@ Host-driven theme re-render: when the user toggles dark/light, cli-jaw's `broadc
 ```html
 <div id="heat" role="img" aria-label="Activity heatmap by day and hour"
   style="width: 100%; height: 340px;"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/6.0.0/echarts.min.js"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"
   onerror="document.body.innerHTML='<p style=&quot;color:#999&quot;>ECharts failed to load.</p>'">
 </script>
 <script>
@@ -509,5 +511,5 @@ chart.setOption({
 - `onerror` on script tag required (same as Chart.js)
 - Do NOT use `echarts-gl` (WebGL extension) — overlaps Three.js, huge bundle
 - Do NOT use ECharts map charts in this phase — requires `connect-src` + geoJSON fetch, reconsider after Leaflet phase
-- Bundle size: ECharts 6.0.0 full build is ~1 MB min / ~350 KB gz. Load one chart per widget, lazy-load on widget mount only. If the chart is a single series type, consider lightweight Chart.js instead.
-- ECharts 6.0.0 is still the latest 6.x release as of 2026-04 (no 6.0.x patch shipped). Pin the exact version.
+- Bundle size: the ECharts 6.x full build is ~1 MB min / ~350 KB gz. Load one chart per widget, lazy-load on widget mount only. If the chart is a single series type, consider lightweight Chart.js instead.
+- Pin the ECharts 6.x major with `echarts@6` so compatible 6.x fixes are picked up without crossing a major-version boundary.

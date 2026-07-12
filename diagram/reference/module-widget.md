@@ -33,9 +33,9 @@ The saved HTML follows the same rules as `diagram-html`: sandboxed iframe render
 |---|---|---|---|---|
 | Matter.js | 0.20.0 | cdnjs | ~26 KB | 1 (drop-in) |
 | Math.js | 14.8.1 | cdnjs | ~193 KB | 1 (drop-in) |
-| Three.js (WebGL 2, default) | 0.172.0 | jsdelivr (ES Module) | ~176 KB | 2 (WebGL) |
-| Three.js (WebGPU, optional)  | 0.180.0 | jsdelivr (ES Module) | ~200 KB | 3 (advanced) |
-| p5.js | 1.11.10 | cdnjs | ~269 KB | 2 (creative) |
+| Three.js (WebGL 2, default) | 0.185 | jsdelivr (ES Module) | ~176 KB | 2 (WebGL) |
+| Three.js (WebGPU, optional)  | 0.185 | jsdelivr (ES Module) | ~200 KB | 3 (advanced) |
+| p5.js | 2.x | jsdelivr | ~269 KB | 2 (creative) |
 | Tone.js | 15.1.22 | cdnjs | ~77 KB | 2 (audio) |
 | Vanilla JS | — | — | 0 KB | 1 |
 
@@ -180,15 +180,14 @@ Use for: interactive math graphs, equation evaluation, sliders controlling varia
 Use for: 3D models, procedural geometry, interactive 3D scenes.
 WebGL works in `sandbox="allow-scripts"` without `allow-same-origin`.
 
-**Important**: Three.js r172+ is ES Module only — must use `<script type="module">`.
+**Important**: The legacy `three.js` / `three.min.js` builds were removed in r161. Use ES modules with `<script type="module">`. Three.js r185 supports both static `import` declarations and dynamic `await import()`; an import map lets either form resolve bare specifiers such as `three` and `three/addons/`.
 
-**Textures**: CDN-hosted textures (cdnjs, jsdelivr, unpkg) are allowed by CSP.
-External URLs from other domains are blocked. For procedural textures, use `ShaderMaterial` or canvas-generated `CanvasTexture`.
+**Textures are host-policy dependent, not a Three.js limitation**: cli-jaw's sandboxed widget iframe has a restricted `img-src` CSP, so only `data:` and `blob:` texture URLs work there. In standalone HTML, including `diagram-to-html.sh` output, CDN texture URLs work normally when the page's CSP permits them. For portable widgets, prefer embedded data, blob URLs, `DataTexture`, or a canvas-generated `CanvasTexture`.
 
 ```html
 <div id="c" style="width:100%; height:400px;"></div>
 <script type="module">
-  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.min.js';
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185/build/three.module.min.js';
   const el = document.getElementById('c');
 
   const testCanvas = document.createElement('canvas');
@@ -219,38 +218,39 @@ External URLs from other domains are blocked. For procedural textures, use `Shad
 ```
 
 ### Three.js Rules
-- `<script type="module">` required (UMD build removed in r172+)
-- Use static `import` only — dynamic `import()` is unreliable in srcdoc iframes
-- OrbitControls: `import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/controls/OrbitControls.js'`
+- `<script type="module">` required for r161+ (legacy `three.js` / `three.min.js` builds were removed in r161)
+- Static `import` and dynamic `await import()` are both supported. Use the auto-injected import map for bare static imports such as `import * as THREE from 'three'`; use a literal allowlisted CDN URL for conditional dynamic imports.
+- OrbitControls: `import { OrbitControls } from 'three/addons/controls/OrbitControls.js'` (resolved by the auto-injected Three.js import map)
 - r163+ requires WebGL 2 — add capability guard
-- Textures: `data:` and `blob:` only (CSP blocks external URLs). Use procedural textures.
-- External models (`.glb`/`.gltf`): blocked by `connect-src 'none'`
-- Always add `onerror` fallback for WebGL failure
-- jsdelivr only (NOT cdnjs — Three.js not available as UMD on cdnjs)
+- Sandboxed iframe textures: use `data:` or `blob:` because cli-jaw's `img-src` CSP blocks external texture URLs. Standalone HTML may use CDN textures when its CSP allows them.
+- Sandboxed iframe models (`.glb`/`.gltf`): external fetches are blocked by `connect-src 'none'`; embed the model bytes and parse them locally. Standalone HTML is not subject to that widget CSP.
+- Catch module/renderer initialization errors and show a user-visible fallback
+- Use pinned jsdelivr URLs for r185 modules in these templates; cdnjs does not provide the r185 ES module builds
 
-### Optional: WebGPU path (r171+, pinned r0.180.0)
+### Optional: WebGPU path (r185)
 
 Use only when you need GPGPU compute, custom TSL shaders, or compute-heavy particles that hit WebGL 2 limits. **Default remains the WebGL 2 path above** — do not switch unless the widget specifically benefits.
 
-Top-level `await` inside `<script type="module">` is standard ES2022+ and works in Chrome/Edge/Safari/Firefox. cli-jaw's iframe CSP already allows `script-src 'unsafe-inline'` for inline module scripts, so the pattern below works as-is inside srcdoc. Dynamic `import()` is used inside the `else` branch because static `import` cannot be conditional.
+Top-level `await` inside `<script type="module">` works in current browsers. cli-jaw's iframe CSP allows inline module scripts, so the pattern below works inside srcdoc. The literal dynamic `import()` is useful when loading conditionally; a static import through an import map is equally supported. In r185, `WebGPURenderer` prefers WebGPU and automatically falls back to its WebGL 2 backend when WebGPU is unavailable.
 
 ```html
 <div id="gpu" style="width:100%; height:400px;"></div>
 <script type="module">
   const el = document.getElementById('gpu');
 
-  // Capability guard — WebGPU is not available in very old browsers or disabled contexts
-  if (!('gpu' in navigator)) {
-    el.textContent = 'WebGPU not available — this widget requires WebGPU';
+  // WebGPURenderer can use WebGPU or its WebGL 2 fallback backend.
+  const testCanvas = document.createElement('canvas');
+  if (!('gpu' in navigator) && !testCanvas.getContext('webgl2')) {
+    el.textContent = 'Neither WebGPU nor WebGL 2 is available';
   } else {
-    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.webgpu.min.js');
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.185/build/three.webgpu.min.js');
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, el.clientWidth / 400, 0.1, 100);
     camera.position.z = 3;
 
     const renderer = new THREE.WebGPURenderer({ antialias: true, alpha: true });
-    await renderer.init();               // REQUIRED — WebGPU async device bootstrap
+    await renderer.init();               // Needed before synchronous pre-loop renderer use
     renderer.setSize(el.clientWidth, 400);
     el.appendChild(renderer.domElement);
 
@@ -263,20 +263,27 @@ Top-level `await` inside `<script type="module">` is standard ES2022+ and works 
 
 **WebGPU-specific rules**:
 - Entry point is `build/three.webgpu.min.js` — **not** the main `three.module.min.js`
-- Version pinned to `0.180.0`. Minimum for production WebGPURenderer is r171 (2025-09); r180 is the current safe anchor as of 2026-04. Do NOT use `^` / `~` / `+` ranges in the URL.
-- `renderer.init()` is **async** — must `await` before using the renderer. Pattern above uses dynamic `import()` inside an `if/else` block (static `import` can't be conditional). Alternative: wrap the whole thing in an `async` IIFE after a top-level static import.
-- Use `renderer.setAnimationLoop(cb)` instead of `requestAnimationFrame` recursion — required for WebXR/WebGPU frame pacing
+- Pin CDN URLs to `0.185`, the current revision. r171, published November 29, 2024, introduced the `three/webgpu` and `three/tsl` entry-point split; do not use `^` / `~` / `+` ranges in CDN URLs.
+- `renderer.init()` is async. `setAnimationLoop()` initializes the renderer automatically; explicitly `await renderer.init()` before synchronous pre-loop renderer calls, on-demand rendering, or feature detection.
+- Use `renderer.setAnimationLoop(cb)` for automatic async initialization and correct WebXR/WebGPU frame pacing
 - TSL shaders (`tsl` module) let you write one shader that compiles to both WGSL and GLSL — useful only if you're writing custom materials
-- Falls back silently if device init fails — always include the `'gpu' in navigator` guard + user-visible message
+- `WebGPURenderer` automatically falls back to a WebGL 2 backend when WebGPU is unavailable. Keep a capability/error message for environments that support neither backend or where initialization fails.
 - **Do not** mix WebGL and WebGPU in the same widget; pick one per iframe
-- Browser support: Chrome/Edge 113+, Safari 26 (2025-09) + iOS 26, Firefox 141+ (2025 late). Guard above handles old browsers gracefully.
+- Prefer runtime capability checks over browser-version tables, which become stale quickly.
+
+**r185 migration notes for advanced widgets**:
+- `PostProcessing` was renamed to `RenderPipeline` in r183; use the TSL/node-based WebGPU post-processing stack, not WebGL's `EffectComposer` passes.
+- `WebGPURenderer` async methods such as `renderAsync()` and `computeAsync()` are deprecated; initialize first and use the synchronous methods, or render through `setAnimationLoop()`.
+- The `colorBufferType` option and `getColorBufferType()` were renamed to `outputBufferType` and `getOutputBufferType()` in r182.
+- `Clock` was deprecated in r183; use `Timer` in r185. Transparent WebGPU canvases also use revised r185 premultiplied-alpha behavior, so prefer an opaque scene background unless HTML compositing is intentional.
+- `ShaderMaterial`, `RawShaderMaterial`, and `onBeforeCompile()` customizations are not supported by `WebGPURenderer`; port custom shaders to NodeMaterial/TSL.
 
 **When to use which**:
 
 | Scenario | Use |
 |---|---|
-| Static or lightly-animated 3D scene (≤100 objects) | WebGL 2 (r0.172.0 default) |
-| Physics, particles, cloth, GPU compute (10k+ instances) | WebGPU (r0.180.0, min r171) |
+| Static or lightly-animated 3D scene (≤100 objects) | WebGL 2 (0.185 default) |
+| Physics, particles, cloth, GPU compute (10k+ instances) | WebGPU (0.185) |
 | Custom fragment/vertex shaders in GLSL | WebGL 2 |
 | Custom shaders targeting both backends (TSL) | WebGPU |
 | Torus knot / single mesh demo | WebGL 2 — simpler, smaller bundle |
@@ -289,7 +296,7 @@ Use for: generative art, particle systems, creative visual demos.
 Runs in global mode (attaches to `window.setup`/`window.draw`).
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.10/p5.min.js"
+<script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"
   onerror="document.body.innerHTML='<p>p5.js failed to load.</p>'">
 </script>
 <script>
@@ -317,6 +324,7 @@ Runs in global mode (attaches to `window.setup`/`window.draw`).
 ```
 
 ### p5.js Rules
+- p5.js 2.x includes breaking changes: loading APIs are Promise-based, so use `async setup()` and `await`; shaders use the new `p5.strands` system; a WebGPU build is also available
 - 269 KB — heavy for a chat widget. Prefer vanilla Canvas API for simple 2D
 - p5.js best for: educational demos, generative art, rapid prototyping
 - Global mode is fine in sandboxed iframe (isolated `window`)
@@ -448,7 +456,7 @@ No external library needed — zero loading time.
 - Theme tokens: `window.__jawTheme.isDark`, `window.__jawTokens['--*']`
 - `sendPrompt(text)` to populate chat input (max 500 chars, rate-limited)
 - CDN allowlist (CSP-enforced): `cdnjs.cloudflare.com`, `cdn.jsdelivr.net`, `unpkg.com`, `esm.sh`
-- Import maps auto-injected for Three.js bare specifiers (`import from 'three'`)
+- Import maps auto-injected for Three.js bare specifiers (for example, `import * as THREE from 'three'`)
 - If widget includes its own `<script type="importmap">`, the auto-injection is skipped
 
 ## Available CDN Libraries
@@ -487,7 +495,7 @@ TensorFlow.js, Konva.js, PixiJS, Fabric.js, Cytoscape.js — test individually b
 
 Static `import` requires `<script type="module">`. JSX is NOT supported (no Babel/SWC in iframe) — use `React.createElement()` directly.
 
-> **Three.js exception**: Three.js uses an auto-injected importmap for bare specifiers (`import from 'three'`). If a widget includes its own `<script type="importmap">`, auto-injection is skipped — use full esm.sh URLs in that case.
+> **Three.js exception**: Three.js uses an auto-injected import map for bare specifiers such as `three` and `three/addons/`. If a widget includes its own `<script type="importmap">`, auto-injection is skipped; define those mappings yourself or use literal pinned CDN URLs. Static imports and literal dynamic imports are both supported.
 
 ### importmap pattern (cleaner Tier 2 imports)
 
