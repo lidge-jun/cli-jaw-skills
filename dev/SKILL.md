@@ -194,11 +194,26 @@ pinned version, uncertain behavior, or a major release in the past 6 months.
 If Context7 is unavailable, fall back to web search for official docs — never rely
 on training data alone for library-specific APIs.
 
+## External Evidence and Recall Routing
+
+Canonical routing table for anything that is external, current, or previously decided.
+Surface routers point here instead of restating the policy.
+
+| Need | Route |
+|---|---|
+| External library syntax or pinned-version behavior | Context7 `resolve-library-id` → `query-docs`; otherwise official docs |
+| Current versions, releases, CVEs, providers, or public evidence | Load the active `search` skill and follow its evidence rules |
+| HTTP-first URL proof | Fetch the URL directly first; escalate to a real browser only when fetch is insufficient |
+| Prior term, file, or decision is unfamiliar, or context was lost | Search past sessions and the memory store before asking the user |
+
 ### External/current evidence
 
 For current versions, release notes, CVEs, package/source checks, or provider behavior,
 read the active `search` skill and follow its query-rewrite, source-fetch, and
 evidence-status rules. Sub-agents are bound by this policy too — include it in dispatch prompts.
+
+Routers that delegate here (`dev-frontend`, `dev-uiux-design`) inherit these rules in
+full; delegation is a pointer, never a weakening.
 
 ---
 
