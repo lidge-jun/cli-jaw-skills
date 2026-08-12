@@ -9,7 +9,7 @@ Use this skill for PowerPoint `.pptx` creation, editing, review, and QA.
 Triggers: `"PowerPoint"`, `"PPTX"`, `"presentation"`, `"slides"`, `"deck"`.
 
 **OfficeCLI routing and consent rule:**
-- First check whether `officecli` is available with `command -v officecli`.
+- First check whether `officecli` is available with a probe that works in the agent's actual shell: `command -v officecli` on POSIX, `Get-Command officecli -ErrorAction SilentlyContinue` in PowerShell. **`command -v` is not a PowerShell builtin or cmdlet** — on Windows it prints nothing, sets no exit code, and raises no error, so it is indistinguishable from "not installed" and the agent asks to install a tool that is already there (#298). `officecli --version` is the portable fallback: a non-zero exit or no output means missing.
 - If installed, recommend OfficeCLI first for high-fidelity PPTX mutations, validation, query, batch/resident flows, CJK/rhwp-aware work, and Office-compatible output.
 - If missing, do not auto-install. Present choices before proceeding:
   1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.

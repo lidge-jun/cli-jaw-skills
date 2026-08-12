@@ -9,7 +9,7 @@ description: "HWP/HWPX create, read, edit, review, template-fill, QA. Triggers: 
 > (DOCX, PPTX, XLSX, PDF). If the task involves a non-HWP format, stop and tell the user.
 
 **OfficeCLI routing and consent rule:**
-- First check whether `officecli` is available with `command -v officecli`.
+- First check whether `officecli` is available with a probe that works in the agent's actual shell: `command -v officecli` on POSIX, `Get-Command officecli -ErrorAction SilentlyContinue` in PowerShell. **`command -v` is not a PowerShell builtin or cmdlet** — on Windows it prints nothing, sets no exit code, and raises no error, so it is indistinguishable from "not installed" and the agent asks to install a tool that is already there (#298). `officecli --version` is the portable fallback: a non-zero exit or no output means missing.
 - If installed, recommend OfficeCLI first for HWPX work and experimental rhwp-backed binary HWP read/edit.
 - If missing, do not auto-install. Present choices before proceeding:
   1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.

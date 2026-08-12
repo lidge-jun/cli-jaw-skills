@@ -8,7 +8,7 @@ description: "Excel XLSX create, read, edit, analyze. Triggers: Excel, .xlsx, sp
 Use this skill for `.xlsx`, `.xlsm`, `.csv`, and `.tsv` work that ends in an Excel workbook.
 
 **OfficeCLI routing and consent rule:**
-- First check whether `officecli` is available with `command -v officecli`.
+- First check whether `officecli` is available with a probe that works in the agent's actual shell: `command -v officecli` on POSIX, `Get-Command officecli -ErrorAction SilentlyContinue` in PowerShell. **`command -v` is not a PowerShell builtin or cmdlet** — on Windows it prints nothing, sets no exit code, and raises no error, so it is indistinguishable from "not installed" and the agent asks to install a tool that is already there (#298). `officecli --version` is the portable fallback: a non-zero exit or no output means missing.
 - If installed, recommend OfficeCLI first for high-fidelity XLSX mutations, inspection, validation, batch/resident flows, CJK/rhwp-aware work, and Office-compatible output.
 - If missing, do not auto-install. Present choices before proceeding:
   1. Install forked OfficeCLI from `https://github.com/lidge-jun/OfficeCLI` via `bash "$(npm root -g)/cli-jaw/scripts/install-officecli.sh"`.
