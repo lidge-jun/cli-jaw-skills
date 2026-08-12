@@ -1,6 +1,6 @@
 ---
 name: officecli-data-pipeline
-description: "Pandas DataFrame → Excel pipeline. Export CSV/TSV from pandas, import with officecli, then format and validate. Supports CJK headers, number formatting, conditional formatting, and charts."
+description: "Pandas DataFrame → Excel pipeline. Export pandas split JSON, write explicit cells with officecli batch --input, close, read back persisted values, then format and validate. Supports CJK, embedded newlines, number formatting, conditional formatting, and charts."
 metadata:
   openclaw:
     emoji: "📊"
@@ -11,13 +11,25 @@ metadata:
 
 Overlay skill for OfficeCLI that bridges Python pandas DataFrames with formatted Excel documents.
 
-> **Architecture**: pandas creates the data → CSV/TSV export preserves the table cleanly → officecli creates/imports the workbook → officecli formats and validates.
+> **Architecture**: pandas creates the data → split JSON preserves values and embedded newlines → officecli writes explicit cells with `batch --input` → officecli closes, reads back, formats, and validates.
 > This path keeps pandas focused on transforms and lets officecli own the OOXML package from creation through validation.
 >
 > **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
 > Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
 > with a lightweight pandas/openpyxl fallback after stating formatting/validation limits, or stop.
 > If the user chooses lightweight mode, save that preference to memory for future Office work.
+
+### Windows safety contract
+
+- On Windows, **never use `officecli import` for bulk writes**. Released builds can report success while persisting an empty-cell skeleton.
+- Generate explicit cell commands with `scripts/dataframe_to_batch.py`, save them to a UTF-8 JSON file, and run `officecli batch WORKBOOK --input COMMANDS.json`.
+- Prefer `--input` over inline `--commands`; it avoids Windows shell quoting and command-length hazards.
+- After the last mutation, run `officecli close WORKBOOK`, then verify exact persisted values with `scripts/verify_persisted_cells.py`.
+- `officecli validate`, row counts, and successful exit codes are not proof that values were saved. Read back representative headers, CJK text, embedded-newline cells, and numeric cells from the closed workbook.
+- `officecli import` is legacy opt-in on non-Windows only, after that exact OfficeCLI build has been independently verified. Persisted read-back remains mandatory.
+
+Commands below use `python`, which is the normal Windows launcher. On hosts that
+only expose `python3`, substitute that command without changing the arguments.
 
 ---
 
@@ -34,19 +46,19 @@ Overlay skill for OfficeCLI that bridges Python pandas DataFrames with formatted
 ## Pipeline Architecture
 
 ```
-┌─────────────┐    ┌───────────────┐    ┌──────────────┐    ┌──────────────┐
-│   pandas     │ →  │   CSV / TSV    │ →  │  officecli   │ →  │  officecli   │
-│  DataFrame   │    │ export table   │    │ create/import│    │ format/valid │
-└─────────────┘    └───────────────┘    └──────────────┘    └──────────────┘
-  Data transforms     Portable rows      Native workbook      Schema + layout
-  Joins, aggregates   Header-safe text   ownership            verification
+┌─────────────┐    ┌───────────────┐    ┌──────────────┐    ┌────────────────┐
+│   pandas     │ →  │  split JSON   │ →  │  officecli   │ →  │ close/read-back│
+│  DataFrame   │    │ values + rows │    │ batch --input│    │ format/validate│
+└─────────────┘    └───────────────┘    └──────────────┘    └────────────────┘
+  Data transforms     UTF-8 + newlines    Explicit cells       Persisted proof
+  Joins, aggregates   Type-safe values    Native workbook      Schema + layout
 ```
 
-**Why export CSV/TSV first instead of writing `.xlsx` directly?** officecli formatting is:
+**Why export split JSON instead of writing `.xlsx` directly?** officecli formatting is:
 1. Declarative (one command per style) vs imperative (multiple Python API calls)
 2. Scriptable in shell (composable with other CLI tools)
 3. Batchable (single open/save cycle for all formatting)
-4. Owned end-to-end by officecli, so `officecli validate` stays aligned with the generated workbook
+4. Owned end-to-end by officecli, while exact persisted read-back catches silent empty-workbook failures
 
 ---
 
@@ -64,16 +76,24 @@ df = pd.DataFrame({
     "카테고리": ["가전", "가전", "가전", "가전"],
 })
 
-df.to_csv("sales_report.csv", index=False)
-print(f"Written {len(df)} rows to sales_report.csv")
+df.to_json(
+    "sales_report.split.json",
+    orient="split",
+    force_ascii=False,
+    date_format="iso",
+)
+print(f"Prepared {len(df)} rows for explicit-cell writing")
 ```
 
 ### Step 2: Format with officecli
 
 ```bash
-# Create workbook and import pandas output
+# Create workbook and write every non-null value to an explicit cell.
 officecli create sales_report.xlsx
-officecli import sales_report.xlsx /Sheet1 sales_report.csv --header
+python scripts/dataframe_to_batch.py \
+  --sheet-json Sheet1=sales_report.split.json \
+  --output sales_report.data.json
+officecli batch sales_report.xlsx --input sales_report.data.json
 
 # Header row styling
 officecli set sales_report.xlsx '/Sheet1/A1:D1' \
@@ -92,16 +112,15 @@ officecli set sales_report.xlsx '/Sheet1/col[D]' --prop width=12
 # Freeze header row
 officecli set sales_report.xlsx /Sheet1 --prop freeze=A2
 
-# Validate
-officecli validate sales_report.xlsx
 ```
 
 ### Step 3: Batch Formatting (Recommended)
 
-Batch mode performs all operations in a single open/save cycle — much faster:
+Save the following UTF-8 JSON as `sales_report.format.json`. File input performs
+all operations in one open/save cycle without Windows shell-quoting hazards:
 
-```bash
-officecli batch sales_report.xlsx --commands '[
+```json
+[
   {"command":"set","path":"/Sheet1/A1:D1","props":{"font.bold":"true","font.size":"12","font.name":"Malgun Gothic"}},
   {"command":"set","path":"/Sheet1/B2:B5","props":{"numFmt":"#,##0"}},
   {"command":"set","path":"/Sheet1/C2:C5","props":{"numFmt":"0.0%"}},
@@ -110,7 +129,28 @@ officecli batch sales_report.xlsx --commands '[
   {"command":"set","path":"/Sheet1/col[C]","props":{"width":"12"}},
   {"command":"set","path":"/Sheet1/col[D]","props":{"width":"12"}},
   {"command":"set","path":"/Sheet1","props":{"freeze":"A2"}}
-]'
+]
+```
+
+```bash
+officecli batch sales_report.xlsx --input sales_report.format.json
+officecli close sales_report.xlsx
+```
+
+Save representative exact values as `sales_report.expect.json`:
+
+```json
+{
+  "/Sheet1/A1": "제품명",
+  "/Sheet1/A2": "김치냉장고",
+  "/Sheet1/B2": "15000000"
+}
+```
+
+```bash
+python scripts/verify_persisted_cells.py sales_report.xlsx \
+  --expect-json sales_report.expect.json
+officecli validate sales_report.xlsx
 ```
 
 ---
@@ -214,9 +254,9 @@ df_summary = pd.DataFrame({
     "금액": [153000000, 53000000, 100000000, 0.654],
 })
 
-df_sales.to_csv("sales.csv", index=False)
-df_costs.to_csv("costs.csv", index=False)
-df_summary.to_csv("summary.csv", index=False)
+df_sales.to_json("sales.split.json", orient="split", force_ascii=False)
+df_costs.to_json("costs.split.json", orient="split", force_ascii=False)
+df_summary.to_json("summary.split.json", orient="split", force_ascii=False)
 ```
 
 ### Step 2: Format All Sheets with Batch
@@ -226,11 +266,18 @@ officecli create quarterly_report.xlsx
 officecli add quarterly_report.xlsx / --type sheet --prop name="매출"
 officecli add quarterly_report.xlsx / --type sheet --prop name="비용"
 officecli add quarterly_report.xlsx / --type sheet --prop name="요약"
-officecli import quarterly_report.xlsx /매출 sales.csv --header
-officecli import quarterly_report.xlsx /비용 costs.csv --header
-officecli import quarterly_report.xlsx /요약 summary.csv --header
+python scripts/dataframe_to_batch.py \
+  --sheet-json 매출=sales.split.json \
+  --sheet-json 비용=costs.split.json \
+  --sheet-json 요약=summary.split.json \
+  --output quarterly.data.json
+officecli batch quarterly_report.xlsx --input quarterly.data.json
+```
 
-officecli batch quarterly_report.xlsx --commands '[
+Save the following as `quarterly.format.json`:
+
+```json
+[
   {"command":"set","path":"/매출/A1:C1","props":{"font.bold":"true","font.name":"Malgun Gothic"}},
   {"command":"set","path":"/매출/B2:C4","props":{"numFmt":"#,##0"}},
   {"command":"set","path":"/매출/col[A]","props":{"width":"10"}},
@@ -248,16 +295,25 @@ officecli batch quarterly_report.xlsx --commands '[
   {"command":"set","path":"/요약/B2:B3","props":{"numFmt":"#,##0"}},
   {"command":"set","path":"/요약/B4","props":{"numFmt":"#,##0"}},
   {"command":"set","path":"/요약/B5","props":{"numFmt":"0.0%"}}
-]'
+]
+```
 
+```bash
+officecli batch quarterly_report.xlsx --input quarterly.format.json
+officecli close quarterly_report.xlsx
+python scripts/verify_persisted_cells.py quarterly_report.xlsx \
+  --expect-json quarterly.expect.json
 officecli validate quarterly_report.xlsx
 ```
 
 ---
 
-## CSV Import Pipeline
+## Legacy CSV Import (Opt-in Only)
 
-For simple CSV-to-Excel conversion without Python:
+Do not use this path on Windows. Convert CSV/TSV with pandas, export split JSON,
+then use the explicit-cell batch path above. The commands below are allowed only
+on a non-Windows host after verifying the exact OfficeCLI build, and still require
+close plus exact persisted read-back:
 
 ```bash
 # Create workbook and import CSV directly
@@ -271,16 +327,22 @@ officecli set report.xlsx '/Sheet1/A1:D1' \
 # Add autofilter for data exploration
 officecli add report.xlsx /Sheet1 --type autofilter --prop range=A1:D1
 
+officecli close report.xlsx
+python scripts/verify_persisted_cells.py report.xlsx --expect-json report.expect.json
 officecli validate report.xlsx
 ```
 
 ### TSV Import
+
+Legacy non-Windows verified builds only:
 
 ```bash
 officecli import report.xlsx /Sheet1 data.tsv --format tsv --header
 ```
 
 ### Stdin Import (Pipe from Other Tools)
+
+Legacy non-Windows verified builds only:
 
 ```bash
 # Pipe query results directly into Excel
@@ -316,68 +378,47 @@ officecli set data.xlsx '/Sheet1/A2:A100' --prop numFmt='yyyy"년" mm"월" dd"�
 
 ---
 
-## End-to-End Example Script
+## End-to-End Sequence
 
-Complete pipeline from data generation to validated output:
+Complete pipeline from data generation to persisted-value proof:
+
+```python
+import pandas as pd
+
+df = pd.DataFrame([
+    {"제품명": "김치냉장고", "설명": "첫 줄\n둘째 줄", "매출액": 15000000},
+    {"제품명": "에어컨", "설명": "여름 상품", "매출액": 23000000},
+])
+df.to_json("monthly_sales.split.json", orient="split", force_ascii=False)
+```
 
 ```bash
-#!/bin/bash
-set -euo pipefail
+officecli create monthly_sales.xlsx
+officecli add monthly_sales.xlsx / --type sheet --prop name="월별매출"
+python scripts/dataframe_to_batch.py \
+  --sheet-json 월별매출=monthly_sales.split.json \
+  --output monthly_sales.data.json
+officecli batch monthly_sales.xlsx --input monthly_sales.data.json
 
-OUTPUT="monthly_sales_$(date +%Y%m).xlsx"
+# Save formatting commands as monthly_sales.format.json, then apply them.
+officecli batch monthly_sales.xlsx --input monthly_sales.format.json
+officecli close monthly_sales.xlsx
 
-# Step 1: Generate data with Python
-python3 -c "
-import pandas as pd
-import random
+# Include a header, CJK, embedded newline, and number in this expectations file.
+python scripts/verify_persisted_cells.py monthly_sales.xlsx \
+  --expect-json monthly_sales.expect.json
+officecli validate monthly_sales.xlsx
+```
 
-months = ['1월','2월','3월','4월','5월','6월']
-products = ['김치냉장고','에어컨','세탁기','건조기','식기세척기']
+Example `monthly_sales.expect.json`:
 
-rows = []
-for product in products:
-    for month in months:
-        revenue = random.randint(8000000, 30000000)
-        growth = round(random.uniform(0.85, 1.35), 2)
-        rows.append({'제품명': product, '월': month, '매출액': revenue, '성장률': growth})
-
-df = pd.DataFrame(rows)
-df.to_csv('monthly_sales.csv', index=False)
-print(f'Generated {len(df)} rows')
-"
-
-# Step 2: Create workbook and import CSV
-officecli create "$OUTPUT"
-officecli add "$OUTPUT" / --type sheet --prop name="월별매출"
-officecli import "$OUTPUT" /월별매출 monthly_sales.csv --header
-
-# Step 3: Format with officecli batch
-officecli batch "$OUTPUT" --commands '[
-  {"command":"set","path":"/월별매출/A1:D1","props":{"font.bold":"true","font.size":"11","font.name":"Malgun Gothic"}},
-  {"command":"set","path":"/월별매출/C2:C31","props":{"numFmt":"#,##0"}},
-  {"command":"set","path":"/월별매출/D2:D31","props":{"numFmt":"0.0%"}},
-  {"command":"set","path":"/월별매출/col[A]","props":{"width":"16"}},
-  {"command":"set","path":"/월별매출/col[B]","props":{"width":"8"}},
-  {"command":"set","path":"/월별매출/col[C]","props":{"width":"15"}},
-  {"command":"set","path":"/월별매출/col[D]","props":{"width":"10"}},
-  {"command":"set","path":"/월별매출","props":{"freeze":"A2"}},
-  {"command":"add","path":"/월별매출","type":"autofilter","props":{"range":"A1:D1"}},
-  {"command":"add","path":"/월별매출","type":"databar","props":{"range":"C2:C31","color":"4472C4"}},
-  {"command":"add","path":"/월별매출","type":"formulacf","props":{"range":"D2:D31","formula":"$D2<1","fill":"FF6B6B"}},
-  {"command":"add","path":"/월별매출","type":"formulacf","props":{"range":"D2:D31","formula":"$D2>=1.2","fill":"51CF66"}}
-]'
-
-# Step 4: Add chart
-officecli add "$OUTPUT" '/월별매출' --type chart \
-  --prop chartType=bar \
-  --prop dataRange="월별매출!A1:C31" \
-  --prop title="월별 제품 매출" \
-  --prop width=12 --prop height=18 \
-  --prop x=6 --prop y=1
-
-# Step 5: Validate
-officecli validate "$OUTPUT"
-echo "Pipeline complete: $OUTPUT"
+```json
+{
+  "/월별매출/A1": "제품명",
+  "/월별매출/A2": "김치냉장고",
+  "/월별매출/B2": "첫 줄\n둘째 줄",
+  "/월별매출/C2": "15000000"
+}
 ```
 
 ---
@@ -387,16 +428,14 @@ echo "Pipeline complete: $OUTPUT"
 After every pipeline run, verify:
 
 ```bash
-# 1. Schema validation
+# 1. Flush and release the workbook before proving persistence
+officecli close output.xlsx
+
+# 2. Exact persisted values: header, CJK, newline, and number
+python scripts/verify_persisted_cells.py output.xlsx --expect-json output.expect.json
+
+# 3. Schema validation (necessary, but not sufficient on its own)
 officecli validate output.xlsx
-
-# 2. Row/column count matches expectation
-officecli view output.xlsx text --end 3
-# Verify header + first few data rows look correct
-
-# 3. CJK text renders correctly
-officecli view output.xlsx text | head -5
-# Korean/Japanese/Chinese characters should be readable
 
 # 4. Number formats applied correctly
 officecli get output.xlsx '/Sheet1/B2' --json
@@ -408,9 +447,11 @@ officecli get output.xlsx '/Sheet1' --json
 ```
 
 **Pass criteria:**
+- [ ] Workbook was closed before verification
+- [ ] Exact representative values were read from the persisted workbook
+- [ ] CJK and embedded-newline values match byte-for-byte
 - [ ] `officecli validate` passes with no errors
 - [ ] Row count matches DataFrame length + 1 (header)
-- [ ] CJK text displays correctly in `view text`
 - [ ] Number formats show commas/percentages as expected
 - [ ] Conditional formatting highlights correct cells
 - [ ] Charts reference correct data ranges
@@ -421,7 +462,9 @@ officecli get output.xlsx '/Sheet1' --json
 
 | Task | Command |
 |------|---------|
-| Import CSV | `officecli import data.xlsx /Sheet1 data.csv --header` |
+| DataFrame → batch JSON | `python scripts/dataframe_to_batch.py --sheet-json Sheet1=data.split.json --output data.batch.json` |
+| Safe bulk write | `officecli batch data.xlsx --input data.batch.json` |
+| Legacy import | Non-Windows verified builds only: `officecli import data.xlsx /Sheet1 data.csv --header` |
 | Header styling | `officecli set f.xlsx '/Sheet1/A1:D1' --prop font.bold=true --prop font.name="Malgun Gothic"` |
 | Number format | `officecli set f.xlsx '/Sheet1/B2:B99' --prop numFmt="#,##0"` |
 | Percentage | `officecli set f.xlsx '/Sheet1/C2:C99' --prop numFmt="0.0%"` |
@@ -431,5 +474,7 @@ officecli get output.xlsx '/Sheet1' --json
 | Highlight rule | `officecli add f.xlsx /Sheet1 --type formulacf --prop range=... --prop formula=...` |
 | Chart | `officecli add f.xlsx /Sheet1 --type chart --prop chartType=bar --prop dataRange=...` |
 | Autofilter | `officecli add f.xlsx /Sheet1 --type autofilter --prop range=A1:D1` |
-| Batch format | `officecli batch f.xlsx --commands '[...]'` |
+| Batch format | `officecli batch f.xlsx --input format.commands.json` |
+| Flush and release | `officecli close f.xlsx` |
+| Persisted read-back | `python scripts/verify_persisted_cells.py f.xlsx --expect-json expected.json` |
 | Validate | `officecli validate f.xlsx` |
