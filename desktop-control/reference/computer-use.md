@@ -4,6 +4,10 @@ For desktop apps and non-DOM UI. Finder, System Settings, Chrome tab bar, native
 
 ## Current tool surface
 
+macOS is **app-scoped**; Windows is **window-scoped**. These are different APIs, not dialects of one API. Calling a macOS-only tool on Windows fails with `sky.get_app_state is not a function` rather than a clean precondition error, so establish the platform before the first call.
+
+### macOS
+
 Use the Computer Use tools exposed by the active runtime. The current contract is:
 
 | Tool | Use |
@@ -20,21 +24,56 @@ Use the Computer Use tools exposed by the active runtime. The current contract i
 | `type_text(app, text)` | Type literal text into current focus. Use only after verifying focus. |
 | `perform_secondary_action(app, element_index, action)` | Invoke a secondary accessibility action exposed by an element. |
 
+### Windows
+
+| Tool | Use |
+|---|---|
+| `list_windows()` | Discover windows. This is the entry point on Windows — there is no app-scoped session. |
+| `get_window_state({app, id})` | Read a window's state; returns screenshot plus accessibility tree. Required before interaction each assistant turn. |
+| `activate_window`, `get_window` | Focus and inspect a specific window. |
+| `click`, `scroll`, `drag`, `press_key`, `type_text`, `set_value`, `launch_app`, `list_apps`, `perform_secondary_action` | Same roles as macOS. |
+
+**Not available on Windows: `get_app_state`, `select_text`.** Measured `Object.keys(sky)` on a Windows 11 host confirms the surface above.
+
+```js
+const sky = (await import("@oai/sky")).sky;
+const wins = await sky.list_windows();
+const st = await sky.get_window_state({ app: wins[0].app, id: wins[0].id });
+```
+
 ## Preconditions (check before first action)
 
-- Platform: `macOS`.
-- The active agent runtime exposes the Computer Use tools listed above.
+- Platform: `macOS` or `Windows`. Linux, WSL, and Docker have no Computer Use host.
+- The active agent runtime exposes the platform's tools listed above.
+
+### macOS
+
 - If the app is not obvious, call `list_apps()` before `get_app_state(app)`.
 - TCC Accessibility and AppleEvents are granted to the controlling app.
 - In cli-jaw packaged installs, `/Applications/Jaw.app` and `/Applications/Codex Computer Use.app` may be required for TCC attribution. Treat missing bundles as setup failures when this path was explicitly requested.
+
+### Windows
+
+Two results here look like success and are not. Both break the "re-ground with a state read" loop by returning something plausible.
+
+- **`list_apps()` works without a working pipe.** It returned 40 apps on a host where no window could be read. It is a local enumeration, not a health signal — never conclude from it that the connection is alive.
+- **An empty `list_windows()` is usually "you are not on the pipe", not "no windows are open".** Calling `@oai/sky` outside `node_repl` returns an empty list instead of an error, because the native-pipe transport is selected only when `globalThis.nodeRepl` exists and carries `SKY_CUA_NATIVE_PIPE=1`; the constructor takes the `nodeRepl` object itself, so no amount of environment setup reproduces it from a bare `node.exe`. The fallback helper runs in session 0 and sees nothing.
+
+Requirements:
+
+- Run Computer Use calls inside `node_repl`.
+- The Codex desktop app must be running in the **logged-on** session — it creates `\\.\pipe\codex-computer-use-<uuid>`, not `codex-computer-use.exe` (that binary is the notify client). A locked screen is fine; logged out is not.
+- The app rewrites `config.toml` with the new pipe path when it starts, so read that file **after** launching rather than trusting the stored value.
+- Over SSH you land in session 0 and cannot launch a GUI directly; use the task scheduler. Quoting is several layers deep (`ssh → PowerShell → bash → codex → JS`), so upload a script file instead of composing a one-liner.
+- The codex Windows sandbox kills child processes inside `codex exec` with exit `-1073741502` and an empty stderr. The only known workaround is `--dangerously-bypass-approvals-and-sandbox`, which disables **both** approvals and the sandbox. That is a real safety cost: it is an explicit, attended, user-made choice. cli-jaw never adds it automatically and never persists it, and `permissions=auto` is not an equivalent substitute.
 
 If any blocker fails, stop and report: `precondition failed: <name>`. Do not switch to CDP.
 
 ## The state-first rule
 
-Every assistant turn that interacts with an app begins with `get_app_state(app)`. The returned state includes a screenshot and element indices used by subsequent actions.
+Every assistant turn that interacts with an app begins with a state read — `get_app_state(app)` on macOS, `get_window_state({app, id})` on Windows. The returned state includes a screenshot and element indices used by subsequent actions.
 
-- Call `get_app_state` again after any action that changes the UI or focus.
+- Call it again after any action that changes the UI or focus.
 - When the server returns `stale_warning`, re-call `get_app_state` before retrying — it is a signal, not a failure.
 - If an action does not change state and the next action uses the same fresh tree intentionally, you may continue; do not continue through uncertainty.
 

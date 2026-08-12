@@ -4,7 +4,9 @@ Below is the actual Chrome → Spotify trace that surfaced every pattern this sk
 
 ## Pattern 1 — State first
 
-Every session begins with `get_app_state`. No exceptions.
+Every session begins with a state read. No exceptions.
+
+The examples below are macOS (`get_app_state(app)`). On Windows the same discipline applies with the window-scoped API: `list_windows()` then `get_window_state({app, id})`, and neither `get_app_state` nor `select_text` exists. See [`computer-use.md`](computer-use.md).
 
 ```
 path=computer-use
@@ -100,7 +102,7 @@ result=ok
 
 | Rule | When | What |
 |---|---|---|
-| State first | First Computer Use interaction each assistant turn | `get_app_state(app)` before anything else |
+| State first | First Computer Use interaction each assistant turn | macOS `get_app_state(app)` / Windows `get_window_state({app, id})` before anything else |
 | Screenshot-visible but not in tree | Map labels, canvas text, custom renders | `click(x, y)` pointer-action **immediately** from screenshot coords |
 | element_index | Target IS in the element tree | Prefer `click(element_index=N)` / `set_value(element_index=N)`; use `type_text(app, text)` only after focus verification |
 | Stale recovery | `stale_warning=yes` or element miss | Re-call `get_app_state`, get fresh indices, retry |

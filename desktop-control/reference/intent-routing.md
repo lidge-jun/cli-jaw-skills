@@ -47,7 +47,7 @@ The routing table above maps to the `CU-XX` / `TX-XX` contracts defined in `devl
 3. Is the target outside any webpage (app window, menu bar, OS dialog)? → **Computer Use**.
 4. Are you reading a pixel coordinate the user gave verbatim? → **Computer Use** pointer-action.
 5. Do you need the DOM to locate the element but the user insists on a real cursor click? → **Hybrid**.
-6. Is the app name unclear? → **Computer Use** `list_apps()` before `get_app_state(app)`, then continue routing inside the selected app.
+6. Is the app name unclear? → **Computer Use** discovery first, then continue routing inside the selected target. macOS: `list_apps()` before `get_app_state(app)`. Windows: `list_windows()` before `get_window_state({app, id})` — `list_apps()` there answers even with a dead pipe, so it proves nothing about the connection.
 
 If steps 0–6 all return no match, stop and report `needs boss follow-up: ambiguous target`.
 
