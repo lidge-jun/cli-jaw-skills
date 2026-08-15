@@ -146,7 +146,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-backend"
+      "superseded_by": "jaw-dev-backend"
     },
     "apple-notes": {
       "name": "Apple Notes",
@@ -216,7 +216,7 @@
       },
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "desktop-control"
+      "superseded_by": "jaw-desktop-control"
     },
     "autonomous-loops": {
       "name": "Autonomous Loops Skill",
@@ -243,7 +243,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-pabcd"
+      "superseded_by": "jaw-dev-pabcd"
     },
     "brainstorming": {
       "name": "Brainstorming",
@@ -258,7 +258,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "browser": {
+    "jaw-browser": {
       "name": "브라우저 조작",
       "name_ko": "브라우저 조작",
       "name_en": "Browser Control",
@@ -523,7 +523,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-pabcd"
+      "superseded_by": "jaw-dev-pabcd"
     },
     "continuous-learning": {
       "name": "Continuous Learning",
@@ -654,7 +654,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-data"
+      "superseded_by": "jaw-dev-data"
     },
     "database-migrations": {
       "name": "Database Migration Patterns",
@@ -668,7 +668,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-data"
+      "superseded_by": "jaw-dev-data"
     },
     "debugging-checklist": {
       "name": "Debugging Checklist",
@@ -682,7 +682,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-debugging"
+      "superseded_by": "jaw-dev-debugging"
     },
     "debugging-helpers": {
       "name": "Debugging Helpers",
@@ -696,7 +696,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-debugging"
+      "superseded_by": "jaw-dev-debugging"
     },
     "design": {
       "name": "Design Workspace",
@@ -727,7 +727,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "search"
+      "superseded_by": "jaw-search"
     },
     "dependency-install-helper": {
       "name": "Dependency Install Helper",
@@ -754,9 +754,9 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-devops"
+      "superseded_by": "jaw-dev-devops"
     },
-    "desktop-control": {
+    "jaw-desktop-control": {
       "name": "Desktop Control",
       "name_ko": "데스크톱 컨트롤",
       "name_en": "Desktop Control",
@@ -781,7 +781,7 @@
       "status": "active",
       "version": "1.0.0"
     },
-    "dev": {
+    "jaw-dev": {
       "name": "Dev Common",
       "name_ko": "Dev Common",
       "name_en": "Dev Common",
@@ -794,7 +794,7 @@
       "install": null,
       "version": "1.1.3"
     },
-    "dev-architecture": {
+    "jaw-dev-architecture": {
       "name": "Dev Architecture",
       "name_ko": "Dev Architecture",
       "name_en": "Dev Architecture",
@@ -807,7 +807,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-backend": {
+    "jaw-dev-backend": {
       "name": "Dev Backend",
       "name_ko": "Dev Backend",
       "name_en": "Dev Backend",
@@ -820,7 +820,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-code-reviewer": {
+    "jaw-dev-code-reviewer": {
       "name": "Dev Code Reviewer",
       "name_ko": "Dev Code Reviewer",
       "name_en": "Dev Code Reviewer",
@@ -833,7 +833,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-data": {
+    "jaw-dev-data": {
       "name": "Dev Data",
       "name_ko": "Dev Data",
       "name_en": "Dev Data",
@@ -846,7 +846,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-debugging": {
+    "jaw-dev-debugging": {
       "name": "Dev-Debugging — Systematic Root Cause Analysis",
       "name_ko": "Dev-Debugging — Systematic Root Cause Analysis",
       "name_en": "Dev-Debugging — Systematic Root Cause Analysis",
@@ -859,7 +859,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-devops": {
+    "jaw-dev-devops": {
       "name": "Dev DevOps",
       "name_ko": "Dev DevOps",
       "name_en": "Dev DevOps",
@@ -872,7 +872,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-frontend": {
+    "jaw-dev-frontend": {
       "name": "Dev Frontend",
       "name_ko": "Dev Frontend",
       "name_en": "Dev Frontend",
@@ -885,7 +885,7 @@
       "install": null,
       "version": "1.0.3"
     },
-    "dev-pabcd": {
+    "jaw-dev-pabcd": {
       "name": "Dev PABCD",
       "name_ko": "Dev PABCD",
       "name_en": "Dev PABCD",
@@ -898,7 +898,7 @@
       "install": null,
       "version": "2.0.3"
     },
-    "dev-scaffolding": {
+    "jaw-dev-scaffolding": {
       "name": "Dev Scaffolding",
       "name_ko": "Dev Scaffolding",
       "name_en": "Dev Scaffolding",
@@ -911,7 +911,7 @@
       "install": null,
       "version": "1.0.3"
     },
-    "dev-security": {
+    "jaw-dev-security": {
       "name": "Dev-Security — Production Security Hardening",
       "name_ko": "Dev-Security — Production Security Hardening",
       "name_en": "Dev-Security — Production Security Hardening",
@@ -924,7 +924,7 @@
       "install": null,
       "version": "1.0.2"
     },
-    "dev-testing": {
+    "jaw-dev-testing": {
       "name": "Dev Testing",
       "name_ko": "Dev Testing",
       "name_en": "Dev Testing",
@@ -937,7 +937,7 @@
       "install": null,
       "version": "1.1.2"
     },
-    "dev-uiux-design": {
+    "jaw-dev-uiux-design": {
       "name": "Dev UI/UX Design",
       "name_ko": "Dev UI/UX 디자인",
       "name_en": "Dev UI/UX Design",
@@ -967,7 +967,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "diagram": {
+    "jaw-diagram": {
       "name": "Diagram",
       "name_ko": "다이어그램",
       "name_en": "Diagram",
@@ -1097,7 +1097,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-devops"
+      "superseded_by": "jaw-dev-devops"
     },
     "documentation-lookup": {
       "name": "Documentation Lookup (Context7)",
@@ -1111,9 +1111,9 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "search"
+      "superseded_by": "jaw-search"
     },
-    "docx": {
+    "jaw-docx": {
       "name": "DOCX",
       "name_ko": "DOCX",
       "name_en": "DOCX",
@@ -1190,7 +1190,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-debugging"
+      "superseded_by": "jaw-dev-debugging"
     },
     "eval-harness": {
       "name": "Eval Harness",
@@ -1217,7 +1217,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "search"
+      "superseded_by": "jaw-search"
     },
     "fal-image-edit": {
       "name": "Fal Image Edit",
@@ -1305,7 +1305,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "github": {
+    "jaw-github": {
       "name": "GitHub (범용)",
       "name_ko": "GitHub (범용)",
       "name_en": "GitHub",
@@ -1322,7 +1322,7 @@
       "install": "brew install gh",
       "version": "1.0.0"
     },
-    "goal": {
+    "jaw-goal": {
       "name": "Goal Execution",
       "name_ko": "Goal 실행 가이드",
       "name_en": "Goal Execution",
@@ -1477,7 +1477,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "hwp": {
+    "jaw-hwp": {
       "name": "HWP",
       "name_ko": "한글 (HWP/HWPX)",
       "name_en": "HWP/HWPX",
@@ -1765,7 +1765,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-debugging"
+      "superseded_by": "jaw-dev-debugging"
     },
     "liquid-glass-design": {
       "name": "Liquid Glass Design System (iOS 26)",
@@ -1792,7 +1792,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-debugging"
+      "superseded_by": "jaw-dev-debugging"
     },
     "logistics-exception-management": {
       "name": "Logistics Exception Management",
@@ -1833,7 +1833,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "memory": {
+    "jaw-memory": {
       "name": "Long-term Memory",
       "name_ko": "Long-term Memory",
       "name_en": "Long-term Memory",
@@ -2107,7 +2107,7 @@
       "install": "brew install openhue",
       "version": "1.0.0"
     },
-    "pdf": {
+    "jaw-pdf": {
       "name": "PDF 읽기/리뷰",
       "name_ko": "PDF 읽기/리뷰",
       "name_en": "PDF Reader/Writer",
@@ -2124,7 +2124,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "pdf-vision": {
+    "jaw-pdf-vision": {
       "name": "PDF Vision (하이브리드)",
       "name_ko": "PDF Vision (하이브리드)",
       "name_en": "PDF Vision (Hybrid)",
@@ -2223,7 +2223,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "pptx": {
+    "jaw-pptx": {
       "name": "PPTX",
       "name_ko": "PPTX",
       "name_en": "PPTX",
@@ -2353,7 +2353,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-pabcd"
+      "superseded_by": "jaw-dev-pabcd"
     },
     "react-best-practices": {
       "name": "React Best Practices",
@@ -2380,7 +2380,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-code-reviewer"
+      "superseded_by": "jaw-dev-code-reviewer"
     },
     "regex-vs-llm-structured-text": {
       "name": "Regex vs LLM for Structured Text Parsing",
@@ -2427,7 +2427,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-code-reviewer"
+      "superseded_by": "jaw-dev-code-reviewer"
     },
     "research-worker": {
       "name": "Research Worker",
@@ -2494,7 +2494,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "screen-capture": {
+    "jaw-screen-capture": {
       "name": "Screen Capture",
       "name_ko": "Screen Capture",
       "name_en": "Screen Capture",
@@ -2507,7 +2507,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "search": {
+    "jaw-search": {
       "name": "Search Hub",
       "name_ko": "Search Hub",
       "name_en": "Search Hub",
@@ -2532,7 +2532,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-security"
+      "superseded_by": "jaw-dev-security"
     },
     "security-ownership-map": {
       "name": "Security Ownership Map",
@@ -2559,7 +2559,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-security"
+      "superseded_by": "jaw-dev-security"
     },
     "senior-architect": {
       "name": "Senior Architect",
@@ -2573,7 +2573,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-architecture"
+      "superseded_by": "jaw-dev-architecture"
     },
     "sentry": {
       "name": "Sentry",
@@ -2759,7 +2759,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "structured-renderers": {
+    "jaw-structured-renderers": {
       "name": "Structured Renderers",
       "name_ko": "구조화 렌더러",
       "name_en": "Structured Renderers",
@@ -2853,7 +2853,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-testing"
+      "superseded_by": "jaw-dev-testing"
     },
     "team-builder": {
       "name": "Team Builder",
@@ -2868,7 +2868,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "telegram-send": {
+    "jaw-telegram-send": {
       "name": "Telegram Send",
       "name_ko": "Telegram Send",
       "name_en": "Telegram Send",
@@ -2915,7 +2915,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-uiux-design"
+      "superseded_by": "jaw-dev-uiux-design"
     },
     "things-mac": {
       "name": "Things 3 (macOS)",
@@ -3010,7 +3010,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-uiux-design"
+      "superseded_by": "jaw-dev-uiux-design"
     },
     "ux-researcher": {
       "name": "UX Researcher",
@@ -3054,9 +3054,9 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-testing"
+      "superseded_by": "jaw-dev-testing"
     },
-    "video": {
+    "jaw-video": {
       "name": "Video Rendering",
       "name_ko": "영상 렌더링",
       "name_en": "Video Rendering",
@@ -3072,7 +3072,7 @@
           "pnpm"
         ]
       },
-      "install": "node skills_ref/video/scripts/ensure-remotion.mjs",
+      "install": "node skills_ref/jaw-video/scripts/ensure-remotion.mjs",
       "version": "0.1.0"
     },
     "video-downloader": {
@@ -3163,7 +3163,7 @@
       "provider": "openai",
       "status": "active",
       "version": "1.0.0",
-      "superseded_by": "desktop-control"
+      "superseded_by": "jaw-desktop-control"
     },
     "weather": {
       "name": "날씨",
@@ -3190,7 +3190,7 @@
       "requires": null,
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "search"
+      "superseded_by": "jaw-search"
     },
     "web-artifacts-builder": {
       "name": "Web Artifacts Builder",
@@ -3238,7 +3238,7 @@
       "provider": "n/a",
       "status": "active",
       "version": "1.0.0",
-      "superseded_by": "browser"
+      "superseded_by": "jaw-browser"
     },
     "whatsapp": {
       "name": "Whatsapp",
@@ -3265,7 +3265,7 @@
       "requires": {},
       "install": null,
       "version": "1.0.0",
-      "superseded_by": "dev-pabcd"
+      "superseded_by": "jaw-dev-pabcd"
     },
     "x-api": {
       "name": "X API",
@@ -3280,7 +3280,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "xlsx": {
+    "jaw-xlsx": {
       "name": "XLSX",
       "name_ko": "XLSX",
       "name_en": "XLSX",
