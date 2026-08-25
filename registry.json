@@ -3319,6 +3319,32 @@
       "description": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
       "desc_ko": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
       "desc_en": "Ranked structure map before exploring unfamiliar code: cli-jaw map <path> [--budget N]. Lists per-file definitions ordered by reference gravity; subtree scoping for large monorepos. Run before deep Grep dives. Triggers: repo map, structure map, codebase overview, project structure."
+    },
+    "jaw-dev-write": {
+      "name": "Dev Write",
+      "name_ko": "Dev Write",
+      "name_en": "Dev Write",
+      "emoji": "✍️",
+      "category": "orchestration",
+      "description": "한국어 윤문에 필수 사용. 이미 쓴 텍스트에서 번역투·AI 관용구를 걷어내고 문체를 일관되게 맞추되 의미는 그대로 둔다. 채팅 답변, 문서, README, 릴리스 노트, 커밋 본문, 이슈/PR 텍스트, UI 문구가 대상. 트리거: 윤문, 다듬어, 자연스럽게, 교정, AI투, 번역투, Korean polish, proofread Korean.",
+      "desc_ko": "한국어 윤문에 필수 사용. 번역투·AI 관용구 제거, 문체 일관성, 의미 보존 수정.",
+      "desc_en": "MUST USE for Korean prose revision: remove translationese and AI idioms, fix register breaks, preserve meaning exactly. Applies to chat answers, docs, READMEs, release notes, commit bodies, issue/PR text, UI copy.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
+    "jaw-dev-speech": {
+      "name": "Dev Speech",
+      "name_ko": "Dev Speech",
+      "name_en": "Dev Speech",
+      "emoji": "💬",
+      "category": "orchestration",
+      "description": "사람에게 보낼 답변을 구성할 때 필수 사용. 상대 수준 보정, 결론 선행 순서, 추측과 확인의 구분, 사람다운 문체 규율, 그리고 다른 AI에게 일을 넘길 때의 맥락·완료조건 작성법. 트리거: 설명해, 알려줘, 쉬게 설명, 답변, explain, tone, register, audience.",
+      "desc_ko": "답변 구성 스킬. 상대 수준 보정, 결론 선행, 추측/확인 구분, 사람다운 문체.",
+      "desc_en": "MUST USE when composing an answer for a person: audience calibration, conclusion-first order, hedging discipline, human register, and how to hand work to another AI with selected context and verifiable completion criteria.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
     }
   }
 }
