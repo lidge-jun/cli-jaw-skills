@@ -403,3 +403,139 @@ For 공문서 or government-submission documents:
 - Headings: sans-serif (고딕), Bold 700
 - Left-aligned body text (no indent from title)
 - Source: KRDS (krds.go.kr), 국립국어원 공문서 지침
+
+## Embedding Images and Diagrams
+
+### Canvas Drawing (inline diagrams)
+
+Use reportlab Canvas for custom diagrams directly in PDF — no external images needed:
+
+```python
+from reportlab.platypus.flowables import Flowable
+
+class CustomDiagram(Flowable):
+    """Base class for inline PDF diagrams."""
+    def __init__(self, width, height):
+        Flowable.__init__(self)
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        c = self.canv
+        # Rounded rectangles for boxes
+        c.setFillColor(HexColor('#DBEAFE'))
+        c.roundRect(0, 0, 6*cm, 2*cm, 8, fill=1, stroke=0)
+        # Lines for connections
+        c.setStrokeColor(HexColor('#6B7280'))
+        c.setLineWidth(2)
+        c.line(3*cm, 2*cm, 3*cm, 4*cm)
+        # Text labels
+        c.setFont('NotoSansKR', 12)
+        c.drawCentredString(3*cm, 0.7*cm, '한국어 라벨')
+```
+
+Useful Canvas primitives:
+- `roundRect(x, y, w, h, radius)` — colored boxes, cards
+- `line(x1, y1, x2, y2)` — connections, arrows
+- `circle(x, y, r)` — nodes, bullets
+- `drawCentredString(x, y, text)` — centered labels
+- `setFillColor()` / `setStrokeColor()` — theming
+
+### ColorBox Pattern
+
+A reusable colored banner/callout:
+
+```python
+class ColorBox(Flowable):
+    def __init__(self, text, bg_color, text_color, width, height, font_size=16):
+        Flowable.__init__(self)
+        self.text, self.bg, self.tc = text, bg_color, text_color
+        self.width, self.height, self.fs = width, height, font_size
+
+    def draw(self):
+        c = self.canv
+        c.setFillColor(self.bg)
+        c.roundRect(0, 0, self.width, self.height, 10, fill=1, stroke=0)
+        c.setFillColor(self.tc)
+        c.setFont('NotoSansKR', self.fs)
+        tw = c.stringWidth(self.text, 'NotoSansKR', self.fs)
+        c.drawString((self.width - tw) / 2, self.height / 2 - self.fs / 3, self.text)
+```
+
+### Bar Chart Pattern
+
+Horizontal bar charts for comparisons:
+
+```python
+class BarChart(Flowable):
+    def __init__(self, data, width, height):
+        # data: list of (label, value, max_value, color)
+        Flowable.__init__(self)
+        self.data, self.width, self.height = data, width, height
+
+    def draw(self):
+        c = self.canv
+        bar_h, gap = 1.0*cm, 0.8*cm
+        max_bar_w = self.width * 0.55
+        for i, (label, value, max_val, color) in enumerate(reversed(self.data)):
+            y = i * (bar_h + gap)
+            c.setFont('NotoSansKR', 12)
+            c.drawString(0, y + bar_h/2 - 4, label)
+            bar_w = (value / max_val) * max_bar_w
+            c.setFillColor(color)
+            c.roundRect(self.width*0.35, y, bar_w, bar_h, 5, fill=1, stroke=0)
+```
+
+### Embedding External Images (SVG/PNG)
+
+Convert SVG to PNG, then embed with reportlab Image:
+
+```python
+import subprocess
+from reportlab.platypus import Image
+from reportlab.lib.units import cm
+
+# SVG to PNG via rsvg-convert (brew install librsvg)
+subprocess.run(['rsvg-convert', 'diagram.svg', '-o', 'diagram.png'], check=True)
+
+# Or via cairosvg (pip install cairosvg)
+import cairosvg
+cairosvg.svg2png(url='diagram.svg', write_to='diagram.png', dpi=200)
+
+# Embed in story
+img = Image('diagram.png', width=14*cm, height=8*cm)
+story.append(img)
+```
+
+### Architecture Diagram Pattern
+
+For MoE/pipeline/flow diagrams:
+
+```python
+class ArchDiagram(Flowable):
+    def draw(self):
+        c = self.canv
+        # Input layer (bottom)
+        c.setFillColor(HexColor('#DBEAFE'))
+        c.roundRect(self.w/2 - 3*cm, 0, 6*cm, 1.5*cm, 8, fill=1, stroke=0)
+        # Router (middle)
+        c.setFillColor(HexColor('#FEF3C7'))
+        c.roundRect(self.w/2 - 2*cm, 2.2*cm, 4*cm, 1.3*cm, 8, fill=1, stroke=0)
+        # Expert boxes (top row, highlight active ones)
+        for i in range(8):
+            color = HexColor('#10B981') if i in active_set else HexColor('#F3F4F6')
+            c.setFillColor(color)
+            c.roundRect(x, y, expert_w, expert_h, 6, fill=1, stroke=0)
+        # Arrows connecting layers
+        c.line(src_x, src_y, dst_x, dst_y)
+```
+
+### Best Practices
+
+- Use Canvas Flowables for reproducible, resolution-independent diagrams
+- Embed external PNG/JPEG via `reportlab.platypus.Image` with explicit width/height
+- Convert SVG to PNG with `rsvg-convert` (macOS: `brew install librsvg`) or `cairosvg`
+- For complex diagrams, generate SVG first (better tooling), then embed as PNG
+- Always set `preserveAspectRatio=True` on Image flowables
+- Use colorful backgrounds (roundRect with fill) to create visual weight on each page
+- Table with colored cells works as a simple grid/comparison chart
