@@ -7,7 +7,7 @@ description: "Convert HTML slides into native PowerPoint elements. Triggers: HTM
 
 Convert HTML slides into native PowerPoint elements with accurate positioning.
 Covers: HTML→native PPTX conversion (text, images, shapes, lists), screenshot fallback.
-For programmatic slide creation without HTML, see [pptx skill](../pptx/SKILL.md).
+For programmatic slide creation without HTML, see [pptx skill](../jaw-pptx/SKILL.md).
 
 ---
 

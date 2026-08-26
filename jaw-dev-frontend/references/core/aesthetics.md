@@ -25,22 +25,50 @@ Hero-scale typography belongs to true hero surfaces. It is usually slop inside w
 - **Body**: `text-base text-gray-600 leading-relaxed max-w-[65ch]`
 - **Serif**: BANNED for Dashboard/Software UIs. OK for editorial/creative only.
 
-### Serif Discipline (expanded)
-Serif is VERY DISCOURAGED as default font. "It feels creative/premium" is NOT a reason.
+### Serif Discipline (verified 2026-07-09)
+Serif is a DOMAIN-GATED direction, not a default and not a blanket ban.
+"It feels creative/premium" is still NOT a reason — but the 2024-2026 serif
+renaissance in AI/tech branding is real and measurable, and direction work
+must be able to speak it.
 
-**Serif acceptable ONLY when:**
+**The actual grammar is a three-role system** (never "make everything serif"):
+display serif at LIGHT weights + sans UI + mono technical accent. Measured
+live 2026-07-09: claude.ai display `Anthropic Serif` 56px / weight **330**;
+anthropic.com editorial H2 ~68px/400; medium.com `GT Super` 120px/400 with
+Sohne sans UI; manus.im Libre Baskerville 36px/400 over system-sans UI;
+Perplexity's Comet leads with Editorial New (Studio Freight, Fonts In Use
+2025-10-23). Note the weights: 330-400. Heavy bold display serif is NOT the
+pattern.
+
+**Serif direction is legitimate when:**
 - Brand brief literally names a serif font, OR
-- Aesthetic is genuinely editorial/luxury/publication AND you can articulate why
+- Aesthetic is genuinely editorial/luxury/publication AND you can articulate why, OR
+- The surface is an AI-product / research / trust brand deliberately signaling
+  human warmth and scholarship (the Anthropic / Comet / Manus lane) — serif
+  display must then come WITH editorial structure (long-form typography,
+  page-like surfaces, restrained palette), never pasted onto a SaaS layout.
 
-**Banned as defaults:**
-- Fraunces, Instrument_Serif (the two LLM-favorite display serifs)
+**Still banned:**
+- Serif in dashboards, dense tools, admin, and Software UIs (unchanged).
+- Fraunces, Instrument_Serif as defaults (the two LLM-favorite display serifs).
+- "tasteslop": a display serif as a generic AI-premium shortcut without
+  editorial content structure — the backlash already has a name (WIRED
+  2026-06-05).
+
+**Do not overclaim the trend:** Runway loads JHA Times Now but renders its
+hero in a grotesk (abcNormal 48px/400); Attio loads Tiempos Text but leads
+with Inter Display 64px/600; Mistral is sans/mono (ALTMistral 96px/500).
+Loading a serif file is not being serif-led.
 
 **Emphasis Rule:**
 - Never inject serif word into sans headline (or vice versa) for visual interest
 - Use italic or bold of the SAME font family
 
-**If serif is justified (rare), rotate from:**
-PP Editorial New, GT Sectra Display, Reckless Neue, Tiempos Headline, Recoleta, Cormorant Garamond, Playfair Display, EB Garamond, IvyPresto, Migra
+**If serif display is chosen, rotate from:**
+Tiempos Headline, Editorial New / PP Editorial New, GT Super, GT Sectra
+Display, Reckless Neue, Libre Baskerville, Recoleta, Cormorant Garamond,
+Playfair Display, EB Garamond, IvyPresto, Migra — at weights 330-500,
+generous size, line-height 1.1-1.25 for Latin display.
 
 **Italic Descender Clearance:**
 When italic has descender letters (y g j p q): `line-height: 1.1` min + `padding-bottom: 0.25rem` reserve
@@ -115,6 +143,16 @@ Rotate: never the same palette twice in consecutive projects.
 
 ### Layout Diversification
 - **ANTI-CENTER BIAS**: When DESIGN_VARIANCE > 4, centered Hero/H1 is BANNED.
+  Carve-out: FE-HERO-LIGHT-CENTER-01 (canonical in `layout-discipline.md`) is
+  the sanctioned named exception at any variance when its conditions hold:
+  headline weight <= 400 plus a full-width authored real-media backdrop. Bold
+  centered heroes remain banned above variance 4.
+  A second sanctioned variant also passes at any variance (canonical in
+  `layout-discipline.md` FE-HERO-LIGHT-CENTER-01, Authored-Field Centered
+  Statement): the background or proof object is the primary authored content,
+  the centered overlay carries <= 3 semantic elements, line breaks are
+  deliberate, and no equal-card row follows. Evidence: Vectr, Fin, Michael
+  Pumo (2026-07-14 award crawl).
 - **ANTI-HERO-IN-TOOLS**: Apps, dashboards, admin, finance flows, and developer tools should not start with landing-page hero composition.
 - Force: "Split Screen" (50/50), "Left-aligned content / Right asset", "Asymmetric white-space"
 - **Grid over Flex-Math**: NEVER `w-[calc(33%-1rem)]`. ALWAYS CSS Grid.
@@ -145,11 +183,39 @@ Atmospheric techniques are secondary:
 - **Layered transparencies**: Frosted glass with inner refraction borders
 - **Dramatic shadows**: Tinted to background hue, not generic black
 
-### Glassmorphism (when used)
-Go beyond `backdrop-blur`:
-- 1px inner border: `border-white/10`
-- Inner shadow: `shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]`
-- Simulates physical edge refraction
+### Expressive vs Functional Layers (verified 2026-07-09)
+
+The strongest 2025-2026 announcement/hero grammar (OpenAI model cards, Apple
+capsule UI) splits every surface into two layers that must never mix:
+
+- **Expressive layer**: soft-focus organic photography, AI-generated texture,
+  grain, natural palettes — carries emotion, sits in the background, contains
+  NO functional text.
+- **Functional layer**: opaque capsule/pill or card labels, buttons, and copy
+  floating ABOVE the expressive layer — full contrast, clean geometry, no
+  transparency tricks needed (the OpenAI pill is opaque white, not glass).
+
+Rules: never set functional text directly on a busy expressive background
+without its own opaque (or heavily scrimmed) container; never decorate the
+functional layer with the expressive layer's texture; one expressive field per
+viewport. This is the same layer logic as Apple's WWDC25 capsule system
+(controls as a distinct functional layer over content) executed with opaque
+surfaces.
+
+Carve-out (FE-TOPBAR-STATE-01, canonical in `top-bar.md`): a scroll-adaptive
+top bar may run a lighter at-top material (~70-80% opacity) ONLY when the hero
+is authored with a calm bar zone (the expressive field deliberately leaves the
+bar area quiet); once content scrolls beneath, the bar returns to near-opaque
+(85-95%). All other functional-layer text keeps the opaque-container rule.
+Emphasis inside pill chrome is carried by FILLS and tints, not by nested
+capsule borders — child capsule borders/outlines at rest are banned
+(FE-PILL-NEST-01, canonical in `liquid-glass.md`).
+
+### Glassmorphism / Liquid Glass (when used)
+Glass recipes, layer discipline, perf and a11y gates are owned by
+`liquid-glass.md` — read it before shipping any translucent material.
+Short version: functional layer only, 1px inner border + inner shadow for
+edge refraction, and consider the blur-free pill-over-imagery alternative.
 
 ---
 
@@ -211,6 +277,20 @@ When choosing a direction, select from these. Each has distinct rules:
 Vary between these. NEVER converge on the same archetype across generations.
 
 ---
+
+### AI-Brand Grammar Vocabulary (verified 2026-07-09)
+
+Direction shorthand for AI/tech surfaces, grounded in who actually designed what:
+
+| Grammar | Signature | Provenance |
+| --- | --- | --- |
+| OpenAI: warm-sans organic | proprietary warm geometric sans + huge whitespace + soft natural photography/film grain + opaque capsule labels | In-house (Feb 2025 rebrand, led by Veit Moeller/Shannon Jager) + ABC Dinamo (OpenAI Sans) + Studio Dumbar/DEPT (motion/sound) |
+| Anthropic: serif bookish | display serif at light weights + warm off-white page metaphor + editorial layout | Geist (Styrene + Tiempos system) |
+| DeepMind: scientific dimensional | serif/sans duality (DM Serif/DM Sans by Colophon) + conceptual 3D systems | MultiAdaptor + someform |
+
+Use these as direction vocabulary ("OpenAI-grammar hero", "Anthropic-grammar
+editorial"), not as skins to copy verbatim; each pairs with the Expressive vs
+Functional Layers rule above and the Serif Discipline gates.
 
 ## Icon System
 

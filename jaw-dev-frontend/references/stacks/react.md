@@ -19,6 +19,9 @@ Before choosing component libraries, read the core references that match the sur
 Prefer proven behavior primitives for complex interactive components:
 
 - Radix / Headless UI for dialog, popover, menu, tabs, combobox-like behavior
+- The project dropdown design layer (`references/core/dropdown-layer.md`
+  FE-DROPDOWN-LAYER-01) supplies the SKIN over these primitives; the skin never
+  replaces the primitive
 - shadcn/ui as source code scaffolding, not as a final visual design
 - Existing repo components before adding a new dependency
 
@@ -260,44 +263,20 @@ test('dialog is accessible', () => {
 - **NEVER** `w-[calc(33%-1rem)]`. ALWAYS CSS Grid
 - DESIGN_VARIANCE levels 4-10: aggressive single-column fallback on `< 768px`
 
-## Behavior Rules (moved from SKILL.md §8-§10, 2026-07-02)
+## Behavior Rules
 
 ### Custom Hooks
-Create a custom hook only when it owns reusable behavior. Good candidates: subscription
-lifecycle, reusable async state machine, shared form-field behavior, media/query/observer
-integration, keyboard/focus behavior, external store wrapper. Avoid thin aliases for
-`useState`/`useToggle`/`useDebounce` unless the repo standardizes them.
-Rules: name describes behavior, not implementation; explicit stable inputs, small return
-shape; side effects justified by an external system with correct cleanup; honest
-dependencies (`useEffectEvent` for non-reactive callbacks); never hide server/router/form
-ownership inside a generic hook.
+
+Create a custom hook only when it owns reusable behavior: a subscription lifecycle, reusable async state machine, shared form-field behavior, media/query/observer integration, keyboard/focus behavior, or an external-store wrapper. Avoid thin aliases for `useState`, `useToggle`, or `useDebounce` unless the repository standardizes them. Use explicit stable inputs, a small return shape, honest dependencies, and correct cleanup; never hide server, router, or form ownership inside a generic hook.
 
 ### React Performance
-Keep components pure, state local, classify state ownership, use server rendering/caching
-boundaries, split expensive client islands, measure before memoizing.
 
-| Tool | Use when |
-|------|----------|
-| `memo` | child render is expensive and props are stable |
-| `useMemo` | calculation is expensive or identity is required |
-| `useCallback` | callback identity required by memoized child or external API |
-| `useTransition` | interaction should stay responsive during non-urgent work |
-| `useOptimistic` | mutation UX benefits from reversible optimistic state |
-| `Activity` | hidden UI should preserve state without active Effects |
-| `Suspense` | dynamic/async boundary needs isolated loading behavior |
-
-With React Compiler enabled, remove defensive memoization unless measurement or semantics
-justify it. Split at route boundaries and heavy components (charts, editors, 3D).
-Inspect React Performance Tracks (Chrome DevTools) before adding memoization.
+Keep components pure and state local. Classify ownership, split expensive client islands, and measure before memoizing. Use `memo`, `useMemo`, and `useCallback` only for measured cost or required identity; use `useTransition` for non-urgent work, `useOptimistic` for reversible mutations, `<Activity>` for state-preserving hidden UI, and `Suspense` for isolated async boundaries. With React Compiler enabled, remove defensive memoization unless measurement or semantics justify it. Inspect React Performance Tracks before adding memoization.
 
 ### Form Handling
-Simple forms: controlled components + schema validation (Zod). Complex (multi-step,
-dynamic fields): react-hook-form + Zod resolver. Always show field-level errors with
-`role="alert"`.
+
+Use controlled fields plus schema validation for simple forms and the repository's established form library plus schema resolver for complex or dynamic forms. Always expose field-level errors with `role="alert"` or an equivalent accessible association.
 
 ## Sources
 
-| Claim | Source | Checked |
-|---|---|---|
-| React 19.2 line: Activity, useEffectEvent, PPR, Performance Tracks | https://react.dev/blog/2025/10/01/react-19-2 | 2026-07-02 |
-| React Compiler stable/optional | https://react.dev/learn/react-compiler/introduction | 2026-07-02 |
+Framework-version claims must be refreshed against official React documentation before changing version-sensitive behavior. The React 19.2 release notes cover `<Activity>`, `useEffectEvent`, and Performance Tracks; the React Compiler documentation covers its stable, optional setup.

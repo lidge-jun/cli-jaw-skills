@@ -4,6 +4,11 @@ Extends the baseline a11y rules in SKILL.md with ARIA authoring patterns, focus 
 
 ## ARIA Widget Patterns
 
+Note: a project may unify ALL dropdown-like surfaces under one visual skin
+(`dropdown-layer.md` FE-DROPDOWN-LAYER-01), but the ARIA pattern is still
+chosen per BEHAVIOR — menu vs listbox/select vs combobox vs dialog. One skin
+never means one blanket component.
+
 ### Dialog (Modal)
 
 ```html
@@ -87,6 +92,21 @@ Extends the baseline a11y rules in SKILL.md with ARIA authoring patterns, focus 
 | Carousel | Arrow L/R slides, Tab to controls | Must have pause |
 | Command palette | Type to filter, Arrow navigate, Enter select | Combobox variant |
 
+## Unusual Navigation (FE-A11Y-UNUSUAL-NAV-01, STRICT)
+
+There is no accessibility exemption for unusual navigation. Visual hiding,
+miniaturized edge controls, hover discovery, counters, and viewport-locked
+canvases are allowed only when the same route remains operable and orienting
+without the visual effect. SiteInspire unusual-layout winners are evidence for
+the visual system, not permission to remove the accessible path.
+
+- Expose semantic `nav`, `main`, and relevant region landmarks.
+- Provide a keyboard-visible alternative for every hidden or hover-revealed control.
+- Give pointer controls a 44×44px conservative target baseline.
+- Expose progress, current item, or route status as text to assistive technology.
+- Provide a reduced-motion route that does not depend on spatial animation.
+- Keep core content reachable through a non-canvas, non-precision-scroll path.
+
 ## Screen Reader Testing
 
 ### Quick Test (Every Component)
@@ -127,3 +147,23 @@ Extends the baseline a11y rules in SKILL.md with ARIA authoring patterns, focus 
 - [ ] Keyboard reaches every interactive element
 - [ ] VoiceOver heading navigation produces logical outline
 - [ ] Color is never the sole state indicator
+
+---
+
+## Heading Level Continuity (FE-HEADING-LEVELS-01, DEFAULT)
+
+Source: impeccable detector catalog (skipped heading levels rule).
+
+Do not skip heading levels: `h1` -> `h3` without an `h2` is a semantic error
+that breaks screen reader navigation and document outline.
+
+Rules:
+- Every page has exactly one `h1`.
+- Heading levels increase by one: `h1` -> `h2` -> `h3`. Never skip.
+- Heading levels may decrease by any amount (closing a subsection).
+- Visual size is independent of semantic level — use CSS, not heading tags, for size.
+- Components that render headings should accept a `level` prop or use `aria-level`
+  to maintain correct nesting in any context.
+
+Verification: run `document.querySelectorAll('h1,h2,h3,h4,h5,h6')` and check
+that levels increase by at most 1. Automated: axe-core `heading-order` rule.

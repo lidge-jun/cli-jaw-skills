@@ -42,6 +42,10 @@ Generate 3-5 **structurally different** variants. Not color/font swaps — funda
 User makes **binary decisions**: Alive or Dead.
 **NO blending** — blending is averaging. Averaging is convergence.
 
+Precedence: this Alive/Dead process governs POST-CODE iteration rounds. The
+pre-code concept stage is owned by `dev-uiux-design` UX-CONCEPT-GEN-01, whose
+mockup SYNTHESIS rule applies there and does not conflict with this ban.
+
 ### Round 3: Mutate
 Within the surviving direction, introduce deliberate "breaks":
 - Named violations of design convention
@@ -80,7 +84,7 @@ High-impact techniques for replacing generic patterns:
 - **Split-screen scroll** — Two halves sliding in opposite directions
 
 ### Surfaces
-- **True glassmorphism** — Beyond `backdrop-blur`: 1px inner border + inner shadow = edge refraction
+- **True glassmorphism** — see `liquid-glass.md` (recipes + gates); the tell of fake glass is `backdrop-blur` with no edge refraction
 - **Spotlight borders** — Card borders illuminating dynamically under cursor
 - **Grain/noise overlays** — Fixed `pointer-events-none` overlay breaking digital flatness
 - **Colored tinted shadows** — Shadows carrying background hue, not generic black

@@ -8,6 +8,71 @@
 5. Banned inside hero: tagline below CTAs, trust strip, pricing teaser, feature bullets
 6. "Used by" logo wall → separate section directly below hero
 
+## Hero Composition Grammar (verified 2026-07-09)
+
+The classic SaaS split hero — left bold headline + subcopy + CTA, right boxed
+product screenshot/mockup card — is the exhausted Stripe(2020)->Linear(2023)
+template lineage; "Linear Design" is now a reproducible kit/template category
+(LogRocket 2026-02-03). Treat it as a slop signal on brand/product homepages.
+**FE-HERO-SPLIT-01: never choose a split hero unprompted — build one ONLY when
+the user explicitly requests a split/2-column hero.** The one context where it
+is worth *proposing* is a conversion-focused paid-acquisition landing page
+where 5-second clarity beats brand memorability (Unbounce anatomy) — but even
+there, suggest it and let the user decide; no universal A/B evidence favors
+either shape (VWO). "This looks like a landing page" is NOT an exception.
+
+For this rule, an edge-to-edge, grid-crossing, interactive or media aperture that performs the product premise is not a "split hero."
+
+Core inversion (DEFAULT): **the product visual is the STAGE, not a polite
+right-column card.** Choose from the verified replacement menu (heroes
+live-checked 2026-07-09):
+
+| Composition | Shape | Verified users |
+| --- | --- | --- |
+| Centered stacked over media | centered headline + CTA over full-width media/video/canvas | OpenAI, Dia, Framer, Raycast |
+| Product-as-stage | headline spans the width; huge product UI rises full-width BELOW, not beside | Linear, Cursor |
+| Editorial opener | large text-led mission headline, no screenshot; editorial modules follow | Anthropic |
+| Evolved split | copy left + giant animated canvas/visual behind/right — never a boxed screenshot card | Stripe, Vercel |
+| Full-bleed consumer hero | centered copy over full-bleed photography/brand imagery | Toss |
+
+Rules (DEFAULT):
+- Without an explicit user request for a split hero (FE-HERO-SPLIT-01), do not
+  place a boxed screenshot, media, or device-mockup card in a right column of
+  the hero. If the product must appear in the first viewport, make it
+  full-width, background, environment, or an interactive demo surface.
+- **FE-HERO-LIGHT-CENTER-01 (DEFAULT): Light Centered Display Hero.** A centered
+  hero headline is allowed as an intentional named pattern when the headline is
+  LIGHT weight (300-400, explicitly not bold), set over a full-width real media
+  or motion backdrop (photography, generated texture, or video; never a
+  gradient wash), with generous whitespace and a minimal copy stack (FE-HERO-01
+  copy budget still applies). Evidence: OpenAI announcement grammar; aside.com
+  measured 2026-07-10 with a custom display variable font, weight 400, 36px,
+  centered, over soft sky photography. The generic centered BOLD hero plus
+  template composition remains banned. This exception exists ONLY when the
+  light-weight headline and authored-media backdrop conditions both hold.
+  A second sanctioned variant is the **Authored-Field Centered Statement**: centered
+  copy may sit over a background or proof object only when that authored field is
+  the primary content, the overlay contains no more than 3 semantic elements,
+  headline line breaks are deliberately authored, and the next section is not an
+  equal-card row. Evidence: Vectr's restrained statement over an isometric
+  landscape, Fin's serif statement over an authored canvas, and Michael Pumo's
+  statement within radical negative space. This variant does not legalize a
+  generic centered BOLD hero; without authored-field primacy and all four gates,
+  the generic composition remains banned.
+  Composition ownership lives here; type exemplar details live in
+  `aesthetics.md` / `design-isms.md`.
+- Korean note: "left bold Pretendard headline + right mockup" is the same dead
+  template in Korean surfaces; Toss itself uses centered copy over full-bleed
+  imagery, not a split.
+- Replacement trend labels: story-driven heroes, scrollytelling, immersive 3D,
+  dimensionality/layers (SaaSFrame / Figma / Digidop / Contra, 2025-2026).
+
+Sources: LogRocket "Linear Design" (2026-02-03); Nordcraft "why do all websites
+look the same" (2024-09-03); Rectangle "The Linear effect" (2023-01-10); live
+hero inspections of openai.com, linear.app, cursor.com, anthropic.com,
+stripe.com, vercel.com, raycast.com, diabrowser.com, framer.com, toss.im
+(2026-07-09); Unbounce landing-page anatomy; VWO A/B testing guide.
+
 ## Eyebrow Restraint (MANDATORY)
 - Maximum 1 eyebrow per 3 sections (hero counts as 1)
 - Pre-flight mechanical check: count uppercase+tracking instances ≤ ceil(sectionCount / 3)
@@ -16,7 +81,8 @@
 ## Section Layout Repetition Ban
 - Each layout family (3-col cards, split-text-image, full-width-quote, etc.) at most ONCE per page
 - 8-section page needs ≥4 different layout families
-- Cross-ref: aesthetics.md § Spatial Composition also bans 3-col cards and centered heroes
+- Cross-ref: aesthetics.md § Spatial Composition also bans 3-col cards and
+  centered heroes, except the named FE-HERO-LIGHT-CENTER-01 pattern above.
 
 ## Zigzag Alternation Cap
 - Max 2 consecutive left-image/right-text alternating sections
@@ -32,9 +98,9 @@
 - Background diversity: ≥2-3 cells need real visual variation (image, gradient, pattern)
 - Rhythm: no one-sided repetition (6 left-image/right-text rows)
 
-### Bento Composition (the part AI gets wrong)
+### Bento Composition (FE-BENTO-01, DEFAULT)
 
-A bento is one composed object, not a pile of cards. Failures to catch:
+A bento is one composed object, not a pile of cards. Catch these failures before styling:
 
 - **Ragged rows**: cells in the same visual row ending at different heights with dead air below the short ones. Compose on an explicit grid (`grid-template-rows` / `grid-row: span n`) so every row edge lands on a shared line. If a cell can't fill its slot, its span is wrong or its content is thin.
 - **Uniform-span monotony**: 6+ cells all 1x1 is a card grid wearing a bento costume. A real bento has 1 dominant cell (2x2 or 2x1) and clear size hierarchy: big = most important, not "whatever fit".
@@ -42,9 +108,9 @@ A bento is one composed object, not a pile of cards. Failures to catch:
 - **Orphan tail row**: last row with 1 cell + void. Re-span the tail cell to full width or merge its content upward.
 - **Sealed-box syndrome**: every cell = same radius + same border + same padding + same background. Vary surface treatment: let 1-2 cells go borderless, let an image bleed to cell edges, let one cell be a flat stat with no chrome.
 - **Density whiplash**: one cell packed with a data table next to a cell holding 3 words. Balance per-cell content weight before styling.
-- **Gap drift**: one `gap` value for the whole bento. Cells that touch (`gap-4` everywhere, then a random `mt-8`) break the object illusion.
+- **Gap drift**: one `gap` value for the whole bento, followed by random local margins, breaks the object illusion.
 
-**Pre-ship check**: screenshot the bento, squint. If it reads as one interlocking slab → pass. If it reads as boxes floating near each other → recompose spans before touching colors.
+**Pre-ship check**: screenshot the bento, squint. If it reads as one interlocking slab, pass. If it reads as boxes floating near each other, recompose spans before touching colors.
 
 ## Section Content Limits
 - Default per section: short headline (≤8 words) + sub-paragraph (≤25 words) + one visual/CTA

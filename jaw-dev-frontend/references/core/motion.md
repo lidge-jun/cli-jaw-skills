@@ -1,6 +1,8 @@
 # Motion Choreography — Animation Engineering Guide
 
-Rules for meaningful, performant animation. One well-choreographed moment > 10 scattered effects.
+This entry point owns domain gates, intensity, CSS/Framer patterns, and pointer-proximity motion. Continue with [`motion-scroll.md`](motion-scroll.md) for scroll-linked patterns, [`motion-cinematic.md`](motion-cinematic.md) for section transitions, and [`motion-media.md`](motion-media.md) for generated media, performance, reduced motion, and the final honesty audit.
+
+Rules for meaningful, performant animation. One signature moment + a small number of supporting reveals > 10 scattered effects.
 
 ---
 
@@ -10,11 +12,41 @@ Motion intensity must match the product surface:
 
 | Surface | Default |
 | --- | --- |
-| Finance, gov, B2B, auth, payment, security | 1-3: feedback-only, low anxiety |
-| Dashboards, admin, ops, developer tools | 1-4: state transition only |
-| Consumer apps, education, community | 3-6: guided feedback and progress |
-| Landing, campaign, editorial | 5-8: expressive but still performant |
+| Finance, gov, B2B, auth, payment, security | TOOL: scroll-driven = 0 (hard); feedback/state transitions 1-4 OK |
+| Dashboards, admin, ops, developer tools | TOOL: scroll-driven = 0 (hard); feedback/state transitions 1-4 OK |
+| Consumer apps, education, community | APP: feedback + state-transition motion only; no scroll-motion floor |
+| Landing, conversion campaign, marketing, editorial, portfolio | LANDING: scroll-driven floor 2, ceiling ~4; expressive but still performant |
+| Experiential microsite, award entry, interactive story | EXPERIENCE: continuous authored choreography only under the narrative, fallback, and reachability gates below |
 | Games / interactive art | domain-specific |
+
+## FE-MOTION-BUCKET-01 - Motion Bucket Map (DEFAULT)
+
+Classify the surface before choosing scroll choreography. The bucket map is the
+primary gate; `MOTION_INTENSITY` is secondary.
+
+- **LANDING**: landing, conversion campaign, marketing, editorial, portfolio,
+  and marketing-facing pages of any product, including AI tools, education, and
+  community products. Scroll-driven motion floor = 2, ceiling ~4. The floor is
+  **1 signature + >= 1 supporting reveal = floor 2**.
+- **EXPERIENCE**: experiential microsites, award entries, and interactive
+  stories are carved out of LANDING. Continuous authored choreography is
+  allowed only when every scene advances narrative or state, a reduced-motion
+  fallback exists, and core information is reachable without precision
+  scrolling. A conversion campaign remains LANDING. Evidence: continuous
+  Awwwards/CSSDA narratives and the ambient/state utility behavior of Sky Clock
+  and Nothing to Watch.
+- **APP**: logged-in or in-app consumer, education, and community screens.
+  Feedback + state-transition motion only; no scroll-motion floor.
+- **TOOL**: dashboards, admin, finance, gov, B2B repeated-work, developer
+  consoles, auth, and payment surfaces. Scroll-driven motion = 0 (hard);
+  feedback/state transitions at levels 1-4 are preserved.
+- **Games / interactive art**: domain-specific and exempt.
+
+A "scroll motion" is one distinct choreographed scroll-driven moment, either a
+signature moment or a supporting reveal. Identical per-section fade-up
+repetition counts as one supporting moment total, not N. The floor applies to
+the base experience only; `prefers-reduced-motion` and missing `@supports`
+legitimately deliver zero motion.
 
 Avoid cinematic page loads for repeated-work tools. Motion should clarify state, not slow the task.
 
@@ -104,61 +136,58 @@ const y = useMotionValue(0);
 
 ---
 
-## Scroll-Driven (Level 8+)
+## Pointer-Proximity Motion — Icon Chips, Magnetic, Dock (Level 6+)
 
-### Scroll Progress
-```tsx
-const { scrollYProgress } = useScroll();
-const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-```
+2026-trend surface: floating icon-chip clusters that respond to the cursor —
+magnetic pull, dock-style magnification, proximity glow. Chip-as-content
+composition is Tier-2 observed (aside.com, 2026-07-07); the motion patterns
+below are Tier-1 pattern-survey synthesis — see
+the 2026-07-07 practitioner research snapshot. Use for
+landing/expressive surfaces only (Domain Gates above); never inside
+repeated-work tools.
 
-### View Transitions API
-```tsx
-document.startViewTransition(() => {
-  // DOM update
+Rules (FE-PROXIMITY-01, DEFAULT):
+
+- **One listener, shared state.** Track `pointermove` once per cluster (or
+  once on the section), write normalized cursor position into CSS variables
+  inside a single rAF; chips consume the variables. Never N per-chip
+  listeners.
+- **Gate the capability**: wrap in `@media (hover: hover) and (pointer:
+  fine)`; touch devices get the static layout (or a scroll-driven
+  equivalent), not a broken hover sim.
+- **Reduced motion**: proximity displacement counts as non-essential motion;
+  under `prefers-reduced-motion: reduce`, chips stay static (opacity/color
+  feedback only).
+- Transform/opacity only, as everywhere else. Displacement caps keep text
+  legible: magnetic pull <= 8-12px for buttons, dock scale <= 1.3-1.5.
+
+```js
+// Shared cluster loop: one pointermove -> CSS vars -> chips derive their own motion
+const cluster = document.querySelector('.chip-cluster');
+let px = 0, py = 0, raf = 0;
+cluster.addEventListener('pointermove', (e) => {
+  px = e.clientX; py = e.clientY;
+  raf ||= requestAnimationFrame(() => {
+    raf = 0;
+    const r = cluster.getBoundingClientRect();
+    cluster.style.setProperty('--mx', `${px - r.left}px`);
+    cluster.style.setProperty('--my', `${py - r.top}px`);
+  });
+});
+cluster.addEventListener('pointerleave', () => {
+  cluster.style.setProperty('--mx', '-9999px'); // chips ease back to rest
 });
 ```
 
-**NEVER mix GSAP/Three.js with Framer Motion in the same component tree.**
-Use Framer for UI. Use GSAP/Three.js ONLY for isolated full-page scrolltelling or canvas backgrounds, wrapped in strict `useEffect` cleanup blocks.
+- **Magnetic chip**: displacement = (cursor - chip center) x strength
+  (0.2-0.5), eased back on leave via a `transform` transition or spring.
+- **Dock magnification**: per-chip `scale = 1 + k * max(0, 1 -
+  distance/influenceRadius)` with `transform-origin: bottom`; a
+  linear/gaussian falloff over ~2-3 neighbor chips reads as macOS Dock.
+  Reserve real dock behavior for playful/creative surfaces.
+- With Framer Motion, keep this in `useMotionValue` + `useTransform` (no
+  re-renders), same as Magnetic Hover above.
 
 ---
 
-## Performance Rules
-
-1. Animate ONLY `transform` and `opacity`. Never `top`, `left`, `width`, `height`.
-2. `will-change: transform` sparingly. Remove after animation completes.
-3. Grain/noise filters → fixed `pointer-events-none` pseudo-elements only.
-4. Perpetual/infinite animations MUST be `React.memo`'d and isolated in microscopic Client Components.
-5. Wrap dynamic lists in `<AnimatePresence>`.
-6. 60fps target. Profile on mobile before shipping.
-
----
-
-## Creative Arsenal (Inspiration)
-
-Pick from these for signature moments — don't use all of them:
-
-| Category       | Concepts                                                                                         |
-| -------------- | ------------------------------------------------------------------------------------------------ |
-| **Navigation** | Mac OS Dock magnification, Magnetic buttons, Gooey menu, Dynamic Island                          |
-| **Cards**      | Parallax tilt (3D on mouse), Spotlight border, Holographic foil hover                            |
-| **Scroll**     | Sticky scroll stack, Horizontal scroll hijack, Zoom parallax, SVG path drawing                   |
-| **Text**       | Kinetic marquee, Text mask reveal (type as window to video), Text scramble (Matrix decode)       |
-| **Micro**      | Particle explosion button, Directional hover fill, Ripple click effect, Mesh gradient background |
-
----
-
-## `prefers-reduced-motion` (Mandatory)
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-```
-
-Always include. No exceptions.
+Continue: [`motion-scroll.md`](motion-scroll.md).

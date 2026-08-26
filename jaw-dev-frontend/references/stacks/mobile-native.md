@@ -2,7 +2,7 @@
 
 **Last reviewed**: 2026-07-02
 **Applies to**: Expo SDK 57 / React Native 0.86 / React 19.2.3, Flutter 3.44+, Kotlin Multiplatform 2.2+, Swift 6, Jetpack Compose M3 1.4+
-**When to read**: Native mobile app development, cross-platform framework selection, `task_tags: mobile_native`
+**When to read**: Native mobile app development, cross-platform framework selection, change-surface: native mobile
 **Canonical owner**: `dev-frontend` — framework selection and component patterns
 **Non-goals**: Mobile web responsive (→ `responsive-viewport.md`, `mobile-ux.md`), push/offline/auth API (→ `dev-backend/references/core/mobile-api.md`), native UX conventions (→ `dev-uiux-design/references/mobile-native-ux.md`)
 
@@ -261,7 +261,7 @@ struct UserView: View {
 | Banned | Symptom | Fix |
 |--------|---------|-----|
 | `react-native link` in Expo managed | Build fails, native deps break | Use Expo Modules API or config plugins |
-| JSC engine in production (RN 0.84+) | 2x slower cold start, no Intl support | Hermes V1 is default; never opt out |
+| JSC engine in production (RN 0.86+) | Slower cold start, no Intl support | Hermes is default; never opt out |
 | New Architecture opt-out (`newArchEnabled: false`) | Missing Fabric perf, TurboModule access blocked | Remove opt-out; New Arch is default since 0.76 |
 | CocoaPods in Flutter 3.44+ | Dep resolution conflicts with SPM | Migrate to SPM (`flutter pub deps --style=spm`) |
 | `setState` everywhere in Flutter | Widget rebuilds cascade, jank on complex screens | Riverpod or `ValueNotifier` for state outside widgets |
@@ -272,10 +272,10 @@ struct UserView: View {
 
 - [ ] Framework selected using §2 decision table with documented rationale
 - [ ] RN: Hermes V1 enabled, New Architecture active (`newArchEnabled` absent or `true`)
-- [ ] RN: Expo SDK 53+ with `expo/fetch`, no `whatwg-fetch` polyfill
+- [ ] RN: Expo SDK 57 / React Native 0.86 / React 19.2.3 with `expo/fetch`, no `whatwg-fetch` polyfill
 - [ ] Flutter: Impeller enabled (default), SPM for iOS deps (no CocoaPods)
 - [ ] KMP: Shared module compiles for all target platforms (`./gradlew :shared:allTests`)
 - [ ] Native: Swift 6 strict concurrency mode enabled; Compose compiler 2.1+
 - [ ] Deep linking configured (→ `mobile-native-ux.md` §3)
-- [ ] Push notification token management (→ `mobile-api.md` §2)
+- [ ] Push notification token management (→ `dev-backend/references/core/mobile-api.md` §2)
 - [ ] App store assets prepared (→ `mobile-native-ux.md` §5)

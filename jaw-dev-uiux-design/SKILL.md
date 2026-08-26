@@ -54,7 +54,12 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
 | `references/design-isms.md` | User names a style/movement | 11 design movements with CSS signatures |
+| `references/compositional-patterns.md` | Choosing what a page DOES structurally | 15 pattern families (hero, navigation, motion, continuation, content) with frequency, maturity, gates, examples — orthogonal to isms |
+| `references/design-trends.md` | Checking whether a technique is currently stable | Dated axis prevalence and implementation-sensitive signals (2026-07-14 crawl); never promote a dated signal into an ism |
+| `references/design-award-sources.md` | Before setting a visual direction | Gallery selection by lookup axis, domain/type retrieval families, evidence thresholds for promoting a pattern |
 | `references/design-read-example.md` | Learning or reviewing Design Read format | Filled-in Design Read + dial setting example |
+| `references/intent-discovery-ladder.md` | One clarifying fork was not enough, or the user wants guided exploration | Binary/ternary ladder (mood → density → …) anchored on recognizable products |
+| `references/korean-design-vocabulary.md` | Korean design descriptors (깔끔하게, 모던하게, 감성적으로) | Descriptor → concrete token translation table + per-term clarifying questions |
 | `references/product-personalities.md` | User references a product | 8 product DNA profiles with exact tokens |
 | `references/layout-macrostructures.md` | Choosing page/component layout | Component layouts + page-level compositions |
 | `references/ux-states.md` | Building any stateful UI | Onboarding, empty, error, loading, progressive disclosure |
@@ -68,6 +73,7 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 | `references/visual-hierarchy.md` | Any layout / composition decision | 6 levers: size scale, weight contrast, color emphasis, spacing, position, density |
 | `references/form-patterns.md` | Forms, wizards, auth, file upload | Validation timing, multi-step, password UX, file upload, search/filter |
 | `references/mobile-native-ux.md` | Native mobile app UX decisions | iOS HIG vs Material 3, gestures, deep linking, Korean privacy, app store UX |
+| `references/anti-rationalization.md` | Before accepting your own shortcut | Five common agent rationalizations with rebuttal, red flag, and the verification that closes each gap |
 
 ---
 
