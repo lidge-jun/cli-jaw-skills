@@ -5,6 +5,30 @@ description: "PDF 읽기·생성·편집·리뷰. reportlab/pdfplumber/pypdf + K
 
 # PDF Skill
 
+## Content Balance Principle (TEXT-FIRST)
+
+Text is the main content. Visuals are opt-in supplements.
+
+- Every page must have substantive text (3+ paragraphs of real explanation)
+- Diagrams, charts, and colored boxes are SUPPLEMENTS that help explain complex structures
+- Use visuals only when text alone cannot convey the relationship (architecture diagrams,
+  multi-dimensional comparisons, data trends, process flows)
+- A page with only a diagram and a one-liner caption is incomplete
+- Ratio guideline: 80% text-driven pages, 20% pages with diagrams as primary content
+- Never let visual elements replace the explanation — they illustrate it
+
+When to include a diagram:
+- Architecture or system structure (components + connections)
+- Quantitative comparison (bar chart, table with numbers)
+- Multi-step process that is hard to follow linearly
+- Before/after or side-by-side comparison
+
+When NOT to include a diagram:
+- The concept can be explained in 2-3 sentences
+- The visual is decorative rather than informative
+- The page already has enough text to be understood
+
+
 ## Purpose-Driven Workflow (do this FIRST)
 
 Before generating any PDF, define:
