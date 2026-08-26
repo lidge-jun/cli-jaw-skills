@@ -15,6 +15,7 @@ references:
   - "svg-components.md — SVG primitives, layout templates"
   - "color-palette.md — 9-color design system"
   - "module-chart.md — Chart.js + ECharts + D3"
+  - "korean-text.md — Korean/CJK text in SVG, HTML, D3, Chart.js, Mermaid, PDF embedding"
   - "structured-renderers.md — native renderer delegation notes"
   - "module-interactive.md — controls, sendPrompt, debouncing"
   - "module-widget.md — physics, 3D, audio, creative coding"
