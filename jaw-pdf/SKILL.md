@@ -563,3 +563,54 @@ class ArchDiagram(Flowable):
 - Always set `preserveAspectRatio=True` on Image flowables
 - Use colorful backgrounds (roundRect with fill) to create visual weight on each page
 - Table with colored cells works as a simple grid/comparison chart
+
+## Embedding Web Images
+
+Download images from URLs and embed them in PDF:
+
+```python
+import urllib.request
+import tempfile
+from pathlib import Path
+from reportlab.platypus import Image
+from reportlab.lib.units import cm
+
+def embed_web_image(url, width=12*cm, height=None):
+    """Download an image from URL and return a reportlab Image flowable."""
+    suffix = Path(url).suffix or '.png'
+    tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
+    urllib.request.urlretrieve(url, tmp.name)
+    img = Image(tmp.name, width=width, height=height)
+    if height is None:
+        img.hAlign = 'CENTER'
+    return img
+
+# Usage in story:
+# story.append(embed_web_image('https://example.com/diagram.png', width=14*cm))
+# story.append(Paragraph('Figure 1: System architecture', caption_style))
+```
+
+### Guidelines
+
+- Always download to a temp file first — reportlab cannot read from URLs directly
+- Set explicit width; let height auto-scale with aspect ratio (omit height param)
+- Add a caption Paragraph below every embedded image
+- Verify the image renders correctly in the PNG verification step
+- For SVG URLs: download, convert to PNG with rsvg-convert, then embed the PNG
+- Clean up temp files after PDF generation
+- Handle download failures gracefully (skip image, add placeholder text)
+
+### Error handling pattern
+
+```python
+def safe_embed_image(url, width=12*cm, caption=""):
+    """Embed web image with graceful fallback."""
+    try:
+        img = embed_web_image(url, width=width)
+        elements = [img]
+        if caption:
+            elements.append(Paragraph(caption, caption_style))
+        return elements
+    except Exception as e:
+        return [Paragraph(f"[이미지 로드 실패: {caption or url}]", note_style)]
+```
