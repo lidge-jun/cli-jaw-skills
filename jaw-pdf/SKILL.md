@@ -355,3 +355,51 @@ pdftoppm -png -r 200 $INPUT_PDF $OUTPUT_PREFIX
   then embed as PNG via reportlab.platypus.Image.
 - **DOCX to PDF**: `soffice --headless --convert-to pdf input.docx` (requires LibreOffice).
 - **Visual verification**: see jaw-pdf-vision for OCR-based PDF reading.
+
+## Alternative Tools
+
+| Tool | Best For | Korean/CJK | TOC | Quality |
+|------|----------|------------|-----|---------|
+| reportlab | Python programmatic control | TTFont + wordWrap CJK | multiBuild + bookmarks | Good |
+| WeasyPrint | HTML/CSS reports | Pango/Fontconfig | HTML headings -> bookmarks | Excellent |
+| fpdf2 | Simple Python API | HarfBuzz + fallback fonts | Manual two-pass | Good |
+| Typst | Highest-quality documents | Configurable fonts | Native outlines | Excellent |
+| Pandoc + engine | Source portability | Depends on backend | --toc flag | Variable |
+
+Choose reportlab when you need programmatic control from Python. Consider WeasyPrint
+when starting from HTML/CSS. Use Typst for publication-quality output.
+
+## Real-World Workflow Patterns
+
+Based on analysis of actual cli-jaw document production (사업계획서, 활동보고서):
+
+### Iterative Feedback Loop
+
+1. Draft -> Team review (Slack/email) -> Feedback collection -> Revision -> Re-review
+2. Each revision creates a new DOCX with version suffix (초안 -> 수정초안 -> 피드백반영 -> 완성 -> 제출)
+3. Keep all versions; never overwrite the previous draft
+
+### Structured Section Pattern (Q1-Q4, McKinsey-style)
+
+For consulting-style or government-submission documents:
+
+1. Define the narrative thread FIRST: what question does each section answer?
+2. Write section headings as questions, not topics
+3. One key message per section; supporting evidence below
+4. Ghost-deck: validate the argument flow with headings only before writing body text
+
+Example (사업계획서):
+- Q1 문제인식: "고객이 지금 어떤 손실을 겪고 있으며 기존 해결책은 왜 부족한가?"
+- Q2 실현가능성: "우리가 실제로 만들 수 있다는 증거는?"
+- Q3 성장전략: "고객이 왜 비용을 지불하며, 어떻게 고객 수와 매출을 늘릴 것인가?"
+- Q4 향후 발전: "현재 제품을 어떤 구조로 진화시킬 것인가?"
+
+### Korean Government Document Conventions
+
+For 공문서 or government-submission documents:
+
+- A4, margins: top/bottom 15mm, left/right 20mm
+- Body: serif font (Pretendard GOV or 휴먼명조), 15-17pt, line spacing 150-160%
+- Headings: sans-serif (고딕), Bold 700
+- Left-aligned body text (no indent from title)
+- Source: KRDS (krds.go.kr), 국립국어원 공문서 지침
