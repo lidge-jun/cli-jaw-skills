@@ -208,11 +208,11 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
 - **Motion**: See `references/core/motion.md`. One signature moment + a few
   supporting reveals > 10 scattered effects; landing-bucket floor/ceiling per
   FE-MOTION-BUCKET-01.
-- **Assets**: Use screenshots, product images, diagrams, charts, illustrations, generated bitmaps, or soft 3D only when they add product meaning. Never ship a placeholder. Prefer real/generated image or video assets over CSS gradient washes. Read any design reference or captured screenshot back into context with `view_image` before matching it. Third-party captures follow `reference-capture.md` (analysis-only, provenance manifest).
+- **Assets**: Use screenshots, product images, diagrams, charts, illustrations, generated bitmaps, or soft 3D only when they add product meaning. Never ship a placeholder. Prefer real/generated image or video assets over CSS gradient washes. Read any design reference or captured screenshot back into context before matching it. Third-party captures follow `reference-capture.md` (analysis-only, provenance manifest).
 
   1. **Probe**: `ima2 status` → `ima2 serve` if down → recheck.
   2. **Generate**: `ima2 gen` with explicit long prompts; `--ref` for style anchors.
-  3. **Inspect**: `view_image` every candidate.
+  3. **Inspect**: read every candidate image back into context.
   4. **Synthesize**: element ledger per FE-ASSET-SELECT-01.
   5. **Iterate**: `ima2 edit` for targeted fixes.
   6. **Verify**: browser screenshot of rendered result.
@@ -227,7 +227,7 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
   palette, lighting, style, and aspect per `asset-requirements.md`.
 
   Concept mockups guide implementation and are not shipped; production assets require candidate inspection and selection; cutout assets additionally follow FE-ASSET-BG-01.
-- **Visual verification**: after UI changes, exercise the flow per `dev-testing` §4.6 (TEST-CU-QA-01) — `browser:control-in-app-browser` on the dev server, screenshot, `view_image` — instead of claiming visual correctness from code alone.
+- **Visual verification**: after UI changes, exercise the flow per `jaw-dev-testing` §4.6 (TEST-CU-QA-01) — open the dev server in the Manager embedded browser, `POST …/<targetId>/screenshot`, then READ the returned PNG — instead of claiming visual correctness from code alone.
 
 ### Cutout Asset Generation (FE-ASSET-BG-01 surface — STRICT)
 Every cutout asset MUST follow `references/core/asset-production.md` § Asset Background Strategy; load the routed asset references before generation.

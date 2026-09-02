@@ -344,7 +344,7 @@ Source: sol research (wednesday-solutions/ai-agent-skills AST dependency graph).
 Instead of reconstructing a module map for every task, maintain a lightweight
 structural index that agents can query:
 
-- Use `cxc map <dir>` for on-demand symbol-level maps (already shipped).
+- Use `cli-jaw map <dir>` for on-demand symbol-level maps (already shipped).
 - For larger repos, consider a persistent dependency graph artifact (e.g.,
   `dependency-cruiser` JSON, Nx project graph, or a custom SQLite index).
 - The index should track: module → exports, module → imports, symbol → callers.

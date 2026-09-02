@@ -203,11 +203,11 @@ python scripts/with_server.py \
 Browser QA loads `dev-frontend` for rendered implementation context.
 Playwright owns deterministic suites; native tools own immediate exploratory proof.
 **QA-TOOL-LADDER-01:** start at 1 and state why when skipping:
-1. `browser:control-in-app-browser` for built or locally served web UI.
-2. `chrome:control-chrome` for real profile, login, extension, or WAF state.
-3. `computer-use:computer-use` for desktop or GUI-only flows; keep credentials human-supervised.
+1. Manager embedded browser (`POST …/<targetId>/snapshot` for the accessibility tree, `…/screenshot`, `…/act` for click/type/scroll/key) for built or locally served web UI.
+2. A full real-profile browser for login, extension, or WAF state the embedded browser cannot carry.
+3. Desktop or screen-level control for GUI-only flows; keep credential entry human-supervised.
 4. `agbrowse` only for public-URL response-shape proof, never built-UI driving.
-Use inspect -> act -> re-inspect; use screenshots plus `view_image` when DOM inspection fails.
+Use inspect -> act -> re-inspect; when DOM inspection fails, take a screenshot AND read the image back -- a screenshot produced but never read is not an observation.
 Evidence names the flow, states, result, and screenshots; promote durable flows to Playwright.
 ---
 ## 5. CI Pipeline Integration

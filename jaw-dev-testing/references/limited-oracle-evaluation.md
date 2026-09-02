@@ -2,7 +2,7 @@
 
 Use this reference when the real evaluator is scarce, paid, rate-limited, or opaque, and
 local tests are proxy metrics for a score/objective. These rules are paired with
-`cxc-pabcd` Optimization-Loop Meta-Rules (plateau discipline). They were observed in a
+`jaw-dev-pabcd` Optimization-Loop Meta-Rules (plateau discipline). They were observed in a
 14-discard optimization plateau where a prefix-only replay gate and hard
 draw-protection invariant locked a 3.5/8 score.
 

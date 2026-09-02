@@ -82,7 +82,7 @@ solid-background strategy above.
 
 ### Prompt Iteration
 
-- Start with one high-detail prompt. Inspect the result with `view_image`.
+- Start with one high-detail prompt. Inspect the result by reading the image back.
 - On the next iteration, make ONE targeted change and re-specify all constraints.
   Do not rewrite the entire prompt from scratch.
 - Repeat invariants every iteration to prevent drift.

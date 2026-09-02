@@ -177,7 +177,7 @@ ima2 gen "<detailed prompt>" -n 4 -d ./candidates --quality high
 ima2 multimode "<detailed prompt>" --max-images 4 -d ./candidates
 ```
 
-After generation, inspect every candidate with `view_image` before selecting.
+After generation, read every candidate image back into context before selecting.
 Do not blindly use the first result.
 
 ### Parallel Generation Patterns (FE-ASSET-PARALLEL-01, DEFAULT)
@@ -246,7 +246,7 @@ After generating multiple candidates (via `-n`, multimode, or independent
 parallel), select using a two-stage process:
 
 **Stage 1 — Exploration (broad):** Generate 3-5 candidates with different
-directions. Inspect all with `view_image`. Do not select yet.
+directions. Read all of them back into context. Do not select yet.
 
 **Stage 2 — Synthesis (not winner-picking):** Do NOT pick one winner. Build
 an element ledger — for each design token (palette, composition, type
@@ -269,7 +269,7 @@ Rate each candidate on these axes before synthesizing:
 
 #### `$imagegen` Fallback
 
-With `$imagegen`, generate 1-2 candidates, inspect with `view_image`, refine
+With single-image generation only, generate 1-2 candidates, read them back, refine
 the prompt based on what is wrong, and iterate. The synthesis step still
 applies when comparing across iteration rounds.
 
