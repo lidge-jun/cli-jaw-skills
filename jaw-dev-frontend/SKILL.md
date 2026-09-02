@@ -279,6 +279,32 @@ Audit composite convergence tells under FE-CONVERGENCE-01 (`anti-slop.md`): hair
 - Treat short descriptors (hero subtitle, card description, caption) using `text-wrap: pretty` instead of `balance` as a slop signal — `pretty` does nothing on 1-3 line text, especially Korean
 - Treat Korean orphan fragments ("합니다.", "화.", "입니다." alone on a line) as a slop signal — always verify Korean text breaks at target viewports
 - Treat generic stroke icons as brand logo substitutes as a slop signal — use actual brand SVGs from Simple Icons, SVGL, or press kits. See `brand-asset-sourcing.md`
+### Icon Implementation (FE-ICON-01, DEFAULT)
+
+- **Library route:** pick one library from the Design Read and confirm the exact package
+  and its license before installing. `@phosphor-icons/react` is a reasonable default;
+  `iconoir-react`, `@untitledui/icons`, `@hugeicons/react`, and `lucide-react` are for
+  when the read actually selects that family.
+- **Custom route:** generate the approved artwork with whatever image generation you
+  have, trace it to vector (`vtracer`), optimize the SVG (`svgo`), then convert to a
+  component (`svgr`) if the framework needs one. Preserve an editable source asset, and
+  inspect **both** the SVG and the rendered component before shipping — an SVG that
+  looks right in isolation can still render wrong at icon sizes.
+- **Layer consistency:** one library per icon layer. Do not mix one family's navigation
+  icons with another's content icons. A separate custom or premium domain layer is
+  allowed only when it is deliberately art-directed *as* a layer.
+- **Weight semantics:** `regular` is the default state, `fill` indicates selected or
+  active, and `duotone` is reserved for empty states or illustrative emphasis. Keep
+  size, optical weight, color behavior, and accessible labels consistent across the
+  layer.
+
+### Cutout Asset Generation (FE-ASSET-BG-01, STRICT)
+
+Every cutout asset MUST follow `references/core/asset-requirements.md` § Asset
+Background Strategy. Read that section before generating one; a cutout produced without
+its background strategy is the asset most likely to ship with a visible matte edge or a
+background that fights the surface it lands on.
+
 - When NO design brief exists, do not invent a generic default: apply the domain-gated no-brief kit owned by `dev-uiux-design` §1 UX-DEFAULT-ISM-01 and state the assumption
 
 ### Do not ship these tells (FE-AI-TELL-01)
@@ -304,6 +330,21 @@ For detailed budgets and browser connection limits, read `references/core/perfor
 - Icon-only buttons need accessible names (`aria-label`, visible text, or labelled-by)
 - Charts, status messages, loading progress, and AI streaming states need screen-reader labels or live regions where appropriate
 - Do not encode meaning by color alone
+### A11y polish (FE-A11Y-POLISH-01, DEFAULT)
+
+The checks below are the ones a functional a11y pass passes and a careful reviewer
+still fails:
+
+- CTA text fits on one line at target breakpoints; if it wraps, shorten the label or
+  change the layout.
+- Inputs need visible boundaries against their background in default, focus, error,
+  and disabled states.
+- Duplicate CTA intent on the same screen should merge, or differ clearly by outcome.
+- Button contrast is checked during visual review, not left to palette intent.
+
+The last one is the pattern: each of these is satisfiable in the token layer and still
+wrong on the rendered page, which is why they are a review item rather than a lint.
+
 - Modals, menus, comboboxes, bottom sheets, and command palettes must have a complete keyboard path
 - Stress-test Korean long labels and screen-reader names; clipped Hangul is a failure
 - Pointer targets follow WCAG 2.2 AA target-size rules; 44×44px is a conservative product baseline, not the only legal minimum

@@ -547,3 +547,113 @@ When TDD is claimed, durable evidence must show:
 - REFACTOR: full affected suite passing (after cleanup)
 
 A TDD claim without RED evidence is not TDD.
+---
+
+## Acceptance-Row Reachability (TEST-ROW-REACHABLE-01, DEFAULT)
+
+Every row of an acceptance-criteria table must have a **constructible precondition**.
+Before writing a row, ask: is there a call path that reaches this state? Does an
+earlier guard consume this condition first, so the branch under test is never entered?
+Does an operation that produces this value actually exist?
+
+An unreachable row is decoration, not verification — the implementer tries to write
+that test, cannot, and quietly drops it. This applies C-ACTIVATION-GROUNDING-01's
+requirement (every conditional path names its activation scenario) to each row of the
+acceptance table, not just to the plan's prose.
+
+Common unreachable shapes:
+
+- The row asserts a rejection that an earlier, broader rule already rejects — the
+  specific guard is never exercised, so the test passes even if that guard is absent.
+- The row needs a state the public API cannot produce (no operation creates it).
+- The row asserts on a call-site argument the function never receives.
+- Two rows in the same table are mutually exclusive on the same tree (for example
+  "the gate reports a failure here" together with "the gate exits 0 overall").
+
+## Test Oracle Integrity (DEFAULT)
+
+Three narrow contracts that stop false-green. No gate enforces any of them; the
+reviewer is the only check.
+
+**TEST-PROMPT-SEAM-01.** Do not assert on prose. A test may read a document only when
+it **extracts a value and compares it against a value from another source.** Asserting
+that a phrase exists in a file is a violation no matter how many files you read or
+what the test's header says it is for.
+
+- Forbidden: `assert.match(readFileSync(".../SKILL.md"), /prefer rg first/i)` — one
+  source, phrase existence, breaks on harmless rewording, proves no behavior.
+- Allowed: parse the frontmatter `description`, pull a token out of it, and assert that
+  token appears in the runtime constant it is supposed to mirror — two sources, values
+  compared, breaks only when they genuinely disagree.
+- Outside this rule's scope, and allowed: asserting on non-prose values — version pins,
+  license names, runtime output, CLI stdout, file existence.
+
+The rule was written after two such tests were **deleted rather than repaired**, and
+the reason repair failed is the reusable part. Three designs were tried: a structured
+metadata field in each document compared between them (nothing at runtime reads such a
+field, so it becomes a third source of truth that passes whenever both copies are wrong
+together); promoting the prose to a behavioral test (the behavior was already covered,
+so this duplicated coverage while appearing to offset the deletion); and promoting a
+doctrine statement the same way (no runtime branch implements it, so there is nothing to
+compare against).
+
+What that costs is stated plainly rather than hidden: the affected doctrine has **no
+automated consistency check** and is a human-review item. **When prose has no
+counterpart in code, a test that reads it can only check that the words are still
+there.** Deleting it removes a false green; inventing a second document to compare it
+against removes nothing and adds a lie.
+
+**TEST-ORACLE-INDEPENDENCE-01.** Never derive the expected value from the code under
+test.
+
+- Forbidden: `assert.equal(fn(x), fn(x))`; building the expectation with a helper the
+  code under test also uses; refreshing a snapshot from current output and calling that
+  verification.
+- Allowed: hardcode the expectation in the fixture, or compute it by an independent
+  route — a second implementation, a hand-worked example, an external spec.
+
+**TEST-PRECEDENCE-FIXTURE-01.** When testing override / default / fallback, the three
+values must all **differ** — otherwise the test cannot tell which path ran.
+
+- Forbidden: override `"x"`, default `"x"`, fallback `"x"` — every branch passes.
+- Allowed: override `"from-flag"`, default `"from-config"`, fallback `"builtin"`, with
+  each case asserting the specific one.
+
+A regression test should FAIL when the defect is reintroduced. Confirm it once by
+mutation — break it, watch it go red, restore it, watch it go green. A regression test
+that has never been seen red is an assertion about the test, not about the defect.
+
+## CI Green Discipline (TEST-CI-GREEN-01, STRICT)
+
+The latest HEAD is the source of truth for whether CI is green.
+
+1. **Inspect before editing.** Read the failing job's log and its artifacts. A failure
+   you have not read is a failure you are guessing about.
+2. **Make the minimal correct fix** for that failure.
+3. **Re-watch the latest HEAD**, not the run you were looking at when you started.
+
+Never blind-retry a failed job, and never push another change without new failure
+evidence. Both produce the same illusion — activity that looks like progress while the
+failure is unexamined. Re-running to measure a failure RATE is a different act and is
+allowed; see `references/ci-pipeline.md` §5.2.
+
+## Exploratory QA Tier (TEST-CU-QA-01, DEFAULT)
+
+Deterministic browser test suites and exploratory QA are different tools for different
+jobs, and the split is worth stating because collapsing it wastes both:
+
+- **Deterministic suites** own regression guarding. They are the thing you keep.
+- **Exploratory QA** through whatever browser or screen-control capability the runtime
+  offers owns immediate proof that a surface built right now actually works.
+
+Protocol: **inspect → act → re-inspect.** When DOM inspection is unavailable, fall back
+to screenshots **and read the image back** — a screenshot produced but never read is
+not an observation.
+
+Evidence names the flow, the states traversed, the result, and the artifacts. **Promote
+any flow that must stay guarded into a deterministic test**; exploratory proof does not
+accumulate, so a flow left only in QA is a flow that will regress unnoticed.
+
+The tool ladder for this tier is `QA-TOOL-LADDER-01` in `jaw-dev` — start at the runtime's
+embedded browser and escalate only with a stated reason.
+

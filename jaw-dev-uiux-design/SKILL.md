@@ -271,6 +271,46 @@ Inference rules:
 - "Simple" in brief → decrease all three proportionally
 
 "복잡하다" = high DESIGN_VARIANCE is WRONG. Complexity means more features/data/flows, not more visual tricks (carousels, parallax, animations).
+#### Dial Presets (UX-DIAL-PRESET-01, STYLE_SAMPLE)
+
+Source: taste-skill v2, via codexclaw. Exact tuples for common use cases. Presets are
+authoritative **specializations** that may exceed the inference ranges above — Agency
+motion 8 exceeds the general landing 5-7 range on purpose. When a preset exists for the
+exact use case, use it directly and adjust from the Design Read.
+
+| Use case | Variance | Motion | Density | Notes |
+|----------|---|---|---|-------|
+| Landing (SaaS mainstream) | 7 | 6 | 4 | |
+| Landing (agency/creative) | 9 | 8 | 3 | |
+| Landing (premium consumer) | 7 | 6 | 3 | |
+| Portfolio (designer/studio) | 8 | 7 | 3 | |
+| Portfolio (developer) | 6 | 5 | 4 | |
+| Editorial / blog | 6 | 4 | 3 | |
+| Public-sector service | 3 | 2 | 4 | |
+| Dashboard / SaaS admin | 3 | 2 | 5 | |
+| Finance / ops | 2 | 1 | 7 | density D6-D7 |
+| Game | 8 | 7 | 4 | domain-specific |
+| Korean consumer app | 5 | 4 | 5 | CJK density |
+
+**Redesign arithmetic (DEFAULT).** Score the existing surface with the preset rules
+first, then move from it:
+
+- Preserve: variance = match existing, motion = match + 1, density = match existing.
+- Overhaul: variance = existing + 2, motion = existing + 2, density = match existing.
+- "Complex" in the brief increases **density**, never variance or motion.
+- "Simple" decreases variance and motion; density stays or increases.
+
+Clamp all arithmetic to 1-10 and D1-D8. An existing SaaS surface at 7/6/4 preserves to
+7/7/4 and overhauls to 9/8/4.
+
+#### Audience-first ownership (UX-AUDIENCE-01, DEFAULT)
+
+The **audience** picks the aesthetic, not the model's taste. When audience signal and
+model preference conflict, audience wins. The presets above encode audience
+expectations — a public-sector audience expects trust-first restraint, an agency
+audience expects high variance — so reaching past a preset because the result feels
+plain is the failure this rule names. Override with stated rationale only.
+
 
 ### Anti-Default Discipline
 Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
@@ -278,6 +318,88 @@ Do not default to: warm beige backgrounds, centered hero, three equal feature ca
 If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
 
 ### DESIGN.md persistence
+### Image-First Direction Discovery (UX-IMAGE-FIRST-01, DEFAULT)
+
+Fires when the brief has **no** named ism, product reference, or concrete design
+direction. Generate 5 maximally different ism directions, varying layout family,
+palette, type stance, material, and hero grammar. Every prompt must be detailed enough
+to reconstruct the layout.
+
+Compare candidates on hero composition, palette coherence, typographic voice, and
+density fit. **Pick the winning ism, not the winning image** — the render is evidence
+for a direction, and treating it as the deliverable is how a one-off composition becomes
+an accidental design system.
+
+Then synthesize rather than crowning one candidate. Build an element ledger recording,
+per token, which variant did it best and why:
+
+| Token | Best variant | Rationale | Locked value |
+|-------|-------------|-----------|--------------|
+| Palette | #3 | warmest coherence | primary + accent |
+| Hero | #1 | strongest asymmetric composition | editorial offset |
+| Type | #2 | best weight contrast | heading 300, body 400 |
+
+**The synthesis IS the direction lock**: it assembles the best tokens from several
+candidates into one coherent set, and the lock is that assembled set rather than any
+single render. Refine the locked direction with 2-4 variants afterwards.
+
+When a human is in the loop they pick the ism; running unattended, state the selection
+reasoning in the record.
+
+## 2.6 Asset Production Handoff (UX-ASSET-GEN-01, DEFAULT)
+
+Once the concept direction is locked, asset work belongs to
+`jaw-dev-frontend/references/core/asset-requirements.md` — generation, background removal
+(FE-ASSET-BG-01), batching, selection, and integration. This section exists to mark the
+handoff rather than to duplicate it: the direction is decided here, the assets are
+produced there, and blurring the two is how an unlocked direction gets 40 generated
+images spent on it.
+
+## 2.7 Icon Strategy (UX-ICON-01, DEFAULT)
+
+Choose iconography during the Design Read, **before** frontend implementation. Select
+the domain-correct default from the density matrix; an explicit `DESIGN.md`
+`iconography` block overrides it. Do not ask the user unless icon direction is a
+material brand decision that cannot be inferred from the brief.
+
+| Density | Typical surface | Recommended library | Why |
+|---|---|---|---|
+| D1 | Editorial, campaign, sparse portfolio | Iconoir | Airy 1.5px linework suits low-density art-directed composition |
+| D2 | Marketing site, premium consumer landing | Phosphor or Iconoir | Phosphor adds expressive weights; Iconoir stays restrained |
+| D3 | Consumer product, content app | Phosphor | Broad semantics plus regular/fill/duotone hierarchy |
+| D4 | SaaS product, general app UI | Phosphor | Default balance of clarity, coverage, personality |
+| D5 | Korean consumer app, feature-rich mobile | Phosphor + custom domain layer | System clarity plus colorful product-specific concepts |
+| D6 | Dense admin, B2B workflow | Hugeicons or Untitled UI | Higher coverage, neutral precise forms |
+| D7 | Finance, ops, analytics | Untitled UI or Hugeicons | Controlled neutral geometry at high information density |
+| D8 | Developer tool, expert control surface | Hugeicons or Lucide | Maximum coverage; Lucide only when ecosystem fit is intentional |
+
+Routing:
+
+1. Set the system library from the matrix and the product's visual language. Phosphor is
+   the general default, not a universal mandate.
+2. Respect an explicit user choice or an existing `DESIGN.md` value over the inferred
+   default.
+3. Use the library for routine system semantics — navigation, actions, status, search,
+   disclosure, utility controls.
+4. Generate a custom icon when a domain concept has no clear library glyph, when forcing
+   an approximate glyph would reduce comprehension, or when the brief requires a
+   brand-specific visual style. A licensed premium set is the alternative when it
+   already supplies a coherent domain vocabulary.
+
+Three visual layers, kept distinct:
+
+- **System icons (library)** — routine interface semantics, one coherent library and
+  weight language.
+- **Domain icons (custom or premium)** — product concepts, categories, KPIs, services,
+  objects that generic libraries cannot represent precisely.
+- **Brand icons (custom)** — identity-bearing marks, characters, mascots, signature
+  illustrations. Never substitute a generic stroke icon for a logo.
+
+Korean consumer apps often carry more information and rely on colorful domain category
+and KPI icons for fast scanning. For D4-D6 Korean-first apps, prefer a restrained system
+library plus a coherent colored domain layer over forcing every concept into monochrome
+outline icons.
+
 If the project needs persistent design tokens across sessions, save the Design Read as a full `DESIGN.md` in the project root. Format spec: `references/design-system-bootstrap.md § DESIGN.md Format`.
 
 ---

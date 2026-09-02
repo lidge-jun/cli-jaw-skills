@@ -24,11 +24,99 @@ Do NOT ask clarifying questions in IDLE instead of entering Interview, skip Inte
 for unclear requests, or merely narrate — actually execute the command in Bash.
 `/interview` is the user-facing shortcut; the Boss agent always runs the command directly.
 
+- **Teach the decision space, don't only narrow it** (DEFAULT, INTERVIEW-TEACH-01):
+  intent transfer is bidirectional — a user cannot choose among options they have
+  never seen. Questions that merely confirm details the user already stated are the
+  weak form; the strong form maps the option landscape (research it first when
+  needed) with a trade-off explanation per option, at every load-bearing altitude:
+  stack, architecture, **algorithm/strategy**, data structure, evaluation method.
+- Recommend one with project-specific reasoning
+- Confirm once, then proceed
+
+For broad changes or unfamiliar repositories, P phase MUST include:
+- Compact tree of the current repository shape
+- Detected repo conventions: docs, plans, architecture notes, source-of-truth logs, naming, tests
+- Whether existing `structure/`, `devlog/`, `docs/`, `plans/`, or equivalent logs were read and will be reused
+- Whether `structure/` or `devlog/` is proposed
+- The SoT sync target (SOT-SYNC-01): which general source-of-truth doc
+  (`structure/`, architecture/INDEX docs) this unit will patch in C — or, if the
+  repo has none, the plan recommends creating one (jaw-dev-scaffolding §2.1)
+
+Do not create new project-level source-of-truth folders during B unless approved in P or explicitly requested by the user.
+
+For every planned conditional path (error handler, fallback, retry, cache, guard,
+feature-gated branch, threshold behavior), the plan's accept criteria name its
+**activation scenario**: how C will trigger the condition and what observable effect
+proves the path ran (C-ACTIVATION-GROUNDING-01, §3 C).
+
+Design phases before mapping them to PABCD. **Slice and order phases by
+dependency/architecture structure (STRICT, PHASE-SPLIT-01)** — the orthodox
+unlimited-time build order: foundations (schema, contracts, core data flow) → core
+capabilities → integration → hardening/polish — so each phase consumes the verified
+output of the previous one. DB/API/UI/test work inside a phase are subtasks, not
+top-level phases by default, and every phase must still close with something
+independently verifiable (build, tests, or a demonstrable surface). Effort-based
+bucketing is FORBIDDEN: never split or order phases by estimated effort or payoff
+speed — no "quick win vs heavy" buckets, no impact/effort matrices, no time-boxed
+slices. Phase boundaries encode the system's build order, not the schedule. A simple
+task can finish in one PABCD with several small phases; larger work splits into
+multiple PABCD passes — one full P→A→B→C→D per work-phase, closed by D and
+re-entered at P for the next work-phase (see Terminology / Rule 4).
+
+Read project docs and jaw-dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
+
+Write a plan with two parts:
+
 **Interview MUST settle three things before P** (DEFAULT, INTERVIEW-CLASSIFY-01):
 the work class (dev §0.0), the **loop archetype** (§11.4) — ask "does a verifier
 define *done* for this work, or only *better*?" — and the **unit residence**
 (UNIT-RESIDENCE-01, §3.1). Applies in HITL and goal mode alike; an archetype
 discovered mid-loop, after candidates were burned, is an Interview failure.
+
+**Interview may widen, not only narrow** (DEFAULT, INTERVIEW-DIVERGE-01): sometimes the
+truest transfer of intent is "we don't know yet — test both." When a load-bearing
+choice is genuinely uncertain and a spike is cheap, present options as
+`A · B · BOTH (parallel spike, select by evidence)` instead of forcing one pick.
+Generate the option list against typicality bias: the 2-3 options a model volunteers
+are usually one attractor family — deliberately include at least one atypical
+(low-probability) approach. A `BOTH` answer becomes an explore-and-select work-phase
+(§11.4) with the comparison verifier declared in the loop-spec. Divergence seeded at
+Interview is far cheaper than divergence discovered at a plateau.
+
+**Interview sub-modes** (DEFAULT, INTERVIEW-CATALOG-01): pick by the user's knowledge level.
+*Clarification* (existing) — the user already knows roughly what they want; questions structure
+goals, constraints, success criteria. *Catalog Discovery* — the user names a vague domain but no
+features ("사주 앱 만들고 싶어", "뭘 만들지 모르겠어"); see below. *Configurator* — compile the
+selections into a spec. Heuristic: concrete feature/goal → Clarification; vague domain, no tech
+specifics → Catalog Discovery; explicit user request → honor it.
+
+**Catalog Discovery — design/UX LEADS** (DEFAULT, CATALOG-DESIGN-FIRST-01): the user cannot choose
+from options they have never seen (the strong form of INTERVIEW-TEACH-01). Present the option
+ontology in `references/catalog-discovery.yaml`. *Hard barrier:* iterate `axis_order` by ascending
+`stage`; do NOT present a stage until every `required` entry of all earlier stages is answered.
+Stage 1 is design, so all six design dials (mood, lightness, density, shape, typography, motion),
+each `required: true`, MUST be answered before any Stage 2 (domain) or Stage 3 (feature/data/
+security/ops/cost) question appears. This is the load-bearing invariant — backend is asked on top
+of design, never before it.
+
+- *Design methodology — Product-Personality Selection first* (`design_methodology.primary`, from
+  jaw-dev-uiux-design §1): for each design dial show its `question_options` (labels + trade-offs)
+  anchored on familiar products, then ask (present-then-ask, not confirm-what-they-said); refine
+  via the declared `followups` — Korean Request Translation (§3), Reference Discovery (§1 Step 6),
+  Design Read (§2).
+- *Deriving backend questions* — two paths populate Stage 3 from earlier answers, never a flat
+  list: **structural** — a chosen Stage-2 domain entry's `implies[]` plus each Stage-3 entry's
+  `derived_from` (resolve `implies[]` transitively); **keyword** — scan the user's INITIAL
+  free-text request against Stage-3 `auto_activate_rules` (e.g. "사주"/"생년월일" pre-activates
+  `security.pii_protection`). Confirm high-impact activations.
+- The catalog is a DATA STRUCTURE — do not invent entries not in it. The YAML encodes derivation
+  INPUTS + dependency metadata; this prose is the agent procedure that reads it. Automated runtime
+  filtering is out of scope (it would escalate to code).
+
+**Configurator**: once selections are complete, compile them (with resolved `implies[]` chains)
+into a spec — PRD sections, an MVP cut ordered by `cost_class`, a risk register of every
+`risk_class: high` entry, and a PABCD plan seed carrying the work class + loop archetype from
+INTERVIEW-CLASSIFY-01.
 
 ## §2. How It Works
 
@@ -838,6 +926,12 @@ same phase within one work-phase means no progress; force an Interview return �
 server may not enforce this, so the Boss agent self-applies it.
 
 ### §11.4 Loop archetype by problem type (DEFAULT, LOOP-ARCHETYPE-01)
+
+The explore-and-select shape this rule selects for is also tracked as
+`LOOP-EXPLORE-SELECT-01`: an open-ended optimization archetype sources candidates from
+capability-gap hypotheses, compares them on common instances, and retains best-so-far
+rather than converging on the first workable answer. Same rule, two ids -- the id exists
+so upstream references resolve; the content is here, not duplicated elsewhere.
 
 Classify the work-phase's problem type before choosing the inner loop shape:
 **Spec-satisfaction** (verifier defines done — tests, contracts, `npx tsc --noEmit`):
