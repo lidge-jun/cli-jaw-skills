@@ -2,7 +2,7 @@
 
 Covers Node 18+, tsx, ts-node, Bun, Deno. Phase 0 detection, launch recipes,
 inspector protocol, the tsx source-map silent-failure, and cleanup.
-Lineage: lazycodex `runtimes/node.md`, adapted for codexclaw.
+Lineage: lazycodex `runtimes/node.md`, adapted for codexclaw, ported here.
 
 ## Framework-Level References (js/)
 

@@ -2,7 +2,7 @@
 
 Use Playwright as a debugging tool (not just a test runner) when the bug is in
 a web surface: visual, routing, network, or state-dependent behavior.
-Lineage: lazycodex `tools/playwright-cli.md`, adapted for codexclaw.
+Lineage: lazycodex `tools/playwright-cli.md`, adapted for codexclaw, ported here.
 
 ## When to Use (vs the Manager embedded browser)
 
