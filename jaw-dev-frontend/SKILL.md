@@ -208,11 +208,11 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
 - **Motion**: See `references/core/motion.md`. One signature moment + a few
   supporting reveals > 10 scattered effects; landing-bucket floor/ceiling per
   FE-MOTION-BUCKET-01.
-- **Assets**: Use screenshots, product images, diagrams, charts, illustrations, generated bitmaps, or soft 3D only when they add product meaning. Never ship a placeholder. Prefer real/generated image or video assets over CSS gradient washes. Read any design reference or captured screenshot back into context with `view_image` before matching it. Third-party captures follow `reference-capture.md` (analysis-only, provenance manifest).
+- **Assets**: Use screenshots, product images, diagrams, charts, illustrations, generated bitmaps, or soft 3D only when they add product meaning. Never ship a placeholder. Prefer real/generated image or video assets over CSS gradient washes. Read any design reference or captured screenshot back into context before matching it. Third-party captures follow `reference-capture.md` (analysis-only, provenance manifest).
 
   1. **Probe**: `ima2 status` → `ima2 serve` if down → recheck.
   2. **Generate**: `ima2 gen` with explicit long prompts; `--ref` for style anchors.
-  3. **Inspect**: `view_image` every candidate.
+  3. **Inspect**: read every candidate image back into context.
   4. **Synthesize**: element ledger per FE-ASSET-SELECT-01.
   5. **Iterate**: `ima2 edit` for targeted fixes.
   6. **Verify**: browser screenshot of rendered result.
@@ -227,7 +227,7 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
   palette, lighting, style, and aspect per `asset-requirements.md`.
 
   Concept mockups guide implementation and are not shipped; production assets require candidate inspection and selection; cutout assets additionally follow FE-ASSET-BG-01.
-- **Visual verification**: after UI changes, exercise the flow per `dev-testing` §4.6 (TEST-CU-QA-01) — `browser:control-in-app-browser` on the dev server, screenshot, `view_image` — instead of claiming visual correctness from code alone.
+- **Visual verification**: after UI changes, exercise the flow per `jaw-dev-testing` §4.6 (TEST-CU-QA-01) — open the dev server in the Manager embedded browser, `POST …/<targetId>/screenshot`, then READ the returned PNG — instead of claiming visual correctness from code alone.
 
 ### Cutout Asset Generation (FE-ASSET-BG-01 surface — STRICT)
 Every cutout asset MUST follow `references/core/asset-production.md` § Asset Background Strategy; load the routed asset references before generation.
@@ -279,6 +279,32 @@ Audit composite convergence tells under FE-CONVERGENCE-01 (`anti-slop.md`): hair
 - Treat short descriptors (hero subtitle, card description, caption) using `text-wrap: pretty` instead of `balance` as a slop signal — `pretty` does nothing on 1-3 line text, especially Korean
 - Treat Korean orphan fragments ("합니다.", "화.", "입니다." alone on a line) as a slop signal — always verify Korean text breaks at target viewports
 - Treat generic stroke icons as brand logo substitutes as a slop signal — use actual brand SVGs from Simple Icons, SVGL, or press kits. See `brand-asset-sourcing.md`
+### Icon Implementation (FE-ICON-01, DEFAULT)
+
+- **Library route:** pick one library from the Design Read and confirm the exact package
+  and its license before installing. `@phosphor-icons/react` is a reasonable default;
+  `iconoir-react`, `@untitledui/icons`, `@hugeicons/react`, and `lucide-react` are for
+  when the read actually selects that family.
+- **Custom route:** generate the approved artwork with whatever image generation you
+  have, trace it to vector (`vtracer`), optimize the SVG (`svgo`), then convert to a
+  component (`svgr`) if the framework needs one. Preserve an editable source asset, and
+  inspect **both** the SVG and the rendered component before shipping — an SVG that
+  looks right in isolation can still render wrong at icon sizes.
+- **Layer consistency:** one library per icon layer. Do not mix one family's navigation
+  icons with another's content icons. A separate custom or premium domain layer is
+  allowed only when it is deliberately art-directed *as* a layer.
+- **Weight semantics:** `regular` is the default state, `fill` indicates selected or
+  active, and `duotone` is reserved for empty states or illustrative emphasis. Keep
+  size, optical weight, color behavior, and accessible labels consistent across the
+  layer.
+
+### Cutout Asset Generation (FE-ASSET-BG-01, STRICT)
+
+Every cutout asset MUST follow `references/core/asset-requirements.md` § Asset
+Background Strategy. Read that section before generating one; a cutout produced without
+its background strategy is the asset most likely to ship with a visible matte edge or a
+background that fights the surface it lands on.
+
 - When NO design brief exists, do not invent a generic default: apply the domain-gated no-brief kit owned by `dev-uiux-design` §1 UX-DEFAULT-ISM-01 and state the assumption
 
 ### Do not ship these tells (FE-AI-TELL-01)
@@ -304,6 +330,21 @@ For detailed budgets and browser connection limits, read `references/core/perfor
 - Icon-only buttons need accessible names (`aria-label`, visible text, or labelled-by)
 - Charts, status messages, loading progress, and AI streaming states need screen-reader labels or live regions where appropriate
 - Do not encode meaning by color alone
+### A11y polish (FE-A11Y-POLISH-01, DEFAULT)
+
+The checks below are the ones a functional a11y pass passes and a careful reviewer
+still fails:
+
+- CTA text fits on one line at target breakpoints; if it wraps, shorten the label or
+  change the layout.
+- Inputs need visible boundaries against their background in default, focus, error,
+  and disabled states.
+- Duplicate CTA intent on the same screen should merge, or differ clearly by outcome.
+- Button contrast is checked during visual review, not left to palette intent.
+
+The last one is the pattern: each of these is satisfiable in the token layer and still
+wrong on the rendered page, which is why they are a review item rather than a lint.
+
 - Modals, menus, comboboxes, bottom sheets, and command palettes must have a complete keyboard path
 - Stress-test Korean long labels and screen-reader names; clipped Hangul is a failure
 - Pointer targets follow WCAG 2.2 AA target-size rules; 44×44px is a conservative product baseline, not the only legal minimum

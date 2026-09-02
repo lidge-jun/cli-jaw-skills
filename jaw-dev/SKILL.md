@@ -83,6 +83,13 @@ proof that validates the claim, with the reduced scope stated).
 | `ml` / `ai` / `llm` / `rag` | dev-backend + dev-data + dev-testing (+dev-devops) | ML serving, RAG, pipeline, evaluation |
 | `frontend_ui` | dev-frontend + dev-uiux-design | UI/design intent or runnable prototype variant work |
 | `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
+| `logging` (CLI / scripts / libraries) | jaw-dev `references/logging.md` | What to emit and where; service instrumentation stays with jaw-dev-backend |
+| stacked pull requests (`DEV-STACK-*`) | jaw-dev `references/stacked-prs.md` | When to stack, cascade discipline, layer shape, review scope, bottom-up merge safety |
+| recall lookup (`DEV-RECALL-01`) | jaw-dev `references/recall-lookup.md` | Where to search before asking the user |
+| browse / QA ladders | jaw-dev `references/browse-qa-ladders.md` | Which surface opens a page, and why the two orders are opposite |
+| rule-area ownership | jaw-dev `references/skill-ownership.md` | Which skill is authoritative for a rule area; consult before adding one |
+| sub-agent skill injection and discovery | jaw-dev `references/skill-injection-and-discovery.md` | Naming skills in a dispatch packet; authority over a discovered skill |
+
 
 Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
 `frontend|backend|data|docs` (PROMPT-ROUTING-01).
@@ -140,30 +147,11 @@ This skill covers universal guidelines. **STRICT (DEV-ROUTE-01):** for domain-sp
 
 ### Skill Ownership Map
 
-Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST NOT duplicate canonical content.
-
-| Rule Area | Canonical Owner | Stub Locations |
-|-----------|----------------|----------------|
-| Circular dependencies | dev-architecture | dev, dev-code-reviewer |
-| Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
-| Coupling taxonomy | dev-architecture | dev-code-reviewer |
-| Barrel / re-export | dev-architecture | dev-scaffolding |
-| Pre-write search | dev §1.5 | dev-code-reviewer |
-| Edge-first testing | dev-testing §6 | — |
-| Test-induced defense | dev-testing §6.7 | dev-code-reviewer |
-| Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
-| Process isolation | dev-backend refs/ | dev-code-reviewer |
-| Code quality signals / antipatterns | dev-code-reviewer §3 | dev §6 |
-| Long-lived connections (server lifecycle) | dev-backend §1 | dev-frontend |
-| Browser connection budgets | dev-frontend refs/performance-budget | — |
-| Async task queue | dev-backend §2 | — |
-| Debugging methodology | dev-debugging | dev-code-reviewer |
-| Data pipeline patterns | dev-data | dev-backend |
-| Design intent discovery | dev-uiux-design | dev-frontend |
-| Project scaffolding / docs | dev-scaffolding | dev-pabcd |
-| Orchestration workflow | dev-pabcd | — |
-
-When updating a rule, update the canonical owner first, then verify stubs still point correctly.
+Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST
+NOT duplicate canonical content. The full table is in
+`references/skill-ownership.md` — consult it before adding a rule area, and add a row
+when you do. A rule area with no recorded owner is how the same guidance ends up written
+twice in two skills at two different thresholds.
 
 **When your task spans multiple domains**, read each relevant skill file before starting.
 
@@ -214,7 +202,26 @@ evidence-status rules. Sub-agents are bound by this policy too — include it in
 
 Routers that delegate here (`dev-frontend`, `dev-uiux-design`) inherit these rules in
 full; delegation is a pointer, never a weakening.
+### Recall lookup scope (DEV-RECALL-01, MUST)
 
+When a prior term, file, or decision is unfamiliar — or context was lost to a compaction —
+search the durable record **before** asking the user: `cli-jaw chat search <query>`, then
+`cli-jaw memory search <query> [--chat]`, then the owning unit and the commit that
+introduced the term. If all miss, ask, and **state what you searched** — that is what lets
+the user correct the vocabulary instead of re-explaining something already on disk under a
+name you did not try. Full routing table: `references/recall-lookup.md`.
+
+### Browse and QA tool routing (DEV-BROWSE-NATIVE-01, STRICT)
+
+For ad-hoc browsing and exploratory QA — opening a page, checking a URL, eyeballing a
+screen, taking a screenshot — **do not install a browser-automation framework or
+driver.** Use the runtime's own browser capability first. A deliberate end-to-end test
+suite is a different task and belongs to `jaw-dev-testing`.
+
+Two ladders exist and their orders are deliberately **opposite**: public-web proof leads
+with `jaw browser fetch`, QA of a surface you just built leads with the Manager embedded
+browser. Full rung tables and the reason the inversion is the content of the rule:
+`references/browse-qa-ladders.md`.
 ---
 
 ## 0. Intent Clarification
@@ -329,6 +336,18 @@ Full methodology (boundary instrumentation, competing hypotheses, postmortem):
 but might work" · proposing solutions before investigating · "one more attempt" after
 2+ failures. **3+ failed fixes = architectural problem**: pause, question the pattern
 itself, and discuss with the user before further fixes.
+**Repeated-friction rule (DEV-FRICTION-01, DEFAULT).** When the same command class
+fails twice with the same normalized error, do not retry a third time unchanged:
+switch approach — a different tool, different flags, or root-cause the
+environment. Repeated identical failures are friction evidence, not bad luck.
+
+**Repeated-edit-shape rule (DEV-EDIT-SHAPE-01, DEFAULT).** Three same-shaped edits
+in a row (the same structural transform applied at different sites) mean you are
+hand-running a codemod: stop and switch to an AST-based rewrite tool or a scripted
+transform, so the remaining sites are transformed deterministically. The third
+identical edit is the signal — by then the transform is known, and continuing by
+hand is where the divergent site gets missed.
+
 
 ---
 
@@ -382,6 +401,22 @@ and **Verification** (command + result).
 - **Externalize configuration** — use config files or environment variables. Place magic strings and numbers in named constants.
 - **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
 - **Confirm before destructive operations (ESCALATE)** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
+### Git discipline
+
+- **Commit incrementally (DEV-GIT-COMMIT-01, DEFAULT)** — each logically complete step
+  (passing test, wired feature, fixed defect) gets its own commit, so progress is
+  checkpointed on disk. This matters most in multi-cycle work, where the transcript is not
+  durable: committed work survives a context flush, uncommitted work does not.
+- **Push requires explicit user approval (DEV-GIT-PUSH-01, ESCALATE)** — committing
+  locally is autonomous; pushing is an external state change the user must authorize. Holds
+  even at completion, and covers force-push, remote branch creation, and tag push.
+  Approval for a named scope ("push when done") is approval for that scope only.
+- **Stack dependent work instead of one oversized PR (DEV-STACK-01, DEFAULT)** — each
+  branch based on the one below, each PR's base pointing at its parent; cascade to every
+  layer above before pushing (`DEV-STACK-02`, STRICT); merging is bottom-up and
+  user-authorized (`DEV-STACK-04`, ESCALATE). Depth guidance, layer shape, review scope,
+  anti-patterns, and tooling: `references/stacked-prs.md`.
+
 
 ---
 
@@ -436,5 +471,12 @@ linked issue/TODO; Python `# type: ignore[code]` must name the exact error code.
 preload all references (HEURISTIC) — e.g. a caching task reads `caching.md` only.
 **Sub-agents:** each receives its own copy of injected skills — inject only what
 that sub-task needs.
+## 9. Sub-Agent Skill Injection and Skill Discovery
 
----
+Two DEFAULT rules live in `references/skill-injection-and-discovery.md`:
+
+- **`DEV-SKILL-INJECT-01`** — name `jaw-dev` and every relevant surface skill explicitly in
+  the dispatch packet. A sub-agent inherits none of yours, and nothing infers an omitted
+  one; an omitted router is an ungoverned lane, not a lighter one.
+- **`DEV-SKILL-DISCOVERY-01`** — check the runtime's skill registry before improvising.
+  `jaw-dev` keeps authority over a discovered skill, and the family wins name conflicts.

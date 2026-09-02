@@ -1,5 +1,5 @@
 # CI Pipeline Templates
-> Deep reference for `dev-testing` §5 CI Pipeline Integration.
+> Deep reference for `jaw-dev-testing` §5 CI Pipeline Integration.
 
 ## 1. Node.js Workflow Template
 
@@ -93,20 +93,98 @@ pytest -n auto --dist=loadgroup
 - keep contract reports separate from unit coverage
 - fail the build when thresholds or diff coverage drop
 
-## 5. Flaky Test Quarantine Strategy
+## 5. Flaky Test Policy (canonical — `TEST-FLAKE-*`)
 
-1. detect the flaky test by exact name
-2. move it to a quarantine tag or job
-3. keep quarantine non-blocking but visible
-4. assign an owner and removal deadline
-5. restore only after repeated green runs
+Canonical owner: `jaw-dev-testing`. Other skills carry pointer stubs only.
+`jaw-dev-debugging` owns the diagnostic **method**; this section owns the **policy** —
+what CI may do about a flake, and what counts as closing one.
 
-| Signal | Action |
-|--------|--------|
-| intermittent timeout | replace implicit timing with deterministic waits |
-| order-dependent failure | reset shared state or fixture leakage |
-| CI-only HTTP failure | remove live network dependency |
-| snapshot variance | stabilize fonts, time, locale, and dynamic regions |
+A flake is a defect that has not been diagnosed yet. Mechanisms that make CI green
+without diagnosing it ship that defect.
+
+### 5.1 Eliminate the nondeterminism (`TEST-FLAKE-ELIMINATE-01`, STRICT)
+
+A flaky test is a defect in the test or in the code under test. Diagnose the source
+of nondeterminism and remove it. **A flake is closed when the cause is named, not
+when the suite is green.**
+
+This is a CLOSURE rule: it governs the claim "this flake is fixed", not whether work
+may proceed meanwhile. A quarantine under §5.3 does not violate it, because a
+quarantine explicitly does not close the defect.
+
+| Signal | Cause to remove |
+|--------|-----------------|
+| intermittent timeout | implicit timing — wait on an observable condition or a fake clock |
+| passes locally, fails in CI | an unpinned seed, an uncontainerized dependency, or an implicit wait |
+| order-dependent failure | shared mutable state or fixture leakage between tests |
+| CI-only HTTP failure | a live network dependency |
+| snapshot variance | unpinned fonts, time, locale, or dynamic regions |
+| passes alone, fails in the suite | resource contention or global state — isolate, then fix the sharing |
+
+After a fix, search for other tests with the same missing cleanup or the same timing
+assumption. One cause commonly has siblings, and closing only the instance that failed
+leaves the rest to fail later.
+
+### 5.2 Re-running is not a resolution (`TEST-FLAKE-RERUN-01`, STRICT)
+
+Re-running a failed job or test to obtain green is **not** a fix and is never recorded
+as one. Raising a timeout until a test passes is the same violation wearing a config
+change.
+
+A re-run is permitted for exactly one purpose: measuring the failure **rate** as
+diagnostic input. When you use it that way, write the measurement down — "4 of 5 runs,
+4 different tests" is evidence; "passed on retry" is not.
+
+### 5.3 Quarantine is an exception with a cost (`TEST-FLAKE-QUARANTINE-01`, DEFAULT)
+
+Quarantine is permitted only when the flake blocks delivery of work that does not
+depend on the code under test — state which delivery, and why it is independent — AND
+all four of these are recorded in the same change (**STRICT**: the four fields are not
+waivable; only the decision to defer is DEFAULT):
+
+1. the exact test name,
+2. a named owner,
+3. a removal deadline, and
+4. the suspected cause.
+
+Mechanics: move it to a quarantine tag or job, and keep that job **non-blocking but
+visible**. A quarantine nobody sees is a deletion; a quarantine that blocks is not a
+quarantine.
+
+**A quarantine without a deadline is a deletion with extra steps.** Quarantine never
+closes the defect — it defers it, and the deadline is the receipt. Restore only after
+repeated green runs (§5.5).
+
+A quarantine carrying all four fields is the one form of `.skip()` that is not a
+`TEST-PATCH-INTEGRITY-01` red flag. An undocumented skip still is.
+
+### 5.4 "Environmental" is a claim, not an observation (`TEST-FLAKE-ATTRIBUTION-01`, DEFAULT)
+
+Before calling a failure environmental or pre-existing, prove it:
+
+1. the identical failure reproduces on the untouched baseline,
+2. no change in the current set touches that code, and
+3. the matching CI job is green at the same SHA.
+
+Without the triple it stays a candidate defect.
+
+This is DEFAULT rather than STRICT for one reason only: step 3 sometimes needs CI
+access an agent does not have. In that case record the gap. **A recorded gap is not a
+waiver** — the failure remains a candidate defect, and the claim "environmental"
+remains unmade.
+
+A release or freeze decision is a stricter setting than ordinary development, and
+`jaw-dev-devops` owns the STRICT counterpart there. An agent must not reach the weaker
+class by loading only `jaw-dev-testing`: when the question is whether to ship, the
+baseline claim needs the full triple regardless of convenience.
+
+### 5.5 Counting greens
+
+How many consecutive green runs make a flaky-capable suite trustworthy is a
+**release-gate** question, not a remediation one, and it belongs to `jaw-dev-devops`. The
+distinction matters because the two have different costs of being wrong: a remediation
+call that is too lenient costs a re-investigation, while a release call that is too
+lenient ships the defect.
 
 ## 6. Recommended Job Order
 
@@ -155,4 +233,4 @@ Minimum smoke:
 
 CI matrix proof is enough for pure library/import behavior. For desktop,
 installer, profile, permission, PATH, shell-shim, or visible OS behavior that CI
-cannot observe, hand off to `dev-devops/references/cross-platform-release.md`.
+cannot observe, hand off to `jaw-dev-devops/references/cross-platform-release.md`.

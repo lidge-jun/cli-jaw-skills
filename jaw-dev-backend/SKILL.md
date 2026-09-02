@@ -191,6 +191,23 @@ Routes → Controllers → Services → Repositories → Database
 
 ### Repository Pattern (Interface Abstraction)
 
+**Boundary parsing contract (BACKEND-BOUNDARY-01, DEFAULT).** Parse once at
+ingress and trust boundaries; inside that boundary, typed values are proof. Do not
+duplicate schema validation, null defense, or defensive parsing in services unless the
+data crosses a **new** trust boundary. Canonical boundary-defense ownership stays with
+`jaw-dev-architecture` §4; this is the backend stub.
+
+The reason to state it as a rule rather than a preference: duplicated validation reads as
+prudence and behaves as ambiguity — with two checks, neither one is the boundary, and a
+later change can remove whichever looks redundant.
+
+**Server runtime safety (BACKEND-RUNTIME-01, DEFAULT).** Production server runtimes set
+explicit read, write, request/idle, and graceful-shutdown timeouts. Drain on SIGTERM or
+deploy: stop accepting new work, let in-flight work finish within the shutdown budget,
+then close. Propagate the request id from ingress into structured logs, traces, queued
+work, and outbound calls wherever the stack supports it — an id that stops at the queue
+boundary is the one you will miss during an incident.
+
 Use repository interfaces so services depend on abstractions, enabling mocking and swapping implementations.
 
 ### Async Task Queue Patterns

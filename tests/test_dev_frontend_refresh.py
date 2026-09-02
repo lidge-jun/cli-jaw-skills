@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEV_FRONTEND = ROOT / "dev-frontend"
+DEV_FRONTEND = ROOT / "jaw-dev-frontend"
 
 
 def read(relative: str) -> str:

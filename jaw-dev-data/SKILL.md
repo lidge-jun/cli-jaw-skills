@@ -194,6 +194,16 @@ Changes to a contracted schema require **versioning and consumer notification**.
 
 ## 5. Analysis & Reporting
 
+### Migration and Backfill Sequencing (DATA-MIGRATION-01, DEFAULT)
+
+Treat schema changes and data backfills as **separate steps**. Production evolution runs
+expand → backfill → dual read/write where needed → contract.
+
+Before declaring the migration complete, require three things: a **dry run**, an
+**idempotency proof**, and **reconciliation counts**. Idempotency is the one that
+matters most in practice — a backfill is the operation most likely to be interrupted and
+resumed, so one that is not safe to re-run turns a retry into double-counted data.
+
 ### Always Start with Summary Statistics
 
 Before any deep analysis, provide:

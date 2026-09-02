@@ -2,7 +2,7 @@
 
 When to isolate work from the main process, and which mechanism to use.
 
-**Origin:** ima2-gen SSE hang — a CPU-bound image generation task blocked the event loop, causing all SSE connections to stall. Process-level isolation would have contained the failure.
+**Origin:** an image-generation SSE hang — a CPU-bound generation task blocked the event loop, causing all SSE connections to stall. Process-level isolation would have contained the failure.
 
 ---
 

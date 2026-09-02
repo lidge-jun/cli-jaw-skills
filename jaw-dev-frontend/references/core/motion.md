@@ -50,6 +50,29 @@ legitimately deliver zero motion.
 
 Avoid cinematic page loads for repeated-work tools. Motion should clarify state, not slow the task.
 
+
+### Award-Entry Experience Carve-Out (FE-MOTION-EXPERIENCE-01, DEFAULT)
+
+Experiential microsites, award entries, and interactive stories may use continuous authored choreography only when every scene advances narrative or state, a reduced-motion fallback exists, and the core route remains reachable without precision scrolling. Marketing and conversion pages remain governed by the landing/campaign row above; an award reference alone does not justify cinematic motion.
+
+Count repeated identical fade-ups as one motion idea, not many. Prefer one signature moment plus a small number of supporting reveals, and verify the static/reduced-motion reading order independently.
+
+Avoid cinematic page loads for repeated-work tools. Motion should clarify state, not slow the task.
+
+## MOTION_INTENSITY Levels
+
+| Level | Rules                                                                                                           |
+| :---: | --------------------------------------------------------------------------------------------------------------- |
+|  1-3  | No automatic animations. CSS `:hover` and `:active` only.                                                       |
+|  4-7  | Enumerate transition properties, usually `transform`, `opacity`, `background-color`, `border-color`, `box-shadow`. `animation-delay` cascades. |
+| 8-10  | Complex scroll-triggered reveals. Framer Motion hooks. NEVER `window.addEventListener('scroll')`.               |
+
+---
+
+Never use `transition-all` as a default in Tailwind or CSS all-property transitions. Enumerate the properties so layout, width, height, and color changes do not animate accidentally.
+
+## CSS-Only Patterns (Level 4-7)
+
 ## MOTION_INTENSITY Levels
 
 | Level | Rules                                                                                                           |

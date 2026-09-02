@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-16
 Applies to: GitHub Actions, ArgoCD 2.14+, Argo Rollouts 1.8+
 When to read: Deploy pipeline setup or modification
-Canonical owner: dev-devops §2
+Canonical owner: jaw-dev-devops §2
 
 ---
 
@@ -256,3 +256,75 @@ Phase 4: Drop old column
 | No prod approval | Unreviewed changes hit users | Environment protection |
 | `down()` migrations | Rollback breaks forward-deployed code | Expand-contract |
 | Deploy without smoke test | Silent failures | Post-deploy smoke in pipeline |
+
+---
+
+## §6 Verification Evidence Rules
+
+Owner: this file. The GO/NO-GO decision rules that consume these live in
+`jaw-dev-devops` SKILL.md §2.8. Each was learned by getting it wrong first, and the
+incident is kept with the rule because the rule alone reads like bureaucracy.
+
+### §6.1 Suite partitioning (`DEVOPS-SUITE-PARTITION-01`, STRICT)
+
+A local one-process full-suite run is **not** the CI suite gate. Replay the
+partition CI actually applies — the general shards plus each segregated job's exact
+command — and record both forms.
+
+Why: a real pipeline excluded three load-sensitive path patterns from its general
+batches and covered them with two dedicated jobs, one running six files together and
+one running a single file. Running everything in one process therefore failed tests
+CI never runs together, and the resulting red was **not the gate's verdict**.
+Decomposed, the same tree gave a fully green general suite plus a green segregated
+job.
+
+Corollary: if you cannot state which CI job a local command corresponds to, that
+command is not a gate.
+
+### §6.2 Baseline versus defect (`DEVOPS-BASELINE-DEFECT-01`, STRICT)
+
+A local red test is a **candidate defect** until all three hold:
+
+1. the identical failure reproduces on the untouched pre-change baseline SHA,
+2. no merged unit in the change set touches that code, and
+3. CI's matching job is green at the freeze SHA.
+
+Two out of three is not evidence. "It's flaky" and "it's environmental" are
+conclusions, not observations, and they need the same proof as any other claim.
+Remediation of a genuine flake belongs to `jaw-dev-testing`
+`references/ci-pipeline.md` §5; this rule only decides whether you are allowed to
+call it one.
+
+### §6.3 Instrument stability (`DEVOPS-VERIFY-INSTRUMENT-01`, STRICT)
+
+Do not change the verification instrument — runner flags, parallelism, shard layout,
+timeouts, retry policy — while using it to certify a freeze. Change it against a
+known-good baseline, or defer it.
+
+Stated at the source as: **a verification instrument gets changed against a
+known-good baseline; it does not get used to establish one.** The train that
+produced this deferred its parallel-runner change for exactly that reason — across
+five recorded runs four different tests flaked, and the freeze gate was itself a
+full-suite run, so landing the new runner would have made red indistinguishable from
+noise.
+
+### §6.4 Exact-head evidence (`DEVOPS-EXACT-HEAD-01`, STRICT)
+
+Re-read the PR or branch head immediately before claiming exact-head evidence. A
+push mid-verification makes a recorded SHA stale. Keep stale rows **labeled** stale
+and never merge on them; a remembered pass is not evidence.
+
+The case: a MERGE recommendation was formed against a head the author had already
+replaced. The fix was not more care but a run table that marks superseded rows
+explicitly, so staleness is visible rather than remembered.
+
+### §6.5 Stability counting (`DEVOPS-FLAKE-STABILITY-01`, DEFAULT)
+
+A flaky-capable suite is stable only after N consecutive greens at **one** head plus
+the required CI matrix. Declare N in the GO report. The train behind this rule set
+N=3 plus two OS matrices, never collected it, and deferred the change rather than
+landing it — at the head under test the recorded runs were green, green, then a
+failure. **One green run is not a land signal.**
+
+This rule counts greens; it does not tell you how to fix a flake. That is
+`jaw-dev-testing` `references/ci-pipeline.md` §5, which owns `TEST-FLAKE-*`.

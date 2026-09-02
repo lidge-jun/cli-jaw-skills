@@ -28,7 +28,8 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | `references/homebrew.md` | Homebrew distribution | Formula vs Cask, audit/test, livecheck, artifact trust, install/uninstall proof |
 | `references/platform-engineering.md` | Platform / DORA / provider routing | DORA capabilities, platform guardrails, provider table rows, SLSA handoff |
 | `references/kubernetes.md` | K8s deployment | Gateway API (v1.6+), Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
-| `references/ci-cd-deploy.md` | Deploy pipeline | GHA reusable workflows, deploy strategies, rollback, GitOps, progressive delivery |
+| `references/ci-cd-deploy.md` | Deploy pipeline, and freeze/GO evidence | GHA reusable workflows, deploy strategies, rollback, GitOps, progressive delivery; §6 suite partitioning, baseline-vs-defect, instrument stability, exact-head evidence, stability counting |
+| `references/branch-lifecycle.md` | Branch or worktree cleanup | Deletion-evidence checks, ref snapshot and restore, merged-vs-closed gap, stacked-PR bases, fork identity by repository id, worktree removal order |
 | `references/iac.md` | Infrastructure code | OpenTofu/Terraform modules, Pulumi, state encryption, blast radius isolation |
 | `references/sre-foundations.md` | Operations/incidents | SLO/SLI/error budget, burn-rate alerting, incident response, blameless postmortem |
 | `references/edge-serverless.md` | Edge/serverless work | Edge request shaping, auth at edge, Cloudflare Workers, Vercel Edge, edge AI triage |
@@ -133,6 +134,11 @@ jobs:
 
 ### §2.5 Secret Management (STRICT)
 
+**Rule (DEVOPS-AUTH-01):** prefer OIDC, workload identity federation, trusted
+publishing, or another short-lived credential flow **before** static long-lived
+tokens. When a static token is unavoidable, scope it narrowly, store it in the
+managed secret system, and rotate on schedule or on incident.
+
 | Source | Usage |
 |--------|-------|
 | GHA Secrets / Vault / AWS SM | CI pipeline secrets |
@@ -146,6 +152,84 @@ jobs:
 - Actions updates deploy repo (image digest PR/commit) → ArgoCD reconciles
 - Self-heal: ArgoCD auto-reverts drift
 - Environment protection: GitHub Environments for prod approval gate
+
+### §2.7 Release Proof Contract (STRICT)
+
+**Rule (DEVOPS-RELEASE-PROOF-01):** a release claim must name the artifact digest,
+the workflow or builder identity, the deploy target and environment, smoke-test
+evidence, and rollback evidence. Five items, each an artifact rather than an
+assertion — "deployed successfully" names none of them.
+
+Keep the proof at this level; detailed package, platform, and supply-chain mechanics
+live in the release references.
+
+### §2.8 Freeze and GO/NO-GO Gates (STRICT)
+
+`DEVOPS-RELEASE-PROOF-01` governs the proof bundle for an artifact you already
+published. This section governs the decision to publish at all — the readiness
+report, and the gates it claims to have passed.
+
+| Rule | Severity | Statement |
+|------|----------|-----------|
+| `DEVOPS-FREEZE-SHA-01` | STRICT | Pin the readiness report to the code SHA its gates describe. If the head moved after the freeze, prove the delta is docs-only (`git diff --name-only <freeze> <head>`) and keep every gate receipt on the freeze SHA. |
+| `DEVOPS-GATE-WEAKEN-01` | STRICT | A red named gate is never excused inside the report that gate failed. Make the original command green, or replace it with a pre-declared equivalent CI actually runs — and declare the swap **before** the verdict, not after the failure. |
+| `DEVOPS-REVIEW-THREADS-01` | STRICT | Unresolved review threads on merged PRs are a GO blocker. Count them **after** merge: a thread opened minutes before merge still counts until it is fixed or explicitly dismissed. |
+| `DEVOPS-GATE-OWNER-01` | STRICT | A mandatory GO gate needs an implementing work-phase and a recorded terminal outcome — pass, not-reproduced, or explicitly deregistered. A gate nobody implements is not a gate; it is a wish. |
+
+**Why gate-weakening is the load-bearing one.** In the case that produced these
+rules, a freeze audit rejected the first GO report on three counts: unresolved
+review threads on merged PRs, a red gate argued into an exception, and missing
+frozen-head receipts. The red-gate part is the instructive one — the suite was red,
+the red tests were known to be load-sensitive, and the fix was real, so the report
+explained the exception. The audit rejected that anyway, and correctly: **an
+exception argued *after* a gate fails is indistinguishable from an exception argued
+*because* it failed.**
+
+The honest move was to decompose the gate to match what CI actually runs
+(`DEVOPS-SUITE-PARTITION-01`), which turned the general suite green. The one
+remaining local failure was waived separately on the `DEVOPS-BASELINE-DEFECT-01`
+triple — not by the partitioning. Two different mechanisms for two different
+problems; collapsing them is how a partition becomes a way to hide a defect.
+
+Operational mechanics — suite partitioning, baseline-versus-defect attribution,
+instrument stability, and exact-head evidence — live in
+`references/ci-cd-deploy.md` §6. Runtime and operator-signal evidence rules live in
+`references/sre-foundations.md` §7.
+
+### §2.9 Branch Lifecycle Hygiene (STRICT)
+
+Delivery repositories accumulate dead refs, and the cost is not disk. Stale branches
+make the remote branch list unusable for triage, keep superseded heads reachable by
+tooling that resolves names, and hide the handful of branches that actually still
+matter. Treat branch lifecycle as delivery infrastructure.
+
+| Rule | Severity | Statement |
+|------|----------|-----------|
+| `DEVOPS-BRANCH-AUTODELETE-01` | STRICT | Enable host-side head deletion on merge (`delete_branch_on_merge` on GitHub) **and** close the gap it leaves. That setting fires only on merge; a pull request closed without merging keeps its head branch forever, so the closed-PR case needs its own scheduled automation. |
+| `DEVOPS-BRANCH-DELETE-EVIDENCE-01` | STRICT | Never bulk-prune. Before deleting any ref, prove per branch that it is not protected, not an open PR head, not the base of an open PR, not a fork head, and not carrying unique commits. A name pattern is not evidence. |
+| `DEVOPS-BRANCH-SNAPSHOT-01` | STRICT | Snapshot `git for-each-ref` (SHA + refname) for every local and remote ref to scratch space before the first deletion. A deleted remote branch is restorable with `git push origin <sha>:refs/heads/<name>` only while you still hold the SHA. |
+| `DEVOPS-WORKTREE-DIRTY-01` | STRICT | Check every attached worktree for uncommitted work before removing it, and remove worktrees **before** their branches — an attached branch cannot be deleted, and `--force` on a dirty tree discards work no reflog will return. |
+
+**Why the merged/closed distinction is load-bearing.** `delete_branch_on_merge`
+reads as complete branch hygiene, so a repository with it enabled looks solved. It
+is not: in the case behind this rule the setting was on and the repository still
+carried 59 dead remote branches, because closed-unmerged PRs fall outside what it
+covers. The failure is silent and compounds — nothing reports it, and the branch
+list simply degrades until triage stops using it.
+
+**Why stacked PRs break naive cleanup.** A stacked child PR targets its parent's
+head branch, so deleting a closed parent **closes the open child**. "The PR that
+owned this branch is closed" is therefore insufficient grounds for deletion: the
+base of any open PR is protected regardless of its own PR state
+(`jaw-dev` `DEV-STACK-04`).
+
+**Fork heads are out of scope, and identity is by repository id.** A fork's head
+lives in the contributor's repository; deleting refs there is neither permitted nor
+intended. Compare repository **ids**, not names — a fork commonly carries the same
+branch names as upstream, so name comparison silently misclassifies it.
+
+Mechanics, the deletion-plan algorithm, and a worked audit live in
+`references/branch-lifecycle.md`.
 
 ---
 

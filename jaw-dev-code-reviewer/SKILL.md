@@ -448,3 +448,14 @@ findings, verify each claimed fix, and process new findings normally. Revisit
 unchanged code when a cross-file dependency changed. If either anchor is missing,
 history was rewritten ambiguously, or the interdiff cannot be trusted, fall back
 to a full review of the current base-to-head diff.
+## Deletion and worktree rules
+
+Three DEFAULT rules live in `references/deletion-and-worktree.md`:
+
+- **`REVIEW-GUARD-REMOVAL-01`** — deleting a trust-boundary guard needs a regression test
+  that exercises the deleted path. The expected result **inverts** by deletion kind: a
+  relocating deletion must stay GREEN, a non-replacing one goes RED.
+- **`REVIEW-REMOVED-BACKEND-01`** — a document listing available capabilities gets checked
+  for retired ones reappearing as available.
+- **`REVIEW-WORKTREE-01`** — never check out another review ref in the worktree you were
+  handed; the condition is observable state, not ownership.

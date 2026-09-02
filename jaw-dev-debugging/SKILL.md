@@ -150,6 +150,19 @@ before treating external material as proof.
 
 ### Phase 3: Hypothesis and Testing
 
+**STRICT (DEBUG-RCA-EVIDENCE-01):** before investigating any single root-cause
+hypothesis, or making any root-cause claim, write at least three **orthogonal**
+hypotheses (`H1`/`H2`/`H3`) and **one falsifier for each**. Collapse duplicates,
+test against disconfirming evidence, and do not claim a root cause until the
+competitors have been ruled out **by evidence**. If fewer than three are plausible,
+state why.
+
+Two words in that rule carry the weight. **Orthogonal** — three restatements of one
+theory are one hypothesis, and listing them produces the feeling of rigor with none
+of it. **Falsifier** — a hypothesis you cannot describe a disconfirming observation
+for is not testable, so it can never be ruled out and will still be sitting there,
+unexcluded, when you claim the winner.
+
 1. **List competing hypotheses first** — write at least three plausible root-cause
    hypotheses before investigating any single one. Include the evidence that would
    support or reject each hypothesis. If fewer than three are plausible, state why.
@@ -174,6 +187,18 @@ before treating external material as proof.
    further rather than guessing. Record the open question explicitly.
 
 ### Phase 4: Implementation
+
+**STRICT (DEBUG-TOGGLE-PROOF-01):** enter implementation only after all three hold:
+the captured value matches the hypothesis prediction, the repro repeats, and
+**toggling the suspected cause off and on removes then restores the bug.** Write one
+paragraph explaining the causal mechanism before patching.
+
+The toggle is the load-bearing clause, and it is the one usually skipped. A value
+that matches the prediction proves correlation; the bug disappearing when you disable
+the cause and returning when you re-enable it is what distinguishes the cause from
+something that merely co-occurs with it. If the suspected cause cannot be toggled,
+say so and treat the diagnosis as unconfirmed rather than quietly upgrading
+correlation to causation.
 
 1. **Write a failing test first** — the test reproduces the bug. It should fail
    before the fix. Use `dev-testing` for TDD patterns and test harness setup.
@@ -356,19 +381,26 @@ action item that prevents the same class of bug from recurring.
 | `references/async-debugging.md` | Concurrency issues | Race conditions, deadlocks, event loop blocking, promise/callback |
 | `references/tool-guides.md` | Quick cheatsheet | Node inspector basics, pdb basics, Chrome DevTools, git bisect, DB EXPLAIN |
 | `references/postmortem-template.md` | After resolving a significant incident | Blameless postmortem template |
+| `references/performance-debugging.md` | Latency, throughput, or memory regressions | Profiling ladder, measurement discipline |
 | `references/runtimes/node.md` | Node.js / tsx / Bun / Deno | Phase 0 detection, tsx source-map trap, launch recipes, `exec()` patterns, silent-failure table, cleanup |
-| `references/runtimes/js/nextjs-react.md` | Next.js 16 / React 19 | Server-vs-client attach split, DevTools MCP, hydration mismatch workflow, React Compiler debug, RSC silent-failures |
-| `references/runtimes/js/vite-vitest.md` | Vite 8 / Vitest 4 | forwardConsole agent forwarding, plugin-transform debug, visual regression, HMR + build-time silent-failures |
+| `references/runtimes/js/nextjs-react.md` | Next.js 16 / React 19 | Server-vs-client attach split, hydration mismatch workflow, React Compiler debug, RSC silent failures |
+| `references/runtimes/js/vite-vitest.md` | Vite 8 / Vitest 4 | Console forwarding to the agent, plugin-transform debug, visual regression, HMR and build-time silent failures |
 | `references/runtimes/js/node-backend.md` | Express 5 / Fastify 5 / NestJS 11 | Router debug namespaces, lifecycle hooks, schema serialization drops, DI errors, AsyncLocalStorage loss |
-| `references/runtimes/python.md` | Python (CPython 3.9+) | Attach methods, pdb/ipdb/pudb, pytest, asyncio gotchas, PEP 768 safe attach, py-spy/memray, silent-failures |
-| `references/runtimes/rust.md` | Rust | Hierarchy (dbg! -> RUST_LOG -> backtrace -> gdb/lldb -> tokio-console -> cargo-expand), Miri UB, silent-failures |
-| `references/runtimes/go.md` | Go | Delve launch/attach, goroutine patterns, race detector, pprof, GODEBUG, silent-failures |
-| `references/runtimes/c-cpp.md` | C/C++ | Sanitizers (ASan/TSan/MSan/UBSan), GDB/LLDB, Valgrind, CMake debug builds, UB silent-failures |
+| `references/runtimes/python.md` | Python (CPython 3.9+) | Attach methods, pdb/ipdb/pudb, pytest, asyncio gotchas, PEP 768 safe attach, py-spy/memray, silent failures |
+| `references/runtimes/rust.md` | Rust | Hierarchy (`dbg!` → `RUST_LOG` → backtrace → gdb/lldb → tokio-console → cargo-expand), Miri UB, silent failures |
+| `references/runtimes/go.md` | Go | Delve launch/attach, goroutine patterns, race detector, pprof, GODEBUG, silent failures |
+| `references/runtimes/c-cpp.md` | C/C++ | Sanitizers (ASan/TSan/MSan/UBSan), GDB/LLDB, Valgrind, CMake debug builds, UB silent failures |
 | `references/runtimes/jvm.md` | Java/Kotlin (JVM) | jcmd live diagnostics, JFR profiling, JDWP/JDB, Kotlin coroutines, GraalVM native-image |
 | `references/runtimes/swift.md` | Swift / iOS | LLDB, Instruments, Swift concurrency, simulator CLI, crash symbolication |
-| `references/runtimes/ruby.md` | Ruby (3.2+) | debug gem/rdbg, binding.irb, pry, Rails tools, nil-propagation silent-failures |
-| `references/runtimes/beam.md` | Elixir/Erlang (BEAM) | IEx.pry, Observer, :dbg/recon, supervision hiding, mailbox/atom/binary leaks |
-| `references/tools/playwright.md` | Browser/web-surface bugs | codegen repro, PWDEBUG, trace viewer, console/network listeners, viewport gotchas |
+| `references/runtimes/ruby.md` | Ruby (3.2+) | debug gem/rdbg, `binding.irb`, pry, Rails tools, nil-propagation silent failures |
+| `references/runtimes/beam.md` | Elixir/Erlang (BEAM) | `IEx.pry`, Observer, `:dbg`/recon, supervision hiding, mailbox/atom/binary leaks |
+| `references/tools/playwright.md` | Browser or web-surface bugs | codegen repro, PWDEBUG, trace viewer, console/network listeners, viewport gotchas |
+
+Read the runtime file for the stack you are actually debugging, not all of them. Each
+carries a **silent-failure table** for its runtime — the failures that produce no
+error at all — which is the part hardest to rediscover under time pressure and the
+main reason these are worth loading.
+
 
 ---
 

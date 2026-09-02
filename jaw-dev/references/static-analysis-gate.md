@@ -38,6 +38,43 @@ verification gate or configuring lint/typecheck for a project.
 
 This table is not exhaustive — the project's own config is the canonical rule set.
 
+## New-File Language Default
+
+For new JavaScript/TypeScript source files, prefer TypeScript:
+
+- Use `.ts` for logic and `.tsx` for typed UI components when the project already supports
+  TypeScript or is greenfield JS/TS.
+- Use `.js`/`.jsx` only when the repo is clearly JS-only, build or runtime constraints
+  require JS, or the user asks for JS.
+- Do not introduce TypeScript tooling, convert existing JS, or change `tsconfig` without
+  user approval. Migrating a language is a decision with a cost the user is paying.
+
+New TypeScript is strict-compatible from the first patch, not after a cleanup pass:
+
+- No implicit `any`.
+- Explicit `any` requires a nearby justification comment.
+- Prefer `unknown` plus narrowing over `any`.
+- Type exported function parameters and return values.
+- Handle null and undefined deliberately.
+- Avoid code that only passes because `strict` is disabled — it becomes someone else's
+  failure the moment the flag is turned on.
+
+Verification: run the project's configured typecheck when available. If TypeScript is
+present but no typecheck script exists, use the closest safe equivalent (`tsc --noEmit`).
+If strict compatibility cannot be verified, say so rather than implying it was checked.
+
+## Escape Hatches
+
+When bypassing the type system is unavoidable:
+
+- Add a comment explaining why the escape is needed — not what it does.
+- Scope it minimally: cast at the narrowest point, not the broadest.
+- Prefer assertion functions over raw casts (`assertIsString(x)` over `x as string`).
+- A double cast through `unknown` requires a linked issue or TODO. It defeats the checker
+  entirely, so it should be traceable to a reason that can expire.
+- A blanket type-checker suppression must name the specific error code it suppresses, so
+  it stops applying when that error stops being the one that occurs.
+
 ## Sources
 
 | Claim | Source | Checked |
