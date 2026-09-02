@@ -85,6 +85,9 @@ proof that validates the claim, with the reduced scope stated).
 | `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
 | `logging` (CLI / scripts / libraries) | jaw-dev `references/logging.md` | What to emit and where; service instrumentation stays with jaw-dev-backend |
 | stacked pull requests (`DEV-STACK-*`) | jaw-dev `references/stacked-prs.md` | When to stack, cascade discipline, layer shape, review scope, bottom-up merge safety |
+| recall lookup (`DEV-RECALL-01`) | jaw-dev `references/recall-lookup.md` | Where to search before asking the user |
+| browse / QA ladders | jaw-dev `references/browse-qa-ladders.md` | Which surface opens a page, and why the two orders are opposite |
+| sub-agent skill injection and discovery | jaw-dev `references/skill-injection-and-discovery.md` | Naming skills in a dispatch packet; authority over a discovered skill |
 
 
 Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
@@ -219,47 +222,24 @@ Routers that delegate here (`dev-frontend`, `dev-uiux-design`) inherit these rul
 full; delegation is a pointer, never a weakening.
 ### Recall lookup scope (DEV-RECALL-01, MUST)
 
-When a prior term, file, or decision is unfamiliar — or context was lost to a
-compaction — search the durable record **before** asking the user:
-
-| Trigger | Route |
-|---|---|
-| A prior term, file, or decision is unfamiliar | `cli-jaw chat search <query>` |
-| Context was lost and you need the memory store | `cli-jaw memory search <query> [--chat]` |
-| Both miss | Ask the user, and state exactly what you searched for |
-
-Reporting the search terms on a miss is the part that matters: it lets the user
-correct the vocabulary instead of re-explaining something already on disk under a
-name you did not try.
-
-Also search the owning implementation unit (`devlog/_plan/YYMMDD_slug/`), the
-worklog, and the commit that introduced the term. A reconstructed decision
-presented as a recalled one is a FAMILY-PROOF-01 violation.
+When a prior term, file, or decision is unfamiliar — or context was lost to a compaction —
+search the durable record **before** asking the user: `cli-jaw chat search <query>`, then
+`cli-jaw memory search <query> [--chat]`, then the owning unit and the commit that
+introduced the term. If all miss, ask, and **state what you searched** — that is what lets
+the user correct the vocabulary instead of re-explaining something already on disk under a
+name you did not try. Full routing table: `references/recall-lookup.md`.
 
 ### Browse and QA tool routing (DEV-BROWSE-NATIVE-01, STRICT)
 
-For ad-hoc browsing and exploratory QA — opening a page, checking a URL,
-eyeballing a screen, taking a screenshot — **do not install a browser-automation
-framework or driver.** Use the runtime's own browser capability first. A
-deliberate end-to-end test suite is a different task and belongs to
-`jaw-dev-testing`; this rule does not touch it.
+For ad-hoc browsing and exploratory QA — opening a page, checking a URL, eyeballing a
+screen, taking a screenshot — **do not install a browser-automation framework or
+driver.** Use the runtime's own browser capability first. A deliberate end-to-end test
+suite is a different task and belongs to `jaw-dev-testing`.
 
-Two ladders exist and their orders are deliberately **opposite**. Start at 1 and
-say why when you skip a rung. What is portable here is the ordering principle, not
-any specific tool name — bind each rung to whatever your runtime actually has.
-
-| Context | Ladder | Order | Owner |
-|---|---|---|---|
-| Public-web proof (search, research, URL verification) | `SEARCH-BROWSE-01` | 1. `jaw browser fetch <url>` → 2. Manager embedded browser → 3. full real-profile browser → 4. screen-level control | the active `search` skill |
-| QA of a surface you just built or served | `QA-TOOL-LADDER-01` | 1. Manager embedded browser (`…/snapshot`, `…/screenshot`, `…/act`) → 2. full real-profile browser → 3. screen-level control → 4. `jaw browser fetch` (public-URL shape checks only) | `jaw-dev-testing` |
-
-The inversion is the content of the rule, not an inconsistency. Proving a public
-claim wants the cheapest faithful read of what a server returns, so scripted fetch
-leads. QA of your own surface needs the thing to actually render and respond to
-input, so a real browser context leads and scripted fetch drops to last, where it
-can only confirm shape.
-
-
+Two ladders exist and their orders are deliberately **opposite**: public-web proof leads
+with `jaw browser fetch`, QA of a surface you just built leads with the Manager embedded
+browser. Full rung tables and the reason the inversion is the content of the rule:
+`references/browse-qa-ladders.md`.
 ---
 
 ## 0. Intent Clarification
@@ -441,27 +421,19 @@ and **Verification** (command + result).
 - **Confirm before destructive operations (ESCALATE)** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
 ### Git discipline
 
-- **Commit incrementally (DEV-GIT-COMMIT-01, DEFAULT)** — commit working progress
-  as you go during implementation. Each logically complete step (passing test,
-  wired feature, fixed bug) gets its own commit so that progress is checkpointed
-  on disk and recoverable after compaction or failure. Do not accumulate an entire
-  feature as uncommitted changes. This matters most in multi-cycle work, where the
-  transcript is not durable: committed work survives a context flush, uncommitted
-  work does not.
-- **Push requires explicit user approval (DEV-GIT-PUSH-01, ESCALATE)** — never
-  push to a remote without the user's explicit approval in the current session.
-  Committing locally is autonomous; pushing is an external state change the user
-  must authorize. This holds even at completion, and it covers force-push, remote
-  branch creation, and tag push. Approval for a named scope ("push when done") is
-  approval for that scope only.
-- **Stack dependent work instead of one oversized PR (DEV-STACK-01, DEFAULT)** —
-  when a change splits into 2+ dependency-ordered parts and one PR would be too
-  large to review, publish a bottom-up stack: each branch based on the one below,
-  each PR's base pointing at its parent. Editing a lower layer means cascading the
-  rebase to every layer above before pushing (`DEV-STACK-02`, STRICT). Merging a
-  stack is bottom-up and stays user-authorized (`DEV-STACK-04`, ESCALATE).
-  Canonical rules, depth guidance, anti-patterns, review scope, and tooling:
-  `references/stacked-prs.md`.
+- **Commit incrementally (DEV-GIT-COMMIT-01, DEFAULT)** — each logically complete step
+  (passing test, wired feature, fixed defect) gets its own commit, so progress is
+  checkpointed on disk. This matters most in multi-cycle work, where the transcript is not
+  durable: committed work survives a context flush, uncommitted work does not.
+- **Push requires explicit user approval (DEV-GIT-PUSH-01, ESCALATE)** — committing
+  locally is autonomous; pushing is an external state change the user must authorize. Holds
+  even at completion, and covers force-push, remote branch creation, and tag push.
+  Approval for a named scope ("push when done") is approval for that scope only.
+- **Stack dependent work instead of one oversized PR (DEV-STACK-01, DEFAULT)** — each
+  branch based on the one below, each PR's base pointing at its parent; cascade to every
+  layer above before pushing (`DEV-STACK-02`, STRICT); merging is bottom-up and
+  user-authorized (`DEV-STACK-04`, ESCALATE). Depth guidance, layer shape, review scope,
+  anti-patterns, and tooling: `references/stacked-prs.md`.
 
 
 ---
@@ -517,38 +489,12 @@ linked issue/TODO; Python `# type: ignore[code]` must name the exact error code.
 preload all references (HEURISTIC) — e.g. a caching task reads `caching.md` only.
 **Sub-agents:** each receives its own copy of injected skills — inject only what
 that sub-task needs.
-## 9. Sub-Agent Skill Injection (DEV-SKILL-INJECT-01, DEFAULT)
+## 9. Sub-Agent Skill Injection and Skill Discovery
 
-Name `jaw-dev` and every relevant surface skill **explicitly** in the dispatch packet
-for any governed sub-agent. A sub-agent gets its own skill context; it does not
-inherit yours, and nothing infers a skill you left out. An omitted router produces
-an ungoverned lane, not a lighter one.
+Two DEFAULT rules live in `references/skill-injection-and-discovery.md`:
 
-- Prefer whatever resolvable skill reference the runtime supports — a path, a link,
-  a registry id. When none resolves, inline the router body into the packet rather
-  than naming a skill the child cannot load. A name the child cannot resolve is
-  worse than no name: it reads as governed and behaves as ungoverned.
-- The external-evidence policy binds delegated agents too — restate it in the
-  dispatch prompt.
-- Surface-to-owner mappings are canonical in the **Skill Ownership Map** above.
-
-## 10. Skill Discovery (DEV-SKILL-DISCOVERY-01, DEFAULT)
-
-For a capability none of the loaded skills covers, check what the runtime's skill
-registry already offers before improvising a procedure or adding tooling. Load only
-the result you need — a speculative load costs the same tokens as a used one.
-
-Two invariants hold regardless of where a discovered skill came from:
-
-- **`jaw-dev` keeps authority.** A loaded third-party skill supplies domain procedure; it
-  does not override §0.2 rule classes, the §3 verification gate, or §5 safety rules.
-- **The family wins name conflicts.** When a discovered skill shares a rule area with
-  a `dev-*` skill, the Skill Ownership Map names the canonical owner and the
-  discovered skill is the stub.
-
-If the runtime exposes no discovery surface, say so rather than inventing a skill
-name — this rule governs how a discovered skill is treated, not whether discovery
-exists.
-
-
----
+- **`DEV-SKILL-INJECT-01`** — name `jaw-dev` and every relevant surface skill explicitly in
+  the dispatch packet. A sub-agent inherits none of yours, and nothing infers an omitted
+  one; an omitted router is an ungoverned lane, not a lighter one.
+- **`DEV-SKILL-DISCOVERY-01`** — check the runtime's skill registry before improvising.
+  `jaw-dev` keeps authority over a discovered skill, and the family wins name conflicts.

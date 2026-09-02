@@ -7,13 +7,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_SKILLS = 229
+# Paths carry the jaw- prefix. The rename never reached this file, so every one of
+# these exemptions silently stopped matching the file it was granted for -- and with
+# the count check failing first, nothing surfaced it.
 KNOWN_LONG_SKILLS = {
-    "dev-pabcd/SKILL.md",
-    "dev-testing/SKILL.md",
-    "docx/SKILL.md",
-    "hwp/SKILL.md",
-    "pptx/SKILL.md",
-    "xlsx/SKILL.md",
+    "jaw-dev-pabcd/SKILL.md",
+    "jaw-dev-testing/SKILL.md",
+    "jaw-docx/SKILL.md",
+    "jaw-hwp/SKILL.md",
+    "jaw-pptx/SKILL.md",
+    "jaw-xlsx/SKILL.md",
 }
 
 
