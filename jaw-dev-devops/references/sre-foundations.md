@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-16
 Applies to: Google SRE principles, 2026 observability practices
 When to read: Production operations, incident response, SLO definition
-Canonical owner: dev-devops §5
+Canonical owner: jaw-dev-devops §5
 
 Cross-ref: read `platform-engineering.md` for DORA metrics and platform
 engineering context before broad DevOps capability refreshes.
@@ -264,3 +264,44 @@ N+M    Root cause identified → permanent fix planned
 | Blame individuals | Engineers hide mistakes, no systemic improvement | Blameless postmortem culture |
 | No error budget policy | SLO violations have no defined response | Define 3-stage policy |
 | Postmortem without action items | Theater; same incidents repeat | Specific, owned, tracked items |
+
+---
+
+## §7 Evidence and Operator Signals
+
+### §7.1 Process identity (`DEVOPS-STALE-PROCESS-01`, STRICT)
+
+A live long-running process is not candidate evidence until its start time, binary,
+and config are proven to match the build under test.
+
+This exists because a release train had a live canary as a GO criterion, and the
+process listening on the expected port turned out to have been started two days
+earlier — the reporter's own pre-fix build. The canary was rejected as the wrong
+instrument **before** it was run. The lesson is the identity check, not a bad
+measurement: the measurement never happened, because the identity check came first.
+
+Check, in this order: process start time versus the artifact's mtime, the resolved
+binary path versus the one you built, and the config the process actually loaded
+versus the one on disk. **A matching port and a healthy health endpoint prove
+neither.**
+
+The same failure has been rediscovered independently elsewhere in this ecosystem: a
+deployment proof needed process start time compared against the installed build's
+mtime, because a matching version string and a green health endpoint were both
+satisfied by a process still running the previous build.
+
+### §7.2 Operator signals (`DEVOPS-OBS-SIGNAL-01`, DEFAULT)
+
+When an operator surface is missing a signal, **add the missing signal.** Never flip
+an already-true status bit to compensate.
+
+The instructive case: a status command showed a green line for a component, and users
+in a degraded state called it misleading. It was not — the component was up and
+answering its health check, and the reporter proved that himself by querying it.
+Turning that line yellow would have made the one honest signal lie in order to cover
+for one that was never emitted. **The fix is a second line, not a corrupted first
+one.**
+
+The negative form of the same rule: a degraded, ineligible, or skipped verdict that
+can reach an operator command must carry a message. A silent "ineligible" is how
+three separate operational commands all reported success while doing nothing.

@@ -83,6 +83,9 @@ proof that validates the claim, with the reduced scope stated).
 | `ml` / `ai` / `llm` / `rag` | dev-backend + dev-data + dev-testing (+dev-devops) | ML serving, RAG, pipeline, evaluation |
 | `frontend_ui` | dev-frontend + dev-uiux-design | UI/design intent or runnable prototype variant work |
 | `crud_fullstack` | dev-backend, dev-frontend, dev-testing | Boss/direct planning signal only — when delegating, prefer split roles |
+| `logging` (CLI / scripts / libraries) | jaw-dev `references/logging.md` | What to emit and where; service instrumentation stays with jaw-dev-backend |
+| stacked pull requests (`DEV-STACK-*`) | jaw-dev `references/stacked-prs.md` | When to stack, cascade discipline, layer shape, review scope, bottom-up merge safety |
+
 
 Tags are normalized `task_tags`, **not** employee `role` values; the execution role stays
 `frontend|backend|data|docs` (PROMPT-ROUTING-01).
@@ -214,6 +217,48 @@ evidence-status rules. Sub-agents are bound by this policy too — include it in
 
 Routers that delegate here (`dev-frontend`, `dev-uiux-design`) inherit these rules in
 full; delegation is a pointer, never a weakening.
+### Recall lookup scope (DEV-RECALL-01, MUST)
+
+When a prior term, file, or decision is unfamiliar — or context was lost to a
+compaction — search the durable record **before** asking the user:
+
+| Trigger | Route |
+|---|---|
+| A prior term, file, or decision is unfamiliar | `cli-jaw chat search <query>` |
+| Context was lost and you need the memory store | `cli-jaw memory search <query> [--chat]` |
+| Both miss | Ask the user, and state exactly what you searched for |
+
+Reporting the search terms on a miss is the part that matters: it lets the user
+correct the vocabulary instead of re-explaining something already on disk under a
+name you did not try.
+
+Also search the owning implementation unit (`devlog/_plan/YYMMDD_slug/`), the
+worklog, and the commit that introduced the term. A reconstructed decision
+presented as a recalled one is a FAMILY-PROOF-01 violation.
+
+### Browse and QA tool routing (DEV-BROWSE-NATIVE-01, STRICT)
+
+For ad-hoc browsing and exploratory QA — opening a page, checking a URL,
+eyeballing a screen, taking a screenshot — **do not install a browser-automation
+framework or driver.** Use the runtime's own browser capability first. A
+deliberate end-to-end test suite is a different task and belongs to
+`jaw-dev-testing`; this rule does not touch it.
+
+Two ladders exist and their orders are deliberately **opposite**. Start at 1 and
+say why when you skip a rung. What is portable here is the ordering principle, not
+any specific tool name — bind each rung to whatever your runtime actually has.
+
+| Context | Ladder | Order | Owner |
+|---|---|---|---|
+| Public-web proof (search, research, URL verification) | `SEARCH-BROWSE-01` | 1. `jaw browser fetch <url>` → 2. Manager embedded browser → 3. full real-profile browser → 4. screen-level control | the active `search` skill |
+| QA of a surface you just built or served | `QA-TOOL-LADDER-01` | 1. Manager embedded browser (`…/snapshot`, `…/screenshot`, `…/act`) → 2. full real-profile browser → 3. screen-level control → 4. `jaw browser fetch` (public-URL shape checks only) | `jaw-dev-testing` |
+
+The inversion is the content of the rule, not an inconsistency. Proving a public
+claim wants the cheapest faithful read of what a server returns, so scripted fetch
+leads. QA of your own surface needs the thing to actually render and respond to
+input, so a real browser context leads and scripted fetch drops to last, where it
+can only confirm shape.
+
 
 ---
 
@@ -329,6 +374,18 @@ Full methodology (boundary instrumentation, competing hypotheses, postmortem):
 but might work" · proposing solutions before investigating · "one more attempt" after
 2+ failures. **3+ failed fixes = architectural problem**: pause, question the pattern
 itself, and discuss with the user before further fixes.
+**Repeated-friction rule (DEV-FRICTION-01, DEFAULT).** When the same command class
+fails twice with the same normalized error, do not retry a third time unchanged:
+switch approach — a different tool, different flags, or root-cause the
+environment. Repeated identical failures are friction evidence, not bad luck.
+
+**Repeated-edit-shape rule (DEV-EDIT-SHAPE-01, DEFAULT).** Three same-shaped edits
+in a row (the same structural transform applied at different sites) mean you are
+hand-running a codemod: stop and switch to an AST-based rewrite tool or a scripted
+transform, so the remaining sites are transformed deterministically. The third
+identical edit is the signal — by then the transform is known, and continuing by
+hand is where the divergent site gets missed.
+
 
 ---
 
@@ -382,6 +439,30 @@ and **Verification** (command + result).
 - **Externalize configuration** — use config files or environment variables. Place magic strings and numbers in named constants.
 - **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
 - **Confirm before destructive operations (ESCALATE)** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
+### Git discipline
+
+- **Commit incrementally (DEV-GIT-COMMIT-01, DEFAULT)** — commit working progress
+  as you go during implementation. Each logically complete step (passing test,
+  wired feature, fixed bug) gets its own commit so that progress is checkpointed
+  on disk and recoverable after compaction or failure. Do not accumulate an entire
+  feature as uncommitted changes. This matters most in multi-cycle work, where the
+  transcript is not durable: committed work survives a context flush, uncommitted
+  work does not.
+- **Push requires explicit user approval (DEV-GIT-PUSH-01, ESCALATE)** — never
+  push to a remote without the user's explicit approval in the current session.
+  Committing locally is autonomous; pushing is an external state change the user
+  must authorize. This holds even at completion, and it covers force-push, remote
+  branch creation, and tag push. Approval for a named scope ("push when done") is
+  approval for that scope only.
+- **Stack dependent work instead of one oversized PR (DEV-STACK-01, DEFAULT)** —
+  when a change splits into 2+ dependency-ordered parts and one PR would be too
+  large to review, publish a bottom-up stack: each branch based on the one below,
+  each PR's base pointing at its parent. Editing a lower layer means cascading the
+  rebase to every layer above before pushing (`DEV-STACK-02`, STRICT). Merging a
+  stack is bottom-up and stays user-authorized (`DEV-STACK-04`, ESCALATE).
+  Canonical rules, depth guidance, anti-patterns, review scope, and tooling:
+  `references/stacked-prs.md`.
+
 
 ---
 
@@ -436,5 +517,38 @@ linked issue/TODO; Python `# type: ignore[code]` must name the exact error code.
 preload all references (HEURISTIC) — e.g. a caching task reads `caching.md` only.
 **Sub-agents:** each receives its own copy of injected skills — inject only what
 that sub-task needs.
+## 9. Sub-Agent Skill Injection (DEV-SKILL-INJECT-01, DEFAULT)
+
+Name `jaw-dev` and every relevant surface skill **explicitly** in the dispatch packet
+for any governed sub-agent. A sub-agent gets its own skill context; it does not
+inherit yours, and nothing infers a skill you left out. An omitted router produces
+an ungoverned lane, not a lighter one.
+
+- Prefer whatever resolvable skill reference the runtime supports — a path, a link,
+  a registry id. When none resolves, inline the router body into the packet rather
+  than naming a skill the child cannot load. A name the child cannot resolve is
+  worse than no name: it reads as governed and behaves as ungoverned.
+- The external-evidence policy binds delegated agents too — restate it in the
+  dispatch prompt.
+- Surface-to-owner mappings are canonical in the **Skill Ownership Map** above.
+
+## 10. Skill Discovery (DEV-SKILL-DISCOVERY-01, DEFAULT)
+
+For a capability none of the loaded skills covers, check what the runtime's skill
+registry already offers before improvising a procedure or adding tooling. Load only
+the result you need — a speculative load costs the same tokens as a used one.
+
+Two invariants hold regardless of where a discovered skill came from:
+
+- **`jaw-dev` keeps authority.** A loaded third-party skill supplies domain procedure; it
+  does not override §0.2 rule classes, the §3 verification gate, or §5 safety rules.
+- **The family wins name conflicts.** When a discovered skill shares a rule area with
+  a `dev-*` skill, the Skill Ownership Map names the canonical owner and the
+  discovered skill is the stub.
+
+If the runtime exposes no discovery surface, say so rather than inventing a skill
+name — this rule governs how a discovered skill is treated, not whether discovery
+exists.
+
 
 ---
