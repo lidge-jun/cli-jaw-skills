@@ -87,6 +87,7 @@ proof that validates the claim, with the reduced scope stated).
 | stacked pull requests (`DEV-STACK-*`) | jaw-dev `references/stacked-prs.md` | When to stack, cascade discipline, layer shape, review scope, bottom-up merge safety |
 | recall lookup (`DEV-RECALL-01`) | jaw-dev `references/recall-lookup.md` | Where to search before asking the user |
 | browse / QA ladders | jaw-dev `references/browse-qa-ladders.md` | Which surface opens a page, and why the two orders are opposite |
+| rule-area ownership | jaw-dev `references/skill-ownership.md` | Which skill is authoritative for a rule area; consult before adding one |
 | sub-agent skill injection and discovery | jaw-dev `references/skill-injection-and-discovery.md` | Naming skills in a dispatch packet; authority over a discovered skill |
 
 
@@ -146,30 +147,11 @@ This skill covers universal guidelines. **STRICT (DEV-ROUTE-01):** for domain-sp
 
 ### Skill Ownership Map
 
-Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST NOT duplicate canonical content.
-
-| Rule Area | Canonical Owner | Stub Locations |
-|-----------|----------------|----------------|
-| Circular dependencies | dev-architecture | dev, dev-code-reviewer |
-| Module boundaries / layers | dev-architecture | dev-backend, dev-frontend |
-| Coupling taxonomy | dev-architecture | dev-code-reviewer |
-| Barrel / re-export | dev-architecture | dev-scaffolding |
-| Pre-write search | dev §1.5 | dev-code-reviewer |
-| Edge-first testing | dev-testing §6 | — |
-| Test-induced defense | dev-testing §6.7 | dev-code-reviewer |
-| Boundary-only defense | dev-architecture §4 | dev-backend, dev-security |
-| Process isolation | dev-backend refs/ | dev-code-reviewer |
-| Code quality signals / antipatterns | dev-code-reviewer §3 | dev §6 |
-| Long-lived connections (server lifecycle) | dev-backend §1 | dev-frontend |
-| Browser connection budgets | dev-frontend refs/performance-budget | — |
-| Async task queue | dev-backend §2 | — |
-| Debugging methodology | dev-debugging | dev-code-reviewer |
-| Data pipeline patterns | dev-data | dev-backend |
-| Design intent discovery | dev-uiux-design | dev-frontend |
-| Project scaffolding / docs | dev-scaffolding | dev-pabcd |
-| Orchestration workflow | dev-pabcd | — |
-
-When updating a rule, update the canonical owner first, then verify stubs still point correctly.
+Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST
+NOT duplicate canonical content. The full table is in
+`references/skill-ownership.md` — consult it before adding a rule area, and add a row
+when you do. A rule area with no recorded owner is how the same guidance ends up written
+twice in two skills at two different thresholds.
 
 **When your task spans multiple domains**, read each relevant skill file before starting.
 
