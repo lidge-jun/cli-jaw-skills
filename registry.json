@@ -3345,6 +3345,23 @@
       "requires": null,
       "install": null,
       "version": "1.0.0"
+    },
+    "jaw-calendar-reminders": {
+      "name": "Calendar + Reminders",
+      "name_ko": "캘린더 + 미리알림",
+      "name_en": "Calendar + Reminders",
+      "emoji": "📆",
+      "category": "productivity",
+      "description": "macOS Calendar.app과 Reminders.app을 CLI로 조작한다. 일정 조회·생성·수정·검색·삭제, 미리알림 목록·추가·완료·삭제·정리, 마감일·알람·반복·우선순위·JSON 출력까지. osascript 내장이라 설치가 필요 없고, icalBuddy가 있으면 조회가 빨라진다. 트리거: 캘린더, 일정, 약속, 미리알림, 리마인더, 할일, calendar, event, reminder, todo, due.",
+      "desc_ko": "macOS 캘린더·미리알림 CLI 조작. 일정/미리알림 조회·생성·수정·삭제, 반복·알람·우선순위, JSON 출력. osascript 기반이라 설치 불필요.",
+      "desc_en": "Control macOS Calendar.app and Reminders.app from the CLI: events and reminder lists (read, create, update, search, complete, delete, cleanup) with due dates, alarms, recurrence, priority, and JSON output. Zero install via osascript; icalBuddy speeds up reads when present.",
+      "requires": {
+        "bins": [
+          "osascript"
+        ]
+      },
+      "install": null,
+      "version": "1.0.0"
     }
   }
 }
