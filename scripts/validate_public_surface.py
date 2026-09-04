@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # (pptx_original, xlsx_original) were left behind when the office skills were replaced
 # with their v4 versions, and a blind glob counts those as public surface. This file
 # validates the PUBLIC surface, and registry.json is what defines it.
-EXPECTED_SKILLS = 229
+EXPECTED_SKILLS = 230
 # Paths carry the jaw- prefix. The rename never reached this file, so every one of
 # these exemptions silently stopped matching the file it was granted for -- and with
 # the count check failing first, nothing surfaced it.
@@ -91,11 +91,11 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["229", "47 skills", "28 skills", "2 skills"]:
+    for needle in ["230", "47 skills", "28 skills", "2 skills"]:
 
         if needle not in readme:
             raise SystemExit(f"README missing public-surface count: {needle}")
-    for needle in ["canonical", "og:image", "twitter:card", "229"]:
+    for needle in ["canonical", "og:image", "twitter:card", "230"]:
         if needle not in docs:
             raise SystemExit(f"docs missing marker: {needle}")
 
