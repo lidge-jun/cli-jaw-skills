@@ -99,6 +99,17 @@ Before producing a `diagram-file` HTML widget, check whether a native renderer i
 
 These renderers are lighter than HTML widgets, survive sanitizer/hydration, and avoid iframe overhead. They are final-answer-only structured fences; during streaming they remain inert code blocks. Keep JSON complete, compact, and schema-versioned. See the active `structured-renderers` skill for canonical schemas and examples.
 
+### OfficeCLI raster CJK rule
+
+When OfficeCLI rasterizes Mermaid to PNG and the diagram contains Korean/CJK text,
+prepend this directive to the Mermaid source before rendering:
+```mermaid
+%%{init: {"themeVariables":{"fontFamily":"Noto Sans KR, Apple SD Gothic Neo, NanumGothic, Malgun Gothic, sans-serif"}}}%%
+```
+After export, open and inspect the PNG. Confirm that Korean glyphs are not tofu
+boxes, labels are not clipped, and the fallback font did not change node metrics.
+Rendering or a successful OfficeCLI exit code is not visual verification.
+
 ### Mermaid gotchas (read before using beta/experimental types)
 
 - **Do NOT use C4 diagrams** (`C4Context`, `C4Container`, etc.) — theme tokens are not applied in dark mode, text becomes unreadable ([mermaid #4906](https://github.com/mermaid-js/mermaid/issues/4906)). Substitute routing:
@@ -186,7 +197,7 @@ Rules:
 - Every SVG MUST have `role="img"` + `<title>` + `<desc>`
 - Use classes from the design system (`.node`, `.connector`, `.label`, `.label-start`, etc.) — `.label` forces `text-anchor: middle` (centered text only); for left-aligned text use `.label-start` or just the color class
 - Colors: use CSS classes, not inline fill/stroke colors
-- Text: `font-family` inherited from host (do NOT set explicit fonts)
+- Text: inline SVG inherits `font-family` from the jaw host; do not set explicit fonts there. Exception: OfficeCLI-rasterized Mermaid with Korean/CJK text must use the init directive above because the raster renderer is not the jaw host.
 
 ### 2. Mermaid (simple flowcharts, ERDs)
 Use standard ` ```mermaid ` code blocks. The existing renderer handles these.
