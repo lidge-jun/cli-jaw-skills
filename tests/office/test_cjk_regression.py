@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import run_officecli, run_officecli_json
+from tests.conftest import run_officecli, run_officecli_json
 
 
 @pytest.mark.cjk

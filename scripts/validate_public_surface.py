@@ -1,46 +1,200 @@
+"""Validate the cli-jaw skill library's public surface.
+
+What this checks and what it deliberately does not.
+
+The old version asserted counts: a hardcoded skill total, and greps for the literal
+strings "230", "28 skills", "2 skills" in README.md and docs/index.html. Every one of
+those fires when a number goes stale, never when a skill is broken, so adding a skill
+turned CI red until three documents were hand-edited. A grep also only asks whether a
+string appears somewhere in a file, which is not a check that the number is true.
+
+What replaced them are invariants that can only fail when something is actually wrong:
+frontmatter parses and carries a name and description, the declared name agrees with the
+skill id, no two skills claim the same name, every registry entry resolves to a real
+SKILL.md, and the documentation assets exist. Counts are still measured -- they are
+printed as output, and `--json` emits them for the generator that writes the published
+figures -- but nothing fails because a number moved.
+"""
+
 from __future__ import annotations
 
+import argparse
 import json
-
+import re
+import sys
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-# The count of skills that are BOTH registered in registry.json and present on disk.
-# Not the count of `*/SKILL.md` directories: two unregistered backup directories
-# (pptx_original, xlsx_original) were left behind when the office skills were replaced
-# with their v4 versions, and a blind glob counts those as public surface. This file
-# validates the PUBLIC surface, and registry.json is what defines it.
-EXPECTED_SKILLS = 230
-# Paths carry the jaw- prefix. The rename never reached this file, so every one of
-# these exemptions silently stopped matching the file it was granted for -- and with
-# the count check failing first, nothing surfaced it.
-KNOWN_LONG_SKILLS = {
+
+# Document-format skills carry per-format procedure that does not compress into a router
+# table. The cap is a readability rule for ordinary skills, and these are the standing
+# exceptions rather than a drift-tracking list.
+LONG_SKILL_EXEMPTIONS = {
     "jaw-dev-pabcd/SKILL.md",
     "jaw-dev-testing/SKILL.md",
     "jaw-docx/SKILL.md",
     "jaw-hwp/SKILL.md",
-    # jaw-pdf crossed 500 in ec0dd5e, the newest commit on main at the time, and the
-    # broken count check above hid it: the count failed first, so this check never ran.
-    # Granted for the same reason as its four siblings, which were all already exempt at
-    # 572-877 lines -- a document-format skill carries per-format procedure that does not
-    # compress into a router table. It was the only one of the five not on this list.
     "jaw-pdf/SKILL.md",
     "jaw-pptx/SKILL.md",
     "jaw-xlsx/SKILL.md",
 }
+LINE_LIMIT = 500
+
+# Upstream originals kept beside their jaw- adaptations. They stay OUT of registry.json:
+# their frontmatter declares "license: Proprietary. LICENSE.txt has complete terms" and no
+# LICENSE.txt is present, so publishing them into an installable catalogue would be wrong.
+# Named here so the exclusion is visible in code rather than silently tolerated.
+VENDORED_UNREGISTERED = {"pptx_original", "xlsx_original"}
 
 
-def validate_registry() -> None:
-    """Registry integrity: every entry resolves to a SKILL.md, requires uses the
-    normalized schema (bins/env/system), and no description is truncated."""
+@dataclass
+class Skill:
+    """A skill as the registry defines it, plus the file that actually holds it."""
+
+    skill_id: str
+    path: Path
+    registered: bool
+    frontmatter: dict[str, str] = field(default_factory=dict)
+
+    @property
+    def is_bundle(self) -> bool:
+        """True when SKILL.md sits below the skill directory.
+
+        A bundle packages several skills (`static-analysis/skills/codeql/SKILL.md`), so
+        its frontmatter names the INNER skill -- `codeql`, not `static-analysis`. The
+        name check accounts for that instead of failing on it.
+        """
+        return self.path.parent.name != self.skill_id
+
+
+def parse_frontmatter(text: str) -> dict[str, str] | None:
+    """Read a SKILL.md frontmatter block into a flat mapping.
+
+    Hand-rolled because the repository has no YAML dependency and adding one for four
+    keys is not worth it. Two shapes matter beyond `key: value`: nested blocks (the
+    `metadata` and `capabilities` maps some skills carry) are skipped rather than
+    misparsed, and folded block scalars (`description: >-` with the text on indented
+    continuation lines, twelve files today) are consumed. Without that second case the
+    value reads as the literal ">-", which is non-empty and would let a genuinely empty
+    description pass.
+    """
+    match = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if match is None:
+        return None
+
+    data: dict[str, str] = {}
+    lines = match.group(1).split("\n")
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line.strip() or line.startswith((" ", "\t", "#")):
+            continue
+        key, sep, value = line.partition(":")
+        if not sep:
+            continue
+        key = key.strip()
+        value = value.strip()
+        if value in {">", ">-", "|", "|-"}:
+            folded = []
+            while index < len(lines) and (not lines[index].strip() or lines[index].startswith((" ", "\t"))):
+                folded.append(lines[index].strip())
+                index += 1
+            value = " ".join(part for part in folded if part)
+        data[key] = value.strip().strip('"').strip("'")
+    return data
+
+
+def discover_skills() -> list[Skill]:
+    """Every skill, found the way registry.json defines them.
+
+    A blind `*/SKILL.md` glob misses bundles, whose SKILL.md sits one level down and
+    whose registry entry already names the real path. The old file globbed in one
+    function and honored `entry` in another, so six real skills looked orphaned.
+    """
+    registry = json.loads((ROOT / "registry.json").read_text(encoding="utf-8"))["skills"]
+    skills: list[Skill] = []
+    seen: set[Path] = set()
+
+    for skill_id, meta in registry.items():
+        entry = ROOT / meta.get("entry", f"{skill_id}/SKILL.md")
+        if entry.exists():
+            skills.append(Skill(skill_id, entry, registered=True))
+            seen.add(entry)
+
+    for path in sorted(ROOT.glob("*/SKILL.md")):
+        if path not in seen:
+            skills.append(Skill(path.parent.name, path, registered=False))
+
+    for skill in skills:
+        skill.frontmatter = parse_frontmatter(skill.path.read_text(encoding="utf-8")) or {}
+    return sorted(skills, key=lambda s: s.skill_id)
+
+
+def check_frontmatter(skills: list[Skill]) -> list[str]:
+    problems = []
+    for skill in skills:
+        relative = skill.path.relative_to(ROOT)
+        if not skill.frontmatter:
+            problems.append(f"{relative}: no parseable frontmatter block")
+            continue
+        if not skill.frontmatter.get("name"):
+            problems.append(f"{relative}: frontmatter has no name")
+        if not skill.frontmatter.get("description"):
+            problems.append(f"{relative}: frontmatter has no description")
+    return problems
+
+
+def check_names(skills: list[Skill]) -> list[str]:
+    """The declared name has to agree with the id the rest of the system uses.
+
+    For a bundle that means the registry key against its directory, because the file
+    itself names the inner skill.
+    """
+    problems = []
+    seen: dict[str, str] = {}
+    for skill in skills:
+        relative = skill.path.relative_to(ROOT)
+        declared = skill.frontmatter.get("name", "")
+        if skill.is_bundle:
+            if skill.path.parts[len(ROOT.parts)] != skill.skill_id:
+                problems.append(f"{relative}: bundle entry does not live under {skill.skill_id}/")
+        elif declared and declared != skill.skill_id:
+            problems.append(f"{relative}: declares name '{declared}' in directory '{skill.skill_id}'")
+        key = declared or skill.skill_id
+        if key in seen and seen[key] != str(relative):
+            problems.append(f"duplicate skill name '{key}': {seen[key]} and {relative}")
+        seen.setdefault(key, str(relative))
+    return problems
+
+
+def check_line_limit(skills: list[Skill]) -> list[str]:
+    problems = []
+    for skill in skills:
+        relative = str(skill.path.relative_to(ROOT))
+        if relative in LONG_SKILL_EXEMPTIONS:
+            continue
+        length = len(skill.path.read_text(encoding="utf-8").splitlines())
+        if length > LINE_LIMIT:
+            problems.append(
+                f"{relative}: {length} lines exceeds the {LINE_LIMIT}-line readability limit "
+                "(add it to LONG_SKILL_EXEMPTIONS with a reason if the length is justified)"
+            )
+    return problems
+
+
+def check_registry(skills: list[Skill]) -> list[str]:
+    """Registry integrity, and correspondence with what is on disk."""
     registry = json.loads((ROOT / "registry.json").read_text(encoding="utf-8"))["skills"]
     allowed_requires = {"bins", "env", "system"}
     problems = []
+
     for skill_id, meta in registry.items():
         entry = meta.get("entry", f"{skill_id}/SKILL.md")
         if not (ROOT / entry).exists():
-            problems.append(f"{skill_id}: missing SKILL.md at {entry}")
+            problems.append(f"{skill_id}: registry entry points at a missing {entry}")
         requires = meta.get("requires")
         if isinstance(requires, dict):
             unknown = set(requires) - allowed_requires
@@ -48,84 +202,106 @@ def validate_registry() -> None:
                 problems.append(f"{skill_id}: non-normalized requires keys {sorted(unknown)}")
         if str(meta.get("description", "")).endswith("..."):
             problems.append(f"{skill_id}: truncated description")
-    if problems:
-        raise SystemExit("registry integrity failures:\n" + "\n".join(problems))
+
+    unregistered = {s.skill_id for s in skills if not s.registered}
+    unexpected = sorted(unregistered - VENDORED_UNREGISTERED)
+    if unexpected:
+        problems.append(
+            "unregistered skill directories: " + ", ".join(unexpected)
+            + " (register them, or add them to VENDORED_UNREGISTERED with the reason)"
+        )
+    stale = sorted(VENDORED_UNREGISTERED - unregistered)
+    if stale:
+        problems.append(f"VENDORED_UNREGISTERED lists skills that are no longer unregistered: {', '.join(stale)}")
+    return problems
 
 
-def registered_skill_ids() -> set[str]:
-    """Skill ids declared in registry.json — the repository's own definition of the
-    published surface. A directory holding a SKILL.md is not automatically a skill."""
-    registry = json.loads((ROOT / "registry.json").read_text(encoding="utf-8"))
-    return set(registry["skills"])
-
-
-def main() -> None:
-    registered = registered_skill_ids()
-    on_disk = {p.parent.name: p for p in ROOT.glob("*/SKILL.md")}
-
-    skills = sorted(p for name, p in on_disk.items() if name in registered)
-    if len(skills) != EXPECTED_SKILLS:
-        raise SystemExit(f"expected {EXPECTED_SKILLS} registered skills, found {len(skills)}")
-
-    # Report drift in both directions without failing on it. An unregistered directory is
-    # dead weight rather than a broken surface, and a registry entry with no directory may
-    # point at an upstream skill this repository does not vendor. Both are worth seeing;
-    # neither is worth a red gate, and making them fatal here would re-break the gate the
-    # way the blind glob did.
-    unregistered = sorted(set(on_disk) - registered)
-    if unregistered:
-        print(f"note: {len(unregistered)} unregistered directories with a SKILL.md: {', '.join(unregistered)}")
-    missing = sorted(registered - set(on_disk))
-    if missing:
-        print(f"note: {len(missing)} registry entries with no directory: {', '.join(missing)}")
-
-    over_limit = []
-    for skill in skills:
-        lines = skill.read_text(encoding="utf-8").splitlines()
-        relative = str(skill.relative_to(ROOT))
-        if len(lines) > 500 and relative not in KNOWN_LONG_SKILLS:
-            over_limit.append(f"{relative}:{len(lines)}")
-
-    if over_limit:
-        raise SystemExit("unexpected new SKILL.md line-limit drift: " + ", ".join(over_limit))
-
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+def check_docs_assets() -> list[str]:
+    problems = []
+    for asset in ("docs/assets/favicon.svg", "docs/assets/social-preview.svg"):
+        if not (ROOT / asset).exists():
+            problems.append(f"missing docs asset: {asset}")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["230", "28 skills", "2 skills"]:
+    for marker in ('rel="canonical"', 'property="og:image"', 'name="twitter:card"'):
+        if marker not in docs:
+            problems.append(f"docs/index.html is missing {marker}")
+    return problems
 
-        if needle not in readme:
-            raise SystemExit(f"README missing public-surface count: {needle}")
-    for needle in ["canonical", "og:image", "twitter:card", "230"]:
-        if needle not in docs:
-            raise SystemExit(f"docs missing marker: {needle}")
 
-    required_assets = [
-        ROOT / "docs/assets/favicon.svg",
-        ROOT / "docs/assets/social-preview.svg",
-    ]
-    missing = [str(path.relative_to(ROOT)) for path in required_assets if not path.exists()]
-    if missing:
-        raise SystemExit("missing docs assets: " + ", ".join(missing))
+REFERENCE_PATH = re.compile(r"`((?:references?|scripts)/[^`\s]+)`")
 
-    validate_registry()
 
-    # Measure the reference-folder count instead of grepping a literal: a stale literal
-    # is how the docs page came to say 47 in one place and 48 in another.
-    reference_count = len([
-        d for d in ROOT.iterdir()
-        if d.is_dir() and ((d / "references").is_dir() or (d / "reference").is_dir())
-    ])
-    for text, label in ((readme, "README"), (docs, "docs")):
-        if f"{reference_count} skills" not in text:
-            raise SystemExit(
-                f"{label} does not report the measured reference-folder count {reference_count}"
-            )
+def report_unresolved_paths(skills: list[Skill]) -> dict[str, int]:
+    """Backtick-quoted local paths that do not resolve, as a cleanup worklist.
+
+    A warning on purpose. Measured across the tree there are ~104 of these in 15 skills,
+    most of them prose that names a file the skill does not ship. That is worth seeing and
+    worth cleaning, but it is not evidence that anything regressed, so it never fails.
+    Glob forms are skipped because `scripts/*.py` is a pattern, not a path.
+    """
+    unresolved: dict[str, int] = {}
+    for skill in skills:
+        directory = skill.path.parent
+        count = 0
+        for candidate in REFERENCE_PATH.findall(skill.path.read_text(encoding="utf-8")):
+            if any(ch in candidate for ch in "*?[]"):
+                continue
+            if not (directory / candidate).exists():
+                count += 1
+        if count:
+            unresolved[skill.skill_id] = count
+    return unresolved
+
+
+def measure(skills: list[Skill]) -> dict[str, int]:
+    """The published figures, measured rather than asserted."""
+    directories = [d for d in ROOT.iterdir() if d.is_dir() and not d.name.startswith(".")]
+    return {
+        "skills": len([s for s in skills if s.registered]),
+        "reference_folders": len([d for d in directories if (d / "references").is_dir() or (d / "reference").is_dir()]),
+        "script_folders": len([d for d in directories if (d / "scripts").is_dir()]),
+        "template_folders": len([d for d in directories if (d / "templates").is_dir()]),
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--json", action="store_true", help="emit the measured inventory as JSON")
+    args = parser.parse_args()
+
+    skills = discover_skills()
+    problems = (
+        check_frontmatter(skills)
+        + check_names(skills)
+        + check_line_limit(skills)
+        + check_registry(skills)
+        + check_docs_assets()
+    )
+
+    counts = measure(skills)
+    if args.json:
+        print(json.dumps(counts, indent=2))
+        return 0
+
+    if problems:
+        print("public surface is invalid:", file=sys.stderr)
+        for problem in problems:
+            print(f"  - {problem}", file=sys.stderr)
+        return 1
+
+    unresolved = report_unresolved_paths(skills)
+    if unresolved:
+        total = sum(unresolved.values())
+        worst = ", ".join(f"{k} ({v})" for k, v in sorted(unresolved.items(), key=lambda kv: -kv[1])[:5])
+        print(f"note: {total} unresolved reference paths in {len(unresolved)} skills; largest: {worst}")
 
     print(
-        f"validated {len(skills)} skills; {reference_count} carry reference folders; "
-        "known long skills are tracked"
+        f"validated {counts['skills']} registered skills "
+        f"({counts['reference_folders']} with references, {counts['script_folders']} with scripts, "
+        f"{counts['template_folders']} with templates)"
     )
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

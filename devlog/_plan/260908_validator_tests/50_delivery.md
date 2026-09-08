@@ -17,8 +17,9 @@ synthetic registry drift each produce a named failure, then are reverted.
 ## Files this task may commit
 
 `scripts/validate_public_surface.py`, `scripts/sync_public_surface.py`, `tests/**`,
-`pyproject.toml`, `.github/workflows/ci.yml`, `registry.json`, `README.md`,
-`docs/index.html`, and `devlog/_plan/260908_validator_tests/`. Nothing else. The
+`pyproject.toml`, `.github/workflows/ci.yml`, `README.md`,
+`docs/index.html`, and `devlog/_plan/260908_validator_tests/`. Nothing else — note `registry.json` is NOT
+edited: the fold keeps every entry and fixes the detector instead. The
 runtime cleanup (wp5) touches no repository file.
 
 ## PR

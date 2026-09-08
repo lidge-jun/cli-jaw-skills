@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml"><img src="https://github.com/lidge-jun/cli-jaw-skills/actions/workflows/pages.yml/badge.svg" alt="Pages"></a>
-  <img src="https://img.shields.io/badge/skills-230-111827" alt="230 skills">
+  <img src="https://img.shields.io/badge/skills-236-111827" alt="236 skills">
   <img src="https://img.shields.io/badge/reference_assets-52-2563eb" alt="52 skills with references">
 </p>
 
@@ -26,9 +26,9 @@ while maintainers can review the full library in one place.
 
 | Surface | Status |
 |---------|--------|
-| Skill library | 230 top-level `SKILL.md` files |
+| Skill library | 236 registered skills |
 | Reference material | 52 skills include `reference/` or `references/` folders |
-| Helper scripts | 28 skills include `scripts/` folders |
+| Helper scripts | 30 skills include `scripts/` folders |
 | Templates | 2 skills include `templates/` folders |
 | Office formats | `docx`, `pptx`, `xlsx`, and `hwp` skill families are present |
 | CI | Focused Python regression tests, skill count validation, known long-skill drift checks, docs drift checks |

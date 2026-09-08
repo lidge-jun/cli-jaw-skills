@@ -7,8 +7,11 @@ from pathlib import Path
 
 import pytest
 
+# Drives the real officecli binary; opt in with `-m officecli`.
+pytestmark = pytest.mark.officecli
 
-ROOT = Path(__file__).resolve().parents[1]
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def load_module(name: str, path: Path):

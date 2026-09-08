@@ -17,11 +17,10 @@ PR, merge and runtime modification are authorized in this session.
 **The validator counts instead of checking.** `scripts/validate_public_surface.py` asserts
 `EXPECTED_SKILLS`, then greps README for the literal strings `"230"`, `"28 skills"`,
 `"2 skills"`, greps `docs/index.html` for `"230"`, and (from last cycle) compares a
-measured reference-folder count against both files. Every one of these fires on a
-bookkeeping mismatch, never on a broken skill. Adding a skill breaks CI until three
-documents are hand-edited. Worse, the literals have already published falsehoods: main
-carried "47 reference folders" while the tree held 52, and CI stayed green because the
-grep only asked whether the string `"47 skills"` appeared *somewhere*.
+measured reference-folder count against both files. Every one of these fires on a bookkeeping mismatch, never on a broken skill. Adding a
+skill breaks CI until three documents are hand-edited. And a grep only asks whether a
+literal string appears somewhere in the file, which is not a check that the number is
+true.
 
 The 500-line cap is the one size check worth keeping, but it currently reads as drift
 detection ("unexpected new SKILL.md line-limit drift") with a hardcoded four-file
