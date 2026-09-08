@@ -234,7 +234,7 @@ REFERENCE_PATH = re.compile(r"`((?:references?|scripts)/[^`\s]+)`")
 def report_unresolved_paths(skills: list[Skill]) -> dict[str, int]:
     """Backtick-quoted local paths that do not resolve, as a cleanup worklist.
 
-    A warning on purpose. Measured across the tree there are ~104 of these in 15 skills,
+    A warning on purpose. Measured across the tree there are ~138 of these in 15 skills,
     most of them prose that names a file the skill does not ship. That is worth seeing and
     worth cleaning, but it is not evidence that anything regressed, so it never fails.
     Glob forms are skipped because `scripts/*.py` is a pattern, not a path.

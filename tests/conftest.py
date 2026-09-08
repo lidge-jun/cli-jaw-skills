@@ -14,7 +14,6 @@ from __future__ import annotations
 import importlib.util
 import shutil
 import sys
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -64,21 +63,14 @@ def surface():
     return validator
 
 
+# officecli helpers and format fixtures live in the ROOT conftest.py, which predates this
+# split and is already wired for the office suites. tests/office/test_cjk_regression.py
+# imports them from there; re-defining them here would give the repository two versions of
+# the same helper.
+
+
 def officecli_available() -> bool:
-    return shutil.which("officecli") is not None
-
-
-def run_officecli(*args: str, check: bool = True) -> subprocess.CompletedProcess:
-    """Invoke the officecli binary.
-
-    tests/office/test_cjk_regression.py has imported this helper from a conftest since it
-    was written, but no conftest existed anywhere in the repository -- the file could not
-    be collected at all. This is that helper.
-    """
-    binary = shutil.which("officecli")
-    if binary is None:
-        pytest.skip("officecli binary is not installed")
-    return subprocess.run([binary, *args], capture_output=True, text=True, check=check)
+    return shutil.which("officecli") is not None or (Path.home() / ".local" / "bin" / "officecli").exists()
 
 
 def pytest_collection_modifyitems(config, items):
@@ -93,45 +85,3 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "officecli" in item.keywords or "/office/" in str(item.fspath):
             item.add_marker(skip)
-
-
-def run_officecli_json(*args: str) -> dict:
-    """officecli invocation whose stdout is JSON.
-
-    Same story as run_officecli: imported by the CJK suite since it was written, never
-    defined anywhere. The suite skips without the binary, so this only has to be correct
-    on a machine that has it.
-    """
-    import json
-
-    result = run_officecli(*args, "--json", check=False)
-    if result.returncode != 0:
-        pytest.fail(f"officecli {' '.join(args)} exited {result.returncode}: {result.stderr.strip()}")
-    return json.loads(result.stdout or "{}")
-
-
-@pytest.fixture
-def tmp_docx(tmp_path: Path) -> Path:
-    return _blank_office_file(tmp_path, "docx")
-
-
-@pytest.fixture
-def tmp_xlsx(tmp_path: Path) -> Path:
-    return _blank_office_file(tmp_path, "xlsx")
-
-
-@pytest.fixture
-def tmp_pptx(tmp_path: Path) -> Path:
-    return _blank_office_file(tmp_path, "pptx")
-
-
-@pytest.fixture
-def tmp_hwp(tmp_path: Path) -> Path:
-    return _blank_office_file(tmp_path, "hwp")
-
-
-def _blank_office_file(tmp_path: Path, suffix: str) -> Path:
-    """A new document of the requested format, created by officecli itself."""
-    target = tmp_path / f"sample.{suffix}"
-    run_officecli("new", str(target))
-    return target

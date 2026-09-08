@@ -31,7 +31,7 @@ while maintainers can review the full library in one place.
 | Helper scripts | 30 skills include `scripts/` folders |
 | Templates | 2 skills include `templates/` folders |
 | Office formats | `docx`, `pptx`, `xlsx`, and `hwp` skill families are present |
-| CI | Focused Python regression tests, skill count validation, known long-skill drift checks, docs drift checks |
+| CI | Skill-surface invariants (frontmatter, name agreement, registry correspondence, docs assets) and a concern-split pytest suite |
 | GitHub Pages | `/docs/index.html` static landing page, ready for Pages deployment |
 | License | No root license file is currently declared |
 

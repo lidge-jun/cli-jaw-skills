@@ -18,6 +18,6 @@ def test_line_limit_exemptions_all_exist(repo_root, surface):
         assert (repo_root / relative).exists(), f"exemption for a file that does not exist: {relative}"
 
 
-def test_bundles_live_under_their_skill_directory(skills):
+def test_bundles_live_under_their_skill_directory(skills, repo_root):
     for skill in (s for s in skills if s.is_bundle):
-        assert skill.path.is_relative_to(skill.path.parents[-2]), skill.skill_id
+        assert skill.path.is_relative_to(repo_root / skill.skill_id), skill.skill_id

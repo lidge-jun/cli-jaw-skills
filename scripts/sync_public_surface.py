@@ -36,7 +36,7 @@ def main() -> int:
             (r"(alt=\")\d+( skills\")", counts["skills"]),
             (r"(reference_assets-)\d+(-2563eb)", counts["reference_folders"]),
             (r"(alt=\")\d+( skills with references\")", counts["reference_folders"]),
-            (r"(\| Skill library \| )\d+( top-level)", counts["skills"]),
+            (r"(\| Skill library \| )\d+( registered skills)", counts["skills"]),
             (r"(\| Reference material \| )\d+( skills include)", counts["reference_folders"]),
             (r"(\| Helper scripts \| )\d+( skills include)", counts["script_folders"]),
             (r"(\| Templates \| )\d+( skills include)", counts["template_folders"]),
@@ -52,14 +52,25 @@ def main() -> int:
     }
 
     changed = []
+    dead: list[str] = []
     for relative, rules in substitutions.items():
         path = ROOT / relative
         text = original = path.read_text(encoding="utf-8")
         for pattern, value in rules:
-            text = re.sub(pattern, lambda m, v=value: f"{m.group(1)}{v}{m.group(2)}", text)
+            # A pattern that matches nothing is the failure this whole change exists to
+            # remove: the number silently stops being generated and drifts unnoticed.
+            text, hits = re.subn(pattern, lambda m, v=value: f"{m.group(1)}{v}{m.group(2)}", text)
+            if hits == 0:
+                dead.append(f"{relative}: {pattern}")
         if text != original:
             path.write_text(text, encoding="utf-8")
             changed.append(relative)
+
+    if dead:
+        print("patterns that matched nothing (the markup moved):", file=sys.stderr)
+        for entry in dead:
+            print(f"  - {entry}", file=sys.stderr)
+        return 1
 
     summary = ", ".join(f"{k}={v}" for k, v in counts.items())
     print(f"measured {summary}")
