@@ -11,6 +11,10 @@
 
 ## CDP vision-click (inside Chrome)
 
+Requires the Codex CLI: the provider path shells out to `codex exec`. If the
+active CLI is not Codex, that is the precondition behind the first failure-mode
+row below.
+
 ```bash
 cli-jaw browser vision-click "Submit button"        # single click
 cli-jaw browser vision-click "Play button" --double # double-click
@@ -49,6 +53,10 @@ result=ok
   corner". Bad: "the thing".
 - **Prefer accessibility targets.** If the latest state read exposes an element
   index, click that instead of a coordinate.
+- **Watch the coordinate frame.** The vision model answers in the frame of the
+  screenshot it was given. `cli-jaw browser vision-click` converts that to the
+  viewport for you; on the Computer Use path the screenshot frame *is* the
+  screen frame, so no conversion applies.
 - **One attempt per call.** If vision returns nothing useful, report and stop —
   do not retry ten times with rephrasings.
 
@@ -66,4 +74,3 @@ Vision-click is one tactic inside the broader "how do I reach a UI target"
 problem. Routing lives here; the command encapsulates the low-level recipe
 (response parsing, DPR correction, cost and latency) so you rarely need it
 directly.
-

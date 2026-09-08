@@ -36,5 +36,5 @@ Claude Design처럼 toolbar 중앙에 배치:
 
 ## 목업 참조
 
-- `devlog/_plan/260705.../184_right_sidebar_design_peer_mockup.html`: 최신 기준
-- `devlog/_plan/260705.../181_design_workspace_shell_mockup.html`: 빈 상태
+우측 사이드바 기준안과 빈 상태 목업은 공개 저장소에 없다. 프로젝트의 비공개
+기록에 있으니, 필요하면 그 저장소 접근 권한을 가진 사람에게 요청할 것.

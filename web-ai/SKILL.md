@@ -186,8 +186,8 @@ Failures from `cli-jaw browser web-ai *` carry a typed JSON envelope with
 `errorCode`, `stage`, `retryHint`, `vendor`, `mutationAllowed`,
 `selectorsTried`, and optional `evidence`. HTTP responses
 (`/api/browser/web-ai/*` 5xx bodies) and CLI `--json` output share the
-same shape via `WebAiError.toJSON()`. Initial code list (full catalog in
-agbrowse `devlog/03_phase2_errors.md`):
+same shape via `WebAiError.toJSON()`. Initial code list (the full catalog lives
+in agbrowse's own private notes):
 
 - `cdp.unreachable`, `cdp.target-mismatch`
 - `provider.composer-not-visible`, `provider.model-mismatch`,

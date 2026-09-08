@@ -19,8 +19,11 @@ that its tools are callable.
 So the first step is always the same:
 
 1. Look at what is actually exposed this session.
-2. Whichever surface is present, **its own first call returns its
-   documentation.** Read that result and use only the APIs it describes.
+2. If it is a **CUA JavaScript session**, its first call returns its own
+   documentation along with the initial UI state — read that result and use
+   only the APIs it describes. If it is a set of **MCP tools**, read their tool
+   descriptions and schemas instead; an MCP call returns a tool result, not a
+   documentation payload, so do not wait for one.
 3. If no Computer Use surface is exposed, report
    `precondition failed: no Computer Use surface` and stop. Never substitute
    CDP silently.
@@ -38,7 +41,9 @@ The tool names change; the discipline does not.
   tree** — map labels, canvas text, custom renders.
 - **Prefer a targeted value-setting call over focus-only typing.** Type into
   focus only after the latest state proves the cursor is in the intended field.
-- **A staleness warning is a signal to re-read, not a failure.**
+- **A staleness warning is a signal to re-read, not a failure.** If an action
+  provably did not change state and the next one intentionally reuses the same
+  fresh tree, you may continue — but never continue through uncertainty.
 - **Never claim the cursor was visible.** Cursor overlay is best-effort.
 
 ## Platform shape
@@ -46,6 +51,16 @@ The tool names change; the discipline does not.
 macOS Computer Use is **app-scoped**: you select an app and read its state.
 Windows is **window-scoped**: you enumerate windows and read one window's state.
 Linux, WSL and Docker have no Computer Use host — use CDP there.
+
+### macOS preconditions
+
+- TCC **Accessibility** and **AppleEvents** must be granted to the controlling app.
+- In cli-jaw packaged installs, `/Applications/Jaw.app` and
+  `/Applications/Codex Computer Use.app` may be required for TCC attribution.
+  Treat missing bundles as a setup failure when this path was explicitly
+  requested, not as a reason to switch paths.
+
+### Windows preconditions
 
 Two Windows results look like success and are not:
 
@@ -56,16 +71,28 @@ Two Windows results look like success and are not:
   that no windows are open. Report it as a precondition failure.
 
 Windows also requires the desktop app running in the **logged-on** session — a
-locked screen is fine, logged out is not. Over SSH you land in a non-interactive
-session and cannot launch a GUI directly; upload a script rather than composing
-a deeply nested one-liner.
+locked screen is fine, logged out is not. The app creates the transport endpoint
+when it starts; `codex-computer-use.exe` is the **notify client**, not the
+server, so confirming that process proves nothing. The app also rewrites
+`config.toml` with the current endpoint at launch, so read that file **after**
+launching rather than trusting a stored value.
+
+Over SSH you land in a non-interactive session and cannot launch a GUI directly
+— use the task scheduler to start it in the logged-on session. Quoting nests
+several layers deep (ssh → PowerShell → shell → codex), so upload a script file
+rather than composing a one-liner.
 
 ## Sandbox flag
 
 `--dangerously-bypass-approvals-and-sandbox` disables **both** approvals and
 the sandbox. On Windows it has been the known workaround for the sandbox killing
-`codex exec` children, but that does not make it routine: it is an attended,
-explicit user choice. cli-jaw does not add or persist it on the user's behalf.
+`codex exec` children — the signature is exit `-1073741502` with an empty
+stderr, which reads like a hang rather than a kill.
+
+That does not make the flag routine. It is an attended, explicit user choice,
+and cli-jaw does not add or persist it on the user's behalf. **`permissions=auto`
+is not an equivalent substitute** — do not reach for it as a quieter way to get
+the same effect.
 
 ## The state-first rule
 
@@ -129,3 +156,13 @@ result=<ok|error: one-line reason>
 - Do not skip the state read because you remember where the button is.
 - Do not resolve uncertainty by trying. Re-read instead.
 
+## After-action report
+
+When a task ends, summarize under `transcript-summary`: the path chosen, the
+action classes used, any staleness warnings encountered, and the final result.
+
+## Worked example
+
+See [`control-workflow.md`](control-workflow.md) for an end-to-end trace
+covering state-first, element-index targeting, stale recovery, and the CDP
+speed switch in sequence.

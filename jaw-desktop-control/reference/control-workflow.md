@@ -1,8 +1,9 @@
-# Control workflow — a real trace
+# Control workflow — worked example
 
-The trace below surfaced every pattern this skill enforces. The target happens
-to be a music web app in Chrome; **the patterns are universal** — swap Chrome
-for Finder, Settings, or any native app and the same flow applies.
+The example below is reconstructed from a real Chrome session and carries every
+pattern this skill enforces. The target happens to be a music web app;
+**the patterns are universal** — swap Chrome for Finder, Settings, or any
+native app and the same flow applies.
 
 Tool names are deliberately absent. The surface is host-provided and version
 dependent (see [`computer-use.md`](computer-use.md)); what follows is the
@@ -18,7 +19,7 @@ app=Google Chrome
 action_class=state-read
 action=<state read for the focused app>
 stale_warning=no
-result=ok (47 elements, focused tab: open.spotify.com)
+result=ok (47 elements, focused tab: the music app)
 ```
 
 The returned state gives you element indices. Without it you have nothing to
@@ -80,7 +81,7 @@ round-trips through screenshots and accessibility trees; CDP talks to the DOM.
 
 ```
 path=cdp
-url=https://open.spotify.com
+url=<the music app>
 action=cli-jaw browser snapshot --interactive
 result=ok (ref IDs: e1..e89)
 
@@ -129,4 +130,3 @@ Target visible in screenshot?
 Same four beats everywhere: read state, target an element index, re-read on
 staleness, and switch to CDP refs if the app exposes web DOM (any Electron or
 CEF app included).
-
