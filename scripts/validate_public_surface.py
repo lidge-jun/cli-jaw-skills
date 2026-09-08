@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -228,6 +229,41 @@ def check_docs_assets() -> list[str]:
     return problems
 
 
+# Private development records belong in lidge-jun/cli-jaw-internal. This repository is
+# public and is consumed as a submodule, so anything committed here is disclosed the
+# moment it is pushed.
+#
+# The rule exists because 29 such files lived at this repository's root for some time
+# without anything noticing. cli-jaw's own check:private-boundary matches whole path
+# segments against the index of the repository it runs in, and until recently never
+# enumerated submodule contents -- so it reported clean while these sat inside one. A
+# gate in the consuming repository cannot be relied on to police this one.
+#
+# Segments rather than substrings: a skill legitimately named "deployment-planning"
+# must not trip a rule aimed at "_plan".
+PRIVATE_SEGMENTS = re.compile(r"^(?:devlog(?:[._-].*)?|cli-jaw-internal|_plan|_fin|\.jwc)$", re.IGNORECASE)
+
+
+def check_private_records() -> list[str]:
+    """Tracked files whose path names a private-records directory."""
+    tracked = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT, capture_output=True, text=True, check=True,
+    ).stdout.split("\0")
+    offenders = [
+        path for path in tracked
+        if path and any(PRIVATE_SEGMENTS.match(segment) for segment in path.split("/"))
+    ]
+    if not offenders:
+        return []
+    shown = "\n    ".join(offenders[:10])
+    more = f"\n    ... and {len(offenders) - 10} more" if len(offenders) > 10 else ""
+    return [
+        f"{len(offenders)} private development record(s) tracked in this public repository; "
+        f"they belong in cli-jaw-internal:\n    {shown}{more}"
+    ]
+
+
 REFERENCE_PATH = re.compile(r"`((?:references?|scripts)/[^`\s]+)`")
 
 
@@ -276,6 +312,7 @@ def main() -> int:
         + check_line_limit(skills)
         + check_registry(skills)
         + check_docs_assets()
+        + check_private_records()
     )
 
     counts = measure(skills)
