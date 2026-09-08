@@ -30,11 +30,11 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["226", "47 skills", "28 skills", "2 skills"]:
+    for needle in ["226", "48 skills", "28 skills", "2 skills"]:
 
         if needle not in readme:
             raise SystemExit(f"README missing public-surface count: {needle}")
-    for needle in ["canonical", "og:image", "twitter:card", "226"]:
+    for needle in ["canonical", "og:image", "twitter:card", "226", "48 skills"]:
         if needle not in docs:
             raise SystemExit(f"docs missing marker: {needle}")
 
@@ -46,7 +46,22 @@ def main() -> None:
     if missing:
         raise SystemExit("missing docs assets: " + ", ".join(missing))
 
-    print(f"validated {len(skills)} skills; known long Office skills are tracked")
+    reference_skills = sorted(
+        path.parent.name
+        for path in ROOT.glob("*/")
+        if (path / "references").is_dir() or (path / "reference").is_dir()
+    )
+    reference_count = len(
+        [d for d in ROOT.iterdir() if d.is_dir() and ((d / "references").is_dir() or (d / "reference").is_dir())]
+    )
+    for text, label in ((readme, "README"), (docs, "docs")):
+        if f"{reference_count} skills" not in text and str(reference_count) not in text:
+            raise SystemExit(f"{label} does not report the measured reference-folder count {reference_count}")
+
+    print(
+        f"validated {len(skills)} skills; {reference_count} carry reference folders; "
+        "known long Office skills are tracked"
+    )
 
 
 if __name__ == "__main__":

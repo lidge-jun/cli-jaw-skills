@@ -9,6 +9,11 @@ metadata:
 
 # Gemini Deep Research
 
+> **Local addition (cli-jaw-skills).** Method ownership: `search/references/deep-research.md`
+> owns how a deep-research task is scoped, tracked and reported. This skill is one
+> execution backend for it — the report format below is that backend's output format,
+> not the protocol.
+
 Autonomous research agent that plans searches, reads sources, and synthesizes cited reports.
 
 ## When to Use

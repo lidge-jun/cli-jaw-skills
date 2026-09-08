@@ -125,6 +125,15 @@ When the gate triggers:
 - Time budget runs low → report the matrix as-is (incomplete rows marked),
   never silently drop unchecked clues.
 
+## Deep research requests
+
+A request for **deep research / 딥리서치 / 심층 조사** follows
+`references/deep-research.md`: scope and reader, query families that each carry a goal,
+waves with a reflection step and a gap matrix, budgets and stop rules, a claim-to-source
+ledger, then the report. The tiers below are its execution lanes — a heavier tier is not
+a substitute for the method. Ordinary latest/current lookups stay on the ladder and never
+auto-escalate into the protocol.
+
 ## Routing Quick-Reference
 
 | Signal in query | Start at |
@@ -132,7 +141,7 @@ When the gate triggers:
 | General fact / docs / version | Tier 1 |
 | Login-gated page, JS-rendered SPA, official page fetch failure | Tier 2 |
 | X/Twitter, real-time, 실시간 | Tier 3 |
-| Deep synthesis, multi-source comparison, 딥리서치 | Tier 3 (xhigh) or Tier 4 |
+| Deep synthesis, multi-source comparison, 딥리서치 | `references/deep-research.md`, then Tier 3 (xhigh) or Tier 4 |
 
 ## Tier 1 — Built-in CLI Web Search
 
@@ -450,6 +459,8 @@ before driving hosted AI providers.
    `insufficient`. For Tier 3 progrok, if `progrok status` is not logged in,
    skip that tier and report.
 5. **Match effort to query.** Don't use xhigh/Tier 4 for a simple version check.
+   A deep-research request without a written scope and claim ledger is not deep research,
+   however many tiers were spent on it (`references/deep-research.md`).
 6. **No `sufficient` on snippets alone.** At least one primary/original source
    must be actually fetched/opened before any claim is marked `sufficient` —
    snippet agreement across many sources does not count.
