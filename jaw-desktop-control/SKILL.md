@@ -42,7 +42,7 @@ Trigger on any request that touches a visible UI:
 ## Absolute rules
 
 1. **Announce the path before acting.** First line of every task must be `path=cdp`, `path=computer-use`, or `path=cdp+cu`.
-2. **Computer Use always starts each assistant turn with a state read before interacting.** macOS: `get_app_state(app)`. Windows: `get_window_state({app, id})`. Re-call it on stale warnings, after actions that change UI state, and whenever confidence drops.
+2. **Computer Use always starts each assistant turn with a state read before interacting.** Re-read on stale warnings, after actions that change UI state, and whenever confidence drops.
 3. **Every meaningful action records an `action_class`.** Classes: `state-read`, `element-action`, `value-injection`, `keyboard-action`, `pointer-action`, `pointer-action+vision`, `scroll-action`, `drag-action`, `secondary-action`.
 4. **Never fall back silently.** If the required path is unavailable, stop and report which precondition failed.
 5. **Never claim the cursor was visible.** Cursor overlay is best-effort in the current build.
@@ -51,11 +51,9 @@ Trigger on any request that touches a visible UI:
 ## Preconditions (Computer Use path)
 
 - macOS or Windows. Linux, WSL, and Docker have no Computer Use host — use CDP there.
-- **The two platforms expose different APIs.** macOS is app-scoped, Windows is window-scoped. Read [`reference/computer-use.md`](reference/computer-use.md) before the first call.
-  - macOS tools: `list_apps`, `get_app_state`, `click`, `drag`, `press_key`, `scroll`, `select_text`, `set_value`, `type_text`, `perform_secondary_action`.
-  - Windows tools: `list_windows`, `get_window_state`, `activate_window`, `get_window`, `click`, `drag`, `press_key`, `scroll`, `set_value`, `type_text`, `launch_app`, `list_apps`, `perform_secondary_action`. There is **no** `get_app_state` and **no** `select_text`.
-- macOS: start a session by selecting the app display name, bundle identifier, or full app path. Use `list_apps` if the app is unknown.
-- Windows: start from `list_windows()`, then `get_window_state({app, id})`. Calls must run inside `node_repl` — a bare `node.exe` silently falls back to a helper that sees zero windows.
+- **The tool surface belongs to the host and changes between versions — do not assume tool names.** Read [`reference/computer-use.md`](reference/computer-use.md) before the first call: it explains how to establish the surface from what is actually exposed, and why an enabled plugin is not proof its tools are callable.
+- macOS Computer Use is app-scoped: select an app, then read its state. Windows is window-scoped: enumerate windows, then read one window's state.
+- On Windows an enumeration that answers proves nothing about the connection, and an empty window list usually means the transport is not connected rather than that no windows are open.
 - If packaged through cli-jaw, `/Applications/Jaw.app` and `/Applications/Codex Computer Use.app` may be required for TCC attribution. Missing app bundles are a setup issue, not a reason to silently switch paths.
 - macOS: TCC Accessibility and AppleEvents must be granted to the controlling app.
 - Windows: the Codex desktop app must be running in the logged-on session — it creates the named pipe. A locked screen is fine; logged out is not.
@@ -106,5 +104,5 @@ result=ok
 | CDP server not running | `precondition failed: cli-jaw serve not running. Start with 'jaw serve' and retry.` |
 | Computer Use tools missing | `precondition failed: computer-use unavailable` |
 | cli-jaw CU app missing in packaged install | `precondition failed: /Applications/Codex Computer Use.app missing. Recover: jaw doctor --tcc --fix` |
-| Stale warning on action | re-call `get_app_state(app)` then retry; log `stale_warning=yes` in the transcript |
+| Stale warning on action | re-read state then retry; log `stale_warning=yes` in the transcript |
 | Non-GUI task routed here | `needs boss follow-up: not GUI automation` |

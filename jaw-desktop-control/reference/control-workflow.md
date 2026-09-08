@@ -1,88 +1,82 @@
-# Control workflow — real Chrome trace
+# Control workflow — a real trace
 
-Below is the actual Chrome → Spotify trace that surfaced every pattern this skill enforces. **The target happens to be Spotify; the patterns are universal** — swap Chrome for Finder / Settings / Notion, same flow applies.
+The trace below surfaced every pattern this skill enforces. The target happens
+to be a music web app in Chrome; **the patterns are universal** — swap Chrome
+for Finder, Settings, or any native app and the same flow applies.
+
+Tool names are deliberately absent. The surface is host-provided and version
+dependent (see [`computer-use.md`](computer-use.md)); what follows is the
+shape of the work, not an API listing.
 
 ## Pattern 1 — State first
 
 Every session begins with a state read. No exceptions.
 
-The examples below are macOS (`get_app_state(app)`). On Windows the same discipline applies with the window-scoped API: `list_windows()` then `get_window_state({app, id})`, and neither `get_app_state` nor `select_text` exists. See [`computer-use.md`](computer-use.md).
-
 ```
 path=computer-use
 app=Google Chrome
 action_class=state-read
-action=get_app_state("Google Chrome")
+action=<state read for the focused app>
 stale_warning=no
 result=ok (47 elements, focused tab: open.spotify.com)
 ```
 
-The returned state gives you element indices. Without this call, you have nothing to target.
+The returned state gives you element indices. Without it you have nothing to
+target.
 
-## Pattern 2 — element_index over focus-only typing
+## Pattern 2 — Element index over focus-only typing
 
-**Wrong:**
-```
-action=type_text(app="Google Chrome", text="Daft Punk")
-```
+**Fragile:** fire keystrokes at whatever currently has focus.
 
-**Right:**
+**Deterministic:**
+
 ```
 path=computer-use
 app=Google Chrome
 action_class=element-action
-action=click(element_index=12)   # search input field
+action=<click element_index=12>   # search input field
 stale_warning=no
 result=ok
 
 path=computer-use
 app=Google Chrome
 action_class=value-injection
-action=set_value(element_index=12, value="Daft Punk")
+action=<set value on element_index=12 to "Daft Punk">
 stale_warning=no
 result=ok
 ```
 
-`type_text(app, text)` fires keystrokes at whatever has focus — fragile unless the latest state proves the cursor is in the intended field. `set_value(app, element_index, value)` targets a specific element from the last state read — deterministic.
+Typing into focus is a guess about where the cursor is. Setting a value on an
+element from the last state read is not.
 
-## Pattern 3 — Stale warning → re-read → retry
+## Pattern 3 — Stale warning, re-read, retry
 
-Spotify's search results load asynchronously. After typing, the element tree changes:
+Search results load asynchronously, so the element tree changes underneath you:
 
 ```
-path=computer-use
-app=Google Chrome
-action_class=element-action
-action=click(element_index=34)   # first search result
-stale_warning=yes                # ← server signals state drift
+action=<click element_index=34>   # first search result
+stale_warning=yes                 # server signals state drift
 result=error: stale element tree
 ```
 
 Correct recovery:
 
 ```
-path=computer-use
-app=Google Chrome
 action_class=stale-recovery
-action=get_app_state("Google Chrome")
-stale_warning=no
+action=<state read>
 result=ok (52 elements — tree changed)
 
-path=computer-use
-app=Google Chrome
 action_class=element-action
-action=click(element_index=38)   # same result, new index
-stale_warning=no
+action=<click element_index=38>   # same result, new index
 result=ok
 ```
 
-Never retry with the old index. Always re-read state first. The index you memorized is gone.
+Never retry with the old index. The index you memorized is gone.
 
-## Pattern 4 — DOM target → CDP fallback (10× faster)
+## Pattern 4 — DOM target, CDP is faster
 
-Midway through, you realize every target on open.spotify.com is a DOM node. Computer Use round-trips through screenshots and accessibility trees; CDP talks directly to the DOM.
-
-Switch:
+Midway through you realize every target on the page is a DOM node. Computer Use
+round-trips through screenshots and accessibility trees; CDP talks to the DOM.
 
 ```
 path=cdp
@@ -91,53 +85,48 @@ action=cli-jaw browser snapshot --interactive
 result=ok (ref IDs: e1..e89)
 
 path=cdp
-url=https://open.spotify.com
-action=click e42   # "Shuffle Play" button
+action=click e42   # "Shuffle Play"
 result=ok
 ```
 
-~120 ms per CDP action vs ~1200 ms per Computer Use action. When the target is web DOM, CDP wins by an order of magnitude.
+Roughly an order of magnitude faster per action. When the target has web DOM,
+CDP wins.
 
-## Mixing rules (recap)
+## Pattern 5 — Pointer action for screenshot-visible, tree-absent targets
 
-| Rule | When | What |
-|---|---|---|
-| State first | First Computer Use interaction each assistant turn | macOS `get_app_state(app)` / Windows `get_window_state({app, id})` before anything else |
-| Screenshot-visible but not in tree | Map labels, canvas text, custom renders | `click(x, y)` pointer-action **immediately** from screenshot coords |
-| element_index | Target IS in the element tree | Prefer `click(element_index=N)` / `set_value(element_index=N)`; use `type_text(app, text)` only after focus verification |
-| Stale recovery | `stale_warning=yes` or element miss | Re-call `get_app_state`, get fresh indices, retry |
-| CDP preference | Target has web DOM | Switch to `cli-jaw browser` for 10× speed |
-
-### Pattern 5 — pointer-action (screenshot-visible, not in element tree)
-
-Map labels, canvas objects, and custom-rendered UI text are visible in the `get_app_state` screenshot but absent from the element tree. Click them by coordinates directly.
+Map labels, canvas objects, and custom-rendered text appear in the state
+screenshot but not in the element tree. Click them by coordinate:
 
 ```
-# 1. Read state — screenshot shows "스타벅스" label on Naver map
-get_app_state(app="Google Chrome")
-
-# 2. Target is NOT in element tree → use screenshot coordinates
-click(app="Google Chrome", x=719, y=388)
-
-# 3. Verify
-get_app_state(app="Google Chrome")
-# → Starbucks detail panel opened ✅
+1. <state read>          # screenshot shows the label on the map
+2. <click at x=719, y=388>
+3. <state read>          # detail panel opened
 ```
 
 Decision flow:
+
 ```
-get_app_state(app)
+state read
   ↓
 Target visible in screenshot?
-  ├── YES + in element tree  → element_index click
-  ├── YES + NOT in tree      → click(x, y) immediately
+  ├── YES + in element tree  → element index click
+  ├── YES + NOT in tree      → coordinate click
   └── NO                     → scroll/zoom/search, then re-read
 ```
 
-## Applying this outside Chrome
+## Mixing rules
 
-Same four beats everywhere:
-1. `get_app_state(app)` first.
-2. Target an `element_index` with `set_value` / `click`. Use `type_text(app, text)` only when focus was verified in the latest state.
-3. On stale warning, re-read state and retry.
-4. If the target exposes web DOM (any Electron/CEF app included), swap to `cli-jaw browser` refs for speed.
+| Rule | When | What |
+|---|---|---|
+| State first | First Computer Use interaction each turn | Read state before anything else |
+| Screenshot-visible but not in tree | Map labels, canvas text, custom renders | Coordinate click immediately |
+| Element index | Target is in the tree | Prefer index over coordinate; type into focus only after verifying it |
+| Stale recovery | Staleness signal or element miss | Re-read, get fresh indices, retry |
+| CDP preference | Target has web DOM | Switch to `cli-jaw browser` refs for speed |
+
+## Applying this outside a browser
+
+Same four beats everywhere: read state, target an element index, re-read on
+staleness, and switch to CDP refs if the app exposes web DOM (any Electron or
+CEF app included).
+

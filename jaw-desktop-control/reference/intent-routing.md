@@ -16,38 +16,15 @@ Decide the path **before** acting. Announce it as the first line of your reply.
 | Canvas / iframe / WebGL | "click the Play button (no DOM ref)" | `cdp+cu` (vision) | `pointer-action+vision` |
 | Find in DOM + pointer click | "find the Play button via DOM then click it with the cursor" | `cdp+cu` | `element-action` → `pointer-action` |
 
-## Contract IDs
-
-The routing table above maps to the `CU-XX` / `TX-XX` contracts defined in `devlog/_plan/computeruse/21_computer_use_capability_contracts_and_prompts.md`. Use these when you need a contract name in the transcript:
-
-| Path | Contract |
-|---|---|
-| `cdp` state-read | `TX-00` |
-| `cdp` element-action | `TX-01` |
-| `cdp` value-injection | `TX-02` |
-| `cdp` hybrid-lookup | `TX-03` |
-| `cdp` vision-lookup | `TX-04` |
-| `cdp` error-report | `TX-05` |
-| `computer-use` state-read | `CU-00` |
-| `computer-use` element-action | `CU-01` |
-| `computer-use` value-injection | `CU-02` |
-| `computer-use` keyboard-action | `CU-03` |
-| `computer-use` pointer-action | `CU-04` |
-| `computer-use` pointer-action+vision | `CU-05` |
-| `computer-use` stale-recovery | `CU-06` |
-| `computer-use` precondition-fail | `CU-07` |
-| `computer-use` confirmation-prompt | `CU-08` |
-| `computer-use` transcript-summary | `CU-09` |
-
 ## Resolution order
 
 0. **Does the user's message contain `$computer-use` or `/computer-use`?** → **Computer Use**, no further analysis. Explicit user opt-in overrides the heuristics below. If Computer Use tools are unavailable, stop with `precondition failed: computer-use unavailable` instead of trying CDP.
 1. Can the target be addressed by `cli-jaw browser snapshot --interactive` ref? → **CDP**.
-2. Is the target a non-DOM web widget (Canvas, WebGL, iframe, Shadow DOM) visible in the `get_app_state` screenshot? → **Computer Use** `click(x, y)` pointer-action directly from screenshot coordinates. (Legacy fallback: `cli-jaw browser vision-click` remains Codex-only for no-ref browser cases.)
+2. Is the target a non-DOM web widget (Canvas, WebGL, iframe, Shadow DOM) visible in the Computer Use state screenshot? → **Computer Use** pointer-action from those screenshot coordinates. (Fallback: `cli-jaw browser vision-click` for no-ref browser cases.)
 3. Is the target outside any webpage (app window, menu bar, OS dialog)? → **Computer Use**.
 4. Are you reading a pixel coordinate the user gave verbatim? → **Computer Use** pointer-action.
 5. Do you need the DOM to locate the element but the user insists on a real cursor click? → **Hybrid**.
-6. Is the app name unclear? → **Computer Use** discovery first, then continue routing inside the selected target. macOS: `list_apps()` before `get_app_state(app)`. Windows: `list_windows()` before `get_window_state({app, id})` — `list_apps()` there answers even with a dead pipe, so it proves nothing about the connection.
+6. Is the app name unclear? → **Computer Use** discovery first, then continue routing inside the selected target. Use whatever discovery and state-read calls your host's surface documents; on Windows an enumeration that answers proves nothing about the connection.
 
 If steps 0–6 all return no match, stop and report `needs boss follow-up: ambiguous target`.
 
