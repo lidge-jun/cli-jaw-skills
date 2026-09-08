@@ -20,4 +20,5 @@ jaw design export <page-id> [--target design/<slug>.html] [--overwrite] [--json]
 
 ## 목업 참조
 
-- `devlog/_plan/260705.../183_design_export_handoff_tabs_mockup.html`
+export/handoff 탭 목업은 공개 저장소에 없다. 프로젝트의 비공개 기록에 있으니,
+필요하면 그 저장소 접근 권한을 가진 사람에게 요청할 것.

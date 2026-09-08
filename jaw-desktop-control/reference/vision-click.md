@@ -1,22 +1,26 @@
-# Vision-click integration (legacy)
-
-> **Preferred approach inside Control/Codex**: If the target is visible in the `get_app_state` screenshot, use Computer Use `click(x, y)` pointer-action directly from the screenshot coordinates. This is faster and avoids an extra model call. The `cli-jaw browser vision-click` command below is **Codex-only and legacy** — kept for no-ref browser fallback cases.
+# Vision-click integration
 
 ## Decision order
 
 1. Did `cli-jaw browser snapshot --interactive` return a ref? → CDP `click`.
-2. Is Computer Use available and the target visible in the `get_app_state` screenshot? → **`click(x, y)` pointer-action directly.** (Preferred for map labels, canvas text, custom renders.)
-3. Only if there is no ref and direct coordinate clicking is unsuitable → `cli-jaw browser vision-click` (Codex-only, legacy).
+2. Is Computer Use available and the target visible in its state screenshot? →
+   **coordinate pointer-action directly.** Preferred for map labels, canvas
+   text, and custom renders: it costs no extra model call.
+3. Only if there is no ref and direct coordinate clicking is unsuitable →
+   `cli-jaw browser vision-click`.
 
 ## CDP vision-click (inside Chrome)
+
+Requires the Codex CLI: the provider path shells out to `codex exec`. If the
+active CLI is not Codex, that is the precondition behind the first failure-mode
+row below.
 
 ```bash
 cli-jaw browser vision-click "Submit button"        # single click
 cli-jaw browser vision-click "Play button" --double # double-click
 ```
 
-- Requires **Codex CLI** in the current cli-jaw provider implementation.
-- Transcript:
+Transcript:
 
 ```
 path=cdp
@@ -27,45 +31,46 @@ result=ok
 
 ## Desktop vision-click (outside Chrome)
 
-This is the `CU-05` contract — vision is used to pick coordinates inside the Computer Use path:
+Vision picks the coordinates inside the Computer Use path:
 
-1. `get_app_state(app)` to start/refresh the session and capture a screenshot.
+1. Read state to capture a screenshot.
 2. Ask the vision model for coordinates of the described target.
-3. `click(x=<vx>, y=<vy>)` via Computer Use pointer-action.
-
-Transcript:
+3. Issue a coordinate pointer-action.
 
 ```
 path=computer-use
 app=<app>
 action_class=pointer-action+vision
-action=click(x=812, y=514)   # via vision lookup "Play button"
+action=<click at x=812, y=514>   # via vision lookup "Play button"
 stale_warning=no
 result=ok
 ```
 
 ## Guardrails
 
-- **Always try ref-based click first.** Vision-click consumes tokens and adds latency.
-- **Describe the target, not the pixel.** Good: `"Play button in the top-right corner"`. Bad: `"the thing"`.
-- **Double-check orientation.** The vision model returns coordinates in the screenshot's frame; `cli-jaw browser vision-click` handles the conversion to viewport. For Computer Use, the screenshot frame *is* the screen frame.
-- **Prefer accessibility tree targets.** If the latest `get_app_state(app)` exposes an `element_index`, use `click(element_index=...)` instead of coordinate or vision clicking.
-- **One attempt per call.** If vision returns nothing useful, report and stop — do not retry 10× with rephrasings.
+- **Always try ref-based click first.** Vision costs tokens and latency.
+- **Describe the target, not the pixel.** Good: "Play button in the top-right
+  corner". Bad: "the thing".
+- **Prefer accessibility targets.** If the latest state read exposes an element
+  index, click that instead of a coordinate.
+- **Watch the coordinate frame.** The vision model answers in the frame of the
+  screenshot it was given. `cli-jaw browser vision-click` converts that to the
+  viewport for you; on the Computer Use path the screenshot frame *is* the
+  screen frame, so no conversion applies.
+- **One attempt per call.** If vision returns nothing useful, report and stop —
+  do not retry ten times with rephrasings.
 
 ## Failure modes
 
 | Symptom | Report |
 |---|---|
-| vision-click needs Codex but active CLI is not Codex | dispatch to `Control` when available, otherwise report `precondition failed: vision-click requires Codex CLI (active: <cli>)` |
+| vision-click needs Codex but the active CLI is not Codex | dispatch to `Control` when available, otherwise report `precondition failed: vision-click requires Codex CLI (active: <cli>)` |
 | vision model returns "no match" | `vision lookup failed for "<query>" — suggest a more specific description` |
-| click executed but nothing happened | Log both the vision query and the coordinates, then re-snapshot state to confirm whether the page/app changed |
+| click executed but nothing happened | log both the query and the coordinates, then re-read state to confirm whether anything changed |
 
 ## Why this lives inside desktop-control
 
-`vision-click` is **one specific tactic** inside the broader "how do I reach a UI target" problem. Routing lives here; the `cli-jaw browser vision-click` command encapsulates the low-level recipe (NDJSON parsing, DPR correction, cost/latency) so you almost never need it. It remains Codex-only for now because the provider path shells out to `codex exec -i`.
-
-If you do need the low-level recipe (e.g., you're building a new tool that emulates vision-click), the `vision-click` skill is still available as a reference skill — opt in with:
-
-```bash
-cli-jaw skill install vision-click
-```
+Vision-click is one tactic inside the broader "how do I reach a UI target"
+problem. Routing lives here; the command encapsulates the low-level recipe
+(response parsing, DPR correction, cost and latency) so you rarely need it
+directly.

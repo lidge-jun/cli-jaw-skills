@@ -1,3 +1,16 @@
 __pycache__/
 *.pyc
 .codexclaw/
+
+# Private development records live in lidge-jun/cli-jaw-internal, never here.
+# This repository is public and is consumed as a submodule, so a file committed
+# by accident is disclosed the moment it is pushed. 29 of them sat at this root
+# for some time before anything noticed.
+#
+# Ignoring is the first line and the weakest: it stops the accident, not the
+# deliberate `git add -f`. validate_public_surface.py checks the index itself,
+# which is what actually holds.
+devlog/
+_plan/
+_fin/
+.jwc/

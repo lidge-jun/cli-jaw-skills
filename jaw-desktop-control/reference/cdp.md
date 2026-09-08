@@ -67,7 +67,7 @@ result=error: <one-line reason>
 
 ## Failure modes
 
-- **No ref found** for target → if visible in `get_app_state` screenshot, use Computer Use `click(x, y)` pointer-action. Otherwise report the gap.
+- **No ref found** for target → if visible in the Computer Use state screenshot, use a Computer Use pointer-action at those coordinates. Otherwise report the gap.
 - **Navigation drift** between snapshot and click → re-snapshot and retry once; if still off, report.
 - **CDP session died mid-task** → report `precondition failed: cdp session terminated` and stop.
 
