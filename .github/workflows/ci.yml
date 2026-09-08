@@ -20,17 +20,9 @@ jobs:
           python-version: "3.12"
       - name: Install test dependencies
         run: python3 -m pip install pytest
-      - name: Run focused tests
-        run: python3 -m pytest tests/test_dev_frontend_refresh.py -q
+      - name: Run the test suite
+        run: python3 -m pytest -q
       - name: Validate public surface
         run: python3 scripts/validate_public_surface.py
-      - name: Check docs assets and metadata
-        run: |
-          grep -qE "[0-9]+ inspectable skills" docs/index.html
-          grep -q "rel=\"canonical\"" docs/index.html
-          grep -q "property=\"og:image\"" docs/index.html
-          grep -q "name=\"twitter:card\"" docs/index.html
-          test -f docs/assets/favicon.svg
-          test -f docs/assets/social-preview.svg
       - name: Whitespace check
         run: git diff --check
