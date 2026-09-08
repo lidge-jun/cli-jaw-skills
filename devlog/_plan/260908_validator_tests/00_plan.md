@@ -76,3 +76,40 @@ Detail: [10_validator.md](10_validator.md), [20_tests.md](20_tests.md),
 [30_registry.md](30_registry.md), [40_runtime.md](40_runtime.md),
 [50_delivery.md](50_delivery.md).
 
+
+## D closure
+
+DONE. The count checks are gone, the suite is modular behind one CI entry point, the
+registry detector is fixed, the runtime is verified, and PR #6 merged as `060e802`.
+
+What did not go as planned, and matters more than what did. The first plan I wrote would
+have deleted six registry entries and 30 runtime symlinks. The audit refuted both: the
+entries are real plugin bundles with resolving `entry` keys, and the symlinks are the
+documented `jaw-*` compat layer that every enumerator already skips. Two more rounds
+found that bundle SKILL.md files declare their inner skill's name (so a naive name check
+fails immediately), that the path check would print 104 warnings rather than the handful
+globs explained, and that twelve descriptions use folded block scalars a naive parser
+reads as `">-"`. Four rounds to reach PASS on a plan I would otherwise have executed
+confidently and destructively.
+
+The pattern repeated at the implementation layer: the audit found one `sync` regex that
+matched nothing, so that count had silently stopped being generated — the same defect as
+the greps, one level up. The generator now exits non-zero listing dead patterns, and
+caught its own on the first run. Then the submodule sync surfaced a third instance: an
+empty `jaw-dev-speech/references/` directory, untracked by git because git does not track
+empty directories, counting as a reference folder on disk.
+
+Three separate silent-drift defects, all of the same shape — a number or a check that
+appears to be doing something and is not. That is what the old greps were.
+
+What would invalidate this: a skill added under a `references/` folder without
+`sync_public_surface.py` being run, a new `SKILL.md` shape the hand-rolled parser
+mis-reads, or the compat symlinks being removed by someone reading the directory listing
+the way I first did.
+
+Follow-ups not done here: 138 unresolved reference paths across 15 skills print as a
+worklist and are not cleaned (`cloudflare-deploy` alone has 61 and no `references/`
+directory); the `skills_ref` pointer bump in `cli-jaw` waits because that checkout is on
+an unrelated feature branch; the office suites take minutes against the real binary and
+are deselected by default.
+
