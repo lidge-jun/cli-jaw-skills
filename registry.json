@@ -23,9 +23,9 @@
       "name_en": "Agent Eval Skill",
       "emoji": "📊",
       "category": "devtools",
-      "description": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
+      "description": "Head-to-head comparison of coding agents (Claude Code, Aider, Codex, etc.) on custom tasks with pass rate, cost, time, and consistency metrics",
       "desc_ko": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
-      "desc_en": "A lightweight CLI tool for comparing coding agents head-to-head on reproducible tasks. Every \"which coding agent is best?\" comparison runs on vibes...",
+      "desc_en": "Head-to-head comparison of coding agents (Claude Code, Aider, Codex, etc.) on custom tasks with pass rate, cost, time, and consistency metrics",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -62,9 +62,9 @@
       "name_en": "Agent Setup Wizard",
       "emoji": "🧙",
       "category": "devtools",
-      "description": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
+      "description": "Interactive installer for agent skills and rules across any AI coding agent framework. Guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.",
       "desc_ko": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
-      "desc_en": "An interactive, step-by-step installation wizard for skill and rule libraries. Guides users through selective installation of skills and rules, ver...",
+      "desc_en": "Interactive installer for agent skills and rules across any AI coding agent framework. Guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -127,9 +127,9 @@
       "name_en": "Android Clean Architecture",
       "emoji": "📱",
       "category": "devtools",
-      "description": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
+      "description": "Clean Architecture patterns for Android and Kotlin Multiplatform projects — module structure, dependency rules, UseCases, Repositories, and data layer patterns.",
       "desc_ko": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
-      "desc_en": "Clean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data lay...",
+      "desc_en": "Clean Architecture patterns for Android and Kotlin Multiplatform projects — module structure, dependency rules, UseCases, Repositories, and data layer patterns.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -145,7 +145,8 @@
       "desc_en": "REST API design review: naming conventions, HTTP methods, pagination, error formats, versioning, breaking changes, rate limiting.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-backend"
     },
     "apple-notes": {
       "name": "Apple Notes",
@@ -179,9 +180,9 @@
       "name_en": "Architecture Decision Records",
       "emoji": "📐",
       "category": "devtools",
-      "description": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
+      "description": "Capture architectural decisions made during coding sessions as structured ADRs. Auto-detects decision moments, records context, alternatives considered, and rationale. Maintains an ADR log so future developers understand why the codebase is shaped the way it is.",
       "desc_ko": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
-      "desc_en": "Capture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's...",
+      "desc_en": "Capture architectural decisions made during coding sessions as structured ADRs. Auto-detects decision moments, records context, alternatives considered, and rationale. Maintains an ADR log so future developers understand why the codebase is shaped the way it is.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -214,7 +215,8 @@
         ]
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-desktop-control"
     },
     "autonomous-loops": {
       "name": "Autonomous Loops Skill",
@@ -222,9 +224,9 @@
       "name_en": "Autonomous Loops Skill",
       "emoji": "🔄",
       "category": "devtools",
-      "description": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
+      "description": "Patterns and architectures for autonomous Claude Code loops — from simple sequential pipelines to RFC-driven multi-agent DAG systems.",
       "desc_ko": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
-      "desc_en": "Patterns, architectures, and reference implementations for running Claude Code autonomously in loops. Covers everything from simple `claude -p` pip...",
+      "desc_en": "Patterns and architectures for autonomous Claude Code loops — from simple sequential pipelines to RFC-driven multi-agent DAG systems.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -240,7 +242,8 @@
       "desc_en": "Turn a one-line objective into a step-by-step construction plan that any coding agent can execute cold.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-pabcd"
     },
     "brainstorming": {
       "name": "Brainstorming",
@@ -255,7 +258,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "browser": {
+    "jaw-browser": {
       "name": "브라우저 조작",
       "name_ko": "브라우저 조작",
       "name_en": "Browser Control",
@@ -314,9 +317,9 @@
       "name_en": "Carrier Relationship Management",
       "emoji": "🚚",
       "category": "devtools",
-      "description": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
+      "description": "Manage carrier portfolios, negotiate freight rates, track carrier performance, allocate freight, and maintain strategic carrier relationships. Includes scorecarding frameworks, RFP processes, market intelligence, and compliance vetting. Use when managing carriers, negotiating rates, evaluating carrier performance, or building freight strategies.",
       "desc_ko": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
-      "desc_en": "You are a senior transportation manager with 15+ years managing carrier portfolios ranging from 40 to 200+ active carriers across truckload, LTL, i...",
+      "desc_en": "Manage carrier portfolios, negotiate freight rates, track carrier performance, allocate freight, and maintain strategic carrier relationships. Includes scorecarding frameworks, RFP processes, market intelligence, and compliance vetting. Use when managing carriers, negotiating rates, evaluating carrier performance, or building freight strategies.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -345,7 +348,8 @@
       "desc_en": "Build applications with the Anthropic Claude API and SDKs.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "status": "claude-specific"
     },
     "claude-devfleet": {
       "name": "Claude DevFleet Multi-Agent Orchestration",
@@ -353,12 +357,13 @@
       "name_en": "Claude DevFleet Multi-Agent Orchestration",
       "emoji": "⚓",
       "category": "devtools",
-      "description": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
+      "description": "Orchestrate multi-agent coding tasks via Claude DevFleet — plan projects, dispatch parallel agents in isolated worktrees, monitor progress, and read structured reports.",
       "desc_ko": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
-      "desc_en": "Use this skill when you need to dispatch multiple Claude Code agents to work on coding tasks in parallel. Each agent runs in an isolated git worktr...",
+      "desc_en": "Orchestrate multi-agent coding tasks via Claude DevFleet — plan projects, dispatch parallel agents in isolated worktrees, monitor progress, and read structured reports.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "status": "claude-specific"
     },
     "clickhouse-io": {
       "name": "ClickHouse Analytics Patterns",
@@ -396,9 +401,9 @@
       "name_en": "Codebase Onboarding",
       "emoji": "🗺️",
       "category": "devtools",
-      "description": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
+      "description": "Analyze an unfamiliar codebase and generate a structured onboarding guide with architecture map, key entry points, conventions, and a starter CLAUDE.md.",
       "desc_ko": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
-      "desc_en": "Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting u...",
+      "desc_en": "Analyze an unfamiliar codebase and generate a structured onboarding guide with architecture map, key entry points, conventions, and a starter CLAUDE.md.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -416,15 +421,27 @@
       "install": null,
       "version": "1.0.0"
     },
+    "codex-imagegen": {
+      "name": "Codex Native Image Gen",
+      "name_ko": "Codex 네이티브 이미지 생성",
+      "name_en": "Codex Native Image Gen",
+      "emoji": "🖼️",
+      "category": "ai-media",
+      "description": "Codex CLI 네이티브 이미지 생성. API key 없이 uploads 저장·웹 인레이·명시적 채널 전달.",
+      "desc_ko": "Codex CLI 네이티브 이미지 생성. API key 없이 uploads 저장·웹 인레이·명시적 채널 전달.",
+      "desc_en": "Codex CLI-native image generation without an API key, with uploads, web inlay, and explicit channel delivery contracts.",
+      "install": null,
+      "version": "1.0.0"
+    },
     "compose-multiplatform-patterns": {
       "name": "Compose Multiplatform Patterns",
       "name_ko": "Compose Multiplatform Patterns",
       "name_en": "Compose Multiplatform Patterns",
       "emoji": "📱",
       "category": "devtools",
-      "description": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
+      "description": "Compose Multiplatform and Jetpack Compose patterns for KMP projects — state management, navigation, theming, performance, and platform-specific UI.",
       "desc_ko": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
-      "desc_en": "Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform and Jetpack Compose. Covers state management, nav...",
+      "desc_en": "Compose Multiplatform and Jetpack Compose patterns for KMP projects — state management, navigation, theming, performance, and platform-specific UI.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -461,9 +478,9 @@
       "name_en": "Content-Hash File Cache Pattern",
       "emoji": "🔑",
       "category": "devtools",
-      "description": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
+      "description": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
       "desc_ko": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
-      "desc_en": "Cache expensive file processing results (PDF parsing, text extraction, image analysis) using SHA-256 content hashes as cache keys. Unlike path-base...",
+      "desc_en": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -505,7 +522,8 @@
       "desc_en": "Patterns for structuring long-running agent workflows with loop selection, quality gates, and failure recovery.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-pabcd"
     },
     "continuous-learning": {
       "name": "Continuous Learning",
@@ -526,9 +544,9 @@
       "name_en": "Continuous Learning v2.1 — Instinct-Based Architecture",
       "emoji": "📚",
       "category": "devtools",
-      "description": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
+      "description": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination.",
       "desc_ko": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
-      "desc_en": "An advanced learning system that turns agent sessions into reusable knowledge through atomic \"instincts\" — small learned behaviors with confidence ...",
+      "desc_en": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -539,9 +557,9 @@
       "name_en": "Cost-Aware LLM Pipeline",
       "emoji": "💰",
       "category": "devtools",
-      "description": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
+      "description": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
       "desc_ko": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
-      "desc_en": "Patterns for controlling LLM API costs while maintaining quality. Combines model routing, budget tracking, retry logic, and prompt caching into a c...",
+      "desc_en": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -591,9 +609,9 @@
       "name_en": "Customs & Trade Compliance",
       "emoji": "🛃",
       "category": "devtools",
-      "description": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
+      "description": "Customs documentation, tariff classification, duty optimization, restricted party screening, and regulatory compliance across multiple jurisdictions. Includes HS classification logic, Incoterms application, FTA utilization, and penalty mitigation. Use when handling customs clearance, tariff classification, trade compliance, import/export documentation, or duty optimization.",
       "desc_ko": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
-      "desc_en": "You are a senior trade compliance specialist with 15+ years managing customs operations across US, EU, UK, and Asia-Pacific jurisdictions. You sit ...",
+      "desc_en": "Customs documentation, tariff classification, duty optimization, restricted party screening, and regulatory compliance across multiple jurisdictions. Includes HS classification logic, Incoterms application, FTA utilization, and penalty mitigation. Use when handling customs clearance, tariff classification, trade compliance, import/export documentation, or duty optimization.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -635,7 +653,8 @@
       "desc_en": "Schema design, normalization (1NF–BCNF), index optimization, migration strategies, partitioning, database selection guide.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-data"
     },
     "database-migrations": {
       "name": "Database Migration Patterns",
@@ -648,7 +667,8 @@
       "desc_en": "Safe, reversible database schema changes for production systems.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-data"
     },
     "debugging-checklist": {
       "name": "Debugging Checklist",
@@ -661,7 +681,8 @@
       "desc_en": "Reproduce → isolate → log → hypothesis verification debugging checklist.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-debugging"
     },
     "debugging-helpers": {
       "name": "Debugging Helpers",
@@ -673,6 +694,24 @@
       "desc_ko": "체계적 디버깅 보조 (systematic-debugging).",
       "desc_en": "Systematic debugging helpers.",
       "requires": {},
+      "install": null,
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-debugging"
+    },
+    "design": {
+      "name": "Design Workspace",
+      "name_ko": "Design Workspace",
+      "name_en": "Design Workspace",
+      "emoji": "🎨",
+      "category": "devtools",
+      "description": "cli-jaw Design workspace: 오른쪽 sidebar에서 design page 생성/preview/export. Claude Design 스타일 toolbar + full viewport.",
+      "desc_ko": "cli-jaw Design workspace: 오른쪽 sidebar에서 design page 생성/preview/export. Claude Design 스타일 toolbar + full viewport.",
+      "desc_en": "cli-jaw Design workspace: create, preview, and export design pages from the right sidebar. Claude Design-style toolbar + full viewport.",
+      "requires": {
+        "bins": [
+          "cli-jaw"
+        ]
+      },
       "install": null,
       "version": "1.0.0"
     },
@@ -687,7 +726,8 @@
       "desc_en": "Multi-step research agent. Search → analyze → summarize.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-search"
     },
     "dependency-install-helper": {
       "name": "Dependency Install Helper",
@@ -713,23 +753,23 @@
       "desc_en": "Production deployment workflows and CI/CD best practices.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-devops"
     },
-    "desktop-control": {
+    "jaw-desktop-control": {
       "name": "Desktop Control",
       "name_ko": "데스크톱 컨트롤",
       "name_en": "Desktop Control",
       "emoji": "🖥️",
       "category": "automation",
-      "description": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI + macOS 필수.",
-      "desc_ko": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI + macOS 필수.",
-      "desc_en": "Unified CDP + Computer Use automation. Routes DOM to cli-jaw browser, desktop apps to mcp__computer_use__, hybrid to both. Requires Codex CLI + macOS.",
+      "description": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI 필수. macOS는 앱 단위, Windows는 창 단위 API.",
+      "desc_ko": "CDP + Computer Use 통합 자동화. DOM은 cli-jaw browser, 데스크톱 앱은 mcp__computer_use__, 섞이면 하이브리드. Codex CLI 필수. macOS는 앱 단위, Windows는 창 단위 API.",
+      "desc_en": "Unified CDP + Computer Use automation. Routes DOM to cli-jaw browser, desktop apps to mcp__computer_use__, hybrid to both. Requires Codex CLI; macOS is app-scoped and Windows is window-scoped.",
       "requires": {
         "bins": [
           "cli-jaw"
         ],
         "system": [
-          "macOS",
           "Google Chrome"
         ]
       },
@@ -741,174 +781,174 @@
       "status": "active",
       "version": "1.0.0"
     },
-    "dev": {
+    "jaw-dev": {
       "name": "Dev Common",
       "name_ko": "Dev Common",
       "name_en": "Dev Common",
       "emoji": "🔧",
       "category": "orchestration",
-      "description": "Common development guidelines. Modular dev, systematic debugging, verification-before-completion, code quality signals.",
-      "desc_ko": "Common development guidelines. Modular dev, systematic debugging, verification-before-completion, code quality signals.",
-      "desc_en": "Common development guide. Modular dev, self-reference patterns, skills_ref exploration, changelog.",
+      "description": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 분류기 eval 케이스와 신선도 정책(FAMILY-FRESH-01) 포함. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_ko": "모든 코딩 작업에 필수 사용. 작업 깊이(C0-C5), task_tags 오버레이, 모듈 한계, 사전 작성 검색, 완료 전 검증, 안전 규칙을 분류합니다. 분류기 eval 케이스와 신선도 정책(FAMILY-FRESH-01) 포함. 트리거: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
+      "desc_en": "MUST USE for every coding task. Classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Includes classifier eval cases and freshness policy (FAMILY-FRESH-01). Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
       "requires": null,
       "install": null,
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
-    "dev-architecture": {
+    "jaw-dev-architecture": {
       "name": "Dev Architecture",
       "name_ko": "Dev Architecture",
       "name_en": "Dev Architecture",
       "emoji": "🏗️",
       "category": "orchestration",
-      "description": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
-      "desc_ko": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
-      "desc_en": "Canonical owner of module boundary rules, circular dependency detection/prevention, implicit coupling taxonomy, barrel/re-export discipline, and boundary-only defensive programming. Referenced by dev, dev-code-reviewer, dev-backend, dev-frontend stubs.",
+      "description": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel/re-export 변경, 검증 위치 결정, 모노레포 패키지 분리, 이벤트 경계 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_ko": "모듈 경계 작업, 순환 의존성 탐지, 결합도 리뷰, barrel/re-export 변경, 검증 위치 결정, 모노레포 패키지 분리, 이벤트 경계 결정에 필수 사용. 트리거: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조.",
+      "desc_en": "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, validation placement, monorepo package splits, and event-boundary decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-backend": {
+    "jaw-dev-backend": {
       "name": "Dev Backend",
       "name_ko": "Dev Backend",
       "name_en": "Dev Backend",
       "emoji": "⚙️",
       "category": "orchestration",
-      "description": "Backend development guide. API design, architecture patterns, database optimization, error handling, security, logging.",
-      "desc_ko": "Backend development guide. API design, architecture patterns, database optimization, error handling, security, logging.",
-      "desc_en": "Backend role guide. Express.js patterns, SQLite, error handling, security basics.",
+      "description": "백엔드, API, 서버, 데이터베이스 작업에 필수 사용: API 설계(OpenAPI 3.1+/3.2, tRPC v11, 필요시에만 페더레이션), 아키텍처, Temporal 포함 큐/워크플로, Redis 호환 캐싱(Valkey/Redis), 정확한 성숙도의 OTel(로그는 아직 Development), SLO 프레이밍의 휴리스틱 성능 예산, 보안 강화, 미들웨어. 트리거: backend, API, REST, GraphQL, schema, migration, 쿼리 최적화, 백엔드, API 작업.",
+      "desc_ko": "백엔드, API, 서버, 데이터베이스 작업에 필수 사용: API 설계(OpenAPI 3.1+/3.2, tRPC v11, 필요시에만 페더레이션), 아키텍처, Temporal 포함 큐/워크플로, Redis 호환 캐싱(Valkey/Redis), 정확한 성숙도의 OTel(로그는 아직 Development), SLO 프레이밍의 휴리스틱 성능 예산, 보안 강화, 미들웨어. 트리거: backend, API, REST, GraphQL, schema, migration, 쿼리 최적화, 백엔드, API 작업.",
+      "desc_en": "MUST USE for backend, API, server, or database work: API design (OpenAPI 3.1+/3.2, tRPC v11, federation-when-warranted), architecture, queues incl. Temporal for durable workflows, Redis-compatible caching (Valkey/Redis), OTel with correct maturity (logs still Development), heuristic perf budgets with SLO framing, security hardening, middleware. Triggers: backend, API, REST, GraphQL, schema, migration, query optimization, middleware, caching, server.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-code-reviewer": {
+    "jaw-dev-code-reviewer": {
       "name": "Dev Code Reviewer",
       "name_ko": "Dev Code Reviewer",
       "name_en": "Dev Code Reviewer",
       "emoji": "🔍",
       "category": "orchestration",
-      "description": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
-      "desc_ko": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
-      "desc_en": "Code review guide. Review process, quality thresholds, antipatterns, giving/receiving feedback. Available to all agents.",
+      "description": "코드 리뷰와 리뷰 준비성에 필수 사용: 리뷰 프로세스, 품질 임계값, 안티패턴 탐지, 리뷰 판정, AI 리뷰 도구 조율, AI 생성 코드 리뷰(가공 API, 환각 의존성, 얕은 테스트). 트리거: review this, code review, PR review, check my diff, before merge, antipattern, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_ko": "코드 리뷰와 리뷰 준비성에 필수 사용: 리뷰 프로세스, 품질 임계값, 안티패턴 탐지, 리뷰 판정, AI 리뷰 도구 조율, AI 생성 코드 리뷰(가공 API, 환각 의존성, 얕은 테스트). 트리거: review this, code review, PR review, check my diff, before merge, antipattern, 리뷰, 코드 리뷰, 머지 전에 확인.",
+      "desc_en": "MUST USE for code review and review-readiness: review process, quality thresholds, antipattern detection, review verdicts, AI-review-tool coordination, and reviewing AI-generated code (invented APIs, hallucinated dependencies, shallow tests). Triggers: review this, code review, PR review, check my diff, before merge, antipattern.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-data": {
+    "jaw-dev-data": {
       "name": "Dev Data",
       "name_ko": "Dev Data",
       "name_en": "Dev Data",
       "emoji": "📊",
       "category": "orchestration",
-      "description": "Data engineering and analysis guide. Pipelines, ETL/ELT, data quality, SQL optimization, reporting, architecture decisions.",
-      "desc_ko": "Data engineering and analysis guide. Pipelines, ETL/ELT, data quality, SQL optimization, reporting, architecture decisions.",
-      "desc_en": "Data role guide. ETL pipelines, CSV/JSON processing, SQL queries, analysis.",
+      "description": "데이터 엔지니어링·분석 작업에 필수 사용: 파이프라인, ETL/ELT, 데이터 품질(GX Core, Soda 데이터 컨트랙트), SQL 최적화, 스키마 진화, 백필, 리포팅; 2026 스택 최신성(Airflow 3, dbt Core/Fusion/SQLMesh, Kafka 4 KRaft, pandas 3/Polars/DuckDB 휴리스틱, 생태계 기준 Delta-vs-Iceberg). 트리거: ETL, ELT, pipeline, data quality, 백필, 데이터 파이프라인, 데이터 품질.",
+      "desc_ko": "데이터 엔지니어링·분석 작업에 필수 사용: 파이프라인, ETL/ELT, 데이터 품질(GX Core, Soda 데이터 컨트랙트), SQL 최적화, 스키마 진화, 백필, 리포팅; 2026 스택 최신성(Airflow 3, dbt Core/Fusion/SQLMesh, Kafka 4 KRaft, pandas 3/Polars/DuckDB 휴리스틱, 생태계 기준 Delta-vs-Iceberg). 트리거: ETL, ELT, pipeline, data quality, 백필, 데이터 파이프라인, 데이터 품질.",
+      "desc_en": "MUST USE for data engineering and analysis work: pipelines, ETL/ELT, data quality (GX Core, Soda data contracts), SQL optimization, schema evolution, backfills, reporting; 2026 stack currency (Airflow 3, dbt Core/Fusion/SQLMesh, Kafka 4 KRaft, pandas 3/Polars/DuckDB heuristics, Delta-vs-Iceberg by ecosystem). Triggers: ETL, ELT, pipeline, data quality, SQL optimization, backfill, migration, schema drift, batch vs streaming.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-debugging": {
+    "jaw-dev-debugging": {
       "name": "Dev-Debugging — Systematic Root Cause Analysis",
       "name_ko": "Dev-Debugging — Systematic Root Cause Analysis",
       "name_en": "Dev-Debugging — Systematic Root Cause Analysis",
       "emoji": "🐛",
       "category": "orchestration",
-      "description": "This skill is the thinking process for fixing bugs. It enforces a structured",
-      "desc_ko": "This skill is the thinking process for fixing bugs. It enforces a structured",
-      "desc_en": "This skill is the thinking process for fixing bugs. It enforces a structured",
+      "description": "모든 언어의 실제 런타임 디버깅에 필수 사용: 크래시, 무증상 실패, 잘못된 출력, 빌드/테스트 실패, 플레이키 테스트, 성능 회귀, 통합 버그. 분산/비동기/에이전트 실패의 trace-first 증거 수집과 타임트래블/리플레이 지침을 포함한 5단계 근본원인 방법론. 트리거: debug this, why is X failing, flaky test, root cause, error, stack trace, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_ko": "모든 언어의 실제 런타임 디버깅에 필수 사용: 크래시, 무증상 실패, 잘못된 출력, 빌드/테스트 실패, 플레이키 테스트, 성능 회귀, 통합 버그. 분산/비동기/에이전트 실패의 trace-first 증거 수집과 타임트래블/리플레이 지침을 포함한 5단계 근본원인 방법론. 트리거: debug this, why is X failing, flaky test, root cause, error, stack trace, 왜 안 돼, 디버깅, 원인 분석.",
+      "desc_en": "MUST USE for any real runtime debugging in any language: crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, integration bugs. 5-phase root-cause method with trace-first evidence for distributed/async/agent failures and time-travel/replay guidance. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-devops": {
+    "jaw-dev-devops": {
       "name": "Dev DevOps",
       "name_ko": "Dev DevOps",
       "name_en": "Dev DevOps",
       "emoji": "🚀",
       "category": "orchestration",
-      "description": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
-      "desc_ko": "컨테이너 빌드, 배포 파이프라인, Kubernetes, IaC, SRE, 엣지/서버리스, ML 인프라.",
-      "desc_en": "Container builds, deploy pipelines, Kubernetes, IaC, SRE foundations, edge/serverless, ML infra.",
+      "description": "인프라·딜리버리 작업에 필수 사용: 2026 공급망 베이스라인(미니멀 베이스 → SBOM → 스캔 → 서명 → 다이제스트 승격)의 컨테이너 빌드, 배포 파이프라인, Kubernetes Gateway API v1.6+, IaC(OpenTofu 기본; CDKTF 아카이브됨), DORA 2025 AI 증폭기 프레이밍의 SRE, 엣지/서버리스, ML 인프라. 트리거: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy.",
+      "desc_ko": "인프라·딜리버리 작업에 필수 사용: 2026 공급망 베이스라인(미니멀 베이스 → SBOM → 스캔 → 서명 → 다이제스트 승격)의 컨테이너 빌드, 배포 파이프라인, Kubernetes Gateway API v1.6+, IaC(OpenTofu 기본; CDKTF 아카이브됨), DORA 2025 AI 증폭기 프레이밍의 SRE, 엣지/서버리스, ML 인프라. 트리거: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy.",
+      "desc_en": "MUST USE for infrastructure and delivery work: container builds with 2026 supply-chain baseline (minimal base -> SBOM -> scan -> sign -> digest promote), deploy pipelines, Kubernetes Gateway API v1.6+, IaC (OpenTofu default; CDKTF archived), SRE with DORA 2025 AI-amplifier framing, edge/serverless, ML infra. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra task_tags.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-frontend": {
+    "jaw-dev-frontend": {
       "name": "Dev Frontend",
       "name_ko": "Dev Frontend",
       "name_en": "Dev Frontend",
       "emoji": "🎨",
       "category": "orchestration",
-      "description": "프런트엔드 역할 가이드. 독창적 UI/UX 구현, 컴포넌트 설계, 미적 기준.",
-      "desc_ko": "프런트엔드 역할 가이드. 독창적 UI/UX 구현, 컴포넌트 설계, 미적 기준.",
-      "desc_en": "Frontend role guide. Unique UI/UX implementation, component design, aesthetic standards.",
+      "description": "프론트엔드, 웹 UI, 시각 구현 작업에 필수 사용: 페이지/컴포넌트 구축·스타일링·리디자인, 반응형, 모션, 컴포넌트 아키텍처, 프로덕션 폴리시. 2026 플랫폼 규칙(React 19.2 라인, Next 16 Cache Components, Vite 8/Rolldown, Tailwind v4, Baseline 체크 CSS), 에이전트 가시 런타임 진단, CWV 게이트 성능. 트리거: frontend, UI, component, CSS, responsive, animation, React, layout, 프론트엔드, UI 작업, 반응형, 디자인 수정.",
+      "desc_ko": "프론트엔드, 웹 UI, 시각 구현 작업에 필수 사용: 페이지/컴포넌트 구축·스타일링·리디자인, 반응형, 모션, 컴포넌트 아키텍처, 프로덕션 폴리시. 2026 플랫폼 규칙(React 19.2 라인, Next 16 Cache Components, Vite 8/Rolldown, Tailwind v4, Baseline 체크 CSS), 에이전트 가시 런타임 진단, CWV 게이트 성능. 트리거: frontend, UI, component, CSS, responsive, animation, React, layout, 프론트엔드, UI 작업, 반응형, 디자인 수정.",
+      "desc_en": "MUST USE for any frontend, web UI, or visual implementation work: building, styling, or redesigning pages/components, responsive layouts, motion, component architecture, production polish. 2026 platform rules (React 19.2 line, Next 16 Cache Components, Vite 8/Rolldown, Tailwind v4, Baseline-checked CSS), agent-visible runtime diagnostics, CWV-gated performance. Triggers: frontend, UI, component, CSS, responsive, animation, React, layout, styling, redesign, anti-slop.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-pabcd": {
+    "jaw-dev-pabcd": {
       "name": "Dev PABCD",
       "name_ko": "Dev PABCD",
       "name_en": "Dev PABCD",
       "emoji": "🎯",
       "category": "orchestration",
-      "description": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
-      "desc_ko": "PABCD orchestration workflow. Plan → Audit → Build → Check → Done. 구조화된 멀티스텝 개발 with human checkpoints.",
-      "desc_en": "PABCD orchestration workflow for structured multi-step development with human checkpoints between phases.",
+      "description": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용: orchestrate, phase, attest, 인터뷰 모드, 골 모드, 체크포인트, 다단계 개발, 최적화 루프 정체 규율. 상태 전이는 명시적 오케스트레이션 의도가 있을 때만 수행합니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
+      "desc_ko": "cli-jaw PABCD 오케스트레이션 워크플로에 필수 사용: orchestrate, phase, attest, 인터뷰 모드, 골 모드, 체크포인트, 다단계 개발, 최적화 루프 정체 규율. 상태 전이는 명시적 오케스트레이션 의도가 있을 때만 수행합니다. 트리거: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
+      "desc_en": "MUST USE for cli-jaw PABCD orchestration workflows: orchestrate, phase, attest, interview mode, goal mode, checkpoints, multi-phase development, and optimization-loop plateau discipline. State transitions require explicit orchestration intent, not keyword mentions. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
       "requires": null,
       "install": null,
-      "version": "2.0.0"
+      "version": "2.1.0"
     },
-    "dev-scaffolding": {
+    "jaw-dev-scaffolding": {
       "name": "Dev Scaffolding",
       "name_ko": "Dev Scaffolding",
       "name_en": "Dev Scaffolding",
       "emoji": "🏗️",
       "category": "orchestration",
-      "description": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
-      "desc_ko": "Lidge Standard 프로젝트 스캐폴딩. Feature-based + Colocation + Barrel Export + devlog 구조.",
-      "desc_en": "Scaffold projects following the Lidge Standard: feature-based layout, colocation, barrel exports, devlog structure.",
+      "description": "프로젝트 설정, 기능 스캐폴딩, 구조 감사, 문서 스캐폴딩에 필수 사용. Lidge Standard, colocation, public boundary exports, repo-first convention reuse, source-of-truth doc planning을 적용합니다. 트리거: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
+      "desc_ko": "프로젝트 설정, 기능 스캐폴딩, 구조 감사, 문서 스캐폴딩에 필수 사용. Lidge Standard, colocation, public boundary exports, repo-first convention reuse, source-of-truth doc planning을 적용합니다. 트리거: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
+      "desc_en": "MUST USE for project setup, feature scaffolding, structural audits, or documentation scaffolding. Applies the Lidge Standard, colocation, public boundary exports, repo-first convention reuse, and source-of-truth doc planning. Triggers: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-security": {
+    "jaw-dev-security": {
       "name": "Dev-Security — Production Security Hardening",
       "name_ko": "Dev-Security — Production Security Hardening",
       "name_en": "Dev-Security — Production Security Hardening",
       "emoji": "🛡️",
       "category": "orchestration",
-      "description": "Treat security as a build constraint, not a cleanup step.",
-      "desc_ko": "Treat security as a build constraint, not a cleanup step.",
-      "desc_en": "Treat security as a build constraint, not a cleanup step.",
+      "description": "보안 민감 코드에 필수 사용: XSS, CSRF, SQL 인젝션, JWT, OAuth, 시크릿, OWASP Top 10:2025, ASVS 5.0, 에이전틱 AI 보안(LLM Top 10 2025 + Agentic Top 10 2026), AI 제안 의존성 슬롭스쿼팅 게이트, 공급망, 위협 모델. 트리거: auth/login/token 코드, 신뢰 경계 입력 검증, 의존성/릴리스 표면, security/threat_model task_tags.",
+      "desc_ko": "보안 민감 코드에 필수 사용: XSS, CSRF, SQL 인젝션, JWT, OAuth, 시크릿, OWASP Top 10:2025, ASVS 5.0, 에이전틱 AI 보안(LLM Top 10 2025 + Agentic Top 10 2026), AI 제안 의존성 슬롭스쿼팅 게이트, 공급망, 위협 모델. 트리거: auth/login/token 코드, 신뢰 경계 입력 검증, 의존성/릴리스 표면, security/threat_model task_tags.",
+      "desc_en": "MUST USE for security-sensitive code: XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP Top 10:2025, ASVS 5.0, agentic AI security (LLM Top 10 2025 + Agentic Top 10 2026), slopsquatting gate for AI-suggested dependencies, supply chain, threat model. Triggers: auth/login/token code, input validation at trust boundaries, dependency/release surface, security/threat_model task_tags.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
-    "dev-testing": {
+    "jaw-dev-testing": {
       "name": "Dev Testing",
       "name_ko": "Dev Testing",
       "name_en": "Dev Testing",
       "emoji": "🧪",
       "category": "orchestration",
-      "description": "디버깅 phase 전용. Playwright 웹앱 테스팅, 정찰-행동 패턴.",
-      "desc_ko": "디버깅 phase 전용. Playwright 웹앱 테스팅, 정찰-행동 패턴.",
-      "desc_en": "Debugging phase only. Playwright web app testing, recon-action pattern.",
+      "description": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용: 단위/통합/API/컨트랙트(Pact V4, Schemathesis), Playwright E2E(AI 테스트 에이전트 정책 포함), property-based/뮤테이션 테스트, CI, 보안 스캔, 커버리지, TDD 전략. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_ko": "테스트, QA, 회귀 보호, 릴리스 검증에 필수 사용: 단위/통합/API/컨트랙트(Pact V4, Schemathesis), Playwright E2E(AI 테스트 에이전트 정책 포함), property-based/뮤테이션 테스트, CI, 보안 스캔, 커버리지, TDD 전략. 트리거: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, 테스트, 회귀 테스트, 품질 게이트.",
+      "desc_en": "MUST USE for testing, QA, regression protection, and release verification: unit, integration, API, contract (Pact/PactV4, Schemathesis), Playwright E2E (incl. AI test-agent policy), property-based and mutation testing, CI, security-scan, coverage, and TDD strategy. Triggers: write tests, regression test, Playwright, E2E, contract test, coverage, CI flake, TDD, test, testing, QA.",
       "requires": null,
       "install": null,
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
-    "dev-uiux-design": {
+    "jaw-dev-uiux-design": {
       "name": "Dev UI/UX Design",
       "name_ko": "Dev UI/UX 디자인",
       "name_en": "Dev UI/UX Design",
       "emoji": "🎯",
       "category": "orchestration",
-      "description": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
-      "desc_ko": "UI/UX 의도 발견, 디자인 어휘, 제품 성격, UX 상태 패턴. 디자인 방향이 모호하거나 온보딩/빈상태/에러상태 구현 시 사용.",
-      "desc_en": "UI/UX intent discovery, design vocabulary, product personalities, and UX state patterns. Use when user design direction is vague, when building onboarding/empty/error states, or when referencing a product aesthetic.",
+      "description": "UI/UX 방향과 디자인 판단에 필수 사용: 모호한 시각 브리프, 온보딩, 빈/에러/로딩 상태, 레이아웃 어휘, 타이포 줄바꿈, 파비콘, 로고, 브랜드. 한국어 디자인 요청 번역표와 검증된 한국어 타이포 게이트 포함. 트리거: make it look good, modern, clean, 깔끔하게, 모던하게, 감성적으로, onboarding, empty state, favicon, logo, design system.",
+      "desc_ko": "UI/UX 방향과 디자인 판단에 필수 사용: 모호한 시각 브리프, 온보딩, 빈/에러/로딩 상태, 레이아웃 어휘, 타이포 줄바꿈, 파비콘, 로고, 브랜드. 한국어 디자인 요청 번역표와 검증된 한국어 타이포 게이트 포함. 트리거: make it look good, modern, clean, 깔끔하게, 모던하게, 감성적으로, onboarding, empty state, favicon, logo, design system.",
+      "desc_en": "MUST USE for UI/UX direction and design judgment: vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, brand identity. Includes the lazy-user gate (UX-LAZY-01): default-first, one primary action, choices demoted to progressive disclosure, surface-conditional by density profile. Korean design-request translation tables and verified Korean typography gates. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     "develop-web-game": {
       "name": "웹 게임 개발",
@@ -927,7 +967,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "diagram": {
+    "jaw-diagram": {
       "name": "Diagram",
       "name_ko": "다이어그램",
       "name_en": "Diagram",
@@ -951,7 +991,8 @@
       "desc_en": "Security-focused diff review. Analyze security impact of code changes.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "differential-review/skills/differential-review/SKILL.md"
     },
     "dispatching-parallel-agents": {
       "name": "Dispatching Parallel Agents",
@@ -1055,7 +1096,8 @@
       "desc_en": "Docker and Docker Compose best practices for containerized development.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-devops"
     },
     "documentation-lookup": {
       "name": "Documentation Lookup (Context7)",
@@ -1063,14 +1105,15 @@
       "name_en": "Documentation Lookup (Context7)",
       "emoji": "📖",
       "category": "devtools",
-      "description": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
+      "description": "Use up-to-date library and framework docs via Context7 MCP instead of training data. Activates for setup questions, API references, code examples, or when the user names a framework.",
       "desc_ko": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
-      "desc_en": "When the user asks about libraries, frameworks, or APIs, fetch current documentation via the Context7 MCP (tools `resolve-library-id` and `query-do...",
+      "desc_en": "Use up-to-date library and framework docs via Context7 MCP instead of training data. Activates for setup questions, API references, code examples, or when the user names a framework.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-search"
     },
-    "docx": {
+    "jaw-docx": {
       "name": "DOCX",
       "name_ko": "DOCX",
       "name_en": "DOCX",
@@ -1115,9 +1158,9 @@
       "name_en": "Energy Procurement",
       "emoji": "⚡",
       "category": "devtools",
-      "description": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
+      "description": "Electricity and gas procurement, tariff optimization, demand charge management, renewable PPA evaluation, and multi-facility energy cost management. Includes market structure analysis, hedging strategies, load profiling, and sustainability reporting frameworks. Use when procuring energy, optimizing tariffs, managing demand charges, evaluating PPAs, or developing energy strategies.",
       "desc_ko": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
-      "desc_en": "You are a senior energy procurement manager at a large commercial and industrial (C&I) consumer with multiple facilities across regulated and dereg...",
+      "desc_en": "Electricity and gas procurement, tariff optimization, demand charge management, renewable PPA evaluation, and multi-facility energy cost management. Includes market structure analysis, hedging strategies, load profiling, and sustainability reporting frameworks. Use when procuring energy, optimizing tariffs, managing demand charges, evaluating PPAs, or developing energy strategies.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1146,7 +1189,8 @@
       "desc_en": "Compiler/runtime error → cause + fix suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-debugging"
     },
     "eval-harness": {
       "name": "Eval Harness",
@@ -1154,9 +1198,9 @@
       "name_en": "Eval Harness",
       "emoji": "📊",
       "category": "devtools",
-      "description": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
+      "description": "Evaluation framework for agent sessions implementing eval-driven development (EDD) principles.",
       "desc_ko": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
-      "desc_en": "Evaluation framework for agent-assisted workflows. Define expected behavior before implementation, run evals continuously, and track regressions wi...",
+      "desc_en": "Evaluation framework for agent sessions implementing eval-driven development (EDD) principles.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1172,7 +1216,8 @@
       "desc_en": "Neural search for web content, code, companies, and people via the Exa MCP server.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-search"
     },
     "fal-image-edit": {
       "name": "Fal Image Edit",
@@ -1214,9 +1259,9 @@
       "name_en": "Flutter/Dart Code Review Best Practices",
       "emoji": "🦋",
       "category": "devtools",
-      "description": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
+      "description": "Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.",
       "desc_ko": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
-      "desc_en": "Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solu...",
+      "desc_en": "Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1227,9 +1272,9 @@
       "name_en": "FoundationModels: On-Device LLM (iOS 26)",
       "emoji": "📲",
       "category": "devtools",
-      "description": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
+      "description": "Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.",
       "desc_ko": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
-      "desc_en": "Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output...",
+      "desc_en": "Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1260,7 +1305,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "github": {
+    "jaw-github": {
       "name": "GitHub (범용)",
       "name_ko": "GitHub (범용)",
       "name_en": "GitHub",
@@ -1277,7 +1322,7 @@
       "install": "brew install gh",
       "version": "1.0.0"
     },
-    "goal": {
+    "jaw-goal": {
       "name": "Goal Execution",
       "name_ko": "Goal 실행 가이드",
       "name_en": "Goal Execution",
@@ -1432,7 +1477,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "hwp": {
+    "jaw-hwp": {
       "name": "HWP",
       "name_ko": "한글 (HWP/HWPX)",
       "name_en": "HWP/HWPX",
@@ -1476,7 +1521,8 @@
       "desc_en": "Detect hardcoded secrets, weak crypto, and insecure defaults.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "insecure-defaults/skills/insecure-defaults/SKILL.md"
     },
     "inventory-demand-planning": {
       "name": "Inventory Demand Planning",
@@ -1484,9 +1530,9 @@
       "name_en": "Inventory Demand Planning",
       "emoji": "📦",
       "category": "devtools",
-      "description": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
+      "description": "Demand forecasting, safety stock optimization, replenishment planning, and promotional lift estimation at multi-location retailers. Includes forecasting method selection, ABC/XYZ analysis, seasonal transition management, and vendor negotiation frameworks. Use when forecasting demand, setting safety stock, planning replenishment, managing promotions, or optimizing inventory levels.",
       "desc_ko": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
-      "desc_en": "You are a senior demand planner at a multi-location retailer operating 40–200 stores with regional distribution centers. You manage 300–800 active ...",
+      "desc_en": "Demand forecasting, safety stock optimization, replenishment planning, and promotional lift estimation at multi-location retailers. Includes forecasting method selection, ABC/XYZ analysis, seasonal transition management, and vendor negotiation frameworks. Use when forecasting demand, setting safety stock, planning replenishment, managing promotions, or optimizing inventory levels.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1718,7 +1764,8 @@
       "desc_en": "Lint rule explanation + pattern examples + minimal fix suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-debugging"
     },
     "liquid-glass-design": {
       "name": "Liquid Glass Design System (iOS 26)",
@@ -1726,9 +1773,9 @@
       "name_en": "Liquid Glass Design System (iOS 26)",
       "emoji": "💎",
       "category": "devtools",
-      "description": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
+      "description": "iOS 26–27 Liquid Glass design system — dynamic glass material with blur, reflection, interactive morphing, adjustable intensity, and layering for SwiftUI, UIKit, and WidgetKit.",
       "desc_ko": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
-      "desc_en": "Patterns for implementing Apple's Liquid Glass — a dynamic material that blurs content behind it, reflects color and light from surrounding content...",
+      "desc_en": "iOS 26–27 Liquid Glass design system — dynamic glass material with blur, reflection, interactive morphing, adjustable intensity, and layering for SwiftUI, UIKit, and WidgetKit.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1744,7 +1791,8 @@
       "desc_en": "Log grouping + first failure identification + action suggestions.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-debugging"
     },
     "logistics-exception-management": {
       "name": "Logistics Exception Management",
@@ -1752,9 +1800,9 @@
       "name_en": "Logistics Exception Management",
       "emoji": "🚨",
       "category": "devtools",
-      "description": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
+      "description": "> Freight exception handling: shipment delays, damages, losses, carrier disputes. Includes escalation protocols, carrier-specific behaviors, claims procedures, and judgment frameworks.",
       "desc_ko": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
-      "desc_en": "Freight exceptions across all modes (LTL, FTL, parcel, intermodal, ocean, air). Covers TMS, WMS, carrier portals, claims management, and ERP order ...",
+      "desc_en": "> Freight exception handling: shipment delays, damages, losses, carrier disputes. Includes escalation protocols, carrier-specific behaviors, claims procedures, and judgment frameworks.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1785,7 +1833,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "memory": {
+    "jaw-memory": {
       "name": "Long-term Memory",
       "name_ko": "Long-term Memory",
       "name_en": "Long-term Memory",
@@ -1809,7 +1857,8 @@
       "desc_en": "uv+ruff+ty+pytest Python best practices.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "modern-python/skills/modern-python/SKILL.md"
     },
     "nano-banana-pro": {
       "name": "이미지 생성 (Gemini)",
@@ -1854,9 +1903,9 @@
       "name_en": "Next.js and Turbopack",
       "emoji": "▲",
       "category": "devtools",
-      "description": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
+      "description": "Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, production builds, Server Fast Refresh, and when to fall back to webpack.",
       "desc_ko": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
-      "desc_en": "Next.js 16+ uses Turbopack by default for local development: an incremental bundler written in Rust that significantly speeds up dev startup and ho...",
+      "desc_en": "Next.js 16+ and Turbopack — incremental bundling, FS caching, dev speed, production builds, Server Fast Refresh, and when to fall back to webpack.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -1952,9 +2001,9 @@
       "name_en": "Nutrient Document Processing",
       "emoji": "📄",
       "category": "productivity",
-      "description": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
+      "description": "Process, convert, OCR, extract, redact, sign, and fill documents using the Nutrient DWS API. Works with PDFs, DOCX, XLSX, PPTX, HTML, and images.",
       "desc_ko": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
-      "desc_en": "Process documents with the Nutrient DWS Processor API. Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks,...",
+      "desc_en": "Process, convert, OCR, extract, redact, sign, and fill documents using the Nutrient DWS API. Works with PDFs, DOCX, XLSX, PPTX, HTML, and images.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2058,7 +2107,7 @@
       "install": "brew install openhue",
       "version": "1.0.0"
     },
-    "pdf": {
+    "jaw-pdf": {
       "name": "PDF 읽기/리뷰",
       "name_ko": "PDF 읽기/리뷰",
       "name_en": "PDF Reader/Writer",
@@ -2075,7 +2124,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "pdf-vision": {
+    "jaw-pdf-vision": {
       "name": "PDF Vision (하이브리드)",
       "name_ko": "PDF Vision (하이브리드)",
       "name_en": "PDF Vision (Hybrid)",
@@ -2137,9 +2186,9 @@
       "name_en": "Plankton Code Quality",
       "emoji": "🦠",
       "category": "devtools",
-      "description": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
+      "description": "Write-time code quality enforcement using Plankton — auto-formatting, linting, and agent-powered fixes on every file edit via hooks.",
       "desc_ko": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
-      "desc_en": "Integration reference for Plankton (credit: @alxfazio), a write-time code quality enforcement system. Plankton runs formatters and linters on every...",
+      "desc_en": "Write-time code quality enforcement using Plankton — auto-formatting, linting, and agent-powered fixes on every file edit via hooks.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2174,7 +2223,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "pptx": {
+    "jaw-pptx": {
       "name": "PPTX",
       "name_ko": "PPTX",
       "name_en": "PPTX",
@@ -2193,9 +2242,9 @@
       "name_en": "Production Scheduling",
       "emoji": "🏭",
       "category": "devtools",
-      "description": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
+      "description": "> Production scheduling, job sequencing, line balancing, changeover optimization, and bottleneck resolution in discrete and batch manufacturing. Includes TOC/drum-buffer-rope, SMED, OEE analysis, disruption response frameworks, and ERP/MES interaction patterns.",
       "desc_ko": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
-      "desc_en": "Discrete and batch manufacturing scheduling across machining, assembly, finishing, and packaging work centers. Integrates with ERP (SAP PP, Oracle ...",
+      "desc_en": "> Production scheduling, job sequencing, line balancing, changeover optimization, and bottleneck resolution in discrete and batch manufacturing. Includes TOC/drum-buffer-rope, SMED, OEE analysis, disruption response frameworks, and ERP/MES interaction patterns.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2237,7 +2286,8 @@
       "desc_en": "Multi-language property-based testing (Hypothesis/fast-check etc.).",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "property-based-testing/skills/property-based-testing/SKILL.md"
     },
     "python-patterns": {
       "name": "Python Development Patterns",
@@ -2284,9 +2334,9 @@
       "name_en": "Quality & Non-Conformance Management",
       "emoji": "⚠️",
       "category": "devtools",
-      "description": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
+      "description": "> Quality control, non-conformance investigation, root cause analysis, corrective action, and supplier quality management in regulated manufacturing. Includes NCR lifecycle, CAPA systems, SPC interpretation, and audit methodology across FDA, IATF 16949, and AS9100 environments.",
       "desc_ko": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
-      "desc_en": "Non-conformance lifecycle management in regulated manufacturing (FDA 21 CFR 820, IATF 16949, AS9100, ISO 13485). Integrates with QMS (MasterControl...",
+      "desc_en": "> Quality control, non-conformance investigation, root cause analysis, corrective action, and supplier quality management in regulated manufacturing. Includes NCR lifecycle, CAPA systems, SPC interpretation, and audit methodology across FDA, IATF 16949, and AS9100 environments.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2302,7 +2352,8 @@
       "desc_en": "Use this skill when a feature is too large for a single agent pass and must be split into independently verifiable work units.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-pabcd"
     },
     "react-best-practices": {
       "name": "React Best Practices",
@@ -2328,7 +2379,8 @@
       "desc_en": "Code review feedback reception and response patterns.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-code-reviewer"
     },
     "regex-vs-llm-structured-text": {
       "name": "Regex vs LLM for Structured Text Parsing",
@@ -2336,9 +2388,9 @@
       "name_en": "Regex vs LLM for Structured Text Parsing",
       "emoji": "🔤",
       "category": "devtools",
-      "description": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
+      "description": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
       "desc_ko": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
-      "desc_en": "A practical decision framework for parsing structured text (quizzes, forms, invoices, documents). The key insight: regex handles 95-98% of cases ch...",
+      "desc_en": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2374,7 +2426,8 @@
       "desc_en": "Internal agent code review. Severity-based blocking.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-code-reviewer"
     },
     "research-worker": {
       "name": "Research Worker",
@@ -2395,9 +2448,9 @@
       "name_en": "Returns & Reverse Logistics",
       "emoji": "📦",
       "category": "devtools",
-      "description": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
+      "description": "> Returns authorization, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management. Includes grading frameworks, disposition economics, fraud pattern recognition, and vendor recovery processes.",
       "desc_ko": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
-      "desc_en": "Full returns lifecycle across retail, e-commerce, and omnichannel. Covers RMA, condition grading, disposition routing, refund processing, fraud det...",
+      "desc_en": "> Returns authorization, receipt and inspection, disposition decisions, refund processing, fraud detection, and warranty claims management. Includes grading frameworks, disposition economics, fraud pattern recognition, and vendor recovery processes.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2408,9 +2461,9 @@
       "name_en": "Rules Distill",
       "emoji": "📏",
       "category": "devtools",
-      "description": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
+      "description": "Scan skills to extract cross-cutting principles and distill them into rules — append, revise, or create new rule files.",
       "desc_ko": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
-      "desc_en": "Scan installed skills, extract cross-cutting principles that appear in multiple skills, and distill them into rules — appending to existing rule fi...",
+      "desc_en": "Scan skills to extract cross-cutting principles and distill them into rules — append, revise, or create new rule files.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2441,7 +2494,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "screen-capture": {
+    "jaw-screen-capture": {
       "name": "Screen Capture",
       "name_ko": "Screen Capture",
       "name_en": "Screen Capture",
@@ -2454,21 +2507,16 @@
       "install": null,
       "version": "1.0.0"
     },
-    "search": {
+    "jaw-search": {
       "name": "Search Hub",
       "name_ko": "Search Hub",
       "name_en": "Search Hub",
       "emoji": "🔎",
       "category": "research",
-      "description": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
+      "description": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing. Optional binaries: progrok, cli-jaw.",
       "desc_ko": "웹, 실시간, X/Twitter, 한국어 원문 민감 검색, 딥리서치 라우팅을 위한 통합 검색 허브.",
       "desc_en": "Unified search hub for web, real-time, X/Twitter, Korean source-sensitive lookup, and deep research routing.",
-      "requires": {
-        "optional_bins": [
-          "progrok",
-          "cli-jaw"
-        ]
-      },
+      "requires": {},
       "install": null,
       "version": "1.0.0"
     },
@@ -2483,7 +2531,8 @@
       "desc_en": "Language-specific security vulnerability pattern review.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-security"
     },
     "security-ownership-map": {
       "name": "Security Ownership Map",
@@ -2509,7 +2558,8 @@
       "desc_en": "Per-repo threat model generation (STRIDE/DREAD).",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-security"
     },
     "senior-architect": {
       "name": "Senior Architect",
@@ -2522,7 +2572,8 @@
       "desc_en": "Architecture decision records (ADR), pattern selection (monolith, microservices, CQRS, event sourcing), dependency analysis, tech stack decisions.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-architecture"
     },
     "sentry": {
       "name": "Sentry",
@@ -2563,9 +2614,9 @@
       "name_en": "Skill Stocktake",
       "emoji": "📋",
       "category": "devtools",
-      "description": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
+      "description": "Audit skills and commands for quality. Supports Quick Scan (changed only) and Full Stocktake modes with batch evaluation.",
       "desc_ko": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
-      "desc_en": "Audits all installed skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skil...",
+      "desc_en": "Audit skills and commands for quality. Supports Quick Scan (changed only) and Full Stocktake modes with batch evaluation.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2692,7 +2743,8 @@
         "env": []
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "static-analysis/skills/codeql/SKILL.md"
     },
     "strategic-compact": {
       "name": "Strategic Compact",
@@ -2707,7 +2759,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "structured-renderers": {
+    "jaw-structured-renderers": {
       "name": "Structured Renderers",
       "name_ko": "구조화 렌더러",
       "name_en": "Structured Renderers",
@@ -2743,9 +2795,9 @@
       "name_en": "Swift Actors for Thread-Safe Persistence",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
+      "description": "Thread-safe data persistence in Swift using actors — in-memory cache with file-backed storage, eliminating data races by design.",
       "desc_ko": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
-      "desc_en": "Patterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the a...",
+      "desc_en": "Thread-safe data persistence in Swift using actors — in-memory cache with file-backed storage, eliminating data races by design.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2756,9 +2808,9 @@
       "name_en": "Swift 6.2 Approachable Concurrency",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
+      "description": "Swift 6.2 Approachable Concurrency — single-threaded by default, @concurrent for explicit background offloading, isolated conformances for main actor types.",
       "desc_ko": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
-      "desc_en": "Patterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates...",
+      "desc_en": "Swift 6.2 Approachable Concurrency — single-threaded by default, @concurrent for explicit background offloading, isolated conformances for main actor types.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2769,9 +2821,9 @@
       "name_en": "Swift Protocol-Based Dependency Injection for Testing",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
+      "description": "Protocol-based dependency injection for testable Swift code — mock file system, network, and external APIs using focused protocols and Swift Testing.",
       "desc_ko": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
-      "desc_en": "Patterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enable...",
+      "desc_en": "Protocol-based dependency injection for testable Swift code — mock file system, network, and external APIs using focused protocols and Swift Testing.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2782,9 +2834,9 @@
       "name_en": "SwiftUI Patterns",
       "emoji": "🍎",
       "category": "devtools",
-      "description": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
+      "description": "SwiftUI architecture patterns, state management with @Observable, view composition, navigation, performance optimization, and modern iOS/macOS UI best practices.",
       "desc_ko": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
-      "desc_en": "Modern SwiftUI patterns for building declarative, performant user interfaces on Apple platforms. Covers the Observation framework, view composition...",
+      "desc_en": "SwiftUI architecture patterns, state management with @Observable, view composition, navigation, performance optimization, and modern iOS/macOS UI best practices.",
       "requires": null,
       "install": null,
       "version": "1.0.0"
@@ -2800,7 +2852,8 @@
       "desc_en": "RED-GREEN-REFACTOR TDD cycle enforcement.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-testing"
     },
     "team-builder": {
       "name": "Team Builder",
@@ -2815,7 +2868,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "telegram-send": {
+    "jaw-telegram-send": {
       "name": "Telegram Send",
       "name_ko": "Telegram Send",
       "name_en": "Telegram Send",
@@ -2842,12 +2895,13 @@
       "desc_ko": "HashiCorp Terraform HCL/모듈/프로바이더 IaC.",
       "desc_en": "HashiCorp Terraform HCL/modules/providers IaC.",
       "requires": {
-        "binaries": [
+        "bins": [
           "terraform"
         ]
       },
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "entry": "terraform/code-generation/skills/azure-verified-modules/SKILL.md"
     },
     "theme-factory": {
       "name": "Theme Factory",
@@ -2860,7 +2914,8 @@
       "desc_en": "Apply reusable themes to document/slide/HTML outputs.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-uiux-design"
     },
     "things-mac": {
       "name": "Things 3 (macOS)",
@@ -2954,7 +3009,8 @@
       "desc_en": "Design token generation, color palettes, typography scales, component architecture, WCAG accessibility, developer handoff.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-uiux-design"
     },
     "ux-researcher": {
       "name": "UX Researcher",
@@ -2997,9 +3053,10 @@
       "desc_en": "Systematic quality check for code changes across six phases.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-testing"
     },
-    "video": {
+    "jaw-video": {
       "name": "Video Rendering",
       "name_ko": "영상 렌더링",
       "name_en": "Video Rendering",
@@ -3015,7 +3072,7 @@
           "pnpm"
         ]
       },
-      "install": "node skills_ref/video/scripts/ensure-remotion.mjs",
+      "install": "node skills_ref/jaw-video/scripts/ensure-remotion.mjs",
       "version": "0.1.0"
     },
     "video-downloader": {
@@ -3028,7 +3085,7 @@
       "desc_ko": "yt-dlp 래퍼. 유튜브/미디어 다운로드.",
       "desc_en": "yt-dlp wrapper. YouTube/media download.",
       "requires": {
-        "binaries": [
+        "bins": [
           "yt-dlp"
         ]
       },
@@ -3105,7 +3162,8 @@
       "workflow": "vision_coordinate",
       "provider": "openai",
       "status": "active",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-desktop-control"
     },
     "weather": {
       "name": "날씨",
@@ -3131,7 +3189,8 @@
       "desc_en": "Structured browser web-ai workflow for ChatGPT, Gemini, and Grok.",
       "requires": null,
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-search"
     },
     "web-artifacts-builder": {
       "name": "Web Artifacts Builder",
@@ -3178,7 +3237,8 @@
       "workflow": "routing_guide",
       "provider": "n/a",
       "status": "active",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-browser"
     },
     "whatsapp": {
       "name": "Whatsapp",
@@ -3204,7 +3264,8 @@
       "desc_en": "2-5 minute task decomposition. File paths/code/verification included.",
       "requires": {},
       "install": null,
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "superseded_by": "jaw-dev-pabcd"
     },
     "x-api": {
       "name": "X API",
@@ -3219,7 +3280,7 @@
       "install": null,
       "version": "1.0.0"
     },
-    "xlsx": {
+    "jaw-xlsx": {
       "name": "XLSX",
       "name_ko": "XLSX",
       "name_en": "XLSX",
@@ -3244,6 +3305,59 @@
       "requires": {
         "bins": [
           "xurl"
+        ]
+      },
+      "install": null,
+      "version": "1.0.0"
+    },
+    "repo-map": {
+      "name": "Repo-Map — Ranked Structure Map",
+      "name_ko": "Repo-Map — Ranked Structure Map",
+      "name_en": "Repo-Map — Ranked Structure Map",
+      "emoji": "🗺️",
+      "category": "devtools",
+      "description": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
+      "desc_ko": "낯선 코드베이스 탐색 전 랭킹된 구조 맵 생성: cli-jaw map <path> [--budget N]. 파일별 정의(함수/클래스/타입)를 참조 중력 순으로 나열, 대형 모노레포는 서브트리 스코핑. 깊은 Grep 전에 먼저 실행. 트리거: repo map, structure map, codebase overview, 와꾸, project structure.",
+      "desc_en": "Ranked structure map before exploring unfamiliar code: cli-jaw map <path> [--budget N]. Lists per-file definitions ordered by reference gravity; subtree scoping for large monorepos. Run before deep Grep dives. Triggers: repo map, structure map, codebase overview, project structure."
+    },
+    "jaw-dev-write": {
+      "name": "Dev Write",
+      "name_ko": "Dev Write",
+      "name_en": "Dev Write",
+      "emoji": "✍️",
+      "category": "orchestration",
+      "description": "한국어 윤문에 필수 사용. 이미 쓴 텍스트에서 번역투·AI 관용구를 걷어내고 문체를 일관되게 맞추되 의미는 그대로 둔다. 채팅 답변, 문서, README, 릴리스 노트, 커밋 본문, 이슈/PR 텍스트, UI 문구가 대상. 트리거: 윤문, 다듬어, 자연스럽게, 교정, AI투, 번역투, Korean polish, proofread Korean.",
+      "desc_ko": "한국어 윤문에 필수 사용. 번역투·AI 관용구 제거, 문체 일관성, 의미 보존 수정.",
+      "desc_en": "MUST USE for Korean prose revision: remove translationese and AI idioms, fix register breaks, preserve meaning exactly. Applies to chat answers, docs, READMEs, release notes, commit bodies, issue/PR text, UI copy.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
+    "jaw-dev-speech": {
+      "name": "Dev Speech",
+      "name_ko": "Dev Speech",
+      "name_en": "Dev Speech",
+      "emoji": "💬",
+      "category": "orchestration",
+      "description": "사람에게 보낼 답변을 구성할 때 필수 사용. 상대 수준 보정, 결론 선행 순서, 추측과 확인의 구분, 사람다운 문체 규율, 그리고 다른 AI에게 일을 넘길 때의 맥락·완료조건 작성법. 트리거: 설명해, 알려줘, 쉬게 설명, 답변, explain, tone, register, audience.",
+      "desc_ko": "답변 구성 스킬. 상대 수준 보정, 결론 선행, 추측/확인 구분, 사람다운 문체.",
+      "desc_en": "MUST USE when composing an answer for a person: audience calibration, conclusion-first order, hedging discipline, human register, and how to hand work to another AI with selected context and verifiable completion criteria.",
+      "requires": null,
+      "install": null,
+      "version": "1.0.0"
+    },
+    "jaw-calendar-reminders": {
+      "name": "Calendar + Reminders",
+      "name_ko": "캘린더 + 미리알림",
+      "name_en": "Calendar + Reminders",
+      "emoji": "📆",
+      "category": "productivity",
+      "description": "macOS Calendar.app과 Reminders.app을 CLI로 조작한다. 일정 조회·생성·수정·검색·삭제, 미리알림 목록·추가·완료·삭제·정리, 마감일·알람·반복·우선순위·JSON 출력까지. osascript 내장이라 설치가 필요 없고, icalBuddy가 있으면 조회가 빨라진다. 트리거: 캘린더, 일정, 약속, 미리알림, 리마인더, 할일, calendar, event, reminder, todo, due.",
+      "desc_ko": "macOS 캘린더·미리알림 CLI 조작. 일정/미리알림 조회·생성·수정·삭제, 반복·알람·우선순위, JSON 출력. osascript 기반이라 설치 불필요.",
+      "desc_en": "Control macOS Calendar.app and Reminders.app from the CLI: events and reminder lists (read, create, update, search, complete, delete, cleanup) with due dates, alarms, recurrence, priority, and JSON output. Zero install via osascript; icalBuddy speeds up reads when present.",
+      "requires": {
+        "bins": [
+          "osascript"
         ]
       },
       "install": null,

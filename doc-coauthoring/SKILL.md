@@ -62,8 +62,8 @@ Per-section process:
 
 ### Establish Structure
 
-Before proposing sections, apply the reader contract and answer-first rule from `dev`
-`references/reader-documents.md` (READER-DOC-01/02). Stage 3 below remains the canonical
+Before proposing sections, apply the reader contract and answer-first rule from
+`jaw-dev/references/reader-documents.md` (READER-DOC-01/02). Stage 3 below remains the canonical
 reader test for co-authored documents.
 
 If structure is clear: ask which section to start with. Suggest starting with the most uncertain section.

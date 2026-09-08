@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <rect width="600" height="400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="300" y="40" text-anchor="middle" 
+        font-family="'Noto Sans KR', 'Apple SD Gothic Neo', 'NanumGothic', 'Malgun Gothic', sans-serif" 
+        font-size="24" font-weight="700" fill="#1a1a2e">
+    한국어 SVG 렌더링 테스트
+  </text>
+  
+  <!-- Bar chart with Korean labels -->
+  <g transform="translate(80, 80)">
+    <!-- Bars -->
+    <rect x="0" y="0" width="80" height="200" fill="#3b82f6" rx="4"/>
+    <rect x="110" y="60" width="80" height="140" fill="#10b981" rx="4"/>
+    <rect x="220" y="30" width="80" height="170" fill="#f59e0b" rx="4"/>
+    <rect x="330" y="90" width="80" height="110" fill="#ef4444" rx="4"/>
+    
+    <!-- Korean labels -->
+    <text x="40" y="230" text-anchor="middle" 
+          font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" 
+          font-size="14" fill="#374151">매출</text>
+    <text x="150" y="230" text-anchor="middle" 
+          font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" 
+          font-size="14" fill="#374151">비용</text>
+    <text x="260" y="230" text-anchor="middle" 
+          font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" 
+          font-size="14" fill="#374151">이익</text>
+    <text x="370" y="230" text-anchor="middle" 
+          font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" 
+          font-size="14" fill="#374151">투자</text>
+
+    <!-- Values -->
+    <text x="40" y="-10" text-anchor="middle" 
+          font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#6b7280">120억</text>
+    <text x="150" y="50" text-anchor="middle" 
+          font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#6b7280">80억</text>
+    <text x="260" y="20" text-anchor="middle" 
+          font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#6b7280">95억</text>
+    <text x="370" y="80" text-anchor="middle" 
+          font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#6b7280">60억</text>
+  </g>
+  
+  <!-- Mixed Korean/English -->
+  <text x="300" y="360" text-anchor="middle" 
+        font-family="'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" 
+        font-size="13" fill="#6b7280">
+    jaw-diagram 스킬 한글 폰트 폴백 체인 검증 (font-family fallback test)
+  </text>
+  
+  <!-- Y-axis label -->
+  <text x="30" y="200" text-anchor="middle" transform="rotate(-90, 30, 200)"
+        font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#6b7280">
+    금액 (억원)
+  </text>
+</svg>

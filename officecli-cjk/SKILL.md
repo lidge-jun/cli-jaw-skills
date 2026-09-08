@@ -17,7 +17,11 @@ Use this skill when creating or modifying documents containing Korean, Japanese,
 > local verification. Verify the actual binary with version, capability/help output, text roundtrip,
 > and raw XML checks before relying on CJK font/language behavior.
 >
-> **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
+> **Install consent contract**: probe with the agent's actual shell — `command -v officecli` on
+> POSIX, `Get-Command officecli -ErrorAction SilentlyContinue` in PowerShell, or portably
+> `officecli --version`. `command -v` is NOT a PowerShell builtin: on Windows it prints nothing,
+> sets no exit code, and raises no error, so a working install reads as missing and the agent asks
+> to install what is already there (#298). If genuinely missing, do not auto-install.
 > Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
 > with a lightweight parent-skill fallback after stating CJK fidelity limits, or stop. If the user
 > chooses lightweight mode, save that preference to memory for future Office work.

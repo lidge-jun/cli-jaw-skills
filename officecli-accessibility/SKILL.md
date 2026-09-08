@@ -12,7 +12,11 @@ metadata:
 Overlay skill for OfficeCLI that ensures documents meet accessibility standards.
 Use this skill for pre-delivery QA, compliance audits, or when creating documents for public distribution.
 
-> **Install consent contract**: check `command -v officecli` first. If missing, do not auto-install.
+> **Install consent contract**: probe with the agent's actual shell — `command -v officecli` on
+> POSIX, `Get-Command officecli -ErrorAction SilentlyContinue` in PowerShell, or portably
+> `officecli --version`. `command -v` is NOT a PowerShell builtin: on Windows it prints nothing,
+> sets no exit code, and raises no error, so a working install reads as missing and the agent asks
+> to install what is already there (#298). If genuinely missing, do not auto-install.
 > Ask the user to install the supported fork from `https://github.com/lidge-jun/OfficeCLI`, continue
 > with a lightweight/manual accessibility fallback after stating validation/remediation limits, or
 > stop. If the user chooses lightweight mode, save that preference to memory for future Office work.
