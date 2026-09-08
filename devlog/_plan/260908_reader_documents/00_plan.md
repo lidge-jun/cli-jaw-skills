@@ -76,3 +76,30 @@ These bound every later phase and were verified by running the repo's own checks
 Detailed change maps: [10_reader_documents.md](10_reader_documents.md),
 [20_deep_research.md](20_deep_research.md), [30_delivery.md](30_delivery.md).
 
+
+## D closure
+
+DONE. Both references exist on `main` (`jaw-dev/references/reader-documents.md`,
+`jaw-search/references/deep-research.md`), are routed by pointer stubs, and PR #4 merged
+as `04fda1a` with CI green on the merged head.
+
+What did not go as planned. The plan's central repair — extracting `dev` section 7.2 to
+bring `SKILL.md` under the 500-line cap — was made upstream in parallel as
+`static-analysis-gate.md`, so this branch's version was dropped at the merge. The plan
+unit's own naming had to fight the FSM gate, which expects three-digit prefixes while
+this repo mandates two-digit; a `000_index.md` bridges the two and says why. Two audits
+returned NEAR-PASS and one plan blocker was my own arithmetic error.
+
+The count check is the piece worth keeping. It was written because creating
+`search/references/` would have moved a published number that CI only grepped as a
+literal string. On the merge it immediately failed against main's own figures: the real
+reference-folder count was 52 while four published places still said 47.
+
+What would invalidate this: a skill added under a `references/` folder without the four
+published figures moving, a stub that grows into a restatement of the canonical rules, or
+a deep-research run that reaches a report with an empty ledger.
+
+Follow-ups not done here: `registry.json` drift (6 entries with no directory, 2
+unregistered directories) is pre-existing and reported by the validator as a note;
+`pptx_original`/`xlsx_original` remain unregistered.
+
