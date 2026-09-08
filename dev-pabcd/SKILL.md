@@ -116,7 +116,8 @@ usable outcome exists.
 Read project docs and dev skills first. Write the complete plan internally, then report it simply — like a developer reporting to the CEO.
 
 Write a plan with two parts:
-- **Part 1**: Easy explanation — what will be built, in non-developer terms.
+- **Part 1**: Easy explanation — what will be built, in non-developer terms. Lead with the
+  outcome, per `dev` `references/reader-documents.md` (READER-DOC-02).
 - **Part 2**: Diff-level precision — exact file paths (NEW/MODIFY/DELETE), before/after diffs for MODIFY, complete content for NEW.
 
 If anything is unclear, return to Interview (`cli-jaw orchestrate I`) — do NOT ask questions in P.
@@ -181,7 +182,9 @@ Final sanity check:
 1. Verify all files saved and consistent
 2. Run `npx tsc --noEmit` (if TypeScript project)
 3. Update project structure docs if applicable
-4. Report completion summary
+4. When the work-phase delivers a document or report to a person, run the fresh-reader
+   check (`dev` `references/reader-documents.md`, READER-DOC-05) and record what changed.
+5. Report completion summary
 
 Long external gates (CI runs, deploys) inside cli-jaw: do not block the turn —
 register `cli-jaw bgtask add --cmd '[...]' --prompt "..."` and end the turn; the
@@ -191,7 +194,10 @@ Local tsc/tests stay blocking.
 When done → `cli-jaw orchestrate D --attest '{"from":"C","to":"D","did":"<what you checked>","checkOutput":"<paste the real tsc/test tail>","exitCode":0}'` (C→D uniquely requires a pasted check tail).
 
 ### D — Done
-Summarize the entire flow:
+
+Write D for someone who was not in the loop: the outcome first, then what changed, with
+pointers to the evidence (`dev` `references/reader-documents.md`, READER-DOC-02/04).
+The P/A/B/C trail is the evidence, not the summary. Cover:
 - What was planned (P), audited (A), built (B), checked (C)
 - List of files changed
 - Any follow-up items

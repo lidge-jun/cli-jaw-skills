@@ -13,6 +13,7 @@ Rules for generating and auditing project structures. Create files directly foll
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
+| `dev` `references/reader-documents.md` | Writing a devlog narrative, plan summary, or generated docs | Reader contract, answer-first structure, evidence separated into an appendix |
 | `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
 | `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
 
@@ -67,6 +68,9 @@ Also detect optional lightweight source-of-truth files such as `CONTEXT.md`,
 `CONTEXT-MAP.md`, and `docs/adr/`. Reuse them when present. Do not create them unless
 the repo already uses that convention or the user approves. Create an ADR only for a
 decision that is hard to reverse, surprising without context, or has a real tradeoff.
+
+Narrative and evidence are different files: see `dev` `references/reader-documents.md`
+(READER-DOC-04) for what belongs in each.
 
 Jawdev devlog method:
 - Split large work into phase-level documents instead of one huge plan.

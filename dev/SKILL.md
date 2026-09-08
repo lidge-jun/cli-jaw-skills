@@ -163,6 +163,7 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 | Data pipeline patterns | dev-data | dev-backend |
 | Design intent discovery | dev-uiux-design | dev-frontend |
 | Project scaffolding / docs | dev-scaffolding | dev-pabcd |
+| Reader-facing document structure | dev refs/reader-documents.md | dev-pabcd, dev-scaffolding, diagram, doc-coauthoring |
 | Orchestration workflow | dev-pabcd | — |
 
 When updating a rule, update the canonical owner first, then verify stubs still point correctly.
@@ -381,6 +382,9 @@ When a worklog or changelog file is provided, record every change in this format
 
 Keep entries factual and concise. One entry per file changed.
 
+Reader deliverables — reports, phase summaries, devlog narrative — follow
+`references/reader-documents.md`: the answer first, evidence in an appendix.
+
 ---
 
 ## 5. Safety Rules
@@ -457,19 +461,7 @@ After every code change, run the project's static analysis toolchain as part of 
 | Rust           | `cargo clippy -- -D warnings`         | Zero warnings                |
 | C#             | `dotnet build /warnaserror`           | Zero warnings                |
 
-#### Common Rule ↔ Prose Mapping
-
-| Anti-Pattern (prose) | ESLint / Biome Rule |
-|---|---|
-| Unused variable/import | `no-unused-vars`, `@typescript-eslint/no-unused-vars` |
-| Unsafe `any` type | `@typescript-eslint/no-explicit-any` |
-| Loose equality (`==`) | `eqeqeq` |
-| Circular import | `import/no-cycle` |
-| Unhandled async | `@typescript-eslint/no-floating-promises` |
-| `var` usage | `no-var`, `prefer-const` |
-| Complex function | `complexity`, `max-depth`, `max-lines-per-function` |
-
-This table is not exhaustive — check project config for the canonical set.
+Prose anti-patterns map onto concrete linter rules: see `references/static-analysis.md`.
 
 If no static analysis tool is configured in the project, recommend one to the
 user — but do not add tooling without approval.
