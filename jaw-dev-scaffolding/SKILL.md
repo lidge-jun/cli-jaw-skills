@@ -19,6 +19,7 @@ This skill activates by change surface: new project setup, feature/module scaffo
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
+| `jaw-dev/references/reader-documents.md` | Writing a devlog narrative, plan summary, or generated docs | Reader contract, answer-first structure, evidence separated into an appendix |
 | `references/implementation-log.md` | C3+/multi-phase/cross-session work units | Full devlog routine: decade-numbered plan folders, P-concretize → A-audit → D-archive loop, mainstream design-doc/RFC mapping |
 | `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
 | `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
@@ -105,6 +106,9 @@ and read them; any unit that changes architecture, contracts, or structure patch
 the SoT doc in the SAME unit (C gate, dev-pabcd §3 C). If the repo has no SoT doc,
 recommend creating one — once, via the proposal flow above — rather than silently
 working without a source of truth.
+
+Narrative and evidence are different files: see `jaw-dev/references/reader-documents.md`
+(READER-DOC-04) for what belongs in each.
 
 Implementation-unit devlog method:
 - Split large work into phase-level documents instead of one huge plan —

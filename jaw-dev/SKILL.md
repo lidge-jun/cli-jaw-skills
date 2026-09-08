@@ -392,6 +392,9 @@ When a worklog/changelog file is provided, record one factual entry per changed 
 `### [filename] — [reason]` with **Changes** (what/why), **Impact** (dependent modules),
 and **Verification** (command + result).
 
+Reader deliverables — reports, phase summaries, devlog narrative — follow
+`references/reader-documents.md`: the answer first, evidence in an appendix.
+
 ---
 
 ## 5. Safety Rules

@@ -141,6 +141,9 @@ Rendering or a successful OfficeCLI exit code is not visual verification.
 - 타임라인/히스토리 (4+ 이벤트)
 - 수학적 관계 시각화
 
+A report or explainer around the diagram follows `jaw-dev/references/reader-documents.md`.
+Rendering, formats and security stay owned here.
+
 ### 3. Specification (명사구 스펙)
 
 사용자가 시각물의 구조를 명사구로 기술:

@@ -91,7 +91,7 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    for needle in ["230", "47 skills", "28 skills", "2 skills"]:
+    for needle in ["230", "28 skills", "2 skills"]:
 
         if needle not in readme:
             raise SystemExit(f"README missing public-surface count: {needle}")
@@ -109,7 +109,22 @@ def main() -> None:
 
     validate_registry()
 
-    print(f"validated {len(skills)} skills; known long skills are tracked")
+    # Measure the reference-folder count instead of grepping a literal: a stale literal
+    # is how the docs page came to say 47 in one place and 48 in another.
+    reference_count = len([
+        d for d in ROOT.iterdir()
+        if d.is_dir() and ((d / "references").is_dir() or (d / "reference").is_dir())
+    ])
+    for text, label in ((readme, "README"), (docs, "docs")):
+        if f"{reference_count} skills" not in text:
+            raise SystemExit(
+                f"{label} does not report the measured reference-folder count {reference_count}"
+            )
+
+    print(
+        f"validated {len(skills)} skills; {reference_count} carry reference folders; "
+        "known long skills are tracked"
+    )
 
 
 if __name__ == "__main__":

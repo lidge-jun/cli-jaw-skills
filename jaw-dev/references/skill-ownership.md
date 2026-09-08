@@ -30,6 +30,7 @@ Each rule area has exactly one canonical owner. Other skills may contain stubs b
 | Design judgment | dev-uiux-design | dev-frontend |
 | Frontend implementation | dev-frontend | dev-uiux-design |
 | Project scaffolding / docs | dev-scaffolding | dev-pabcd |
+| Reader-facing document structure (READER-DOC-*) | dev refs/reader-documents.md | dev-pabcd, dev-scaffolding, diagram, doc-coauthoring |
 | Orchestration workflow | dev-pabcd | — |
 | Operational gates | dev-devops | dev-backend, dev-scaffolding |
 | Stacked pull requests (DEV-STACK-*) | dev refs/stacked-prs.md | dev-pabcd, dev-code-reviewer, dev-devops |
