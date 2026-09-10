@@ -13,6 +13,7 @@ capabilities:
   - "Interactive: sliders, toggles, sendPrompt, physics (Matter.js), 3D (Three.js), audio (Tone.js), creative (p5.js)"
 references:
   - "svg-components.md — SVG primitives, layout templates"
+  - "visual-story.md — claim, evidence classes, sequencing, anti-slop, fresh-reader check"
   - "color-palette.md — 9-color design system"
   - "module-chart.md — Chart.js + ECharts + D3"
   - "korean-text.md — Korean/CJK text in SVG, HTML, D3, Chart.js, Mermaid, PDF embedding"
@@ -29,6 +30,9 @@ references:
 
 ## Design Principles
 
+- **Claim first** (DIAGRAM-CLAIM-01): before choosing a type, name the reader, the decision they face, and one claim they could disagree with. That sentence becomes the caption and the `<title>`. If there is no claim, write the sentence and skip the diagram.
+- **Shape carries meaning** (DIAGRAM-SCOPE-01): draw when the point is a relation — contains, precedes, causes, branches, outweighs. Definitions, single facts, and values a reader must compare precisely belong in prose or a table. Recipes: `reference/visual-story.md`.
+- **Never invent data** (DIAGRAM-EVIDENCE-01): every quantity is observed, user-supplied, assumed, or illustrative, and the figure or caption says which. A chart of numbers you made up is not a placeholder, it is a false claim that renders beautifully. Put units on the axis, and say so when an axis does not start at zero. Classes and worked form: `reference/visual-story.md`.
 - **Flat**: No gradients, shadows, blur, glow, or decorative effects. Clean flat surfaces only.
 - **Compact**: Show the essential inline. Explain the rest in response text.
 - **Theme-aware**: Every color must work in both light and dark mode. Use CSS classes for SVG, `window.__jawTokens` for canvas/JS.
@@ -39,8 +43,8 @@ references:
 - Box subtitles: **≤5 words**. Detail goes in `sendPrompt()` or prose — not the box.
 - Colors: **≤2 ramps** per diagram. More = visual noise.
 - Horizontal row: **≤4 boxes** at 680px width. 5+ boxes → shrink or wrap to 2 rows.
-- Nodes: **≤6 per diagram**. 7+ → split into overview + detail diagrams.
-- **Always add prose between diagrams** — never output consecutive SVG blocks or widget blocks without text between them.
+- Nodes: **≤6 per diagram**. 7+ → split into overview + detail diagrams. One takeaway per figure (DIAGRAM-SEQ-01): the overview shows the level where the claim is visible, then a **named** detail figure zooms into one region. Shrinking everything into one frame until labels are unreadable is the failure this budget exists to prevent.
+- **Always add prose between diagrams** — never output consecutive SVG blocks or widget blocks without text between them. That prose is claim-shaped (DIAGRAM-HANDOFF-01): it states what to conclude, not "the diagram below shows the architecture". Detail that will not fit a five-word subtitle goes here.
 
 ## Diagram Type Selection
 
@@ -141,7 +145,11 @@ Rendering or a successful OfficeCLI exit code is not visual verification.
 - 타임라인/히스토리 (4+ 이벤트)
 - 수학적 관계 시각화
 
+이 개수 조건은 그릴지 **검토할** 신호이지 그리라는 지시가 아니다 (DIAGRAM-SCOPE-01). 항목 사이에
+관계가 없으면 그것은 목록이다. 주장 한 줄을 먼저 쓰고, 그 주장이 그림에서 보일 때만 그린다.
+
 A report or explainer around the diagram follows `jaw-dev/references/reader-documents.md`.
+The figure itself follows `reference/visual-story.md`: claim, evidence class, sequencing, handoff.
 Rendering, formats and security stay owned here.
 
 ### 3. Specification (명사구 스펙)
@@ -188,8 +196,8 @@ Output raw `<svg>` markup directly in the response. The chat UI renders it inlin
 ```
 <svg viewBox="0 0 680 {height}" xmlns="http://www.w3.org/2000/svg"
   role="img" aria-labelledby="title-id desc-id">
-  <title id="title-id">Diagram Title</title>
-  <desc id="desc-id">Brief description for screen readers</desc>
+  <title id="title-id">Retries are the only path that writes twice</title>
+  <desc id="desc-id">Request flow from client to queue, with the retry branch rejoining after the write step</desc>
   <!-- shapes, text, paths -->
 </svg>
 ```
@@ -197,7 +205,8 @@ Output raw `<svg>` markup directly in the response. The chat UI renders it inlin
 Rules:
 - viewBox width MUST be 680 (matches container width — do NOT change)
 - Height varies by content: last element bottom + 40px padding
-- Every SVG MUST have `role="img"` + `<title>` + `<desc>`
+- Every SVG MUST have `role="img"` + `<title>` + `<desc>`. The `<title>` states the takeaway, not the subject (DIAGRAM-A11Y-01) — a screen-reader user gets the claim, not the word "Diagram". The same applies to a canvas or widget `aria-label` and its fallback text. Never let a distinction live in color alone: carry it in the label, shape, or position too, so it survives grayscale and color vision deficiency. Widget controls stay keyboard reachable (`reference/module-interactive.md`).
+- Look at the rendered figure before delivering (DIAGRAM-RENDER-01): text inside its box, nothing clipped, no overlapping labels, no empty series, and for CJK no tofu or fallback metric shift. Valid syntax is not a rendered result. CJK specifics: `reference/korean-text.md`.
 - Use classes from the design system (`.node`, `.connector`, `.label`, `.label-start`, etc.) — `.label` forces `text-anchor: middle` (centered text only); for left-aligned text use `.label-start` or just the color class
 - Colors: use CSS classes, not inline fill/stroke colors
 - Text: inline SVG inherits `font-family` from the jaw host; do not set explicit fonts there. Exception: OfficeCLI-rasterized Mermaid with Korean/CJK text must use the init directive above because the raster renderer is not the jaw host.
@@ -211,8 +220,9 @@ Use ` ```diagram-file ` by default. Wrap in a ` ```diagram-html ` code block onl
 ```
 ` ` `diagram-html
 <div id="chart-wrapper" style="position: relative; width: 100%; height: 300px;">
-  <canvas id="myChart" role="img" aria-label="Chart description">
-    Fallback text
+  <canvas id="myChart" role="img"
+    aria-label="Signups doubled after the March pricing change">
+    Fallback text stating the same takeaway
   </canvas>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"
@@ -366,6 +376,7 @@ All CSS/JS animation is available:
 
 ## Reference Files
 For detailed patterns, see:
+- `reference/visual-story.md` — **read first**: claim, evidence classes, one-takeaway sequencing, prose handoff, compositions to avoid, fresh-reader check
 - `reference/svg-components.md` — SVG primitives, viewBox checklist, layout templates
 - `reference/color-palette.md` — Full color values (light + dark), assignment rules
 - `reference/module-chart.md` — Chart.js + D3 + ECharts 6 integration (bar/line/pie/choropleth + heatmap/sankey/radar/treemap/gauge/funnel/candlestick/chord)
