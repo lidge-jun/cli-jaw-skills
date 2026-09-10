@@ -1,5 +1,8 @@
 # Decorative SVG Patterns
 
+Decoration is for when the user asks for it. An explanatory answer earns nothing from an ornament,
+and adding one is the decorative-art case in DIAGRAM-SLOP-01.
+
 ## Simple Icons (24×24 viewBox)
 
 ### Checkmark

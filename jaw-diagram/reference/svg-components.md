@@ -59,6 +59,12 @@ Every `<text>` inside a `<rect>` must respect internal padding (10px):
 ## Vertical Card List
 
 For stacked card layouts (file lists, issue lists, changelog entries):
+
+Use this shape only when the items are genuinely the same kind in sequence — rows of a list, where
+the reader compares like with like. Architecture, comparison, and cause-and-effect content needs a
+layout that shows the relation; a grid of equal boxes asserts equal weight and no relation, which is
+the generic card grid DIAGRAM-SLOP-01 rules out. See `visual-story.md`.
+
 - All cards: **same `x`, same `width`** — no exceptions
 - Standard values: `x=40, width=600, height=40, gap=10`
 - Each card: `y = start_y + (height + gap) × index`
@@ -206,6 +212,7 @@ Spacing: 60px between nodes (48px node + 12px gap + arrow). Max 4-5 nodes per fl
 
 ## Guidelines Summary
 - Always use `viewBox="0 0 680 {height}"` — width 680 is mandatory
+- `<title>` states the takeaway, not the subject (DIAGRAM-A11Y-01): "Retries write twice", not "Request flow"
 - Use `<g>` for grouping related elements (not nested `<svg>`)
 - Keep text concise — truncate long labels
 - Use `dominant-baseline="central"` for vertical text centering

@@ -9,7 +9,14 @@ description: "Korean (CJK) text rendering in SVG, HTML canvas, and Chart.js/D3 v
 
 ### Font-Family Fallback Chain
 
-Always specify a fallback chain for Korean text in SVG:
+Which rule applies depends on where the SVG will be rendered, and the two are opposites.
+
+**Inline SVG in the jaw chat**: set no font at all. The host supplies `font-family`, and the skill's
+inline-SVG rule in `SKILL.md` says not to override it. A hardcoded chain here fights the host theme.
+
+**Everywhere the host CSS is absent** — OfficeCLI rasterization, standalone `.svg` or HTML export,
+PDF embedding, and the D3 and Chart.js cases further down this file — specify the fallback chain,
+because nothing else will:
 
 ```xml
 <text font-family="'Noto Sans KR', 'Apple SD Gothic Neo', 'NanumGothic', 'Malgun Gothic', sans-serif"
@@ -40,7 +47,7 @@ Or via CSS:
 
 ### SVG Text Rendering Best Practices
 
-1. **Always set `font-family` with fallback chain** — never rely on a single font name
+1. **Outside the jaw host, set `font-family` with a fallback chain** — never rely on a single font name. Inside inline SVG in the chat, set none and let the host provide it.
 2. **Use `dominant-baseline="central"`** for vertical centering of Korean text in boxes
 3. **Increase line height** for Korean text: `dy="1.4em"` vs `dy="1.2em"` for Latin
 4. **Test with `view_image`** after rendering — Korean characters can silently fall back to
@@ -50,6 +57,7 @@ Or via CSS:
 
 ```xml
 <!-- Use tspan for mixed-language segments when metrics differ -->
+<!-- Standalone/raster context; in inline chat SVG omit font-family and let the host supply it -->
 <text font-family="'Noto Sans KR', sans-serif" font-size="14">
   <tspan>서버 상태: </tspan>
   <tspan font-family="'SF Mono', 'Consolas', monospace">200 OK</tspan>
