@@ -3,6 +3,11 @@
 HTML card templates for domain data (weather, finance, sports, products).
 Use inside `diagram-html` blocks with jaw theme tokens.
 
+Reach for these when the user asks for that surface. A domain card is a presentation format, not a
+default answer shape, and offering one for an explanatory question is the unsolicited-card case in
+DIAGRAM-SLOP-01. Note also that these templates use emoji, which the `SKILL.md` design forbidden list
+rules out for diagrams — that exception belongs to this card surface and does not travel.
+
 ## Common Card Style
 
 ```css

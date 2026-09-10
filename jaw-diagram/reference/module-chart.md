@@ -11,6 +11,14 @@
 
 **Chart library routing**: In cli-jaw Web UI final answers, prefer the native `chart-json` fence for simple bar/line/pie charts. Chart.js is the default inside `diagram-file` for anything it supports beyond `chart-json`. Switch to ECharts only when the chart type is in ECharts' column above (heatmap, sankey, radar, treemap, etc.). D3 is for custom SVG-based visuals that neither Chart.js nor ECharts cover.
 
+**Before you plot anything** (DIAGRAM-EVIDENCE-01): the numbers in every template on this page are
+illustrative. Replace them with real values, or label the chart illustrative — a chart of quarterly
+revenue you invented is not a placeholder, it is a false claim that renders beautifully. Carry the
+unit on the axis rather than only in the caption, name the source and date for observed data, and say
+so explicitly when an axis does not start at zero, because the reader's eye reads bar heights as the
+ratio. The title or `aria-label` states what the chart shows the reader, not the name of the metric.
+See `visual-story.md`.
+
 ## Web UI `chart-json` Shortcut
 
 Use `chart-json` when the answer needs a compact, final-answer chart with simple labels and one numeric series. It renders as a native Web UI card, so it is lighter than a full iframe widget and should be the first choice for ordinary bar, line, and pie charts.

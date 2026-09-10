@@ -224,3 +224,80 @@ def test_one_takeaway_sequencing_is_in_the_body() -> None:
     skill = read(SKILL)
     assert "One takeaway per figure" in skill
     assert "named" in skill.split("One takeaway per figure", 1)[1][:400]
+
+
+# ---------------------------------------------------------------------------
+# Layer 2: the format owners route to the contract instead of ignoring it.
+# An agent that jumps straight to a format reference must still meet the decision
+# that governs that format's own failure mode.
+# ---------------------------------------------------------------------------
+
+SVG_COMPONENTS = DIAGRAM / "reference" / "svg-components.md"
+MODULE_CHART = DIAGRAM / "reference" / "module-chart.md"
+MODULE_WIDGET = DIAGRAM / "reference" / "module-widget.md"
+KOREAN_TEXT = DIAGRAM / "reference" / "korean-text.md"
+DOMAIN_CARDS = DIAGRAM / "reference" / "module-domain-cards.md"
+MODULE_ART = DIAGRAM / "reference" / "module-art.md"
+
+STITCHED = {
+    SVG_COMPONENTS: ["DIAGRAM-SLOP-01", "DIAGRAM-A11Y-01"],
+    MODULE_CHART: ["DIAGRAM-EVIDENCE-01"],
+    MODULE_WIDGET: ["DIAGRAM-HANDOFF-01", "DIAGRAM-RENDER-01"],
+    DOMAIN_CARDS: ["DIAGRAM-SLOP-01"],
+    MODULE_ART: ["DIAGRAM-SLOP-01"],
+}
+
+
+@pytest.mark.parametrize("path,decisions", [(p, d) for p, d in STITCHED.items()],
+                         ids=lambda v: v.name if isinstance(v, Path) else str(v))
+def test_format_owners_name_the_decision_that_governs_them(path, decisions) -> None:
+    text = read(path)
+    for decision in decisions:
+        assert decision in text, f"{path.name} never names {decision}"
+
+
+def test_card_list_is_bounded_to_same_kind_items() -> None:
+    """An unbounded card-stack template is the generic card grid the contract rules out."""
+    text = read(SVG_COMPONENTS)
+    assert "only when the items are genuinely the same kind" in text
+    assert "asserts equal weight and no relation" in text
+
+
+def test_chart_templates_are_marked_illustrative_and_require_units() -> None:
+    text = read(MODULE_CHART)
+    assert "are\nillustrative" in text or "illustrative" in text
+    assert "unit on the axis" in text
+    assert "does not start at zero" in text
+
+
+def test_widget_default_state_must_carry_the_claim() -> None:
+    text = read(MODULE_WIDGET)
+    assert "default state shows the claim" in text
+    assert "Interaction is not a substitute for a point" in text
+
+
+def test_korean_font_rule_is_scoped_by_surface() -> None:
+    """SKILL.md says inline SVG inherits the host font; korean-text.md used to say always set
+    one. Same skill, opposite instructions for the same surface. The fix scopes them."""
+    text = read(KOREAN_TEXT)
+    assert "Inline SVG in the jaw chat**: set no font at all" in text
+    assert "Everywhere the host CSS is absent" in text
+    assert "Always specify a fallback chain for Korean text in SVG:" not in text
+    assert "1. **Always set `font-family` with fallback chain**" not in text
+
+
+def test_korean_raster_and_export_guidance_survives_the_scoping() -> None:
+    """Scoping the rule must not delete the fallback chain where it is genuinely needed."""
+    text = read(KOREAN_TEXT)
+    assert "Noto Sans KR" in text
+    assert "PDF embedding" in text
+    assert "view_image" in text
+    assert "dominant-baseline" in text
+
+
+def test_domain_cards_emoji_exception_is_named_not_silent() -> None:
+    """These templates use emoji, which the diagram forbidden list bans. Say so, and say it
+    does not travel."""
+    text = read(DOMAIN_CARDS)
+    assert "emoji" in text
+    assert "does not travel" in text

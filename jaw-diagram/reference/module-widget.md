@@ -27,6 +27,18 @@ Then emit:
 
 The saved HTML follows the same rules as `diagram-html`: sandboxed iframe rendering, validator checks, CDN allowlist, and `window.__jawTheme` / `window.__jawTokens` theme integration. The file-backed cap is 2 MB. The id is mutable: editing `~/.cli-jaw/widgets/<chatId>/<widgetId>.html` updates every message that references that id. Save a new id for a frozen version. Use inline `diagram-html` only when the chatId cannot be determined or the widget is too small and disposable to warrant a file.
 
+## What the widget says before anyone touches it
+
+Interaction is not a substitute for a point (DIAGRAM-HANDOFF-01). A reader who never moves a slider
+should still learn something: the default state shows the claim, and the sentence beside the fence
+says what to conclude. Controls then let them test it. A simulation that means nothing until you play
+with it has moved the author's work onto the reader.
+
+Open the widget and look at it before delivering (DIAGRAM-RENDER-01). Check the default frame, not
+just that the script ran: labels inside their bounds, no empty canvas, no control that starts in a
+state the caption contradicts, and for CJK no tofu. A widget that renders blank until interaction is
+indistinguishable from a broken one.
+
 ## Library Versions (CDN)
 
 | Library | Version | CDN | Size (gz) | Tier |
