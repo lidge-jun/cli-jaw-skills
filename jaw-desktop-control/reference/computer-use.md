@@ -6,27 +6,28 @@ through web DOM refs.
 
 ## Establish the surface before the first call
 
-**The Computer Use tool surface belongs to the host and changes between
-versions. Do not assume tool names, including the ones you remember from an
-earlier build.**
+**Computer Use is an MCP tool, not an employee.**
+jaw registers the managed `jaw-computer-use` MCP server for every MCP-aware CLI
+except Codex. Call its `js` tool (`mcp__jaw-computer-use__js` in Claude). Codex
+bosses and employees use Codex's native Computer Use plugin. Both routes use a
+CUA JavaScript session; the first call returns its own documentation and initial
+UI state. Read that documentation before further calls and use only the API it
+describes, such as `cua.getApp(name)`, `app.getAXState()`, `app.click(index|[x,y])`,
+`app.typeText`, and `app.pressKey`. Do not assume tool names beyond the exposed
+`js` surface or invent other `cua` methods. An enabled plugin is not proof that
+its tools are callable.
 
-Recent Codex builds expose a **CUA JavaScript session** — a `cua` object
-reached through a REPL tool. Older builds exposed individual
-`mcp__computer_use__*` MCP tools. A host can also have a Computer Use plugin
-installed and enabled while exposing neither: an enabled plugin is not proof
-that its tools are callable.
+If no Computer Use surface is exposed, report
+`precondition failed: no Computer Use surface`. Install or open the ChatGPT
+desktop app with Computer Use, then restart jaw so it registers
+`jaw-computer-use`. On Linux, WSL, or Docker there is no Computer Use host;
+CDP can serve DOM work only. Never substitute CDP for an explicit
+`$computer-use` request.
 
-So the first step is always the same:
-
-1. Look at what is actually exposed this session.
-2. If it is a **CUA JavaScript session**, its first call returns its own
-   documentation along with the initial UI state — read that result and use
-   only the APIs it describes. If it is a set of **MCP tools**, read their tool
-   descriptions and schemas instead; an MCP call returns a tool result, not a
-   documentation payload, so do not wait for one.
-3. If no Computer Use surface is exposed, report
-   `precondition failed: no Computer Use surface` and stop. Never substitute
-   CDP silently.
+jaw resolves the newest bundled `cua_repl` under
+`~/.codex/plugins/cache/openai-bundled/unified-computer-use/`. It answers
+Computer Use app-approval prompts from the run's permission policy: `auto`
+approves, `safe` declines. Report a declined prompt as `not approved`.
 
 ## What stays true across surfaces
 
@@ -39,8 +40,8 @@ The tool names change; the discipline does not.
   from the latest read.
 - **Use coordinates only when the target is visible but absent from the element
   tree** — map labels, canvas text, custom renders.
-- **Prefer a targeted value-setting call over focus-only typing.** Type into
-  focus only after the latest state proves the cursor is in the intended field.
+- **Type only after checking focus.** Use the documented `app.typeText` after
+  the latest state proves the cursor is in the intended field.
 - **A staleness warning is a signal to re-read, not a failure.** If an action
   provably did not change state and the next one intentionally reuses the same
   fresh tree, you may continue — but never continue through uncertainty.
@@ -50,15 +51,18 @@ The tool names change; the discipline does not.
 
 macOS Computer Use is **app-scoped**: you select an app and read its state.
 Windows is **window-scoped**: you enumerate windows and read one window's state.
-Linux, WSL and Docker have no Computer Use host — use CDP there.
+Linux, WSL and Docker have no Computer Use host; CDP serves separate DOM work.
 
 ### macOS preconditions
 
-- TCC **Accessibility** and **AppleEvents** must be granted to the controlling app.
-- In cli-jaw packaged installs, `/Applications/Jaw.app` and
-  `/Applications/Codex Computer Use.app` may be required for TCC attribution.
-  Treat missing bundles as a setup failure when this path was explicitly
-  requested, not as a reason to switch paths.
+- The responsible process/binary of the jaw service may lack macOS permission
+  to access data from other apps (TCC App Data for the ChatGPT Computer Use
+  container). A Terminal-launched jaw without that grant can block on the first
+  app call. Report `precondition failed: computer-use app access blocked` and
+  point to Privacy & Security for the responsible process/binary; the exact
+  pane name varies by macOS version.
+- Grant any additional Accessibility or AppleEvents permission requested by
+  macOS for the controlling app.
 
 ### Windows preconditions
 
@@ -70,9 +74,12 @@ Two Windows results look like success and are not:
 - **An empty window list usually means the transport is not connected**, not
   that no windows are open. Report it as a precondition failure.
 
-Windows also requires the desktop app running in the **logged-on** session — a
-locked screen is fine, logged out is not. The app creates the transport endpoint
-when it starts; `codex-computer-use.exe` is the **notify client**, not the
+Windows also requires the ChatGPT desktop app with Computer Use running in the
+**logged-on** session — a locked screen is fine, logged out is not — and the
+Codex desktop plugin cache on that host. The mechanism is the same
+`jaw-computer-use` MCP `js` route for non-Codex CLIs and native plugin for Codex.
+The app creates the transport endpoint when it starts;
+`codex-computer-use.exe` is the **notify client**, not the
 server, so confirming that process proves nothing. The app also rewrites
 `config.toml` with the current endpoint at launch, so read that file **after**
 launching rather than trusting a stored value.
@@ -163,6 +170,6 @@ action classes used, any staleness warnings encountered, and the final result.
 
 ## Worked example
 
-See [`control-workflow.md`](control-workflow.md) for an end-to-end trace
+See [`workflow-example.md`](workflow-example.md) for an end-to-end trace
 covering state-first, element-index targeting, stale recovery, and the CDP
 speed switch in sequence.
