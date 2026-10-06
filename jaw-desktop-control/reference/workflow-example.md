@@ -1,13 +1,14 @@
-# Control workflow — worked example
+# Computer Use workflow — worked example
 
 The example below is reconstructed from a real Chrome session and carries every
 pattern this skill enforces. The target happens to be a music web app;
 **the patterns are universal** — swap Chrome for Finder, Settings, or any
 native app and the same flow applies.
 
-Tool names are deliberately absent. The surface is host-provided and version
-dependent (see [`computer-use.md`](computer-use.md)); what follows is the
-shape of the work, not an API listing.
+Use the `jaw-computer-use` MCP `js` tool, or Codex's native Computer Use plugin.
+The first call returns its own `cua` API documentation; read it before using
+only the methods it describes (see [`computer-use.md`](computer-use.md)). The
+example below illustrates decisions rather than prescribing unverified calls.
 
 ## Pattern 1 — State first
 
@@ -42,13 +43,13 @@ result=ok
 path=computer-use
 app=Google Chrome
 action_class=value-injection
-action=<set value on element_index=12 to "Daft Punk">
+action=<type "Daft Punk" after verifying focus on element_index=12>
 stale_warning=no
 result=ok
 ```
 
-Typing into focus is a guess about where the cursor is. Setting a value on an
-element from the last state read is not.
+Typing into focus is a guess unless the latest state confirms the intended
+field is focused. Use the documented `app.typeText` only after that check.
 
 ## Pattern 3 — Stale warning, re-read, retry
 
@@ -76,8 +77,8 @@ Never retry with the old index. The index you memorized is gone.
 
 ## Pattern 4 — DOM target, CDP is faster
 
-Midway through you realize every target on the page is a DOM node. Computer Use
-round-trips through screenshots and accessibility trees; CDP talks to the DOM.
+For a task that did not explicitly require `$computer-use`, you may find that
+every target on the page is a DOM node. CDP talks directly to the DOM:
 
 ```
 path=cdp
@@ -90,8 +91,8 @@ action=click e42   # "Shuffle Play"
 result=ok
 ```
 
-Roughly an order of magnitude faster per action. When the target has web DOM,
-CDP wins.
+Use DOM refs when they fit the user's request. Never switch to CDP for an
+explicit `$computer-use` request.
 
 ## Pattern 5 — Pointer action for screenshot-visible, tree-absent targets
 
@@ -123,10 +124,10 @@ Target visible in screenshot?
 | Screenshot-visible but not in tree | Map labels, canvas text, custom renders | Coordinate click immediately |
 | Element index | Target is in the tree | Prefer index over coordinate; type into focus only after verifying it |
 | Stale recovery | Staleness signal or element miss | Re-read, get fresh indices, retry |
-| CDP preference | Target has web DOM | Switch to `cli-jaw browser` refs for speed |
+| CDP preference | Target has web DOM and Computer Use was not explicitly requested | Switch to `cli-jaw browser` refs |
 
 ## Applying this outside a browser
 
 Same four beats everywhere: read state, target an element index, re-read on
-staleness, and switch to CDP refs if the app exposes web DOM (any Electron or
-CEF app included).
+staleness, and use CDP refs for eligible DOM work when the user did not
+explicitly request Computer Use.

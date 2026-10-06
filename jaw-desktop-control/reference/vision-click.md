@@ -64,7 +64,7 @@ result=ok
 
 | Symptom | Report |
 |---|---|
-| vision-click needs Codex but the active CLI is not Codex | dispatch to `Control` when available, otherwise report `precondition failed: vision-click requires Codex CLI (active: <cli>)` |
+| `jaw browser vision-click` needs Codex but the active CLI is not Codex | If the target is visible through Computer Use, use `jaw-computer-use` MCP `js` (or Codex native) to read state and click its coordinate. Otherwise report `precondition failed: vision-click requires Codex CLI (active: <cli>)`. |
 | vision model returns "no match" | `vision lookup failed for "<query>" — suggest a more specific description` |
 | click executed but nothing happened | log both the query and the coordinates, then re-read state to confirm whether anything changed |
 

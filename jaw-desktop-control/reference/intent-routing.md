@@ -18,7 +18,7 @@ Decide the path **before** acting. Announce it as the first line of your reply.
 
 ## Resolution order
 
-0. **Does the user's message contain `$computer-use` or `/computer-use`?** → **Computer Use**, no further analysis. Explicit user opt-in overrides the heuristics below. If Computer Use tools are unavailable, stop with `precondition failed: computer-use unavailable` instead of trying CDP.
+0. **Does the user's message contain `$computer-use` or `/computer-use`?** → **Computer Use**, no further analysis. Explicit user opt-in overrides the heuristics below. Use `jaw-computer-use` MCP `js` (or Codex native Computer Use). If no surface is exposed, report `precondition failed: no Computer Use surface`; never substitute CDP.
 1. Can the target be addressed by `cli-jaw browser snapshot --interactive` ref? → **CDP**.
 2. Is the target a non-DOM web widget (Canvas, WebGL, iframe, Shadow DOM) visible in the Computer Use state screenshot? → **Computer Use** pointer-action from those screenshot coordinates. (Fallback: `cli-jaw browser vision-click` for no-ref browser cases.)
 3. Is the target outside any webpage (app window, menu bar, OS dialog)? → **Computer Use**.

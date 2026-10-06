@@ -1,6 +1,6 @@
 ---
 name: jaw-desktop-control
-description: "Unified desktop + browser automation. Routes DOM targets to CDP (cli-jaw browser), desktop apps to Computer Use, hybrid combos to both. Codex desktop/CLI required for Computer Use; macOS is app-scoped and Windows is window-scoped."
+description: "Unified desktop + browser automation. Routes DOM targets to CDP (cli-jaw browser), desktop apps to jaw-computer-use MCP or Codex native Computer Use, and hybrid work to both. macOS is app-scoped and Windows is window-scoped."
 metadata:
   {
     "openclaw":
@@ -32,12 +32,12 @@ Unified skill for all UI automation. Chooses between CDP and Computer Use based 
 
 Trigger on any request that touches a visible UI:
 
-- **User message contains `$computer-use` or `/computer-use`** → **skip routing analysis**, jump straight to [`reference/computer-use.md`](reference/computer-use.md). Explicit user opt-in. If Computer Use tools are not available, stop with `precondition failed: computer-use unavailable`.
+- **User message contains `$computer-use` or `/computer-use`** → **skip routing analysis**, jump straight to [`reference/computer-use.md`](reference/computer-use.md). Explicit user opt-in. If no Computer Use surface is exposed, stop with `precondition failed: no Computer Use surface`.
 - "open this URL / click this button / type in this field" → read [`reference/cdp.md`](reference/cdp.md)
 - "switch Chrome tab / open Finder / click System Settings" → read [`reference/computer-use.md`](reference/computer-use.md)
 - "click the thing inside this Canvas / WebGL / iframe" → read [`reference/vision-click.md`](reference/vision-click.md)
 - Not sure which path → read [`reference/intent-routing.md`](reference/intent-routing.md) FIRST
-- Want a real end-to-end example → read [`reference/control-workflow.md`](reference/control-workflow.md)
+- Want a real end-to-end example → read [`reference/workflow-example.md`](reference/workflow-example.md)
 
 ## Absolute rules
 
@@ -50,13 +50,13 @@ Trigger on any request that touches a visible UI:
 
 ## Preconditions (Computer Use path)
 
-- macOS or Windows. Linux, WSL, and Docker have no Computer Use host — use CDP there.
-- **The tool surface belongs to the host and changes between versions — do not assume tool names.** Read [`reference/computer-use.md`](reference/computer-use.md) before the first call: it explains how to establish the surface from what is actually exposed, and why an enabled plugin is not proof its tools are callable.
+- macOS or Windows with the ChatGPT desktop app and Computer Use. jaw resolves the newest bundled `cua_repl` under `~/.codex/plugins/cache/openai-bundled/unified-computer-use/`. Linux, WSL, and Docker have no Computer Use host — CDP is available only for DOM work, never as a substitute for an explicit `$computer-use` request.
+- **Computer Use is an MCP tool, not an employee.** For every MCP-aware jaw CLI except Codex, use the managed `jaw-computer-use` server's `js` tool (Claude: `mcp__jaw-computer-use__js`). Codex bosses and employees use Codex's native Computer Use plugin. Read [`reference/computer-use.md`](reference/computer-use.md) before the first call; the first tool call returns its own `cua` API documentation. Use only the documented API. An enabled plugin is not proof its tool is callable.
 - macOS Computer Use is app-scoped: select an app, then read its state. Windows is window-scoped: enumerate windows, then read one window's state.
 - On Windows an enumeration that answers proves nothing about the connection, and an empty window list usually means the transport is not connected rather than that no windows are open.
-- If packaged through cli-jaw, `/Applications/Jaw.app` and `/Applications/Codex Computer Use.app` may be required for TCC attribution. Missing app bundles are a setup issue, not a reason to silently switch paths.
-- macOS: TCC Accessibility and AppleEvents must be granted to the controlling app.
-- Windows: the Codex desktop app must be running in the logged-on session — it creates the named pipe. A locked screen is fine; logged out is not.
+- jaw answers Computer Use app-approval prompts from the run's permission policy: `auto` approves, `safe` declines. Report a declined prompt as `not approved`.
+- On macOS, the responsible jaw service process/binary may need permission to access data from other apps. If the first app call blocks, report `precondition failed: computer-use app access blocked` and explain the App Data permission in Privacy & Security; the pane name varies by macOS version.
+- Windows: the ChatGPT desktop app must be running in the logged-on session and its transport connected. A locked screen is fine; logged out is not.
 
 ## Transcript format (standard)
 
@@ -102,7 +102,8 @@ result=ok
 |---|---|
 | "I don't see a cursor" | `cursor overlay is best-effort in the current build — action=click(...) succeeded; visible cursor not guaranteed` |
 | CDP server not running | `precondition failed: cli-jaw serve not running. Start with 'jaw serve' and retry.` |
-| Computer Use tools missing | `precondition failed: computer-use unavailable` |
-| cli-jaw CU app missing in packaged install | `precondition failed: /Applications/Codex Computer Use.app missing. Recover: jaw doctor --tcc --fix` |
+| No Computer Use surface exposed | `precondition failed: no Computer Use surface` — install/open the ChatGPT desktop app with Computer Use, then restart jaw so it registers `jaw-computer-use` |
+| First Computer Use app call blocks on macOS | `precondition failed: computer-use app access blocked` — check the jaw service process/binary's App Data permission in Privacy & Security |
+| Computer Use app approval declined under `safe` | `not approved` |
 | Stale warning on action | re-read state then retry; log `stale_warning=yes` in the transcript |
 | Non-GUI task routed here | `needs boss follow-up: not GUI automation` |
