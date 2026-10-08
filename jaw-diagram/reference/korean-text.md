@@ -116,7 +116,7 @@ When an inline HTML widget carries Korean text:
 2. **Set font on the fragment root**:
    ```css
    #viz-root {
-     font-family: 'Noto Sans KR', var(--font-family, sans-serif);
+     font-family: 'Noto Sans KR', var(--font-ui, sans-serif);
    }
    ```
 
