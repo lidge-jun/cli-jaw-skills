@@ -50,7 +50,7 @@ Or via CSS:
 1. **Outside the jaw host, set `font-family` with a fallback chain** — never rely on a single font name. Inside inline SVG in the chat, set none and let the host provide it.
 2. **Use `dominant-baseline="central"`** for vertical centering of Korean text in boxes
 3. **Increase line height** for Korean text: `dy="1.4em"` vs `dy="1.2em"` for Latin
-4. **Inspect a rendered screenshot** (for example `cli-jaw browser screenshot`) after rendering — Korean characters can silently fall back to
+4. **Inspect a rendered screenshot** (for example `cli-jaw browser screenshot`, or the runtime's `view_image` tool) after rendering — Korean characters can silently fall back to
    a different font with mismatched metrics
 
 ### Mixed Korean/English Text
@@ -130,7 +130,7 @@ When an inline HTML widget carries Korean text:
 
 After generating any visualization with Korean text:
 
-1. Render to an image (for example `cli-jaw browser screenshot`) and read it back
+1. Render to an image (for example `cli-jaw browser screenshot`, or the runtime's `view_image` tool) and read it back
 2. Check for:
    - Tofu boxes (missing font fallback)
    - Text overflow (Korean characters wider than Latin)
