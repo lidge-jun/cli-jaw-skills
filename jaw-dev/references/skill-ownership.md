@@ -1,9 +1,9 @@
 # Skill Ownership Map
 
-Companion to `jaw-dev/SKILL.md`. Read when adding a rule area, or when two skills look like
+Companion to `../SKILL.md`. Read when adding a rule area, or when two skills look like
 they say the same thing and you need to know which one is authoritative.
 
-Factored out of `SKILL.md` because a router file should route. Consult this
+Factored out of `../SKILL.md` because a router file should route. Consult this
 table when adding a rule area or reconciling overlapping advice.
 
 Each rule area has exactly one canonical owner. Other skills may contain stubs but MUST NOT duplicate canonical content.

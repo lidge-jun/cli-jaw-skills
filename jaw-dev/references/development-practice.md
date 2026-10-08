@@ -97,7 +97,7 @@ accessibility.
 
 Investigate the root cause before applying any fix — guessing compounds rework.
 Full methodology (boundary instrumentation, competing hypotheses, postmortem):
-`jaw-dev-debugging/SKILL.md` (canonical owner).
+`../../jaw-dev-debugging/SKILL.md` (canonical owner).
 
 **Emergency stop triggers** — any of these means return to root-cause investigation:
 "quick fix now, investigate later" · "just try changing X" · "don't fully understand

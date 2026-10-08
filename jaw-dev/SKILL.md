@@ -24,7 +24,7 @@ Classification is provisional. Before broad investigation, decide who owns indep
 | C2 | Ordinary Product Slice | Conventional endpoint, form, table, model, list/detail screen, integration touchpoint | Compact plan + adjacent convention search + focused tests + micro-audit (orchestration mode) |
 | C3 | Cross-Domain Feature/Refactor | Multiple modules, public API, shared types, broad behavior | Compact or full PABCD depending on persistence/risk; employee audit per `jaw-dev-pabcd` Phase Skip conditions |
 | C4 | High-Risk | Auth, payments, data deletion, migration, release, permission model, security boundary | Full PABCD (mandatory) + full relevant gates + durable risk/evidence record |
-| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Interview/research first (`cli-jaw orchestrate I`), then reclassify |
+| C5 | Research/Ambiguous | Unclear requirements, ambiguous user value, unknown territory after one §0 clarification round | Use Interview behavior first; enter persisted I only for explicit or otherwise authorized orchestration (see `jaw-dev-pabcd` §1), then reclassify |
 
 **Tie-break (DEFAULT):** when signals match two classes, the higher class wins. A conventional route→service→storage slice still counts as C2 even though it spans files; C3's "multiple modules" means crossing a module/package boundary beyond that conventional slice.
 
@@ -106,17 +106,17 @@ governed work. Load selected references only when that task needs their depth.
 
 | Skill File                   | Injected When                     | Covers |
 | ---------------------------- | --------------------------------- | ------ |
-| `jaw-dev-frontend/SKILL.md`      | `role=frontend`                   | UI implementation, responsive, anti-slop |
-| `jaw-dev-backend/SKILL.md`       | `role=backend`                    | API/architecture, data access, ops |
-| `jaw-dev-data/SKILL.md`          | `role=data`                       | Pipelines, data quality, analytics SQL |
-| `jaw-dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP, auth, secrets, supply chain |
-| `jaw-dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright, contracts, CI |
-| `jaw-dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root-cause method, instrumentation |
-| `jaw-dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, severity, antipatterns |
-| `jaw-dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Cycles, coupling, barrels, validation placement |
-| `jaw-dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, UX states |
-| `jaw-dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, devlog |
-| `jaw-dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD phases, gates, attestation |
+| `../jaw-dev-frontend/SKILL.md`      | `role=frontend`                   | UI implementation, responsive, anti-slop |
+| `../jaw-dev-backend/SKILL.md`       | `role=backend`                    | API/architecture, data access, ops |
+| `../jaw-dev-data/SKILL.md`          | `role=data`                       | Pipelines, data quality, analytics SQL |
+| `../jaw-dev-security/SKILL.md`      | Security-sensitive code, or `security`/`threat_model` task_tags | OWASP, auth, secrets, supply chain |
+| `../jaw-dev-testing/SKILL.md`       | `testing`/`tdd` task_tags, or testing phase | Test strategy, Playwright, contracts, CI |
+| `../jaw-dev-debugging/SKILL.md`     | Debugging phase (phase 4)         | Root-cause method, instrumentation |
+| `../jaw-dev-code-reviewer/SKILL.md` | Any agent, during code review     | Review process, severity, antipatterns |
+| `../jaw-dev-architecture/SKILL.md`  | Module boundary work, dependency analysis | Cycles, coupling, barrels, validation placement |
+| `../jaw-dev-uiux-design/SKILL.md`   | Vague design direction, UX state patterns | Intent discovery, design vocabulary, UX states |
+| `../jaw-dev-scaffolding/SKILL.md`   | New project/feature setup, structural audit, docs generation | Lidge Standard, colocation, devlog |
+| `../jaw-dev-pabcd/SKILL.md`         | Orchestrated multi-phase development | PABCD phases, gates, attestation |
 
 ### Skill Ownership Map
 
@@ -135,7 +135,7 @@ twice in two skills at two different thresholds.
 > **Role boundary (canonical — identical in `jaw-dev-frontend` and `jaw-dev-uiux-design`):**
 > `jaw-dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
 > design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
-> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
+> implementation and rendered tell enforcement. Anti-slop has three layers:
 > `jaw-dev` = output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
 > (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
@@ -292,7 +292,7 @@ Reader deliverables (FAMILY-READER-01) — reports, phase summaries, devlog narr
   removed within scope after consumer search.
 - **Verify imports exist** before adding `import` statements. Confirm the target file and export are real.
 - **Externalize configuration** — use config files or environment variables. Place magic strings and numbers in named constants.
-- **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `jaw-dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
+- **Handle all async errors explicitly** — surface failures at a clear boundary. In JS/TS backend code, the Result pattern (`neverthrow`) may replace per-call `try/catch` when failures are surfaced at a verified boundary (see `../jaw-dev-backend/SKILL.md` §3). In other cases, use `try/catch` and log with context (`console.error('[module]', error.message)`).
 - **Confirm before destructive operations (ESCALATE)** — deleting files, dropping tables, resetting state, or clearing caches require explicit user approval.
 - **DEV-SHELL-TEXT-01 / DEV-PRIVACY-01 (STRICT)** — write generated shell-bound
   text safely and keep private data outside public trees. Follow
@@ -320,7 +320,7 @@ Reader deliverables (FAMILY-READER-01) — reports, phase summaries, devlog narr
 
 Anti-pattern detection (god class, long method, deep nesting, magic numbers, stringly
 typed, missing boundary error handling, floating promises, copy-paste) is canonically
-owned by `jaw-dev-code-reviewer/SKILL.md` §3 — read it when writing or reviewing code.
+owned by `../jaw-dev-code-reviewer/SKILL.md` §3 — read it when writing or reviewing code.
 Size signals are in `references/development-practice.md`; boundary-error placement
 follows `jaw-dev-architecture` §4.
 

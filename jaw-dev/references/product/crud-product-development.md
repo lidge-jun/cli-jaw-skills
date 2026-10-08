@@ -34,8 +34,8 @@ Work end-to-end thin rather than layer-complete:
 4. **Surface** — UI states: list/detail/form + loading/empty/error/permission-denied.
 5. **Proof** — focused test or manual check per §4 below.
 
-Per-layer specifics: `dev-backend/references/core/crud-api.md`,
-`dev-frontend/references/core/crud-ui.md`.
+Per-layer specifics: `../../../jaw-dev-backend/references/core/crud-api.md`,
+`../../../jaw-dev-frontend/references/core/crud-ui.md`.
 
 ## 4. Verification (risk-tier, see dev-testing crud-test-matrix)
 

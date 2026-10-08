@@ -4,10 +4,11 @@ P explores and plans within the authorized scope; it does not implement. Read pr
 instructions and the live tree. For a broad or unfamiliar repository, include a compact tree,
 existing conventions and source-of-truth documents, tests, proposed document locations, and the
 SoT sync target (SOT-SYNC-01). Do not create a new project-level source-of-truth folder during B
-unless approved in P. Present an answer-first reader summary following [reader
-documents](../../jaw-dev/references/reader-documents.md), then an executable file map with
-NEW/MODIFY/DELETE, before/after behavior for MODIFY, complete proposed content for NEW, and a
-verifier for each outcome. Present the short user-facing direction and its planned location; ask
+unless approved in P. Present Part 1 as an answer-first reader summary of at most five sentences
+plus a diagram, following [reader documents](../../jaw-dev/references/reader-documents.md).
+Part 2 is an executable file map with NEW/MODIFY/DELETE, before/after diffs for MODIFY,
+complete proposed content for NEW, and a verifier for each outcome. Present the short
+user-facing direction and its planned location; ask
 which business logic must remain a user decision.
 
 ## Loop-spec
@@ -15,8 +16,10 @@ which business logic must remain a user decision.
 For C2+ record nine fields: loop archetype, trigger, user-visible goal, non-goals, verifier and
 what it measures, stop condition, memory artifact at the approved location, expected terminal
 states, and escalation condition. In goal mode add resource and credential scope. For open-ended
-optimization, record descriptor axes, candidate count, selection rule and telemetry before
-generating candidates. A plan-only or no-tests instruction is authoritative: mark the verifier
+optimization, record descriptor axes, cell/archetype assignments, candidate count, a
+deterministic selection rule, and a telemetry schema before generating candidates. If the
+verifier reports only a scalar, make instrumentation B's first work item, ahead of any
+candidate. A plan-only or no-tests instruction is authoritative: mark the verifier
 `NOT RUN` with the reason; do not execute it merely to satisfy this reference.
 
 **PLAN-VERIFIER-REAL-01:** For an executable plan, run each proposed verifier before claiming it

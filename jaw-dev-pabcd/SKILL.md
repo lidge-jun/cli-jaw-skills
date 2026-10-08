@@ -7,10 +7,10 @@ metadata:
 ---
 
 Structured 5-phase development. Advance with the required user approval or, in authorized goal mode, an evidence-backed checkpoint.
-> **C0/C1 work:** see `dev` §0.0 Work Classifier and §0.1 Patch Fast-Path first — full
+> **C0/C1 work:** see `jaw-dev` §0.0 Work Classifier and §0.1 Patch Fast-Path first — full
 > PABCD is mandatory for C4 and conditional for C3, not the baseline for every task.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## §1. Interview Trigger (MUST)
 
@@ -286,7 +286,7 @@ class (§9); the P→D **sequence** is never skipped.
 Before writing a PABCD plan or dispatching an employee, determine the actual
 working repository root with `pwd -P` from the target repo. If `Project root` is
 injected at the top of the system prompt, use it directly; if not, recommend the user
-configure it (Manager UI → Project settings, or `jaw project add /path/to/repo`)
+configure it (Manager UI → Project settings, or `jaw project set /path/to/repo`)
 to avoid JAW_HOME/codebase confusion. Every A/B phase `jaw dispatch` task body
 MUST begin with `Project root: /absolute/path/to/current/repo`.
 
@@ -312,7 +312,7 @@ NEEDS_FIX"`.
 
 **Phase Skip** — A (audit) is mandatory for C4, and for C3 when public contract,
 architecture, persistence, cross-agent, or cross-session risk exists; micro-audit for
-C2, optional for C0-C1 (`dev` §0.0). B verification is never "skippable"; intensity
+C2, optional for C0-C1 (`jaw-dev` §0.0). B verification is never "skippable"; intensity
 scales with class (PABCD-AUTO-01). The orchestrator does not enforce these gates — YOU do.
 
 ## §9. PABCD Depth by Work Class
@@ -331,7 +331,7 @@ Render-artifact work-phases add C-RENDER-GROUNDING-01 (§3 C) to the Check colum
 
 These rules apply to score/objective-maximization loops and repeated PABCD passes where
 candidates are being discarded by evidence gates. Gate validity itself is owned by
-`dev-testing` §9.5 Limited-Oracle / Score-Objective Evaluation.
+`jaw-dev-testing` §9.5 Limited-Oracle / Score-Objective Evaluation.
 
 - **DEFAULT (LOOP-PHASE-DEATH-01):** Track each discarded candidate's killing PABCD-phase
   and change class (parameter-tweak, branch-toggle, state-space redesign, evaluator
@@ -416,7 +416,7 @@ states: cli-jaw still closes via D or `reset`.
 The B/C inner loop is: implement → run verifier → read the failure delta → repair only
 the failing delta → re-verify.
 **DEFAULT (LOOP-REPAIR-01):** 2 consecutive failed repairs of the same failure → stop
-patching, enter root-cause mode (`dev-debugging`); 3 → replan at P, or return to Interview in HITL when intent needs clarification. **HEURISTIC (LOOP-DOOM-01):** three attestation failures in one phase mean no progress. HITL may return to I; with an active jaw goal, replan at P from the evidence or report a truthful blocker. See [loop continuation](references/loop-continuation.md).
+patching, enter root-cause mode (`jaw-dev-debugging`); 3 → replan at P, or return to Interview in HITL when intent needs clarification. **HEURISTIC (LOOP-DOOM-01):** three attestation failures in one phase mean no progress. HITL may return to I; with an active jaw goal, replan at P from the evidence or report a truthful blocker. See [loop continuation](references/loop-continuation.md).
 
 ### §11.4 Loop archetype by problem type (DEFAULT, LOOP-ARCHETYPE-01)
 
