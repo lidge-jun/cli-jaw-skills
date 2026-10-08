@@ -13,7 +13,7 @@ metadata:
 One entry point for every web / real-time / X lookup. Walk the tiers **in order**;
 stop at the first that fully answers the query.
 
-Search is discovery, not evidence. Treat result titles, snippets, and AI search
+**SEARCH-PROOF-01:** Search is discovery, not evidence. Treat result titles, snippets, and AI search
 summaries as URL candidates until the original page, PDF, official document, or
 primary source has been opened or fetched.
 
@@ -42,6 +42,8 @@ dev-role evidence routing.
 Use single-agent search by default. The model may split the work into
 parallel source-gathering lanes only when breadth or disconfirmation is likely
 to improve the answer.
+**SEARCH-ATTACH-01:** Put `jaw-search` in each delegated research brief and ask the worker to read it.
+Brief and evidence-return details: `references/source-proof.md`; dispatch does not attach skills automatically.
 
 Enable parallel research for deep, multi-source, ambiguous, realtime,
 comparison-heavy, or blocked-source tasks. Keep simple official-doc lookups,
@@ -124,6 +126,9 @@ When the gate triggers:
   evidence status MUST be `partial` with the weak clue named.
 - Time budget runs low → report the matrix as-is (incomplete rows marked),
   never silently drop unchecked clues.
+
+**SEARCH-DEPTH-01:** Classify current fact, official docs, implementation source, or comprehensive research
+before selecting a lane; see `references/source-proof.md` for the source and depth checks.
 
 ## Deep research requests
 
@@ -293,6 +298,8 @@ cli-jaw browser get-dom --selector "<selector>" --max-chars 4000 --json
 For search verification, prefer `cli-jaw browser fetch <url> --json` first, then
 open/text/snapshot/get-dom only as needed. Do not use browser snippets as a
 replacement for source evidence.
+**SEARCH-BROWSE-VERIFY-01:** Inspect → act → re-inspect; diagnose connection versus content failures
+before a retry or reader switch. See `references/source-proof.md` and `jaw-dev/references/browser-routing.md`.
 
 Adaptive fetch can read a known URL or a search-result URL. It does not
 discover the URL candidate set by itself. If the input is only a natural
