@@ -91,10 +91,9 @@ These render cleanly and pass every budget, which is exactly why they survive re
 
 ## Look at what you produced (DIAGRAM-RENDER-01, DIAGRAM-FRESH-01)
 
-Valid syntax is not a rendered result. Before delivering, check the figure the way a reader receives
-it: text inside its box, nothing clipped at the frame, no overlapping labels, no empty series, and for
-Korean or other CJK text no tofu boxes and no metric shift from a font fallback. `korean-text.md` owns
-the CJK specifics and `SKILL.md` owns the OfficeCLI raster directive.
+Check the figure at the tier in `render-verification.md` (DIAGRAM-RENDER-01). For computed or exported
+output, inspect the final render for clipping, overlapping labels, empty series and font fallback.
+`korean-text.md` owns CJK specifics and `SKILL.md` owns the OfficeCLI raster directive.
 
 Then the fresh-reader check, which you run on yourself because you are the only reader available at
 authoring time. Cover everything except the figure and its caption. From those two alone, write down

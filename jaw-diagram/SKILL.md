@@ -1,6 +1,6 @@
 ---
 name: jaw-diagram
-description: "SVG diagrams, charts, and interactive visualizations for chat UI"
+description: "SVG diagrams, charts, interactive visualizations, and visual reports or explainer documents; PDF output uses jaw-pdf"
 metadata:
   version: "1.3.0"
 capabilities:
@@ -14,6 +14,8 @@ capabilities:
 references:
   - "svg-components.md — SVG primitives, layout templates"
   - "visual-story.md — claim, evidence classes, sequencing, anti-slop, fresh-reader check"
+  - "render-verification.md — proportionate source, rendered, interactive, and page checks"
+  - "visual-reports.md — visual composition for reports and explainer documents"
   - "color-palette.md — 9-color design system"
   - "module-chart.md — Chart.js + ECharts + D3"
   - "korean-text.md — Korean/CJK text in SVG, HTML, D3, Chart.js, Mermaid, PDF embedding"
@@ -37,6 +39,7 @@ references:
 - **Compact**: Show the essential inline. Explain the rest in response text.
 - **Theme-aware**: Every color must work in both light and dark mode. Use CSS classes for SVG, `window.__jawTokens` for canvas/JS.
 - **Text in response, visuals in tool**: All explanatory prose goes outside the diagram. Never put paragraphs of explanation inside the SVG or widget HTML.
+- **Accessibility** (DIAGRAM-A11Y-01): give the visual a claim-shaped name and description, a text or data alternative for values, meaningful heading order, readable contrast, and labels or shapes that preserve meaning without color. Interactive widgets need visible keyboard focus and reduced-motion behavior. Inspect actual contrast and reading order when the render tier calls for it; ARIA alone does not prove accessibility.
 
 ## Complexity Budget — Hard Limits
 
@@ -80,6 +83,8 @@ Route on the verb, not the noun. Same subject gets different diagrams. Prefer Me
 | "XY chart / scatter / line" | Mermaid | ` ```mermaid ` `xychart` |
 | "venn / overlap / set intersection" | Mermaid (beta) | ` ```mermaid ` `venn-beta` |
 | "show sources / search results / citations" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `search-results` schema |
+| "visual report / explainer document" | `reference/visual-reports.md` | Follow `jaw-dev/references/reader-documents.md` for structure, then this reference for composition |
+| "PDF report / PDF explainer" | `jaw-pdf` skill | Use `reference/visual-reports.md` for composition and `jaw-pdf` for output and final-page checks |
 | "write / draft / compose email, message, document" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `compose-block` schema |
 | "table / rows / sortable data / filterable data" | `structured-renderers` skill | Non-diagram native card: load `structured-renderers` for `dataframe` schema |
 | "patch / diff / unified diff" | `structured-renderers` skill | Non-diagram native display: load `structured-renderers` for `diff` routing |
@@ -128,6 +133,8 @@ Rendering or a successful OfficeCLI exit code is not visual verification.
 - **`sandbox` securityLevel iframe background bug** ([mermaid #5034](https://github.com/mermaid-js/mermaid/issues/5034)) — affects host rendering, not your output. No action needed from the agent.
 - **Theme**: all stable Mermaid types pick up the host dark/light theme automatically via cli-jaw's `themeVariables`. Do NOT set explicit colors in `%%{init: ...}%%` unless overriding for semantic reasons.
 
+**Syntax boundary** (DIAGRAM-SYNTAX-01): use an existing SVG/Mermaid parser or checker when available. Valid syntax cannot prove labels do not overlap. Do not install a new runner solely to check an incidental visual.
+
 ## When to Use
 
 ### 1. Explicit request (명시적 요청)
@@ -151,6 +158,8 @@ Rendering or a successful OfficeCLI exit code is not visual verification.
 A report or explainer around the diagram follows `jaw-dev/references/reader-documents.md`.
 The figure itself follows `reference/visual-story.md`: claim, evidence class, sequencing, handoff.
 Rendering, formats and security stay owned here.
+For a visual report or explainer document, also read `reference/visual-reports.md` for page and exhibit composition.
+For PDF output, follow the `jaw-pdf` skill for creation and final-page verification.
 
 ### 3. Specification (명사구 스펙)
 
@@ -170,6 +179,8 @@ Rendering, formats and security stay owned here.
 ## Delivery Mechanism (read before producing anything)
 
 All four formats — inline SVG, ` ```mermaid `, ` ```diagram-file `, ` ```diagram-html ` — are **rendered inline in the chat response**. The jaw frontend parses your reply text and mounts them automatically. `diagram-file` and `diagram-html` go into sandboxed `<iframe>` elements that the host creates; you do **not** create the iframe.
+
+**Render verification** (DIAGRAM-RENDER-VERIFY-01): follow `reference/render-verification.md`. Reread static inline or ordinary-flow source; render computed, interactive, and exported output at the final state. For a `diagram-file`, inspect the actual Web UI widget. Never call an unrun check passed.
 
 ### File-backed widgets (`diagram-file`)
 
@@ -205,8 +216,8 @@ Output raw `<svg>` markup directly in the response. The chat UI renders it inlin
 Rules:
 - viewBox width MUST be 680 (matches container width — do NOT change)
 - Height varies by content: last element bottom + 40px padding
-- Every SVG MUST have `role="img"` + `<title>` + `<desc>`. The `<title>` states the takeaway, not the subject (DIAGRAM-A11Y-01) — a screen-reader user gets the claim, not the word "Diagram". The same applies to a canvas or widget `aria-label` and its fallback text. Never let a distinction live in color alone: carry it in the label, shape, or position too, so it survives grayscale and color vision deficiency. Widget controls stay keyboard reachable (`reference/module-interactive.md`).
-- Look at the rendered figure before delivering (DIAGRAM-RENDER-01): text inside its box, nothing clipped, no overlapping labels, no empty series, and for CJK no tofu or fallback metric shift. Valid syntax is not a rendered result. CJK specifics: `reference/korean-text.md`.
+- Every SVG MUST have `role="img"` + `<title>` + `<desc>`. The `<title>` states the takeaway, not the subject — a screen-reader user gets the claim, not the word "Diagram". The same applies to a canvas or widget `aria-label` and its fallback text. Never let a distinction live in color alone: carry it in the label, shape, or position too, so it survives grayscale and color vision deficiency. Widget controls stay keyboard reachable (`reference/module-interactive.md`).
+- Check the visual at the tier in `reference/render-verification.md` (DIAGRAM-RENDER-01). Computed and exported figures require inspection of the final render; CJK specifics: `reference/korean-text.md`.
 - Use classes from the design system (`.node`, `.connector`, `.label`, `.label-start`, etc.) — `.label` forces `text-anchor: middle` (centered text only); for left-aligned text use `.label-start` or just the color class
 - Colors: use CSS classes, not inline fill/stroke colors
 - Text: inline SVG inherits `font-family` from the jaw host; do not set explicit fonts there. Exception: OfficeCLI-rasterized Mermaid with Korean/CJK text must use the init directive above because the raster renderer is not the jaw host.
@@ -310,6 +321,8 @@ Use CSS class names — see `reference/color-palette.md`:
 - Org chart: hierarchical tree
 - See `reference/svg-components.md` for templates and detailed SVG rules.
 
+**Layout** (DIAGRAM-LAYOUT-01): keep HTML text in normal Grid/Flex flow. When SVG connectors depend on dynamic boxes, derive endpoints from rendered bounds. Paint connectors before labels; a label crossing one needs a paper-colored stroke halo or a clear position. Size SVG labels using actual text metrics and inspect them at final size.
+
 ### Style-First, Script-Last
 For `diagram-file` widgets and fallback `diagram-html` widgets:
 1. All `<style>` and `<link>` tags first
@@ -377,6 +390,8 @@ All CSS/JS animation is available:
 ## Reference Files
 For detailed patterns, see:
 - `reference/visual-story.md` — **read first**: claim, evidence classes, one-takeaway sequencing, prose handoff, compositions to avoid, fresh-reader check
+- `reference/render-verification.md` — source, rendered, interaction, and page verification tiers
+- `reference/visual-reports.md` — report and explainer composition, exhibits, print and assurance guidance
 - `reference/svg-components.md` — SVG primitives, viewBox checklist, layout templates
 - `reference/color-palette.md` — Full color values (light + dark), assignment rules
 - `reference/module-chart.md` — Chart.js + D3 + ECharts 6 integration (bar/line/pie/choropleth + heatmap/sankey/radar/treemap/gauge/funnel/candlestick/chord)
