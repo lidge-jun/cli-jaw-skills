@@ -3,7 +3,7 @@
 Last reviewed: 2026-07-02
 Applies to: Docker 27+, BuildKit, OCI images
 When to read: Container build/deploy tasks
-Canonical owner: dev-devops §1
+Canonical owner: jaw-dev-devops §1
 
 Cross-ref: read `platform-engineering.md` for provider routing and release
 capability framing; read `package-release.md` for package-registry auth; read

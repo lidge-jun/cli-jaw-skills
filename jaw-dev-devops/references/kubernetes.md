@@ -3,7 +3,7 @@
 Last reviewed: 2026-07-02
 Applies to: Kubernetes 1.32+, Gateway API v1.6+
 When to read: K8s deployment tasks
-Canonical owner: dev-devops §3
+Canonical owner: jaw-dev-devops §3
 
 ---
 

@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-21
 Applies to: CLI packages, desktop-affecting releases, browser automation, installers, shell shims
 When to read: Release claims include Linux/macOS/Windows support or local OS behavior
-Canonical owner: dev-devops cross-platform release proof
+Canonical owner: jaw-dev-devops cross-platform release proof
 
 ---
 
@@ -24,9 +24,9 @@ when the release claim depends on OS-local behavior beyond CI's visibility.
 | Pure library package | Usually yes | No | Test/import matrix |
 | CLI binary wrapper/shim | Yes for core command behavior | Maybe for PATH/shell integration | Install, bin resolve, `--version`, `--help`, safe command |
 | Browser automation/profile paths | Partial | Yes when local profile/app behavior matters | Runner smoke plus visible browser/profile proof |
-| Desktop app or installer | No | Yes | Launch, permission prompt, install/uninstall evidence |
+| Desktop app or installer | No | Yes | Launch, permission prompt, install/uninstall evidence; `native-desktop-acceptance.md` |
 | Windows PATH/PowerShell/shim | Partial | Yes if release claim depends on Windows user behavior | Windows runner plus Windows App/RDP verification |
-| macOS TCC/Keychain/app bundle | Partial | Yes | macOS runner plus visible macOS app/session proof |
+| macOS TCC/Keychain/app bundle | Partial | Yes | macOS runner plus visible macOS app/session proof; `macos-system-approvals.md` |
 | YAML/cloud-only pipeline change | Yes | No | Static validation, CI dry run, API/provider check |
 
 ## §3 Mandatory Environment Prompt
@@ -64,6 +64,6 @@ Matrix only platforms the project declares or the release claims to support.
 
 ## §5 Verification Handoff
 
-Use `dev-testing/references/ci-pipeline.md` for runner matrix mechanics.
+Use `jaw-dev-testing/references/ci-pipeline.md` for runner matrix mechanics.
 Use `desktop-control` or `computer-use` only when direct visible app/OS proof is
 needed. Do not duplicate desktop tool instructions in this reference.

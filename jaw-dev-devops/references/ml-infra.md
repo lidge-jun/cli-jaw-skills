@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-16
 Applies to: NVIDIA GPU clusters, model serving platforms, MLOps
 When to read: ML infrastructure provisioning or model deployment
-Canonical owner: dev-devops (infra layer); dev-backend owns API/serving code patterns
+Canonical owner: jaw-dev-devops (infra layer); jaw-dev-backend owns API/serving code patterns
 
 ---
 

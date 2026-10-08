@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-21
 Applies to: Homebrew Formulae, Homebrew Casks, taps, CLI package distribution on macOS/Linux
 When to read: Updating or creating Homebrew distribution for a released artifact
-Canonical owner: dev-devops Homebrew distribution guidance
+Canonical owner: jaw-dev-devops Homebrew distribution guidance
 
 ---
 
