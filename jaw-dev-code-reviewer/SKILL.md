@@ -12,7 +12,7 @@ metadata:
 > **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
 > **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
-> **Always read `dev/SKILL.md` first** for project-wide conventions before applying review rules.
+> **Always read `jaw-dev/SKILL.md` first** for project-wide conventions before applying review rules.
 
 Systematic code review patterns for finding real issues, not bikeshedding.
 
