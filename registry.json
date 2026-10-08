@@ -792,7 +792,7 @@
       "desc_en": "MUST USE for every coding task. Classifies work depth (C0-C5), task_tags overlays, modular limits, pre-write search, verification-before-completion, and safety rules. Includes classifier eval cases and freshness policy (FAMILY-FRESH-01). Triggers: develop, implement, refactor, feature, bug fix, test, review, code quality, scaffolding.",
       "requires": null,
       "install": null,
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     "jaw-dev-architecture": {
       "name": "Dev Architecture",
@@ -896,7 +896,7 @@
       "desc_en": "MUST USE for cli-jaw PABCD orchestration workflows: orchestrate, phase, attest, interview mode, goal mode, checkpoints, multi-phase development, and optimization-loop plateau discipline. State transitions require explicit orchestration intent, not keyword mentions. Triggers: orchestrate, phase, attest, attestation, interview, goal mode, checkpoint, PABCD.",
       "requires": null,
       "install": null,
-      "version": "2.2.0"
+      "version": "2.2.1"
     },
     "jaw-dev-scaffolding": {
       "name": "Dev Scaffolding",

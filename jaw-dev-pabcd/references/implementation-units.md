@@ -27,11 +27,21 @@ the next P. See [loop continuation](loop-continuation.md) for cycle order.
 
 Use three-digit lexicographic prefixes within a new unit: `000`–`009` for research/spec/MOC,
 `010`–`019` for the first implementation phase, `020`–`029` for the second, and so on. Keep
-research/spec material and implementation designs in separate documents; a bare `PLAN.md` or
-mixed research/implementation document fails audit for a C2+ unit. Use the next free number
+research/spec material and implementation designs in separate documents. Bare semantic filenames (`PLAN.md`,
+`DIFF_PLAN.md`, `PHASES.md`, `RCA.md`, unnumbered folders) or a mixed research/implementation document fail audit
+for a C2+ unit. Use the next free number
 within a decade, with a sub-index if it overflows. Preserve historical names to avoid breaking
 inbound links. Numbering is a convention within the approved record location, never a reason to
 create a private record in a forbidden checkout.
+
+| Range | Purpose |
+|-------|---------|
+| 000-009 | Research, specs, MOC (`000_plan.md`, `001_api-survey.md`) |
+| 010-019, 020-029, ... | Phase 1, Phase 2, ... (`010_phase1-auth-module.md`) |
+
+Three digits rather than two because the range carries the meaning: with two digits `10` reads as
+both "decade 1" and "tenth document"; with three, `010` is phase 1's first document and `001`
+research's first. Do not mix two- and three-digit prefixes in one unit.
 
 The P plan orders phases by dependency: foundations and contracts, then capabilities,
 integration and hardening (PHASE-SPLIT-01). Each work-phase still ends in independently

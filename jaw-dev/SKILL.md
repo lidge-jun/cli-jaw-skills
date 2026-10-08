@@ -275,6 +275,10 @@ success reports · "just this once".
 
 ## 4. Change Documentation
 
+Devlog phase documents use decade-range numbering (00-09 research, 10-19 phase 1, ...; three-digit
+prefixes such as `000_`/`010_` in new units); never bare `PLAN.md`/`PHASES.md`/`RCA.md` (LEXICO-SPLIT-01). Full
+convention: `../jaw-dev-pabcd/references/implementation-units.md`.
+
 For C2+ work with a supplied worklog/changelog, record a factual entry per changed file:
 `### [filename] — [reason]` with **Changes** (what/why), **Impact** (dependent modules),
 and **Verification** (command + result). C0/C1 follow the canonical
