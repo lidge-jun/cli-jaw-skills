@@ -60,7 +60,7 @@ Read project docs and jaw-dev skills first. Write the complete plan internally, 
 Write a plan with two parts:
 
 **Before P settle three things** (DEFAULT, INTERVIEW-CLASSIFY-01):
-the work class (dev §0.0), the **loop archetype** (§11.4) — ask "does a verifier
+the work class (jaw-dev §0.0), the **loop archetype** (§11.4) — ask "does a verifier
 define *done* for this work, or only *better*?" — and the **unit residence**
 (UNIT-RESIDENCE-01, §3.1). Apply this in HITL Interview when authorized, or in goal-mode planning without inventing an Interview round. An archetype discovered after candidates were burned indicates inadequate initial classification.
 
@@ -251,7 +251,7 @@ user request.
 2. Sequence: P → A → B → C → D. Use `jaw orchestrate reset` to restart.
 3. Workers verify (read-only) by default; write-capable dispatch follows [dispatch](references/dispatch.md)
    DISPATCH-ECONOMY-01. Verdicts stay with the boss in B.
-4. Goal-mode precedence: when a jaw goal is active (dev §0.4), use §2.1 with
+4. Goal-mode precedence: when a jaw goal is active (jaw-dev §0.4), use §2.1 with
    evidence-backed checkpoints (`jaw goal update`) instead of user approval; phase
    order, audit conditions, and verification intensity are unchanged.
 

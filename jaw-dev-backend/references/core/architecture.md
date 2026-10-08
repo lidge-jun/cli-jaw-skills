@@ -120,7 +120,7 @@ Three pillars every project must follow:
 
 ```
 <project>/
-├── AGENTS.md              # AI context (propose in plan — do not create silently per dev §0.5)
+├── AGENTS.md              # AI context (propose in plan — do not create silently per jaw-dev §0.5)
 ├── README.md              # Human overview
 ├── .env.example           # Env template (never commit .env)
 ├── devlog/

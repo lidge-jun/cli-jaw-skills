@@ -15,9 +15,9 @@ Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (C
 - Design direction context for rendered verification: see `jaw-dev-uiux-design`.
 This skill activates by change surface when work needs verification depth, regression coverage, or a reproducible test harness.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## Modular References
 
@@ -77,7 +77,7 @@ source-fetch and evidence-status rules.
 - A fast real dependency beats a mock. A mock beats an untested branch.
 - If the failure is mysterious, **delegate methodology to `jaw-dev-debugging`**, then return here for the regression harness.
 - **STRICT (TEST-ANTI-FLAKE-01):** A time-based flake is a bug. Do not use sleep-based synchronization, retry-as-fix, or green-on-retry acceptance without a deterministic cause and harness correction.
-- Verification depth follows `dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
+- Verification depth follows `jaw-dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
 
 ### 1.5a Limited-Oracle / Score-Objective Evaluation
 
@@ -499,7 +499,7 @@ and a hard draw-protection invariant locked a 3.5/8 score.
 - [ ] flaky failures were investigated instead of blindly retried
 - [ ] coverage / junit / trace artifacts are available on failure
 ### 10.5 Final Rule (risk-tier)
-Verification intensity follows the work class (`dev` §0.0 / `references/core/crud-test-matrix.md`):
+Verification intensity follows the work class (`jaw-dev` §0.0 / `references/core/crud-test-matrix.md`):
 for C2 UI work, one focused smoke (manual click-through or one Playwright run) plus targeted
 checks IS a complete story; for C3/C4 or release-sensitive work, a single smoke is not enough —
 run the affected suites and required negatives. Manual/Playwright smoke is a risk-tier rule,

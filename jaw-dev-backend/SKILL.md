@@ -88,7 +88,7 @@ compatibility; Hono for edge/serverless/multi-runtime Web-Standards APIs. New TS
 validation baseline is Zod v4 (read the migration guide before upgrading v3 projects).
 Sources: `references/stacks/node.md` § Sources.
 
-For new Node backend source files, prefer `.ts` when the repo supports TypeScript or is greenfield. Inherit `dev` TypeScript strict-compatibility rules.
+For new Node backend source files, prefer `.ts` when the repo supports TypeScript or is greenfield. Inherit `jaw-dev` TypeScript strict-compatibility rules.
 If backend boundaries are unclear, read existing source-of-truth docs/logs first, then document routes, services, repositories, data stores, and runtime commands in the repo's existing SOT before broad implementation.
 
 ---

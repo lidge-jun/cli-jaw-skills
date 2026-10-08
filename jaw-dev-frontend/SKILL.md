@@ -19,17 +19,17 @@ wiring, visual verification, and frontend platform rules.
 > Implementation anti-slop tell detection and enforcement stays here (concrete rendered tells
 > in UI); design-level concept/taste judgment lives in `jaw-dev-uiux-design`.
 
-> **Role boundary (canonical — identical in `dev` and `jaw-dev-uiux-design`):**
-> `dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
+> **Role boundary (canonical — identical in `jaw-dev` and `jaw-dev-uiux-design`):**
+> `jaw-dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
 > design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
-> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
+> implementation and rendered tell enforcement. Anti-slop has three layers: `jaw-dev` =
 > output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
 > (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## Modular References
 
@@ -88,7 +88,7 @@ For C2 ordinary app screens (form/table/list/detail), `crud-ui.md` alone suffice
 - Data-driven dashboards, reporting views, or data format expectations: load `jaw-dev-data`.
 
 When frontend choices depend on current framework, design-system, browser API, library
-behavior, or package/source freshness, follow `dev` §External Evidence and Recall Routing
+behavior, or package/source freshness, follow `jaw-dev` §External Evidence and Recall Routing
 and load the `search` skill for current/external lookups.
 
 ### Verification grounding
@@ -135,14 +135,14 @@ When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 
 If the user already names a specific component, skip this step.
 Reference: [component.gallery/components](https://component.gallery/components/)
 
-For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component files when the repo supports TypeScript. Inherit `dev` TypeScript strict-compatibility rules.
+For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component files when the repo supports TypeScript. Inherit `jaw-dev` TypeScript strict-compatibility rules.
 If frontend structure is unclear, read existing source-of-truth docs first, then document pages, components, routes, state stores, and build commands in the repo's existing docs before broad implementation.
 
 ---
 
 ## 1.5 Objective Gates vs Style Samples
 
-Two different kinds of rules live in this skill (see `dev` §0.2):
+Two different kinds of rules live in this skill (see `jaw-dev` §0.2):
 - **Objective UX gates (STRICT/DEFAULT)** — accessibility baseline (§7, §11), state coverage
   (loading/empty/error/permission), keyboard operability, visible focus, contrast. Missing
   these are review findings.
@@ -235,7 +235,7 @@ Every cutout asset MUST follow `references/core/asset-production.md` § Asset Ba
 
 ## 5. Anti-Slop Enforcement
 
-Rule classes (dev §0.2): items below are DEFAULT — deviate with a stated reason; concrete
+Rule classes (jaw-dev §0.2): items below are DEFAULT — deviate with a stated reason; concrete
 values and palettes are STYLE_SAMPLE (§1.5); the emoji-as-UI-icon ban is the only STRICT item.
 
 Read `references/core/anti-slop.md` for full rules. Key standards:

@@ -9,9 +9,9 @@ metadata:
 
 # Dev-Code-Reviewer — Code Review Guide
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 > **Always read `dev/SKILL.md` first** for project-wide conventions before applying review rules.
 
 Systematic code review patterns for finding real issues, not bikeshedding.
@@ -394,7 +394,7 @@ the diff is substantially AI-generated (agent commits, Copilot/Cursor bulk chang
 | Missing authz edges | Happy-path handlers without ownership checks | Trace every new endpoint against §3.5 BOLA check |
 | Shallow/mirroring tests | Tests restating the implementation, tautologies | Apply REVIEW-REGRESS-01; require behavior-level assertions |
 | Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `jaw-dev-testing` §6.7 detection table |
-| Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (dev §1) |
+| Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (jaw-dev §1) |
 
 **Agentic/security review trigger (DEFAULT):** if a PR adds MCP servers, tools, agents,
 RAG components, persistent memory, delegated credentials, or autonomous actions, invoke

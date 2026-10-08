@@ -25,10 +25,10 @@ For rendered anti-slop tell detection and implementation-level banned patterns, 
 
 **Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop concept/taste judgment, and design-system decisions. `jaw-dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, rendered tell detection, and rendered verification. After choosing the design direction here, load `jaw-dev-frontend` for concrete implementation.
 
-> **Role boundary (canonical — identical in `dev` and `jaw-dev-frontend`):**
-> `dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
+> **Role boundary (canonical — identical in `jaw-dev` and `jaw-dev-frontend`):**
+> `jaw-dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
 > design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
-> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
+> implementation and rendered tell enforcement. Anti-slop has three layers: `jaw-dev` =
 > output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
 > (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
@@ -39,9 +39,9 @@ changed, or browser-rendered source evidence, read the active `search` skill and
 follow its query-rewrite, source-fetch, and evidence-status rules. Use browser
 fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 > **Rule class note (UX-STYLE-01):** Everything in this skill that expresses taste —
 > product personalities, design-isms, preset tokens, aesthetic vocabulary — is
@@ -216,7 +216,7 @@ When the user gives feedback without specifics, translate:
 
 ---
 
-## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see dev §0.1 Patch Fast-Path.)
+## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see jaw-dev §0.1 Patch Fast-Path.)
 
 Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
 

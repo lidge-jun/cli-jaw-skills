@@ -5,7 +5,7 @@ a migration, a metric, an integration touchpoint, or an incident fix. CRUD is th
 compact representative benchmark of this — **one benchmark, not the default center**.
 This reference is on-demand: read it for C2 ordinary-product work, not for every task.
 
-## 1. Classify and scope (dev §0.0)
+## 1. Classify and scope (jaw-dev §0.0)
 
 - Typical slice = **C2**. C4-promotion triggers (DEV-ESCALATE-01: auth, payments, deletion,
   migration, public contract, permissions) promote the relevant part to C4 — split it out
@@ -19,7 +19,7 @@ This reference is on-demand: read it for C2 ordinary-product work, not for every
 State in a few lines before coding:
 1. The user-visible behavior the slice delivers (one sentence).
 2. Touched layers: route/endpoint → service/model → storage → UI states.
-3. Conventions to reuse — find the nearest existing slice (dev §0.5/§1.5) and mirror its
+3. Conventions to reuse — find the nearest existing slice (jaw-dev §0.5/§1.5) and mirror its
    naming, foldering, validation, and error mapping. Existing Repo First is STRICT.
 4. The verification that will prove it works (smallest honest proof).
 
@@ -28,7 +28,7 @@ State in a few lines before coding:
 Work end-to-end thin rather than layer-complete:
 1. **Contract** — route/schema/types for the happy path.
 2. **Data** — model/query/migration stub (migration itself: see `migration_backfill`
-   strict triggers in dev §0.3 before touching real data).
+   strict triggers in jaw-dev §0.3 before touching real data).
 3. **Behavior** — service logic; validation at the controller/trust boundary
    (dev-architecture §4 — services trust their callers).
 4. **Surface** — UI states: list/detail/form + loading/empty/error/permission-denied.

@@ -1,6 +1,6 @@
 # CRUD Test Matrix — Risk-Tier Verification
 
-On-demand reference. Verification intensity scales with the work class (dev §0.0) and
+On-demand reference. Verification intensity scales with the work class (jaw-dev §0.0) and
 risk, not with ceremony. Evidence rows apply only when their strict trigger applies; for
 low-risk local work use the smallest proof that validates the claim and state the scope.
 
