@@ -268,15 +268,14 @@ Inference rules:
 - Creative/portfolio/editorial → VARIANCE 6-9, MOTION 4-7, density D1-D3
 - Dashboard/SaaS/admin → VARIANCE 2-4, MOTION 1-2, density D4-D5
 - "Complex" in brief → increase density profile (functional depth), NOT VARIANCE or MOTION
-- "Simple" in brief → decrease all three proportionally
+- "Simple" in brief → determine whether it means fewer choices, less decoration, or less information; reduce only that complexity and derive density from task needs
 
 "복잡하다" = high DESIGN_VARIANCE is WRONG. Complexity means more features/data/flows, not more visual tricks (carousels, parallax, animations).
 #### Dial Presets (UX-DIAL-PRESET-01, STYLE_SAMPLE)
 
-Source: taste-skill v2, via codexclaw. Exact tuples for common use cases. Presets are
-authoritative **specializations** that may exceed the inference ranges above — Agency
-motion 8 exceeds the general landing 5-7 range on purpose. When a preset exists for the
-exact use case, use it directly and adjust from the Design Read.
+Preset tuples are style samples, even when outside the rough ranges. Prefer the
+brief, existing design system, accessibility, and observed task evidence;
+document a different choice without calling it failure.
 
 | Use case | Variance | Motion | Density | Notes |
 |----------|---|---|---|-------|
@@ -298,24 +297,27 @@ first, then move from it:
 - Preserve: variance = match existing, motion = match + 1, density = match existing.
 - Overhaul: variance = existing + 2, motion = existing + 2, density = match existing.
 - "Complex" in the brief increases **density**, never variance or motion.
-- "Simple" decreases variance and motion; density stays or increases.
+- "Simple" calls for clarifying whether the user wants fewer choices, less decoration, or less information; adjust only the relevant dial, with density set by task needs.
 
 Clamp all arithmetic to 1-10 and D1-D8. An existing SaaS surface at 7/6/4 preserves to
 7/7/4 and overhauls to 9/8/4.
 
 #### Audience-first ownership (UX-AUDIENCE-01, DEFAULT)
 
-The **audience** picks the aesthetic, not the model's taste. When audience signal and
-model preference conflict, audience wins. The presets above encode audience
-expectations — a public-sector audience expects trust-first restraint, an agency
-audience expects high variance — so reaching past a preset because the result feels
-plain is the failure this rule names. Override with stated rationale only.
+The **audience** picks the aesthetic, not the model's taste. When audience evidence
+and a preset conflict, audience evidence wins. A public-sector audience may need
+trust-first restraint; an agency audience may support high variance. Derive the
+choice from the actual audience and brief, and state the rationale.
 
 
 ### Anti-Default Discipline
 Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
 
 If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
+
+An award example is dated evidence, not a blanket exemption or ban. Recheck its
+original source, surface fit, and accessibility via `references/design-trends.md`
+and `references/compositional-patterns.md`.
 
 ### DESIGN.md persistence
 ### Image-First Direction Discovery (UX-IMAGE-FIRST-01, DEFAULT)

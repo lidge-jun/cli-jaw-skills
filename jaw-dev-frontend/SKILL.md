@@ -227,7 +227,7 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
   palette, lighting, style, and aspect per `asset-requirements.md`.
 
   Concept mockups guide implementation and are not shipped; production assets require candidate inspection and selection; cutout assets additionally follow FE-ASSET-BG-01.
-- **Visual verification**: after UI changes, exercise the flow per `jaw-dev-testing` §4.6 (TEST-CU-QA-01) — open the dev server in the Manager embedded browser, `POST …/<targetId>/screenshot`, then READ the returned PNG — instead of claiming visual correctness from code alone.
+- **Visual verification**: after UI changes, drive the changed flow using `../jaw-dev/references/browse-qa-ladders.md` and `jaw-dev-testing` §4.7. Inspect the render and interaction result. Where Jaw browser is the available capability, use `cli-jaw browser snapshot --interactive`, `click`, and `screenshot`; read the screenshot.
 
 ### Cutout Asset Generation (FE-ASSET-BG-01 surface — STRICT)
 Every cutout asset MUST follow `references/core/asset-production.md` § Asset Background Strategy; load the routed asset references before generation.
@@ -240,7 +240,7 @@ values and palettes are STYLE_SAMPLE (§1.5); the emoji-as-UI-icon ban is the on
 
 Read `references/core/anti-slop.md` for full rules. Key standards:
 
-Award evidence does not repeal these rules. Use the context-gated calibrations in `../jaw-dev-uiux-design/references/compositional-patterns.md`: an exception is valid only when the device expresses specific product, artifact, or narrative content and the surface remains accessible without the effect.
+Use `../jaw-dev-uiux-design/references/compositional-patterns.md` and dated `design-trends.md` as examples. Reopen the underlying source, explain the device's product-specific role, and preserve accessibility; a winner example alone cannot override the anti-slop rule.
 
 ### Hero discipline (FE-HERO-01)
 

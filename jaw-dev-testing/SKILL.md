@@ -9,7 +9,7 @@ metadata:
 # Testing & QA
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
 **Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
-- Review/test boundary and test adequacy findings: see `dev-code-reviewer`.
+- This skill owns test adequacy; `jaw-dev-code-reviewer` owns finding severity and review process.
 - CI pipeline ownership and deployment verification: see `dev-devops`.
 - Data pipeline testing and ETL validation: see `dev-data`.
 - Design direction context for rendered verification: see `dev-uiux-design`.
@@ -24,6 +24,7 @@ This skill activates by change surface when work needs verification depth, regre
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
 | `references/core/crud-test-matrix.md` | When choosing verification depth for a classified task, or testing a CRUD slice | Risk-tier minimums, per-operation negatives, UI smoke rule |
+| `references/manual-surface-qa.md` | Driving a changed API, CLI, TUI, web, or desktop surface | Faithful channel, scenario matrix, verdict, teardown; desktop artifact criteria link to `../jaw-dev-devops/references/native-desktop-acceptance.md` |
 | `references/edge-first-testing.md` | New unit/service/integration tests for features (skip for regression/contract tests) | Edge-first principle, test order by change type, 11-class edge matrix |
 | `references/backend-testing.md` | Backend/API testing | Supertest patterns, DB fixtures, auth mocking |
 | `references/ci-pipeline.md` | CI configuration | GitHub Actions, gates, caching, parallelism |
@@ -200,15 +201,12 @@ python scripts/with_server.py \
 - If a failure looks like data-shape drift, go back to **§2 Backend & API Testing** or **§3 Contract Testing**.
 
 ### 4.7 Native Computer-Use / Browse-Use QA (exploratory tier) (TEST-CU-QA-01)
-Browser QA loads `dev-frontend` for rendered implementation context.
-Playwright owns deterministic suites; native tools own immediate exploratory proof.
-**QA-TOOL-LADDER-01:** start at 1 and state why when skipping:
-1. Manager embedded browser (`POST …/<targetId>/snapshot` for the accessibility tree, `…/screenshot`, `…/act` for click/type/scroll/key) for built or locally served web UI.
-2. A full real-profile browser for login, extension, or WAF state the embedded browser cannot carry.
-3. Desktop or screen-level control for GUI-only flows; keep credential entry human-supervised.
-4. `agbrowse` only for public-URL response-shape proof, never built-UI driving.
-Use inspect -> act -> re-inspect; when DOM inspection fails, take a screenshot AND read the image back -- a screenshot produced but never read is not an observation.
-Evidence names the flow, states, result, and screenshots; promote durable flows to Playwright.
+For rendered implementation context, load `jaw-dev-frontend`. Playwright owns
+deterministic suites; exploratory QA follows `../jaw-dev/references/browse-qa-ladders.md`
+(QA-TOOL-LADDER-01). Use inspect → act → re-inspect. Jaw browser supports
+`cli-jaw browser snapshot --interactive`, `click`, `screenshot`, `text`, and
+`get-dom`; read captured screenshots. Missing access is a verification gap,
+not a pass. Promote flows needing durable coverage to Playwright.
 ---
 ## 5. CI Pipeline Integration
 > Full workflow templates: `references/ci-pipeline.md`
@@ -654,6 +652,6 @@ Evidence names the flow, the states traversed, the result, and the artifacts. **
 any flow that must stay guarded into a deterministic test**; exploratory proof does not
 accumulate, so a flow left only in QA is a flow that will regress unnoticed.
 
-The tool ladder for this tier is `QA-TOOL-LADDER-01` in `jaw-dev` — start at the runtime's
-embedded browser and escalate only with a stated reason.
-
+The tool ladder for this tier is `QA-TOOL-LADDER-01` in
+`../jaw-dev/references/browse-qa-ladders.md`; use an available faithful
+capability and state why a ladder step was skipped.

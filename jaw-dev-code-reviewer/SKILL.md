@@ -63,15 +63,18 @@ Before reviewing any code, verify:
 
 ### Automated Pre-Scan (Run Before Manual Review)
 
-Before reading a single line of code, run automated tools on changed files:
-
-Run project-native linters, type checker, and tests before reviewing.
+Run the smallest repo-native checks that observe the requested review scope. Docs-only
+reviews use document and contract checks; a diagnostic review does not authorize
+installs, product changes, or a broad suite the user prohibited. In cli-jaw,
+`npm test` covers root and unit tests, `npm run test:integration:all` covers
+integration/manager/bin, and `npm run test:manager:browser` is browser smoke;
+choose only checks relevant to this review.
 
 **Pre-Scan Rules:**
 1. **Critical/error findings → block review.** Don't waste human review cycles on machine-detectable problems.
 2. **Warnings → note for review, don't block.** Mention in review but don't make them blocking.
 3. **Tool findings go first** in review output, before manual findings.
-4. **No tool available?** Skip gracefully — pre-scan is additive, not a gate.
+4. **No tool available?** State the gap explicitly; absence is not a finding.
 
 | Tool | Catches | Misses | Key Rules |
 |------|---------|--------|-----------|
@@ -137,7 +140,7 @@ Canonical rule imported from `dev-architecture` §1: **>400 LOC -> split (DEFAUL
 |-------|---------------|
 | 200-400 lines | Healthy — easy to navigate and review |
 | 400-500 lines | Should split unless the author states a concrete reason |
-| >500 lines | Blocking review finding unless already being split in this diff |
+| >500 lines | Strong review signal; not a blocker by size alone. Accept a documented cohesion/risk rationale |
 
 ### Review Verdict
 
@@ -171,7 +174,7 @@ Deterministic blocker semantics (REVIEW-BLOCK-01): any unresolved Critical or Hi
 | Unreachable code after return/throw | `no-unreachable`, compiler warnings | Delete the dead branch |
 | Unused imports / variables | `no-unused-vars`, `@typescript-eslint/no-unused-vars` | Remove |
 | Commented-out code blocks | Manual review | Delete — use version control history |
-| Unused exports | `ts-prune`, `knip`, grep for import sites | Remove export; delete if no internal use |
+| Unused exports | `ts-prune`, `knip`, consumer search | Remove scoped internal dead exports after consumer search; public contracts require compatibility review before removal |
 | Stale feature-flagged code | Check flag status in flag service | Remove dead branch and the flag check |
 
 Dead code is a maintenance tax — remove rather than comment out.
@@ -258,7 +261,7 @@ Scan every PR for these common performance pitfalls:
 
 | Check | Red Flag | Fix |
 |-------|----------|-----|
-| Unnecessary re-renders | State updates in parent causing child re-render cascade | `React.memo`, `useMemo`, extract state down |
+| Measured expensive re-renders | Profiler identifies repeat work | Check Compiler activation and state ownership first; use manual memoization only where still useful |
 | Bundle size impact | New large dependency (>50KB gzipped) | Check `bundlephobia.com`, consider alternatives or lazy loading |
 | Missing `key` prop | List rendering without stable keys | Use unique ID, never array index for dynamic lists |
 | Unoptimized images | Large images without `next/image`, `loading="lazy"`, or srcset | Use framework image optimization |
