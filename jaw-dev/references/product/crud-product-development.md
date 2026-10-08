@@ -30,14 +30,14 @@ Work end-to-end thin rather than layer-complete:
 2. **Data** — model/query/migration stub (migration itself: see `migration_backfill`
    strict triggers in jaw-dev §0.3 before touching real data).
 3. **Behavior** — service logic; validation at the controller/trust boundary
-   (dev-architecture §4 — services trust their callers).
+   (jaw-dev-architecture §4 — services trust their callers).
 4. **Surface** — UI states: list/detail/form + loading/empty/error/permission-denied.
 5. **Proof** — focused test or manual check per §4 below.
 
 Per-layer specifics: `../../../jaw-dev-backend/references/core/crud-api.md`,
 `../../../jaw-dev-frontend/references/core/crud-ui.md`.
 
-## 4. Verification (risk-tier, see dev-testing crud-test-matrix)
+## 4. Verification (risk-tier, see jaw-dev-testing crud-test-matrix)
 
 - C2 default: one focused integration/contract test + UI smoke if UI changed +
   targeted build/typecheck. Unit-test only what holds logic.

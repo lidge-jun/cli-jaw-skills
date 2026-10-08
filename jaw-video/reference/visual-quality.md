@@ -1,6 +1,6 @@
 # Visual Quality — Video Anti-Slop Guide
 
-Adapts `dev-frontend/anti-slop.md` for Remotion motion context.
+Adapts `jaw-dev-frontend/references/core/anti-slop.md` for Remotion motion context.
 Video is more dynamic than static UI — every frame is a first impression.
 
 Before authoring a non-trivial original video, read

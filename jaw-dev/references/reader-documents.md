@@ -47,6 +47,10 @@ what the section answers; a bare "Analysis" conveys too little in any genre.
 Korean documents use **두괄식** — 결론·전망·요약을 맨 앞에. **기승전결** is a narrative
 build-up for stories and essays; it is never the shape of a report.
 
+### REPORT-PARA-01 — One idea per paragraph
+
+Give each paragraph one idea and put its claim in the first sentence; the remaining sentences support that claim. Keep sentences clear and direct, splitting chained clauses so each makes one claim. Use prose for an argument and bullets for parallel items readers need to scan.
+
 ## READER-DOC-03 — Descending structure
 
 Each heading summarizes what sits under it. Siblings do not overlap and together answer

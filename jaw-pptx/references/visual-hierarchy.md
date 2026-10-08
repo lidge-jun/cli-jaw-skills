@@ -1,7 +1,7 @@
 # Slide Visual Hierarchy
 
 Hierarchy = a deliberate eye-path. Build it from 6 levers. The canonical (web) framework lives in
-`dev-uiux-design/references/visual-hierarchy.md`; this is the 16:9 static-slide adaptation.
+`jaw-dev-uiux-design/references/visual-hierarchy.md`; this is the 16:9 static-slide adaptation.
 
 **Rule: exactly one primary focal point per slide.**
 
