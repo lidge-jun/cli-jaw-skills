@@ -1,10 +1,10 @@
 ---
 name: jaw-dev-devops
-description: "MUST USE for infrastructure and delivery work — container builds, deploy pipelines, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, devops/infra/deploy or release_cd task_tags."
+description: "MUST USE for infrastructure and delivery work — container builds, deploy pipelines, repository settings and cleanup, agent PR intake, Electron desktop acceptance, macOS approvals, Kubernetes, IaC, SRE, edge/serverless, ML infrastructure. Triggers: Dockerfile, K8s manifests, CI/CD pipeline, Terraform/IaC, release/deploy, repository rulesets, worktree cleanup, desktop packaging, devops/infra/deploy or release_cd task_tags."
 metadata:
-  short-description: "Container builds, deploy pipelines, K8s, IaC, SRE, edge/serverless, ML infra."
-  keywords: "container, kubernetes, deploy, iac, sre, pipeline, supply chain, sbom, gateway api"
-  last-verified: "2026-07-02"
+  short-description: "Infrastructure, release, repository hygiene, and desktop acceptance."
+  keywords: "container, kubernetes, deploy, iac, sre, pipeline, supply chain, sbom, repository settings, worktree cleanup, agent pr, electron, macos approval"
+  last-verified: "2026-10-08"
 ---
 
 # Dev-DevOps — Production Infrastructure & Delivery
@@ -12,11 +12,11 @@ metadata:
 Build reliable, secure, and automated infrastructure and delivery pipelines.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
-Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned with `dev` §0.2).
+Severity and rule authority are distinct (`jaw-dev` §0.2). Safety, correctness, and release proof remain mandatory; architecture and tool preferences need project-specific justification.
 
 ## Modular References
 
@@ -25,6 +25,12 @@ Severity mapping: `CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT (aligned wi
 | `references/docker.md` | Container build/deploy | Multi-stage builds, distroless, Docker Scout/Trivy, BuildKit secrets, SBOM/Cosign |
 | `references/package-release.md` | Package publishing / release auth | npm/PyPI trusted publishing, Bun-to-npm, registry auth model, downstream distribution table |
 | `references/cross-platform-release.md` | Cross-platform release proof | CI matrix vs local OS proof, Windows App/RDP prompts, desktop verification boundaries |
+| `references/native-desktop-acceptance.md` | Electron desktop changes or release | UI, packaged runtime, artifact identity, signing and distribution evidence |
+| `references/macos-system-approvals.md` | macOS system prompts | Human approval boundary, read-only checks, evidence for blocked rows |
+| `references/repo-bootstrap.md` | Repository settings | Read-back audit, rulesets, merge choices and PR limits |
+| `references/agent-pr-intake.md` | Agent-contributed PRs | Identity, draft policy and supersede proof |
+| `references/local-gc.md` | Local worktree cleanup | PR-state evidence, active/dirty guards and dry-run schedule |
+| `../jaw-dev/references/stacked-prs.md` | Stacked PRs | Canonical layer and CI rules; opt in to native stack tooling only where supported |
 | `references/homebrew.md` | Homebrew distribution | Formula vs Cask, audit/test, livecheck, artifact trust, install/uninstall proof |
 | `references/platform-engineering.md` | Platform / DORA / provider routing | DORA capabilities, platform guardrails, provider table rows, SLSA handoff |
 | `references/kubernetes.md` | K8s deployment | Gateway API (v1.6+), Kustomize overlays, HPA/VPA, Helm, ArgoCD GitOps |
@@ -68,7 +74,9 @@ For canonical Dockerfile templates, read `references/docker.md` §1.
 
 ### §1.2 Image Security & Supply-Chain Baseline (STRICT)
 
-CRITICAL/HIGH findings → block push. No exceptions. The 2026 baseline is ONE workflow,
+CRITICAL/HIGH image findings block push. A later checklist exception cannot waive this gate;
+any policy change must be approved and declared before the verdict. Other checklist
+exceptions follow their owning policy. The 2026 baseline is ONE workflow,
 not separate tips: minimal base image (§1.1) → SBOM generation (Syft / Docker Scout) →
 vulnerability scan (Trivy or Grype) → sign + attest (Cosign/Sigstore) → digest-based
 promote (§2.4). Read `references/docker.md` §4 for scan/SBOM/sign command examples, and
@@ -92,9 +100,13 @@ promote (§2.4). Read `references/docker.md` §4 for scan/SBOM/sign command exam
 ### §2.1 Pipeline Stages (DEFAULT)
 
 ```
-[dev-testing §5]  lint → typecheck → test → contract → e2e
-[dev-devops]      build-image → scan → push-registry → deploy-staging → smoke → promote → deploy-prod
+[jaw-dev-testing §5]  lint → typecheck → test → contract → e2e
+[jaw-dev-devops]      build-image → scan → push-registry → deploy-staging → smoke → promote → deploy-prod
 ```
+
+For stacked PRs, use `../jaw-dev/references/stacked-prs.md` for layer shape
+(`DEV-STACK-03`), membership (`DEV-STACK-06`), CI diagnosis (`DEV-STACK-07`),
+and the native-tool opt-in (`DEV-STACK-OPT-IN-01`).
 
 ### §2.2 GHA Reusable Workflows (DEFAULT)
 
@@ -198,6 +210,9 @@ instrument stability, and exact-head evidence — live in
 
 ### §2.9 Branch Lifecycle Hygiene (STRICT)
 
+This guidance does not itself authorize repository-setting changes, scheduled jobs,
+branch or worktree deletion. Apply the task's actual write authority.
+
 Delivery repositories accumulate dead refs, and the cost is not disk. Stale branches
 make the remote branch list unusable for triage, keep superseded heads reachable by
 tooling that resolves names, and hide the handful of branches that actually still
@@ -209,6 +224,10 @@ matter. Treat branch lifecycle as delivery infrastructure.
 | `DEVOPS-BRANCH-DELETE-EVIDENCE-01` | STRICT | Never bulk-prune. Before deleting any ref, prove per branch that it is not protected, not an open PR head, not the base of an open PR, not a fork head, and not carrying unique commits. A name pattern is not evidence. |
 | `DEVOPS-BRANCH-SNAPSHOT-01` | STRICT | Snapshot `git for-each-ref` (SHA + refname) for every local and remote ref to scratch space before the first deletion. A deleted remote branch is restorable with `git push origin <sha>:refs/heads/<name>` only while you still hold the SHA. |
 | `DEVOPS-WORKTREE-DIRTY-01` | STRICT | Check every attached worktree for uncommitted work before removing it, and remove worktrees **before** their branches — an attached branch cannot be deleted, and `--force` on a dirty tree discards work no reflog will return. |
+| `DEVOPS-BRANCH-NAMESPACE-01` | STRICT | Closed-PR cleanup needs a repository-declared disposable prefix and an exact match between current tip and a related closed PR head SHA; see `branch-lifecycle.md`. |
+| `DEVOPS-REPO-BOOTSTRAP-01` | DEFAULT | Read back repository settings before proposing changes; see `repo-bootstrap.md`. |
+| `DEVOPS-AGENT-INTAKE-01` | DEFAULT | Use the repository's declared PR review policy; see `agent-pr-intake.md`. |
+| `DEVOPS-LOCAL-GC-01` | STRICT | Classify by PR state and SHA; snapshot refs, exclude active/dirty/locked or uncertain trees, and dry-run before cleanup; see `local-gc.md`. |
 
 **Why the merged/closed distinction is load-bearing.** `delete_branch_on_merge`
 reads as complete branch hygiene, so a repository with it enabled looks solved. It
@@ -229,7 +248,9 @@ intended. Compare repository **ids**, not names — a fork commonly carries the 
 branch names as upstream, so name comparison silently misclassifies it.
 
 Mechanics, the deletion-plan algorithm, and a worked audit live in
-`references/branch-lifecycle.md`.
+`references/branch-lifecycle.md`. Repository policy choices, contributed PR
+review and local worktree cleanup live in `references/repo-bootstrap.md`,
+`references/agent-pr-intake.md` and `references/local-gc.md`.
 
 ---
 
@@ -398,19 +419,19 @@ Two consecutive window misses → architecture review.
 
 ## §6 Cross-References
 
-| Topic | Canonical Owner | What dev-devops defers |
+| Topic | Canonical Owner | What jaw-dev-devops defers |
 |-------|----------------|----------------------|
-| Test strategy & CI test stages | `dev-testing` §5 | Test pyramid, coverage gates |
-| Backend observability code patterns | `dev-backend` `observability.md` | OTel SDK setup, structured logging |
-| Security hardening (app-layer) | `dev-security` | OWASP, auth, input validation |
-| SBOM/signing depth | `dev-security` `references/supply-chain-sbom.md` | Supply-chain evidence policy beyond image scan gates |
-| Architecture module boundaries | `dev-architecture` | Coupling taxonomy, barrel discipline |
-| Scaffolding conventions | `dev-scaffolding` | File naming, project structure |
-| Frontend build/bundle | `dev-frontend` | Vite/webpack config, SSR |
+| Test strategy & CI test stages | `jaw-dev-testing` §5 | Test pyramid, coverage gates |
+| Backend observability code patterns | `jaw-dev-backend` `observability.md` | OTel SDK setup, structured logging |
+| Security hardening (app-layer) | `jaw-dev-security` | OWASP, auth, input validation |
+| SBOM/signing depth | `jaw-dev-security` `references/supply-chain-sbom.md` | Supply-chain evidence policy beyond image scan gates |
+| Architecture module boundaries | `jaw-dev-architecture` | Coupling taxonomy, barrel discipline |
+| Scaffolding conventions | `jaw-dev-scaffolding` | File naming, project structure |
+| Frontend build/bundle | `jaw-dev-frontend` | Vite/webpack config, SSR |
 
-**dev-devops owns**: container builds, deploy pipelines, K8s manifests, IaC modules, SRE/incident response, edge infra, ML infra. DevOps owns operational scan execution and release gates; `dev-security` owns security policy, severity thresholds, and required evidence.
-**dev-backend owns**: application-layer observability code, API design, health check implementation.
-Overlap: observability alerting rules (dev-devops §5) ↔ observability code instrumentation (dev-backend `observability.md`). Cross-ref both.
+**jaw-dev-devops owns**: container builds, deploy pipelines, K8s manifests, IaC modules, SRE/incident response, edge infra, ML infra. DevOps owns operational scan execution and release gates; `jaw-dev-security` owns security policy, severity thresholds, and required evidence.
+**jaw-dev-backend owns**: application-layer observability code, API design, health check implementation.
+Overlap: observability alerting rules (jaw-dev-devops §5) ↔ observability code instrumentation (jaw-dev-backend `observability.md`). Cross-ref both.
 
 ## Pre-flight Checklist
 

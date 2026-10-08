@@ -7,7 +7,6 @@ Do not declare frontend work complete from code alone. Render and inspect the UI
 For substantial UI changes:
 
 - run the existing dev/build command first; if it fails, stop and report the exact command/output
-- run the existing jaw-dev/build command first; if it fails, stop and report the exact command/output
 - use Playwright when available; otherwise use the repo's existing visual test or browser tooling
 - desktop screenshot around 1440px width
 - split-screen / tablet screenshot around 1024px width
@@ -80,7 +79,7 @@ For component libraries, prefer Storybook stories for each state and run Chromat
 Applies when the surface belongs to a service someone else operates — a client
 application, another team's product, a repository you hold as a read-only
 reference checkout. The observation requirement does not change; what changes
-is that you cannot assume a jaw-dev server, a fixture set, or a safe backend.
+is that you cannot assume a dev server, a fixture set, or a safe backend.
 
 ### Find the repository-owned start command
 
@@ -92,7 +91,7 @@ observe.
 ### Record configuration and remote dependencies
 
 Before starting, establish what the app talks to. An application that reads a
-production API from a local jaw-dev server is not a safe observation target: you
+production API from a local dev server is not a safe observation target: you
 may read live data, and any write path is a real write.
 
 Note which of these apply and say so in the report: required environment

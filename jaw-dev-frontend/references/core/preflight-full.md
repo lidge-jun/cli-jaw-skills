@@ -1,7 +1,7 @@
 # Full Pre-Flight Checklist (launch/audit depth)
 
-Companion to `dev-frontend/SKILL.md` §14. The router keeps the minimum blocking gates;
-this file is the full launch/audit list. Production surfaces only (`dev` §0.4).
+Companion to `../../SKILL.md` §14. The router keeps the minimum blocking gates;
+this file is the full launch/audit list. Production surfaces only (`jaw-dev` §0.4).
 
 ## Design & composition
 - [ ] Domain-correct direction chosen and committed

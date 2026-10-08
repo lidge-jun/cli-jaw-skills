@@ -256,6 +256,8 @@ Phase 4: Drop old column
 | No prod approval | Unreviewed changes hit users | Environment protection |
 | `down()` migrations | Rollback breaks forward-deployed code | Expand-contract |
 | Deploy without smoke test | Silent failures | Post-deploy smoke in pipeline |
+| No declared agent PR intake | Reviewer queue grows without a review policy | `agent-pr-intake.md` |
+| Ancestry-only local cleanup | Squash merges and reused branch names cause wrong decisions | `local-gc.md` |
 
 ---
 

@@ -50,7 +50,7 @@ ffmpeg -y -i /tmp/my-video/renders/out.mp4 -vf fps=1/3 /tmp/my-video/snapshots/f
 
 ## Premium Tech Briefing Style
 
-Use this style when the user asks for dev-frontend/dev-uiux-design polish or when the task is a tech-news explainer.
+Use this style when the user asks for jaw-dev-frontend/jaw-dev-uiux-design polish or when the task is a tech-news explainer.
 For the full reusable style-pack contract, read `reference/style-packs.md`.
 
 - Background: off-black, charcoal, or zinc-950; never pure black.

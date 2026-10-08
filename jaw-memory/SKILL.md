@@ -16,13 +16,13 @@ metadata:
 
 ## Rules
 
-1. **Search before answering** about past work, decisions, or preferences — run `cli-jaw memory search <keywords>` first.
+1. **Search before answering** about past work, decisions, or preferences. Identify the proper noun, version, error, or file; try short Korean and English keyword variants in L1 memory, then L1 chat.
 2. **Save durable facts immediately** — user preferences, key decisions, stable project facts.
 3. **Use structured destinations** — prefer `structured/profile.md`, `structured/semantic/...`, or `structured/episodes/...`.
-4. **Admit gaps** — if search returns nothing, say "I don't have a record of that."
+4. **Open the source** — read the relevant saved file or full chat message with context before stating exact wording or completion. An injected snapshot locates evidence; it does not verify the source.
 5. **Save stable facts only** — not transient TODOs, phase logs, or temporary checklists.
-6. **Search broadly** — consider Korean/English variants, error codes, symbols, and filenames.
-7. **Use injected context** — a task snapshot may be in the prompt; still search when precision matters.
+6. **Check chronology** — a request or plan is not completed work. Check for later corrections and the applicable date or version.
+7. **Admit checked gaps** — only after memory and chat searches and relevant source reads, state what range or source you checked and what remains unverified.
 
 ## Scope: L1 vs L2
 
@@ -96,8 +96,9 @@ cli-jaw memory init
 ### User Asks "Do you remember...?"
 
 1. Run `cli-jaw memory search "<keywords>"`
-2. If found, answer with the remembered fact and cite the source file
-3. If not found, say there is no saved record and offer to save it
+2. Read a matching file; check later corrections before citing it
+3. If memory misses, run `cli-jaw chat search "<keywords>" --all-sessions` with keyword variants and context
+4. If both miss, state the checked gap and offer to save a durable fact
 
 ### End of Important Session
 
@@ -112,12 +113,14 @@ Search past conversation messages in the current instance. Use when you need pri
 ```bash
 cli-jaw chat search "<keywords>"
 cli-jaw chat search "<keywords>" --days 3          # limit to recent N days
-cli-jaw chat search "<keywords>" --recent 100      # limit to most recent N messages (~50 Q&A pairs)
+cli-jaw chat search "<keywords>" --recent 100      # limit to most recent N messages
 cli-jaw chat search "<keywords>" --context 2       # show ±N surrounding messages
-cli-jaw memory search "<keywords>" --chat          # search memory AND recent chat history together
+cli-jaw chat search "<keywords>" --limit 20        # cap matching results
+cli-jaw chat search "<keywords>" --all-sessions    # search all sessions in this instance
+cli-jaw memory search "<keywords>" --chat          # memory plus a 7-day chat supplement
 ```
 
-Use `chat search` when memory search returns nothing but the fact was discussed in a prior conversation. Combine `--recent` and `--context` for focused lookups.
+Use `chat search` after a memory miss. `--recent` counts messages; combine it with `--context` for focused lookups. Search hits are locators: inspect surrounding messages and later corrections before claiming a decision or completed action.
 
 ## Context (memory→chat jump)
 

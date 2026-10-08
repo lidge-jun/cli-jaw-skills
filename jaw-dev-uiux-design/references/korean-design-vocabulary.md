@@ -42,7 +42,7 @@ Rapid lookup: user word → concrete starting point.
 
 ## Font Selection Guidelines
 
-- **Typography stance (UX-TYPE-01)**: sans by default. Use serif only when the brief, brand system, or stated editorial/premium rationale supports it; do not inject one serif word into an otherwise sans headline for spice. When serif is justified (AI-product/editorial/research/trust surfaces), use the three-role system — display serif at light weights 330-400 + sans UI + mono accent — never as a bare AI-premium shortcut ("tasteslop"); gates in `dev-frontend` `aesthetics.md`.
+- **Typography stance (UX-TYPE-01)**: sans by default. Use serif only when the brief, brand system, or stated editorial/premium rationale supports it; do not inject one serif word into an otherwise sans headline for spice. When serif is justified (AI-product/editorial/research/trust surfaces), use the three-role system — display serif at light weights 330-400 + sans UI + mono accent — never as a bare AI-premium shortcut ("tasteslop"); gates in `jaw-dev-frontend` `aesthetics.md`.
 - **Primary default**: Geist (modern SaaS, Vercel ecosystem)
 - **Korean-first**: Pretendard. Close alternatives: SUIT, Wanted Sans, LINE Seed KR, Noto Sans KR, Spoqa Han Sans Neo, Source Han Sans KR.
 - **Light centered Korean hero**: 300-400 weight is display-only (>= ~40px) for FE-HERO-LIGHT-CENTER-01.

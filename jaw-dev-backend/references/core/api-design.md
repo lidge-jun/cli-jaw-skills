@@ -1,7 +1,7 @@
 # API Design Patterns
 
 Framework-agnostic API design guidelines.
-Synthesized from dev-backend + senior-backend (alirezarezvani) + mrgoonie backend-development.
+Synthesized from jaw-dev-backend + senior-backend (alirezarezvani) + mrgoonie backend-development.
 
 ---
 
@@ -19,7 +19,7 @@ Synthesized from dev-backend + senior-backend (alirezarezvani) + mrgoonie backen
 
 ## Consistent Response Envelope
 
-Every endpoint MUST use the same envelope:
+For APIs that choose a shared envelope, apply it consistently within that contract. Preserve existing contracts and protocol-native GraphQL/gRPC/SSE responses; do not wrap them in this REST sample. HTTP 204 has no JSON body. In cli-jaw, `GET /api/events` is data-only SSE and the native Code API has its own JSON contract. Example for APIs that choose this envelope:
 
 ```json
 // Success

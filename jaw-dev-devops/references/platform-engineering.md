@@ -3,21 +3,21 @@
 Last reviewed: 2026-06-21
 Applies to: DevOps capability refresh, platform guardrails, DORA metrics, provider routing, agent automation
 When to read: Broad DevOps refresh, platform engineering decisions, provider-spanning CI/CD/IaC/SRE work
-Canonical owner: dev-devops platform and capability routing
+Canonical owner: jaw-dev-devops platform and capability routing
 
 ---
 
 ## §1 Purpose
 
 Use this reference to route broad DevOps work by capability instead of dumping
-vendor snippets into `dev-devops/SKILL.md`. Keep the main skill lightweight and
+vendor snippets into `jaw-dev-devops/SKILL.md`. Keep the main skill lightweight and
 load detailed references only when the task needs them.
 
 ## §2 Capability Map
 
 | Capability | Read first | Evidence to collect |
 |---|---|---|
-| Continuous integration | `dev-testing/references/ci-pipeline.md` | lint/type/test/contract/e2e order, artifacts, matrix reasoning |
+| Continuous integration | `jaw-dev-testing/references/ci-pipeline.md` | lint/type/test/contract/e2e order, artifacts, matrix reasoning |
 | Continuous delivery/deployment | `ci-cd-deploy.md` | environments, approvals, rollback, smoke, progressive strategy |
 | Package release | `package-release.md` | auth model, provenance, install smoke, token fallback reason |
 | Cross-platform release | `cross-platform-release.md` | CI matrix proof and target OS/local proof gaps |
@@ -25,7 +25,7 @@ load detailed references only when the task needs them.
 | Containers | `docker.md` | base pinning, scan, SBOM, signing, private install secret handling |
 | Kubernetes | `kubernetes.md` | Gateway API, rollout, HPA/VPA/PDB, GitOps boundary |
 | SRE/operations | `sre-foundations.md` | SLO, burn-rate alert, incident role, recovery evidence |
-| Supply chain / SLSA | `dev-security/references/supply-chain-sbom.md` | SBOM, signing, provenance, dependency audit, verification policy |
+| Supply chain / SLSA | `jaw-dev-security/references/supply-chain-sbom.md` | SBOM, signing, provenance, dependency audit, verification policy |
 
 ## §3 DORA Metrics Use
 
@@ -73,7 +73,7 @@ Keep provider notes table-only unless a task asks for provider-specific depth.
 
 ## §6 SLSA and Security Handoff
 
-`dev-devops` owns collection of release/deploy proof. `dev-security` owns
+`jaw-dev-devops` owns collection of release/deploy proof. `jaw-dev-security` owns
 security policy details.
 
 DevOps proof should record:
@@ -85,7 +85,7 @@ DevOps proof should record:
 - verification commands and artifacts;
 - security exceptions and owners.
 
-Read `dev-security/references/supply-chain-sbom.md` for SLSA, SBOM, signing,
+Read `jaw-dev-security/references/supply-chain-sbom.md` for SLSA, SBOM, signing,
 dependency audit, and provenance policy instead of duplicating those rules here.
 
 ## §7 Broad Refresh Checklist
@@ -94,7 +94,7 @@ Before changing broad DevOps guidance:
 
 1. Identify the capability being changed.
 2. Read the canonical reference in the capability map.
-3. Check whether `dev-testing` or `dev-security` is the owner.
+3. Check whether `jaw-dev-testing` or `jaw-dev-security` is the owner.
 4. Keep provider examples as table rows unless provider-specific implementation
    is the task.
-5. Update `dev-devops/SKILL.md` only as a route, not as a long example host.
+5. Update `jaw-dev-devops/SKILL.md` only as a route, not as a long example host.

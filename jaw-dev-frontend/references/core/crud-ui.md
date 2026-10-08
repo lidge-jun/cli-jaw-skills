@@ -50,4 +50,4 @@ operability fully preserved.
 - UI smoke for the changed screen (manual click-through or one Playwright run when UI risk
   is real — risk-tier rule, not a universal blocker).
 - One negative check: a failing submit shows errors without losing input.
-- See `dev-testing/references/core/crud-test-matrix.md`.
+- See `../../../jaw-dev-testing/references/core/crud-test-matrix.md`.

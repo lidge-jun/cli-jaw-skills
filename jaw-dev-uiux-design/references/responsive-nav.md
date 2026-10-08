@@ -2,7 +2,7 @@
 
 ### Canonical Breakpoint Tiers
 
-See `dev-frontend/references/core/responsive-viewport.md` for the canonical T1–T5+ breakpoint table, page containment rules, container query patterns, and split-screen guidance. All responsive references share that single source of truth.
+See `../../jaw-dev-frontend/references/core/responsive-viewport.md` for the canonical T1–T5+ breakpoint table, page containment rules, container query patterns, and split-screen guidance. All responsive references share that single source of truth.
 
 ### Mobile-First vs Desktop-First
 
@@ -14,7 +14,7 @@ See `dev-frontend/references/core/responsive-viewport.md` for the canonical T1�
 
 ### Container Queries & Split-Screen
 
-See `dev-frontend/references/core/responsive-viewport.md` for canonical container query examples, `@container` vs `@media` decision guide, and split-screen/half-window rules. Nav-specific guidance below.
+See `../../jaw-dev-frontend/references/core/responsive-viewport.md` for canonical container query examples, `@container` vs `@media` decision guide, and split-screen/half-window rules. Nav-specific guidance below.
 
 For navigation components, prefer `@container` so the same nav adapts in a sidebar, modal, or full-width header without viewport-dependent media queries.
 

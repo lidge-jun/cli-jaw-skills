@@ -9,14 +9,14 @@ metadata:
 
 # Dev-Architecture — Module Boundaries & Structural Integrity
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
-> **Always read `dev/SKILL.md` first** for project-wide conventions before applying architecture rules.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **Always read `jaw-dev/SKILL.md` first** for project-wide conventions before applying architecture rules.
 
 Enforces architectural rules that prevent structural decay: circular dependencies, implicit coupling, barrel abuse, and misplaced validation. These rules are mechanical — an AI coding agent can follow them without subjective judgment.
 
-Severity mapping (dev §0.2): `Severity: CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` ⇒ DEFAULT.
+Severity describes impact only when backed by a concrete failure. Style, coupling, and size heuristics follow `jaw-dev` §0.2 DEFAULT exceptions; uppercase severity alone does not make a structural preference a safety gate.
 
 ## Modular References
 
@@ -31,7 +31,7 @@ Severity mapping (dev §0.2): `Severity: CRITICAL`/`HIGH` ⇒ STRICT; `MEDIUM` �
 Architecture rules in this skill are local and mechanical. When an architectural
 decision depends on current framework guidance, cloud/provider reference
 architecture, package deprecation, platform limits, or public source evidence,
-read the active `search` skill and follow its query-rewrite, source-fetch, and
+read the active `jaw-search` skill and follow its query-rewrite, source-fetch, and
 evidence-status rules. Use browser verification only after candidate URLs exist.
 
 ---
@@ -49,11 +49,11 @@ evidence-status rules. Use browser verification only after candidate URLs exist.
 
 ### When to Split a Module
 
-Canonical file-size rule: **>400 LOC -> split (DEFAULT)**. Deviations require a stated reason.
+Files over 400 LOC trigger a cohesion review (DEFAULT). Split by responsibility when useful; document a justified exception instead of blocking by size alone.
 
 | Signal | Action |
 |--------|--------|
-| File exceeds 400 LOC | Split by responsibility (DEFAULT) |
+| File exceeds 400 LOC | Review cohesion; split by responsibility or explain the exception |
 | Module has 6+ direct dependents | Extract shared interface |
 | Two unrelated features share a file | Separate into own modules |
 | Circular import detected | Extract shared types/interfaces to a third module |
@@ -188,11 +188,9 @@ refactoring patterns, and banned review responses.
 ## 4. Boundary-Only Defensive Programming
 
 **Severity: CRITICAL**
-**Rule:** Validation and defensive checks belong ONLY at system boundaries. Internal module boundaries MUST trust their callers.
+**Rule:** Parse untrusted shape once at trust ingress; do not repeat shape validation within a trusted typed boundary. Enforce domain ranges, state transitions, and relational invariants in their domain owner, including for in-process callers. Preserve authorization and assertions for reachable invalid states.
 
-Ownership split: **placement** (validation happens at the boundary, nowhere else) is owned
-by this section; **what the validation schema enforces** (content/policy) is owned by
-`dev-security` §1.
+This section distinguishes ingress parsing from domain invariants. `jaw-dev-security` owns security validation and authorization policy; placement must not erase a business invariant or required defense in depth.
 
 ### Validation Location Matrix
 
@@ -203,18 +201,18 @@ by this section; **what the validation schema enforces** (content/policy) is own
 | File system reads | YES | External data, may be corrupt | Parse + validate structure |
 | Database query results | YES at ORM-untyped/raw-query boundaries (shape only); NO when a typed schema/ORM guarantees the shape | Untyped results may drift; typed guarantees are trusted (see Banned Patterns) | Check raw-query nulls/shape; trust typed ORM results |
 | Message queue consumer | YES | Cross-process boundary | Validate message schema |
-| **Internal function params** | **NO** | Caller is trusted code you control | Type system handles this |
-| **Private method args** | **NO** | Same module, same author | Redundant — types suffice |
-| **Service-to-service in same process** | **NO** | In-process calls share type system | Interface contracts handle this |
+| **Internal function params** | No repeated shape parsing; domain constraints may apply | Types prove shape, not every business invariant | Domain owner checks start <= end |
+| **Private method args** | No repeated shape parsing; invariants may apply | Types do not prove every valid state | Enforce real domain constraints |
+| **Service-to-service in same process** | No repeated trusted shape parsing; enforce domain/security rules | In-process is no waiver for invariants or authorization | Check the actual constraint |
 
 ### Banned Patterns
 
 | Banned Pattern | Why Banned | Fix |
 |----------------|-----------|-----|
 | `if (!param) throw` at start of every internal function | Redundant with type system, clutters code | Remove — let TypeScript/types enforce |
-| Runtime type checks in typed language internals | Duplicates compiler work, adds noise | Trust the type system |
-| `assert(x !== null)` in module-internal code | If x can be null, fix the type; if it can't, the assert is noise | Fix type signature or remove assert |
-| Validation in domain entity constructor for in-process callers | Entities should be created from validated data | Validate at boundary, trust domain layer |
+| Repeated shape checks on validated trusted values | Adds noise without a new boundary | Trust the parsed shape; retain domain invariants and reachable-state checks |
+| Assertions on states proven impossible by the actual contract | Distract from reachable failures | Fix types where sufficient; retain assertions for real state constraints |
+| Repeating ingress shape parsing in each domain constructor | Duplicates a trusted parser | Parse shape once; enforce entity/value-object invariants in the domain owner |
 | Try-catch around every internal call | Hides bugs, makes debugging harder | Let errors propagate, catch at boundary |
 | Null checks after DB query that schema guarantees NOT NULL | Distrusts your own schema | Trust schema, validate at migration time |
 
@@ -251,7 +249,7 @@ by this section; **what the validation schema enforces** (content/policy) is own
 |---------|-----------------|-----------|
 | Library/package public API (`packages/ui/index.ts`) | YES | Single entry point for consumers |
 | Framework plugin entry (`plugin/index.ts`) | YES | Plugin contract requires it |
-| Feature public boundary export (`features/auth/index.ts` as the feature's single external entry) | YES | Public Boundary Export (dev-scaffolding §1); external consumers import the boundary |
+| Feature public boundary export (`features/auth/index.ts` as the feature's single external entry) | YES | Public Boundary Export (jaw-dev-scaffolding §1); external consumers import the boundary |
 | Feature internal convenience barrel (re-exporting siblings for imports inside the feature) | NO | Hides internal structure, breaks tree-shaking |
 | Utility folder (`utils/index.ts`) | NO | Creates coupling magnet |
 | Component folder re-exporting siblings | NO | Direct imports are clearer |
@@ -273,8 +271,8 @@ When reviewing any PR that adds/modifies module structure, verify:
 - [ ] **Coupling classified** — any new cross-module dependency has coupling type identified
 - [ ] **No CRITICAL/HIGH coupling without justification** — Content/Common/Control coupling blocked
 - [ ] **Barrel files** — no new internal barrels; existing public barrels use named exports only
-- [ ] **Validation placement** — new validation is at system boundary, not internal functions
-- [ ] **Module size** — new/modified modules under 400 LOC
+- [ ] **Validation placement** — parse untrusted shape at ingress, enforce domain invariants in their owner, and preserve required security checks
+- [ ] **Module size** — review >400 LOC for cohesion and document justified exceptions
 - [ ] **No "utils" growth** — shared code placed in domain-specific module, not catch-all utils
 - [ ] **Dependency direction** — dependencies point inward toward Domain: outer layers depend on inner layers (Presentation/Application/Infrastructure -> Domain), and inner layers never import outward
 - [ ] **No lazy-import hacks** — no `require()` inside function body to hide circular deps
@@ -289,7 +287,7 @@ When reviewing any PR that adds/modifies module structure, verify:
 | Barrel abuse | Biome `noBarrelFile` or ESLint `no-restricted-imports` | pattern for internal index files |
 | Dead files/exports/deps | knip | `npx knip` |
 | Monorepo package consistency | sherif | `npx sherif` |
-| Module size | custom script | `find src -name '*.ts' -exec wc -l {} + \| awk '$1 > 400'` |
+| Module size review | custom script | `find src -name '*.ts' -exec wc -l {} + \| awk '$1 > 400'` |
 
 Tool roles verified 2026-07-02 (Sources: `references/circular-dependencies.md`).
 
@@ -297,8 +295,8 @@ Tool roles verified 2026-07-02 (Sources: `references/circular-dependencies.md`).
 
 ## Cross-Skill References
 
-- **Observability**: Trace emission at module boundaries is a production/long-lived-runtime concern (DEFAULT there, not universal). See `dev-backend/references/core/observability.md` for the canonical OTel setup.
-- **Security**: Validate at every trust/process/external boundary (HTTP entry, IPC, file/CLI input, third-party responses). Intra-trust-domain module calls follow §4 boundary-only defense — do not re-validate already-trusted data. See `dev-security/SKILL.md` for input validation and auth patterns.
+- **Observability**: Trace emission at module boundaries is a production/long-lived-runtime concern (DEFAULT there, not universal). See `jaw-dev-backend/references/core/observability.md` for the canonical OTel setup.
+- **Security**: Validate at every trust/process/external boundary (HTTP entry, IPC, file/CLI input, third-party responses). Intra-trust-domain module calls follow §4 boundary-only defense — do not re-validate already-trusted data. See `jaw-dev-security/SKILL.md` for input validation and auth patterns.
 
 ---
 
@@ -329,13 +327,13 @@ What type? (see taxonomy above)
 ```
 Is the data source external (HTTP, file, queue, DB, user input)?
   YES -> Validate here (boundary)
-  NO  -> Is this a security-critical path?
-    YES -> Validate (defense in depth)
-    NO  -> Trust the type system, no validation needed
+  NO  -> Is this a security-critical path or domain/state invariant?
+    YES -> Enforce the relevant invariant/authorization in its owner
+    NO  -> Avoid duplicating already-proven shape validation
 ```
-- Coupling and boundary review: see `dev-code-reviewer`.
-- Debugging escalation for boundary or coupling issues: see `dev-debugging`.
-- Infrastructure architecture and deployment boundaries: see `dev-devops`.
+- Coupling and boundary review: see `jaw-dev-code-reviewer`.
+- Debugging escalation for boundary or coupling issues: see `jaw-dev-debugging`.
+- Infrastructure architecture and deployment boundaries: see `jaw-dev-devops`.
 
 ## Structural Index Concept (ARCH-INDEX-01, DEFAULT)
 

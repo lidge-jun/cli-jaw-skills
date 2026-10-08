@@ -14,22 +14,22 @@ This skill owns HTML/CSS/component/runtime implementation, responsive behavior, 
 wiring, visual verification, and frontend platform rules.
 
 > **Role separation:** For design judgment — typography/color/layout direction, UX decision
-> gates, product personalities, or vague visual briefs — load `dev-uiux-design` first. This
-> skill implements the chosen direction; `dev-uiux-design` makes the design decisions.
+> gates, product personalities, or vague visual briefs — load `jaw-dev-uiux-design` first. This
+> skill implements the chosen direction; `jaw-dev-uiux-design` makes the design decisions.
 > Implementation anti-slop tell detection and enforcement stays here (concrete rendered tells
-> in UI); design-level concept/taste judgment lives in `dev-uiux-design`.
+> in UI); design-level concept/taste judgment lives in `jaw-dev-uiux-design`.
 
-> **Role boundary (canonical — identical in `dev` and `dev-uiux-design`):**
-> `dev` owns universal process, evidence, and safety rules. `dev-uiux-design` owns
-> design intent, direction, and concept judgment. `dev-frontend` owns concrete frontend
-> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
-> output/process hygiene (FAMILY-SLOP-01), `dev-uiux-design` = concept/taste judgment
-> (is this direction generic or domain-wrong?), `dev-frontend` = rendered implementation
+> **Role boundary (canonical — identical in `jaw-dev` and `jaw-dev-uiux-design`):**
+> `jaw-dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
+> design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
+> implementation and rendered tell enforcement. Anti-slop has three layers: `jaw-dev` =
+> output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
+> (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## Modular References
 
@@ -71,7 +71,7 @@ wiring, visual verification, and frontend platform rules.
 | `references/core/theme-switching.md`      | Dark mode / theme                    | CSS custom properties toggle, FOWT prevention, transition, component checklist     |
 | `references/core/color-system.md`         | Color tokens, palettes wiring, theme-ready CSS | Token layering, `oklch()` + fallback discipline, `color-mix()`, `light-dark()`, Tailwind v4/shadcn wiring, contrast gates (verified 2026-07-07) |
 | `references/core/i18n-global.md`          | Multi-language / RTL                 | RTL layout, pluralization, Intl API, locale switching, content expansion           |
-| See also: `dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
+| See also: `jaw-dev-uiux-design` skill         | Vague requests, onboarding, UX states | Intent discovery, design isms, product personalities, onboarding/empty/error patterns |
 | `references/stacks/react.md`              | React projects                       | Server Components, hooks, state, TanStack Query, shadcn/ui, performance            |
 | `references/stacks/nextjs.md`             | Next.js projects                     | App Router, RSC, image optimization, data fetching, middleware                     |
 | `references/stacks/vanilla.md`            | HTML+CSS+JS (no framework)           | Zero-dependency, viewport fitting, responsive CSS, progressive enhancement         |
@@ -82,13 +82,13 @@ wiring, visual verification, and frontend platform rules.
 Start with `anti-slop.md`, `aesthetics.md`, `responsive-viewport.md`, and `visual-verification.md`. Add domain/locale/stack references only when relevant.
 For C2 ordinary app screens (form/table/list/detail), `crud-ui.md` alone suffices; add the style references above for marketing/visual surfaces or C3+ work.
 
-- UI/rendering bug RCA: load `dev-debugging`.
-- Build pipeline, bundle config, or deployment: load `dev-devops`.
-- Project setup or file placement conventions: load `dev-scaffolding`.
-- Data-driven dashboards, reporting views, or data format expectations: load `dev-data`.
+- UI/rendering bug RCA: load `jaw-dev-debugging`.
+- Build pipeline, bundle config, or deployment: load `jaw-dev-devops`.
+- Project setup or file placement conventions: load `jaw-dev-scaffolding`.
+- Data-driven dashboards, reporting views, or data format expectations: load `jaw-dev-data`.
 
 When frontend choices depend on current framework, design-system, browser API, library
-behavior, or package/source freshness, follow `dev` §External Evidence and Recall Routing
+behavior, or package/source freshness, follow `jaw-dev` §External Evidence and Recall Routing
 and load the `search` skill for current/external lookups.
 
 ### Verification grounding
@@ -121,7 +121,7 @@ Default rules:
 - For any soft 3D miniature, mascot, chibi, toy-like object, or character-like asset, read `soft-3d-asset-gates.md`.
 - For product/brand/object/place/person pages, use concrete visual assets in the first viewport.
 - For finance, government, B2B, admin, auth, security, and developer tools, keep visual warmth restrained and subordinate to clarity.
-- Every user-facing decision point must justify its existence — defaults first, one primary action per screen, choices demoted to progressive disclosure (`dev-uiux-design` UX-LAZY-01 owns the gate).
+- Every user-facing decision point must justify its existence — defaults first, one primary action per screen, choices demoted to progressive disclosure (`jaw-dev-uiux-design` UX-LAZY-01 owns the gate).
 - For text-heavy surfaces (landing, marketing, editorial, public service), apply typography wrapping defaults — see `typography-wrapping.md`. Dashboard table cells are excluded.
 
 ---
@@ -135,14 +135,14 @@ When the user describes UI in vague terms (e.g. "접히는 거", "팝업 같은 
 If the user already names a specific component, skip this step.
 Reference: [component.gallery/components](https://component.gallery/components/)
 
-For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component files when the repo supports TypeScript. Inherit `dev` TypeScript strict-compatibility rules.
+For new React/Vue/Svelte/Next UI source files, prefer `.tsx` or typed component files when the repo supports TypeScript. Inherit `jaw-dev` TypeScript strict-compatibility rules.
 If frontend structure is unclear, read existing source-of-truth docs first, then document pages, components, routes, state stores, and build commands in the repo's existing docs before broad implementation.
 
 ---
 
 ## 1.5 Objective Gates vs Style Samples
 
-Two different kinds of rules live in this skill (see `dev` §0.2):
+Two different kinds of rules live in this skill (see `jaw-dev` §0.2):
 - **Objective UX gates (STRICT/DEFAULT)** — accessibility baseline (§7, §11), state coverage
   (loading/empty/error/permission), keyboard operability, visible focus, contrast. Missing
   these are review findings.
@@ -153,11 +153,11 @@ Two different kinds of rules live in this skill (see `dev` §0.2):
   MANDATORY), and must never be enforced as universal taste (UX-STYLE-01).
 ## 2. Design Direction Intake
 
-> When the user cannot articulate a clear design direction, load `dev-uiux-design` first —
+> When the user cannot articulate a clear design direction, load `jaw-dev-uiux-design` first —
 > it owns intent discovery and direction selection. This section validates and implements
 > the chosen direction; it does not choose independently.
 
-Before coding, validate the design direction from `dev-uiux-design` (or a concrete brief):
+Before coding, validate the design direction from `jaw-dev-uiux-design` (or a concrete brief):
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Surface**: Is this a working tool, dashboard, public service, AI workflow, game, landing page, or editorial surface?
 - **Tone**: Confirm the direction. For product tools this often means quiet, dense, trustworthy, and fast rather than loud.
@@ -166,11 +166,11 @@ Before coding, validate the design direction from `dev-uiux-design` (or a concre
   moment; supporting scroll reveals may exist alongside it per
   `motion.md` FE-MOTION-BUCKET-01)
 
-When user intent is vague ("깔끔하게", "모던하게", "just make it look good"), read the `dev-uiux-design` skill and run the User Intent Discovery Protocol before making routing decisions.
-If the user cannot answer these questions, use the `dev-uiux-design` skill's structured preference elicitation flow. Offer product references ("Notion 느낌? Linear 느낌?") and visual comparisons.
+When user intent is vague ("깔끔하게", "모던하게", "just make it look good"), read the `jaw-dev-uiux-design` skill and run the User Intent Discovery Protocol before making routing decisions.
+If the user cannot answer these questions, use the `jaw-dev-uiux-design` skill's structured preference elicitation flow. Offer product references ("Notion 느낌? Linear 느낌?") and visual comparisons.
 
-**Concept pass before code (pointer — canonical: `dev-uiux-design` §2.5 UX-CONCEPT-GEN-01):**
-for C2+ expressive or brand-visible surfaces, load `dev-uiux-design` §2.5 before
+**Concept pass before code (pointer — canonical: `jaw-dev-uiux-design` §2.5 UX-CONCEPT-GEN-01):**
+for C2+ expressive or brand-visible surfaces, load `jaw-dev-uiux-design` §2.5 before
 implementation. It owns direction discovery, concept branching (open direction: 5
 distinct isms → lock one → refine; concrete direction: 3-5 contextual variants),
 synthesis, and direction lock. Resume here after `DESIGN.md` is locked.
@@ -189,7 +189,7 @@ Adjust these dials based on what's being built. Present to user if unclear.
 | MOTION_INTENSITY |    4    | 1-10  | 1=static, 10=cinematic choreography    |
 | VISUAL_DENSITY   |    5    | 1-10  | 1=art gallery airy, 10=cockpit dense   |
 
-After Design Read, set dials per `dev-uiux-design` §2 Dial Setting.
+After Design Read, set dials per `jaw-dev-uiux-design` §2 Dial Setting.
 
 Product density profile (D1-D8 in `references/core/product-density.md`) sets component class; VISUAL_DENSITY (1-10) sets spacing within that class. These are orthogonal axes.
 
@@ -227,7 +227,7 @@ Read `references/core/aesthetics.md` for full guidelines. Summary:
   palette, lighting, style, and aspect per `asset-requirements.md`.
 
   Concept mockups guide implementation and are not shipped; production assets require candidate inspection and selection; cutout assets additionally follow FE-ASSET-BG-01.
-- **Visual verification**: after UI changes, exercise the flow per `jaw-dev-testing` §4.6 (TEST-CU-QA-01) — open the dev server in the Manager embedded browser, `POST …/<targetId>/screenshot`, then READ the returned PNG — instead of claiming visual correctness from code alone.
+- **Visual verification**: after UI changes, drive the changed flow using `../jaw-dev/references/browse-qa-ladders.md` and `jaw-dev-testing` §4.7. Inspect the render and interaction result. Where Jaw browser is the available capability, use `cli-jaw browser snapshot --interactive`, `click`, and `screenshot`; read the screenshot.
 
 ### Cutout Asset Generation (FE-ASSET-BG-01 surface — STRICT)
 Every cutout asset MUST follow `references/core/asset-production.md` § Asset Background Strategy; load the routed asset references before generation.
@@ -235,12 +235,12 @@ Every cutout asset MUST follow `references/core/asset-production.md` § Asset Ba
 
 ## 5. Anti-Slop Enforcement
 
-Rule classes (dev §0.2): items below are DEFAULT — deviate with a stated reason; concrete
+Rule classes (jaw-dev §0.2): items below are DEFAULT — deviate with a stated reason; concrete
 values and palettes are STYLE_SAMPLE (§1.5); the emoji-as-UI-icon ban is the only STRICT item.
 
 Read `references/core/anti-slop.md` for full rules. Key standards:
 
-Award evidence does not repeal these rules. Use the context-gated calibrations in `../jaw-dev-uiux-design/references/compositional-patterns.md`: an exception is valid only when the device expresses specific product, artifact, or narrative content and the surface remains accessible without the effect.
+Use `../jaw-dev-uiux-design/references/compositional-patterns.md` and dated `design-trends.md` as examples. Reopen the underlying source, explain the device's product-specific role, and preserve accessibility; a winner example alone cannot override the anti-slop rule.
 
 ### Hero discipline (FE-HERO-01)
 
@@ -305,7 +305,7 @@ Background Strategy. Read that section before generating one; a cutout produced 
 its background strategy is the asset most likely to ship with a visible matte edge or a
 background that fights the surface it lands on.
 
-- When NO design brief exists, do not invent a generic default: apply the domain-gated no-brief kit owned by `dev-uiux-design` §1 UX-DEFAULT-ISM-01 and state the assumption
+- When NO design brief exists, do not invent a generic default: apply the domain-gated no-brief kit owned by `jaw-dev-uiux-design` §1 UX-DEFAULT-ISM-01 and state the assumption
 
 ### Do not ship these tells (FE-AI-TELL-01)
 Enforce the complete AI-default tell catalogs in `references/core/anti-slop.md` and `references/core/layout-discipline.md`.
@@ -438,30 +438,30 @@ Frontend does not operate in isolation. When consuming backend APIs or implement
 
 | Responsibility | Owner |
 |---------------|-------|
-| Response envelope shape (`success`, `data`, `error`, `meta`) | `dev-backend` defines, `dev-testing` verifies |
+| Response envelope shape (`success`, `data`, `error`, `meta`) | `jaw-dev-backend` defines, `jaw-dev-testing` verifies |
 | Consumer-side fixture alignment | **Frontend** — keep mocks in sync with `fixtures/contracts/` |
-| Contract test triggers | Frontend payload changes → update contract tests BEFORE merging (see `dev-testing` §3) |
+| Contract test triggers | Frontend payload changes → update contract tests BEFORE merging (see `jaw-dev-testing` §3) |
 | Error display mapping | Frontend maps `error.code` to user-facing messages; never parse `error.message` for logic |
 
 **When a frontend change touches API consumption:**
 1. Check if the response shape assumption still holds
-2. If changed, update or add a contract test first (see `dev-testing` §3.5)
+2. If changed, update or add a contract test first (see `jaw-dev-testing` §3.5)
 3. Align frontend mocks/fixtures with backend golden examples
 
 ### 15.2 Security Responsibilities
 
 | Control | Policy Owner | Implementation Owner |
 |---------|-------------|---------------------|
-| CSP directives | `dev-security` §5 | Frontend (no inline scripts, no `eval`, no surprise 3rd-party scripts) |
-| CORS | `dev-security` §5 | Backend middleware (`dev-backend` §4) |
-| XSS prevention | `dev-security` §5 | Frontend (avoid `dangerouslySetInnerHTML`; if needed, sanitize with DOMPurify + CSP defense) |
-| Token storage | `dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
-| Auth state display | `dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
+| CSP directives | `jaw-dev-security` §5 | Frontend (no inline scripts, no `eval`, no surprise 3rd-party scripts) |
+| CORS | `jaw-dev-security` §5 | Backend middleware (`jaw-dev-backend` §4) |
+| XSS prevention | `jaw-dev-security` §5 | Frontend (avoid `dangerouslySetInnerHTML`; if needed, sanitize with DOMPurify + CSP defense) |
+| Token storage | `jaw-dev-security` §2 | Frontend (`httpOnly` cookies preferred over `localStorage`) |
+| Auth state display | `jaw-dev-security` §2 | Frontend (loading → check → redirect or render; never flash protected content) |
 
 ### 15.3 Testing Integration
 
 - Playwright smoke tests validate rendered flows AFTER backend API + contract tests pass
-- Frontend unit tests mock API responses using the **same envelope shape** defined in `dev-backend` §5
+- Frontend unit tests mock API responses using the **same envelope shape** defined in `jaw-dev-backend` §5
 - When backend error codes change, frontend error-mapping tests must be updated
 
 ## §16 Pre-Flight Checklist

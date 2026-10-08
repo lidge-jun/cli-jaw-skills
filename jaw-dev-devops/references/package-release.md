@@ -3,7 +3,7 @@
 Last reviewed: 2026-07-02
 Applies to: npm, PyPI, Bun-to-npm, Homebrew, crates.io, RubyGems, Go modules, GHCR, Docker Hub
 When to read: Package publishing, release auth, downstream distribution, CLI package release
-Canonical owner: dev-devops package-release guidance
+Canonical owner: jaw-dev-devops package-release guidance
 
 Cross-ref: read `../../jaw-dev-security/references/supply-chain-sbom.md` for SBOM/signing depth.
 

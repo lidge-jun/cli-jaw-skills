@@ -30,7 +30,7 @@ Visual surfaces need real visual evidence. Abstract backgrounds, blobs, and gene
 
 This source-priority list applies to CONTENT assets used in builds: photos,
 illustrations, textures, motion clips, screenshots, diagrams, charts, and
-brand-safe SVGs. The concept-mockup pass in `dev-uiux-design` is a process
+brand-safe SVGs. The concept-mockup pass in `jaw-dev-uiux-design` is a process
 step outside this sourcing order; when its trigger fires, it runs before code
 even though its outputs are not shippable UI pixels.
 
@@ -252,7 +252,7 @@ directions. Read all of them back into context. Do not select yet.
 an element ledger — for each design token (palette, composition, type
 treatment, hero visual, stat row, section rhythm), note WHICH candidate did
 it best and WHY. The final direction is assembled from the best elements
-across all candidates. This mirrors `dev-uiux-design` UX-CONCEPT-GEN-01 step 3.
+across all candidates. This mirrors `jaw-dev-uiux-design` UX-CONCEPT-GEN-01 step 3.
 
 #### Selection Scorecard
 
@@ -289,9 +289,10 @@ Override per-request only: `ima2 gen "prompt" --provider grok --model grok-imagi
 
 #### `$imagegen` Fallback
 
-The `$imagegen` tool uses a single provider (the Codex-native image generation
-path). No provider routing is needed; quality and style are controlled through
-prompt detail and the `quality` parameter alone.
+The `imagegen` skill is available when the active CLI supports its image-generation
+workflow. In this registry it uses the OpenAI Image API through its bundled CLI
+and requires `OPENAI_API_KEY`; follow that skill for model and quality options.
+The separate `codex-imagegen` skill is only for native generation in Codex CLI.
 
 ### Reference Image Workflow
 

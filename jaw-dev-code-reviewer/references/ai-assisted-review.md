@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-16
 Applies to: GitHub Copilot code review, CodeRabbit 2025+, Sourcery 2024+
 When to read: Using AI review tools in PR workflow
-Canonical owner: dev-code-reviewer
+Canonical owner: jaw-dev-code-reviewer
 
 AI review tools augment human reviewers — they do not replace them. Treat AI findings as triage, not verdicts.
 

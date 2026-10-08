@@ -1,6 +1,6 @@
 # Static Analysis Gate — Toolchain Commands & Rule Mapping
 
-Companion to `dev/SKILL.md` §7. Read when running the static-analysis part of the
+Companion to `../SKILL.md` §7. Read when running the static-analysis part of the
 verification gate or configuring lint/typecheck for a project.
 
 ## Per-Toolchain Gate Commands

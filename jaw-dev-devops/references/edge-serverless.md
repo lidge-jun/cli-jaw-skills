@@ -3,7 +3,7 @@
 Last reviewed: 2026-06-16
 Applies to: Cloudflare Workers, Vercel Edge Functions, AWS Lambda@Edge
 When to read: Edge/serverless deployment tasks
-Canonical owner: dev-devops
+Canonical owner: jaw-dev-devops
 
 ---
 

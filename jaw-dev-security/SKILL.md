@@ -12,13 +12,13 @@ metadata:
 
 Treat security as a build constraint, not a cleanup step.
 This skill is the authoritative source for authentication, authorization, input validation, secrets, headers, rate limiting, supply-chain security policy and evidence requirements, PII handling, and agentic AI safety.
-Validation ownership split: this skill owns **what the validation schema enforces** (content/policy); **placement** (boundary-only validation) is owned by `dev-architecture` §4.
-`dev-backend` delegates here for policy and verification depth.
-`dev-frontend` remains responsible for UI implementation, but frontend security touchpoints such as CSP compliance, CORS behavior, XSS prevention, and dependency auditing are defined here.
+Validation ownership split: this skill owns security validation policy; `jaw-dev-architecture` §4 distinguishes trust-ingress shape parsing from domain invariants and reachable-state checks.
+`jaw-dev-backend` delegates here for policy and verification depth.
+`jaw-dev-frontend` remains responsible for UI implementation, but frontend security touchpoints such as CSP compliance, CORS behavior, XSS prevention, and dependency auditing are defined here.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## When to Activate
 
@@ -32,14 +32,14 @@ Activate this skill when you are:
 - Building AI agents, tool-using workflows, or prompt-processing systems.
 
 Use this skill together with the domain skill, not instead of it:
-- Credential delivery, CI secret injection, image scan gates, signing execution, and release proof: load `dev-devops`.
-- API architecture and middleware placement: See `dev-backend/SKILL.md` §4.
-- Frontend rendering patterns and anti-slop UI guardrails: See `dev-frontend/SKILL.md` §§4-5.
-- Test strategy and execution flow: See `dev-testing`.
-- Review severity and review flow: See `dev-code-reviewer/SKILL.md` §§1-2.
-- Security-sensitive RCA and incident forensics: see `dev-debugging`.
-- Security middleware placement and initial security config: see `dev-scaffolding`.
-- Data pipeline design: See `dev-data/SKILL.md` §§2-4.
+- Credential delivery, CI secret injection, image scan gates, signing execution, and release proof: load `jaw-dev-devops`.
+- API architecture and middleware placement: See `jaw-dev-backend/SKILL.md` §4.
+- Frontend rendering patterns and anti-slop UI guardrails: See `jaw-dev-frontend/SKILL.md` §§4-5.
+- Test strategy and execution flow: See `jaw-dev-testing`.
+- Review severity and review flow: See `jaw-dev-code-reviewer/SKILL.md` §§1-2.
+- Security-sensitive RCA and incident forensics: see `jaw-dev-debugging`.
+- Security middleware placement and initial security config: see `jaw-dev-scaffolding`.
+- Data pipeline design: See `jaw-dev-data/SKILL.md` §§2-4.
 
 ## Threat Model First
 
@@ -59,7 +59,7 @@ Required order before implementation:
 4. **Attacker capability** — anonymous user, authenticated user, tenant peer, malicious
    insider, compromised browser, compromised CI, poisoned dependency, hostile retrieved
    text or prompt.
-5. **Assumptions** — runtime surface versus CI/jaw-dev tooling, identity source, tenant
+5. **Assumptions** — runtime surface versus CI/dev tooling, identity source, tenant
    model, data sensitivity, deployment environment, and what evidence supports each one.
 6. **Controls** — validation, authn/authz, rate limits, isolation, logging and
    redaction, secret handling, scans, tests.
@@ -96,14 +96,14 @@ Domain skills own architecture and implementation details.
 | `references/owasp-top10.md` | Any security-sensitive code | OWASP Top 10:2025 with unsafe/safe code pairs and checklists. 2025-delta mode: explicitly check A03 Software Supply Chain Failures, A10 Mishandling of Exceptional Conditions, and SSRF folded into A01 Broken Access Control |
 | `references/language-quirks.md` | When coding in JS/TS, Python, SQL, or Go | Per-language pitfalls that scanners and reviewers commonly miss |
 | `references/static-analysis.md` | Before claiming code is secure | Semgrep, CodeQL, ESLint security, npm audit, pip-audit, Bandit, gitleaks, CI, pre-commit |
-| `references/asvs-checklist.md` | Before deploy or release | ASVS 5.0.0 pre-deploy checklist by chapter (V-shortcodes) and requirement level L1/L2 |
+| `references/asvs-checklist.md` | Before deploy or release | ASVS-informed local release checklist; formal assessment needs full applicable requirement-level evidence |
 | `references/agentic-ai-security.md` | When building tool-using agents or prompt-driven flows | OWASP Top 10 for Agentic Applications 2026 (ASI01-ASI10) mapped to agent rules and safe operating patterns |
 | `references/llm-supply-chain.md` | When integrating LLMs, RAG pipelines, or consuming tool/agent output | Indirect prompt injection defense, RAG poisoning controls, tool output trust, CI adversarial tests |
 | `references/mcp-supply-chain.md` | Adding MCP servers or vetting agent tools | OWASP MCP secure-development + third-party vetting guides (no official "MCP Top 10" exists — map MCP risks to LLM01/03/06 + Agentic Top 10 ASI02/04/05), server vetting checklist, allowlist/pinning, sandbox, audit logging |
 | `references/supply-chain-sbom.md` | Dependency auditing or release integrity | SBOM generation (Syft/Trivy), artifact signing (Cosign/Sigstore), dependency pin & audit CI |
 
 For current CVEs, advisories, package maintainer/source checks, release
-integrity claims, or registry trust changes, read the active `search` skill and
+integrity claims, or registry trust changes, read the active `jaw-search` skill and
 follow its query-rewrite, original-source fetch, and evidence-status rules.
 
 Read only the references relevant to the current task.
@@ -132,7 +132,7 @@ Use this checklist for login, session, token, password reset, magic link, OAuth,
 - [ ] Passwords hashed with `argon2id` (preferred); `scrypt` next if unavailable; `bcrypt` mainly for legacy; PBKDF2 only for FIPS-140 contexts. MD5/SHA1/raw SHA256 never for passwords. (OWASP Password Storage ordering, checked 2026-07-02.)
 - [ ] Access tokens are short-lived with reduced scope (RFC 9700). Exact TTLs are risk-based org policy — 15-60 minutes is a common starting range, not a standard-mandated number; cite your policy source.
 - [ ] Refresh tokens rotate on use and support family invalidation after reuse detection.
-- [ ] Browser tokens live in `httpOnly`, `secure`, `sameSite` cookies; keep session tokens out of `localStorage`.
+- [ ] Use an appropriate `httpOnly`, `secure`, and `SameSite` cookie strategy; keep session tokens out of `localStorage`. For cookie-authenticated state changes, verify framework CSRF protection or a suitable token, Origin, or Fetch-Metadata defense. SameSite alone is insufficient.
 - [ ] OAuth uses Authorization Code + PKCE; avoid implicit flow (deprecated, token-in-URL exposure).
 - [ ] Sensitive actions such as email change, MFA reset, payout change, and password change require step-up auth.
 - [ ] Failed logins are rate-limited and delayed progressively.
@@ -141,7 +141,7 @@ Use this checklist for login, session, token, password reset, magic link, OAuth,
 - [ ] Auth errors are generic — avoid revealing whether a specific email exists.
 
 See `references/owasp-top10.md` A07 for implementation patterns.
-See `references/asvs-checklist.md` V2 and V3 before deploy.
+See `references/asvs-checklist.md` and the pinned ASVS 5.0.0 V6 Authentication and V7 Session Management requirements before deploy.
 
 ## 3. Authorization and Sensitive Flows
 
@@ -158,7 +158,7 @@ Security failures happen when a route checks only the first.
 - Keep internal flags, role names, and hidden fields out of response serializers.
 
 See `references/owasp-top10.md` A01 for code pairs.
-See `dev-backend/SKILL.md` §4 for middleware execution order.
+See `jaw-dev-backend/SKILL.md` §4 for middleware execution order.
 
 ## 4. Secrets Management
 
@@ -182,7 +182,7 @@ For agent workflows and exfiltration risk, read `references/agentic-ai-security.
 ## 5. Security Headers
 
 This skill owns header policy values.
-`dev-backend` owns middleware ordering and integration points.
+`jaw-dev-backend` owns middleware ordering and integration points.
 
 **Minimum production header baseline**
 - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
@@ -202,7 +202,7 @@ Apply these via the framework's standard header middleware (Helmet for Express, 
 - Prefer cookies over browser storage for session tokens.
 
 See `references/owasp-top10.md` A02 and A05.
-See `dev-frontend/SKILL.md` §§5-7 for performance and accessibility guardrails that still apply after security changes.
+See `jaw-dev-frontend/SKILL.md` §§5-7 for performance and accessibility guardrails that still apply after security changes.
 
 ## 6. Rate Limiting
 
@@ -237,7 +237,7 @@ suggested by an AI (including your own suggestions):
 - [ ] No install scripts doing network/exec surprises; lockfile diff reviewed
 - [ ] Provenance/trusted publishing attestation when the registry supports it (npm/PyPI)
 
-Cross-refs: reviewer-side check in `dev-code-reviewer` §7; registry vetting depth in
+Cross-refs: reviewer-side check in `jaw-dev-code-reviewer` §7; registry vetting depth in
 `references/supply-chain-sbom.md`.
 
 ## 7. Static Analysis Integration
@@ -246,7 +246,7 @@ Security claims are incomplete without automated checks.
 At minimum, run the project-native SAST, dependency-audit, and secret-scan tools (e.g. `npm audit`/`pip-audit`, `semgrep`, `gitleaks`) in local development and CI. Use whatever the repo already standardizes on; exact commands belong in repo docs.
 
 For CI templates, pre-commit hooks, and tool-specific guidance, read `references/static-analysis.md`.
-For review gating, combine this with `dev-code-reviewer/SKILL.md` §§1-2.
+For review gating, combine this with `jaw-dev-code-reviewer/SKILL.md` §§1-2.
 
 ## 8. Agent Configuration Security
 
@@ -311,7 +311,7 @@ A security-sensitive change is complete only when every applicable item passes.
 - [ ] Rate limiting covers auth, public endpoints, and abuse-prone flows.
 - [ ] Static analysis runs clean enough for the repository policy: Semgrep, CodeQL or equivalent, dependency audit, and secret scan.
 - [ ] Error handling returns safe client messages and preserves structured server-side diagnostics.
-- [ ] ASVS 5.0.0 Level 1 requirements pass for all security-sensitive changes; Level 2 for auth, payments, PII, admin, or multi-tenant flows.
+- [ ] Applicable security requirements are mapped to pinned ASVS 5.0.0 requirement IDs, applicability decisions, and evidence. The local checklist alone never certifies L1/L2 conformance.
 - [ ] Agentic workflows resist prompt injection, tool misuse, exfiltration, and excessive agency (OWASP LLM Top 10 2025 + Top 10 for Agentic Applications 2026).
 - [ ] AI-suggested dependencies passed the §6.5 slopsquatting gate.
 
@@ -337,14 +337,14 @@ This matrix clarifies who defines, implements, and verifies each security contro
 
 | Control | Policy Owner | Implementation Owner | Verification Owner |
 |---------|-------------|---------------------|--------------------|
-| Input validation schema | `dev-security` §1 | Domain skill (backend/frontend/data) | `dev-testing` §2 |
-| Auth flow (login, session, token) | `dev-security` §2 | `dev-backend` §4 middleware | `dev-testing` §1.3 risk priorities |
-| Authorization (RBAC/ABAC) | `dev-security` §3 | `dev-backend` service layer | `dev-testing` §2 + `dev-code-reviewer` |
-| Security headers (CSP, CORS, HSTS) | `dev-security` §5 | `dev-backend` middleware + `dev-frontend` compliance | `dev-testing` + static analysis |
-| Rate limiting | `dev-security` §6 | `dev-backend` §4 middleware | Load testing + monitoring |
-| PII/data classification | `dev-security` + `dev-data` §7 | `dev-data` pipeline + `dev-backend` API | `dev-testing` + audit logs |
-| Secrets management | `dev-security` §4 | All skills (runtime env) | gitleaks + `dev-code-reviewer` |
-| Dependency security | `dev-security` §7 | CI pipeline owner | `npm audit` / `pip-audit` in CI |
-| Agentic AI safety | `dev-security` `references/agentic-ai-security.md` | Agent builder | Scenario testing (`dev-testing`) |
+| Input validation schema | `jaw-dev-security` §1 | Domain skill (backend/frontend/data) | `jaw-dev-testing` §2 |
+| Auth flow (login, session, token) | `jaw-dev-security` §2 | `jaw-dev-backend` §4 middleware | `jaw-dev-testing` §1.3 risk priorities |
+| Authorization (RBAC/ABAC) | `jaw-dev-security` §3 | `jaw-dev-backend` service layer | `jaw-dev-testing` §2 + `jaw-dev-code-reviewer` |
+| Security headers (CSP, CORS, HSTS) | `jaw-dev-security` §5 | `jaw-dev-backend` middleware + `jaw-dev-frontend` compliance | `jaw-dev-testing` + static analysis |
+| Rate limiting | `jaw-dev-security` §6 | `jaw-dev-backend` §4 middleware | Load testing + monitoring |
+| PII/data classification | `jaw-dev-security` + `jaw-dev-data` §7 | `jaw-dev-data` pipeline + `jaw-dev-backend` API | `jaw-dev-testing` + audit logs |
+| Secrets management | `jaw-dev-security` §4 | All skills (runtime env) | gitleaks + `jaw-dev-code-reviewer` |
+| Dependency security | `jaw-dev-security` §7 | CI pipeline owner | `npm audit` / `pip-audit` in CI |
+| Agentic AI safety | `jaw-dev-security` `references/agentic-ai-security.md` | Agent builder | Scenario testing (`jaw-dev-testing`) |
 
-Reference this matrix from `dev-backend` and `dev-frontend` when ownership is unclear.
+Reference this matrix from `jaw-dev-backend` and `jaw-dev-frontend` when ownership is unclear.

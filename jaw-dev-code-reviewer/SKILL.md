@@ -9,10 +9,10 @@ metadata:
 
 # Dev-Code-Reviewer — Code Review Guide
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
-> **Always read `dev/SKILL.md` first** for project-wide conventions before applying review rules.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **Always read `jaw-dev/SKILL.md` first** for project-wide conventions before applying review rules.
 
 Systematic code review patterns for finding real issues, not bikeshedding.
 
@@ -38,9 +38,9 @@ Review as a skeptical, independent outsider. Executor claims, passing tests, AI 
 
 ## External/current review evidence
 
-`dev-testing` owns test adequacy and QA execution.
-`dev-debugging` owns RCA when review discovers a runtime failure.
-`dev-architecture` owns coupling and boundary placement.
+`jaw-dev-testing` owns test adequacy and QA execution.
+`jaw-dev-debugging` owns RCA when review discovers a runtime failure.
+`jaw-dev-architecture` owns coupling and boundary placement.
 
 For dependency CVEs, release-note claims, package maintainer/source checks,
 provider behavior, or other current/public evidence used in a review, read the
@@ -63,15 +63,18 @@ Before reviewing any code, verify:
 
 ### Automated Pre-Scan (Run Before Manual Review)
 
-Before reading a single line of code, run automated tools on changed files:
-
-Run project-native linters, type checker, and tests before reviewing.
+Run the smallest repo-native checks that observe the requested review scope. Docs-only
+reviews use document and contract checks; a diagnostic review does not authorize
+installs, product changes, or a broad suite the user prohibited. In cli-jaw,
+`npm test` covers root and unit tests, `npm run test:integration:all` covers
+integration/manager/bin, and `npm run test:manager:browser` is browser smoke;
+choose only checks relevant to this review.
 
 **Pre-Scan Rules:**
 1. **Critical/error findings → block review.** Don't waste human review cycles on machine-detectable problems.
 2. **Warnings → note for review, don't block.** Mention in review but don't make them blocking.
 3. **Tool findings go first** in review output, before manual findings.
-4. **No tool available?** Skip gracefully — pre-scan is additive, not a gate.
+4. **No tool available?** State the gap explicitly; absence is not a finding.
 
 | Tool | Catches | Misses | Key Rules |
 |------|---------|--------|-----------|
@@ -91,7 +94,7 @@ Run project-native linters, type checker, and tests before reviewing.
 5. **Maintainability** — Naming, structure, complexity, test coverage, documentation
 6. **Style** — Last priority. Don't bikeshed formatting when there are real issues.
 
-Delegation: coupling classification belongs to `dev-architecture` §3; boundary and validation-location findings belong to `dev-architecture` §4.
+Delegation: coupling classification belongs to `jaw-dev-architecture` §3; boundary and validation-location findings belong to `jaw-dev-architecture` §4.
 
 ### Review Mindset
 
@@ -117,7 +120,7 @@ Flag these during review:
 | Issue | Threshold | Severity |
 |-------|-----------|----------|
 | Long function | >50 lines | Medium |
-| Large file | >400 lines | Medium; apply `dev-architecture` §1 canonical split rule |
+| Large file | >400 lines | Medium; apply `jaw-dev-architecture` §1 canonical split rule |
 | God class | >20 methods | High |
 | Too many parameters | >5 | Medium |
 | Deep nesting | >4 levels | Medium |
@@ -131,13 +134,13 @@ Flag these during review:
 
 ### File Size Guidance
 
-Canonical rule imported from `dev-architecture` §1: **>400 LOC -> split (DEFAULT)**.
+Canonical rule imported from `jaw-dev-architecture` §1: **>400 LOC -> split (DEFAULT)**.
 
 | Range | Interpretation |
 |-------|---------------|
 | 200-400 lines | Healthy — easy to navigate and review |
 | 400-500 lines | Should split unless the author states a concrete reason |
-| >500 lines | Blocking review finding unless already being split in this diff |
+| >500 lines | Strong review signal; not a blocker by size alone. Accept a documented cohesion/risk rationale |
 
 ### Review Verdict
 
@@ -171,7 +174,7 @@ Deterministic blocker semantics (REVIEW-BLOCK-01): any unresolved Critical or Hi
 | Unreachable code after return/throw | `no-unreachable`, compiler warnings | Delete the dead branch |
 | Unused imports / variables | `no-unused-vars`, `@typescript-eslint/no-unused-vars` | Remove |
 | Commented-out code blocks | Manual review | Delete — use version control history |
-| Unused exports | `ts-prune`, `knip`, grep for import sites | Remove export; delete if no internal use |
+| Unused exports | `ts-prune`, `knip`, consumer search | Remove scoped internal dead exports after consumer search; public contracts require compatibility review before removal |
 | Stale feature-flagged code | Check flag status in flag service | Remove dead branch and the flag check |
 
 Dead code is a maintenance tax — remove rather than comment out.
@@ -185,11 +188,11 @@ Dead code is a maintenance tax — remove rather than comment out.
 | Magic numbers | `if (retries > 3)` | Named constant: `MAX_RETRIES = 3` |
 | Primitive obsession | Passing 5 related strings around | Create a data object/type |
 | Direct mutation | `user.name = 'x'`, `arr.push(y)` | Immutable: `{...obj, name: 'x'}`, `[...arr, y]` |
-| Missing boundary validation | Business logic handles raw user input | Delegate placement to `dev-architecture` §4; schema/content depth to `dev-security` |
+| Missing boundary validation | Business logic handles raw user input | Delegate placement to `jaw-dev-architecture` §4; schema/content depth to `jaw-dev-security` |
 
 ### Security
 
-This section owns the mandatory review pre-scan; `dev-security` owns security
+This section owns the mandatory review pre-scan; `jaw-dev-security` owns security
 policy and deep analysis. Use this checklist for hardcoded secrets, injection,
 validation, auth, authorization, and logging findings.
 
@@ -214,7 +217,7 @@ validation, auth, authorization, and logging findings.
 
 ## 3.5 Security Review Quick-Check
 
-For **every review**, scan for these OWASP-aligned red flags. Delegate to `dev-security/SKILL.md` for deep analysis.
+For **every review**, scan for these OWASP-aligned red flags. Delegate to `../jaw-dev-security/SKILL.md` for deep analysis.
 
 ### Must-Check (Every PR)
 
@@ -237,7 +240,7 @@ For **every review**, scan for these OWASP-aligned red flags. Delegate to `dev-s
 | Dep vulnerabilities | New dependencies added | No `npm audit`/`pip-audit` run |
 | Lockfile changes | `package-lock.json` modified | Unexpected dependency resolution changes |
 
-> **Deep security analysis** → invoke `dev-security/SKILL.md`. This checklist catches surface-level issues during code review; `dev-security` provides OWASP Top 10 depth, ASVS checklists, and static analysis integration.
+> **Deep security analysis** → invoke `../jaw-dev-security/SKILL.md`. This checklist catches surface-level issues during code review; `jaw-dev-security` provides OWASP Top 10 depth, ASVS checklists, and static analysis integration.
 
 ---
 
@@ -258,7 +261,7 @@ Scan every PR for these common performance pitfalls:
 
 | Check | Red Flag | Fix |
 |-------|----------|-----|
-| Unnecessary re-renders | State updates in parent causing child re-render cascade | `React.memo`, `useMemo`, extract state down |
+| Measured expensive re-renders | Profiler identifies repeat work | Check Compiler activation and state ownership first; use manual memoization only where still useful |
 | Bundle size impact | New large dependency (>50KB gzipped) | Check `bundlephobia.com`, consider alternatives or lazy loading |
 | Missing `key` prop | List rendering without stable keys | Use unique ID, never array index for dynamic lists |
 | Unoptimized images | Large images without `next/image`, `loading="lazy"`, or srcset | Use framework image optimization |
@@ -387,15 +390,15 @@ the diff is substantially AI-generated (agent commits, Copilot/Cursor bulk chang
 | Check | AI failure mode | Action |
 |-------|-----------------|--------|
 | Invented APIs | Plausible-but-nonexistent methods/options | Verify each unfamiliar API against the installed version's docs |
-| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `dev-security` §6.5 |
+| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `jaw-dev-security` §6.5 |
 | Missing authz edges | Happy-path handlers without ownership checks | Trace every new endpoint against §3.5 BOLA check |
 | Shallow/mirroring tests | Tests restating the implementation, tautologies | Apply REVIEW-REGRESS-01; require behavior-level assertions |
-| Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `dev-testing` §6.7 detection table |
-| Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (dev §1) |
+| Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `jaw-dev-testing` §6.7 detection table |
+| Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (jaw-dev §1) |
 
 **Agentic/security review trigger (DEFAULT):** if a PR adds MCP servers, tools, agents,
 RAG components, persistent memory, delegated credentials, or autonomous actions, invoke
-`dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
+`jaw-dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
 Agentic Applications 2026.
 
 ### AI Slop Cleanup Checklist (REVIEW-SLOP-01)
@@ -412,8 +415,8 @@ if/elif for type discrimination -> match/case, `object` annotation -> Protocol/T
 
 **Structural:** (4) Needless abstraction (pass-through wrappers, single-use helpers,
 speculative indirection). (5) Boundary violations (wrong-layer imports, hidden
-coupling; delegate to dev-architecture). (6) Oversized modules (>250 pure LOC is a
-slop-cleanup smell, not a split mandate; dev-architecture owns >400L canonical split).
+coupling; delegate to jaw-dev-architecture). (6) Oversized modules (>250 pure LOC is a
+slop-cleanup smell, not a split mandate; jaw-dev-architecture owns >400L canonical split).
 
 **Hidden cost:** (7) Performance equivalences (O(n^2) where O(n) exists, repeated
 computation). (8) Scope leaks (mutable global state, scattered env reads).

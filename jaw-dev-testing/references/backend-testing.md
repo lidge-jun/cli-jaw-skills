@@ -1,6 +1,6 @@
 # Backend Testing Patterns
 
-> Deep reference for `dev-testing` §2 Backend & API Testing.
+> Deep reference for `jaw-dev-testing` §2 Backend & API Testing.
 
 ## 1. Vitest Service Layer Pattern
 

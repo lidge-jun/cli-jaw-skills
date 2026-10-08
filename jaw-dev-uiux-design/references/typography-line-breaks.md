@@ -2,7 +2,7 @@
 
 When to apply text wrapping control, how to evaluate line break quality, and what to check during visual verification.
 
-Read `dev-frontend/references/core/typography-wrapping.md` for the CSS implementation.
+Read `../../jaw-dev-frontend/references/core/typography-wrapping.md` for the CSS implementation.
 
 ---
 

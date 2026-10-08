@@ -8,9 +8,9 @@ metadata:
 
 # Dev Scaffolding
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 Rules for generating and auditing project structures. Create files directly following these rules. Use the audit script (§12) for verification.
 This skill activates by change surface: new project setup, feature/module scaffolding, structural audits, or documentation scaffolding.
@@ -19,7 +19,7 @@ This skill activates by change surface: new project setup, feature/module scaffo
 
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
-| `jaw-dev/references/reader-documents.md` | Writing a devlog narrative, plan summary, or generated docs | Reader contract, answer-first structure, evidence separated into an appendix |
+| `../jaw-dev/references/reader-documents.md` | Writing a devlog narrative, plan summary, or generated docs | Reader contract, answer-first structure, evidence separated into an appendix |
 | `references/implementation-log.md` | C3+/multi-phase/cross-session work units | Full devlog routine: decade-numbered plan folders, P-concretize → A-audit → D-archive loop, mainstream design-doc/RFC mapping |
 | `references/api-docs.md` | API documentation generation | OpenAPI 3.1, developer portal, CI doc drift, SDK generation |
 | `references/monorepo-tooling.md` | Setting up or optimizing monorepo builds | Turborepo vs Nx 2026 decision table, task graph for AI agents, CI optimization |
@@ -28,7 +28,7 @@ This skill activates by change surface: new project setup, feature/module scaffo
 
 For current generator behavior, template commands, package versions, framework
 recommendations, provider bootstrap docs, or source-sensitive tooling choices,
-read the active `search` skill and follow its query-rewrite, source-fetch, and
+read the active `jaw-search` skill and follow its query-rewrite, source-fetch, and
 evidence-status rules. Browser fetch/open/text/get-dom/snapshot is used only
 after candidate URLs exist and the setup claim needs source verification.
 
@@ -38,7 +38,7 @@ Apply for new projects or when a repo has no clear structural convention of its 
 
 1. **Screaming Architecture** — folder names reveal what the app does (`stock-price/`, `auth/`, `report/`)
 2. **Colocation** — related files live together (logic + test + schema in the same folder)
-3. **Public Boundary Export** — each feature/package exposes a single public entry point (`index.ts`, `index.js`, `__init__.py`, or Go package) at its boundary; internal convenience barrels are banned (owned by `dev-architecture` §5)
+3. **Public Boundary Export** — each feature/package exposes a single public entry point (`index.ts`, `index.js`, `__init__.py`, or Go package) at its boundary; internal convenience barrels are banned (owned by `jaw-dev-architecture` §5)
 
 ## 2. Existing Repo First
 
@@ -74,10 +74,9 @@ Keep it light:
 
 ## 2.1 Lightweight Source of Truth (implementation-unit devlog)
 
-The implementation-unit devlog routine (`devlog/_plan/` units — `dev-pabcd` §3.1,
-UNIT-RESIDENCE-01) is the DEFAULT for any repo you do development work in — a
-process rule, not a named style to be requested. Propose the `structure/`
-architecture docs when:
+For implementation-unit records, follow the canonical class policy in `../jaw-dev-pabcd/references/implementation-units.md` (UNIT-RESIDENCE-01): C0 creates no numbered record; C1 records only within an existing owning unit. For work that needs a unit, `devlog/_plan/` is the default convention; a repository that forbids in-tree records uses its approved external location.
+
+Propose `structure/` architecture docs when:
 - The repo is immature, undocumented, or inconsistent; or
 - The user asks for a durable source-of-truth structure; or
 - A broad change needs a durable plan/current-architecture record.
@@ -103,27 +102,27 @@ decision that is hard to reverse, surprising without context, or has a real trad
 **SoT sync (DEFAULT, SOT-SYNC-01):** before patching a repo, FIND its general
 source-of-truth docs first (`structure/`, `architecture.md`, INDEX/context docs)
 and read them; any unit that changes architecture, contracts, or structure patches
-the SoT doc in the SAME unit (C gate, dev-pabcd §3 C). If the repo has no SoT doc,
+the SoT doc in the SAME unit (C gate, jaw-dev-pabcd §3 C). If the repo has no SoT doc,
 recommend creating one — once, via the proposal flow above — rather than silently
 working without a source of truth.
 
-Narrative and evidence are different files: see `jaw-dev/references/reader-documents.md`
+Narrative and evidence are different files: see `../jaw-dev/references/reader-documents.md`
 (READER-DOC-04) for what belongs in each.
 
 Implementation-unit devlog method:
 - Split large work into phase-level documents instead of one huge plan —
   dependency-ordered (PHASE-SPLIT-01), ALL written to diff-level up front
-  (DIFFLEVEL-ROADMAP-01; both defined in `dev-pabcd`).
+  (DIFFLEVEL-ROADMAP-01; both defined in `jaw-dev-pabcd`).
 - Keep diff-level plans in files, not chat: exact paths, NEW/MODIFY/DELETE, before/after diffs for MODIFY, complete content for NEW.
 - Keep chat summaries short: explain the phase, show a compact tree/change map, then link the plan file.
 - Move completed phase folders to `_fin/`; keep pending/future work under `_plan/` or an existing equivalent.
 
-Phase document naming uses decade-range prefixes (LEXICO-SPLIT-01). For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `dev-pabcd/SKILL.md` §3.1 Implementation-Unit Documents — that is the single source of truth.
+Phase document naming uses decade-range prefixes (LEXICO-SPLIT-01). For the canonical table (00–09 research, 10–19 Phase 1, etc.), see `jaw-dev-pabcd/SKILL.md` §3.1 Implementation-Unit Documents — that is the single source of truth.
 - Plan unit folder: `devlog/_plan/YYMMDD_slug/`
 - The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
 - When adding a document, scan siblings and choose the next unused prefix in the correct decade.
 
-Before creating any `structure/`/`devlog/` folders, ask concisely: state that no source-of-truth docs were found, show the proposed tree, give a specific recommendation, and confirm you will not create them without approval. This gate governs INTRODUCING the convention to a repo (the first `devlog/` or `structure/`); once `devlog/_plan/` exists, creating unit subfolders — including the minimal record unit mandated by UNIT-RESIDENCE-01 — is routine and needs no approval dialogue.
+Before introducing `structure/` or `devlog/` folders to an existing repository, follow its instructions and existing convention, then ask the user first. State when no source-of-truth docs were found, show a concrete proposed tree, give a specific recommendation, and confirm that you will not create the folder without approval. Once a unit convention exists, creating its subfolders is routine when the canonical `../jaw-dev-pabcd/references/implementation-units.md` policy requires one; do not create a new unit solely for C0/C1.
 
 ## 2.2 Project Skeleton
 
@@ -131,7 +130,7 @@ For a new project, propose the source-of-truth structure in the plan.
 If the user explicitly asks for the full source-of-truth standard (§8), create it.
 Otherwise ask once before adding `structure/` and `devlog/`.
 
-When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and per-feature public boundary exports (per `dev-architecture` §5; file names from language detection, §3). Defer exact layout to the framework's own generator when one exists.
+When creating an approved new project skeleton, include the source-of-truth and feature-based essentials: `AGENTS.md` + `README.md` (context/overview), `.env.example` + `.gitignore`, `devlog/_plan/` + `devlog/_fin/` (and `str_func/` only for the full standard, §8), `src/` with a `shared/` for truly-shared code, `config/`, `docs/`, and `tests/e2e/`. Then add the language-appropriate package manifest, entry point, language config, and per-feature public boundary exports (per `jaw-dev-architecture` §5; file names from language detection, §3). Defer exact layout to the framework's own generator when one exists.
 
 ## 3. Language Detection
 
@@ -180,21 +179,21 @@ When adding a new feature, create a folder under `src/` with these files:
 | ---------- | ------------- | -------------- | -------------- | ---------------------- |
 | JavaScript | `kebab-case/` | `name.tool.js` | `name.test.js` | `index.js`             |
 | TypeScript | `kebab-case/` | `name.tool.ts` | `name.test.ts` | `index.ts`             |
-| Python     | `kebab-case/` | `name_tool.py` | `test_name.py` | `__init__.py`          |
+| Python     | `package_name/` | `name_tool.py` | `test_name.py` | `__init__.py`          |
 | Go         | `kebab-case/` | `name.go`      | `name_test.go` | *(package = boundary)* |
 | Rust       | `kebab-case/` | `name.rs`      | inline `#[cfg(test)]` or `tests/` | `lib.rs`/parent `mod name;` |
 
 The `index.*` file is the feature's **public boundary export**. Barrel discipline is owned
-by `dev-architecture` §5: external consumers import this boundary, internal code imports
+by `jaw-dev-architecture` §5: external consumers import this boundary, internal code imports
 sources directly, and convenience-only internal barrels are banned.
 
-Principle: "flat until you can't" — start flat, sub-folder only when a folder becomes hard to scan.
+Principle: "flat until you can't" — start flat, sub-folder only when a folder becomes hard to scan. Importable packages must follow language identifier rules; normal Python imports cannot contain hyphens.
 
 ## 6. Naming Conventions
 
 | Item                | Rule                  | Example                      |
 | ------------------- | --------------------- | ---------------------------- |
-| Folders             | kebab-case            | `stock-price/`, `user-auth/` |
+| Folders             | Follow repository and language conventions; kebab-case is a JS/TS example | `stock-price/`, `user-auth/` |
 | JS/TS files         | kebab-case + suffix   | `stock-price.tool.ts`        |
 | Python files        | snake_case + suffix   | `stock_price_tool.py`        |
 | Go files            | snake_case            | `stock_price.go`             |
@@ -248,12 +247,12 @@ Split smells (heuristics, not hard gates):
 
 ## 10. Cross-Cutting Scaffolding
 
-This section owns scaffold file placement only. Behavior, policy, and verification come from the owning surface skill (`dev-backend`, `dev-frontend`, `dev-devops`, `dev-security`).
+This section owns scaffold file placement only. Behavior, policy, and verification come from the owning surface skill (`jaw-dev-backend`, `jaw-dev-frontend`, `jaw-dev-devops`, `jaw-dev-security`).
 
 ### Health Endpoints
 Backend scaffolds should propose health routes (skip if the mature repo already handles health checks per §2):
 - `src/routes/health.ts` (or equivalent) — `/health` (liveness) and `/ready` (readiness)
-- See `dev-backend/references/core/health-checks.md` for response format
+- See `jaw-dev-backend/references/core/health-checks.md` for response format
 
 ### SEO Boilerplate (Web Projects)
 Web project templates should include:
@@ -269,7 +268,7 @@ lint → typecheck → test (unit) → test (integration) → build → deploy (
 ```
 
 ### Security Boilerplate
-Generate security scaffolding: CSP headers, CORS config, rate limiting middleware, `.env.example` with placeholder secrets. See `dev-security/SKILL.md` for full patterns.
+Generate security scaffolding: CSP headers, CORS config, rate limiting middleware, `.env.example` with placeholder secrets. See `jaw-dev-security/SKILL.md` for full patterns.
 
 ---
 
@@ -293,7 +292,7 @@ When `role=docs` or when generating project documentation:
 3. Follow source-of-truth conventions (§2.1) when applicable
 
 ### Devlog Documentation
-1. Follow decade numbering (`dev-pabcd/SKILL.md` §3.1, LEXICO-SPLIT-01): 00-09 research, 10-19 phase 1, etc.
+1. Follow decade numbering (`jaw-dev-pabcd/SKILL.md` §3.1, LEXICO-SPLIT-01): 00-09 research, 10-19 phase 1, etc.
 2. Each devlog entry: title, date, what changed, why, evidence paths
 3. Cross-reference related devlog entries within the same _plan/ folder
 
@@ -301,7 +300,7 @@ When `role=docs` or when generating project documentation:
 
 ## 12. Audit
 
-Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, public boundary exports (dev-architecture §5), devlog presence, `.env` safety, file length, and AGENTS.md where those apply.
+Run the scaffold audit if one is available for the repo (e.g. `bash <SKILL_DIR>/scripts/scaffold-audit.sh [project-path]`) to check structural compliance. Audit checks should reflect the project's own conventions — covering feature-based structure, colocation, public boundary exports (jaw-dev-architecture §5), devlog presence, `.env` safety, file length, and AGENTS.md where those apply.
 ## Scaffold Contract (SCAFFOLD-CONTRACT-01, DEFAULT)
 
 Source: sol research (microsoft/apm, HoangNguyen0403/agent-skills-standard).
@@ -319,8 +318,9 @@ A scaffold operation must be deterministic and verifiable:
 
 ## Post-Scaffold Verification (SCAFFOLD-VERIFY-01, DEFAULT)
 
-After scaffolding, verify the result is usable — do not claim done from
-structural inspection alone:
+Match verification to the scaffold: documentation gets link, structure, and contract checks; a module gets affected checks; a runnable project gets the supported installation, build, test, and server checks below. Respect the repository and user execution constraints. Do not install dependencies or start a server solely to verify prose.
+
+For a runnable project, verify the result is usable:
 
 1. `npm install` / `pip install` / equivalent dependency installation succeeds
 2. `npm run build` / `cargo build` / equivalent build succeeds

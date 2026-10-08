@@ -154,7 +154,7 @@ npx vitest run
 npx vitest run --coverage
 ```
 
-Testing: see dev-testing §1.2 for ratio guidance (Trophy for web/API, Pyramid for libraries).
+Testing: see jaw-dev-testing §1.2 for ratio guidance (Trophy for web/API, Pyramid for libraries).
 
 ---
 

@@ -3,11 +3,11 @@
 Last reviewed: 2026-06-16
 Applies to: MCP 1.x servers, agentic skill registries, tool-using AI agents
 When to read: Adding MCP servers, enabling agent tools, vetting skill packages
-Canonical owner: dev-security
+Canonical owner: jaw-dev-security
 
 MCP servers and agentic skills are executable supply chain — treat them with the same rigor as npm packages, not as configuration.
 
-Cross-ref: `dev-security` §8 (Agent Configuration Security), `references/agentic-ai-security.md` (OWASP ASI01-ASI10)
+Cross-ref: `jaw-dev-security` §8 (Agent Configuration Security), `references/agentic-ai-security.md` (OWASP ASI01-ASI10)
 
 ## OWASP References
 

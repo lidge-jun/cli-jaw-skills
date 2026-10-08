@@ -1,7 +1,7 @@
 # Database — PostgreSQL & MongoDB
 
 Stack-specific database rules.
-Synthesized from dev-backend + senior-backend + mrgoonie databases skill.
+Synthesized from jaw-dev-backend + senior-backend + mrgoonie databases skill.
 
 ---
 

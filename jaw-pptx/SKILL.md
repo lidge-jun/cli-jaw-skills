@@ -170,8 +170,8 @@ Design is a deliverable, not optional polish. A slide deck is not a document: if
 > **The 3-second test.** Every slide must pass it — a viewer grasps the one point in 3 seconds. Wrong chart type, bullet walls, and weak hierarchy all fail it.
 
 Canonical owners (read for depth; this skill carries the slide-adapted essentials inline):
-> - Design-direction / intent discovery, hierarchy levers → `dev-uiux-design` skill.
-> - Anti-slop philosophy + render verification → `dev-frontend` skill.
+> - Design-direction / intent discovery, hierarchy levers → `jaw-dev-uiux-design` skill.
+> - Anti-slop philosophy + render verification → `jaw-dev-frontend` skill.
 
 ### 5.1 Slide Design Read
 
@@ -191,7 +191,7 @@ Reference files:
 
 ### 5.3 Intent Discovery for Decks
 
-When deck direction is vague ("멋지게 만들어줘", "깔끔하게"), ask up to 4 binary/ternary questions before building. If the user names a reference product, skip to mapping via `references/design-system.md`. (Adapted from `dev-uiux-design` §1; "viewport" step dropped — slides are fixed 16:9.)
+When deck direction is vague ("멋지게 만들어줘", "깔끔하게"), ask up to 4 binary/ternary questions before building. If the user names a reference product, skip to mapping via `references/design-system.md`. (Adapted from `jaw-dev-uiux-design` §1; "viewport" step dropped — slides are fixed 16:9.)
 
 1. **Mood** — "청중에게 남길 느낌: `executive/trustworthy` · `premium/editorial` · `energetic/product-launch` · `technical/precise` · `training/clear` 중?"
 2. **Density** — "한 장당 정보 밀도: `keynote sparse`(한 메시지) · `business normal`(제목+시각+짧은 근거) · `review dense`(차트/표 중심) 중?"
@@ -220,7 +220,7 @@ Presets by deck type:
 | Workshop / training | 4 | 6 | 2 |
 | Product launch | 7 | 4 | 6 |
 
-> **"복잡" = higher DENSITY, not higher VARIANCE.** A complex brief means more data/features, not more visual tricks. "Simple" = decrease all three dials proportionally. (from `dev-uiux-design` §2)
+> **"복잡" = higher DENSITY, not higher VARIANCE.** A complex brief means more data/features, not more visual tricks. "Simple" = decrease all three dials proportionally. (from `jaw-dev-uiux-design` §2)
 
 ### 5.5 16:9 Canvas, Grid & Negative Space
 
@@ -378,7 +378,7 @@ Exception: `Malgun Gothic` acceptable as CJK fallback in `a:ea` font stack, neve
 
 **Body floor is 18pt** for audience-facing prose. Four exceptions may go below 18pt: chart axis labels, legends, footer/page number, and ≤5-word KPI sublabels (e.g. "Active users"). Descriptive sentences must be ≥18pt. Rule of thumb: min shape height ≈ font_pt × 0.05cm. Overflow → cut text or split slides, **never shrink font**; if cards won't fit, drop cards.
 
-**Line breaks (manual `text-wrap: balance`).** Break titles/subtitles between thought-units so no line ends with a 1-word (EN) orphan; keep line lengths balanced. **Korean: last line ≥4 chars (2 syllable blocks)** — never leave "다." / "화." alone. Body line length ~45-65 chars. (from `dev-uiux-design` typography-line-breaks)
+**Line breaks (manual `text-wrap: balance`).** Break titles/subtitles between thought-units so no line ends with a 1-word (EN) orphan; keep line lengths balanced. **Korean: last line ≥4 chars (2 syllable blocks)** — never leave "다." / "화." alone. Body line length ~45-65 chars. (from `jaw-dev-uiux-design` typography-line-breaks)
 
 All content slides (not cover/closing) should have speaker notes.
 
@@ -430,7 +430,7 @@ Titles orient on content, not punchline. No "It's not X. It's Y.", no manufactur
 
 ### 5.15 Slide-Specific Anti-Slop
 
-Each = pattern → one-line fix. (Slide-adapted from `dev-frontend` §5 + built-in AI-tells.)
+Each = pattern → one-line fix. (Slide-adapted from `jaw-dev-frontend` §5 + built-in AI-tells.)
 
 1. **Three Icon Columns** — centered title + 3 equal icon/text cols → one dominant block + 2 unequal supports.
 2. **Bullet Wall** — title + 5-9 bullets → split to one idea/slide or convert to process/KPI/comparison.

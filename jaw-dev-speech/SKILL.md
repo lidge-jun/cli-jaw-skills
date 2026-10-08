@@ -1,6 +1,6 @@
 ---
 name: jaw-dev-speech
-description: "MUST USE when composing an answer for a person — explaining technical work, reporting status, teaching an unfamiliar concept, or replying in conversation. Owns explanation order, audience calibration, hedging discipline, and the human-register rules that keep an answer from reading machine-generated. Revision of already-written Korean prose belongs to dev-write; platform-specific content generation belongs to k-writing. Triggers: explain, 설명해, 알려줘, 답변, 어떻게 말하지, 쉽게 설명, 요약해서 말해, tone, register, dev-speech."
+description: "MUST USE when composing an answer for a person — explaining technical work, reporting status, teaching an unfamiliar concept, or replying in conversation. Owns explanation order, audience calibration, hedging discipline, and the human-register rules that keep an answer from reading machine-generated. Revision of already-written Korean prose belongs to jaw-dev-write; platform-specific content generation belongs to k-writing. Triggers: explain, 설명해, 알려줘, 답변, 어떻게 말하지, 쉽게 설명, 요약해서 말해, tone, register, jaw-dev-speech."
 metadata:
   short-description: "Answer composition: audience calibration, conclusion-first order, human register."
   keywords: "explain, explanation, answer, tone, register, audience, teaching, conversation, 설명, 답변, 어투"
@@ -14,7 +14,7 @@ metadata:
 
 > **경계**: 이미 쓴 한국어를 고치는 일은 `jaw-dev-write`(윤문). 특정 플랫폼용 콘텐츠
 > 생성은 `k-writing`. 이 스킬은 사람에게 보내는 답변 자체의 구성을 맡는다.
-> 세 스킬은 같은 AI-tell 분류를 공유하되, dev-speech는 쓰는 시점에, dev-write는 쓴 뒤에 건다.
+> 세 스킬은 같은 AI-tell 분류를 공유하되, jaw-dev-speech는 쓰는 시점에, jaw-dev-write는 쓴 뒤에 건다.
 
 ## 1. 상대에 맞춘다
 

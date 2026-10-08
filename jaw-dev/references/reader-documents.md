@@ -15,7 +15,7 @@ The failure this prevents: an agent that ran twelve probes writes a document lis
 twelve probes. The reader wanted the answer, the reason to believe it, and what to do
 next. The probes belong in an appendix.
 
-## READER-DOC-01 — Reader contract
+## READER-DOC-01 — Reader contract (REPORT-STORY-00 genre table)
 
 Before drafting, write one line: **who reads this, what they decide or do next, what they
 already know.** Then choose one document type and hold it:
@@ -30,14 +30,26 @@ already know.** Then choose one document type and hold it:
 
 Mixing types in one document degrades all of them. Split instead.
 
+### REPORT-STORY-00 — Genre determines the ending
+
+Decision documents use claims to support a choice. Research reports end at the
+answer and remaining uncertainty; histories end at what is contested; references
+end at definitions. Do not manufacture a decision request for those genres.
+
 ## READER-DOC-02 — Answer first
 
 Open with situation, complication, question, and answer in one short paragraph. The
-governing conclusion appears before any evidence. Every heading states a claim, not a
-topic: "Cost falls 12% at the chosen tier", not "Analysis".
+governing conclusion appears before any evidence. Decision documents use
+claim-shaped headings ("Cost falls 12% at the chosen tier"). Research, history,
+and reference sections may use question or topic headings that tell the reader
+what the section answers; a bare "Analysis" conveys too little in any genre.
 
 Korean documents use **두괄식** — 결론·전망·요약을 맨 앞에. **기승전결** is a narrative
 build-up for stories and essays; it is never the shape of a report.
+
+### REPORT-PARA-01 — One idea per paragraph
+
+Give each paragraph one idea and put its claim in the first sentence; the remaining sentences support that claim. Keep sentences clear and direct, splitting chained clauses so each makes one claim. Use prose for an argument and bullets for parallel items readers need to scan.
 
 ## READER-DOC-03 — Descending structure
 
@@ -82,6 +94,11 @@ Where the reader stumbled, fix the structure. Record who read it and what change
 `doc-coauthoring` Stage 3 stays canonical for co-authored documents — it owns question
 generation, the sub-agent mechanics, and the exit condition. This rule sets the
 three-question floor for every other reader deliverable.
+
+For a rendered deliverable (PDF, paged HTML, slides), inspect rendered pages as
+images. Check page breaks, stranded headings, unreadable figure text, half-empty
+pages, and decorative elements that obscure the argument. Fix structure first;
+use the applicable format and design owner for page composition and rendering.
 
 ## Skeletons
 

@@ -3,10 +3,10 @@
 Last reviewed: 2026-06-16
 Applies to: npm, PyPI, container images, CI/CD pipelines
 When to read: Dependency auditing, release integrity, SBOM generation
-Canonical owner: dev-security
+Canonical owner: jaw-dev-security
 
-Cross-ref: `dev-devops` docker.md §1.3 (container image scanning), `dev-security` §7 (Static Analysis Integration)
-Package release auth defaults live in `dev-devops/references/package-release.md`.
+Cross-ref: `jaw-dev-devops` docker.md §1.3 (container image scanning), `jaw-dev-security` §7 (Static Analysis Integration)
+Package release auth defaults live in `../../jaw-dev-devops/references/package-release.md`.
 For public package publishing, prefer registry-native trusted publishing/OIDC
 where supported; long-lived publish tokens require an explicit fallback reason.
 

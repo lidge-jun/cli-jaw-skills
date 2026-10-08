@@ -19,18 +19,18 @@ Activates by change surface when:
 - Handling logo dark mode variants, OG images, or social sharing meta
 
 Read this before style-specific references when the user cannot articulate a clear design direction.
-For rendered anti-slop tell detection and implementation-level banned patterns, defer to `dev-frontend/references/core/anti-slop.md`. This skill owns concept/taste-level anti-slop judgment (is this direction generic or domain-wrong?).
+For rendered anti-slop tell detection and implementation-level banned patterns, defer to `../jaw-dev-frontend/references/core/anti-slop.md`. This skill owns concept/taste-level anti-slop judgment (is this direction generic or domain-wrong?).
 
-**Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `dev-frontend` §5 / `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
+**Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `jaw-dev-frontend` §5 / `../jaw-dev-frontend/references/core/anti-slop.md § Emoji Slop`.
 
-**Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop concept/taste judgment, and design-system decisions. `dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, rendered tell detection, and rendered verification. After choosing the design direction here, load `dev-frontend` for concrete implementation.
+**Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop concept/taste judgment, and design-system decisions. `jaw-dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, rendered tell detection, and rendered verification. After choosing the design direction here, load `jaw-dev-frontend` for concrete implementation.
 
-> **Role boundary (canonical — identical in `dev` and `dev-frontend`):**
-> `dev` owns universal process, evidence, and safety rules. `dev-uiux-design` owns
-> design intent, direction, and concept judgment. `dev-frontend` owns concrete frontend
-> implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
-> output/process hygiene (FAMILY-SLOP-01), `dev-uiux-design` = concept/taste judgment
-> (is this direction generic or domain-wrong?), `dev-frontend` = rendered implementation
+> **Role boundary (canonical — identical in `jaw-dev` and `jaw-dev-frontend`):**
+> `jaw-dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
+> design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
+> implementation and rendered tell enforcement. Anti-slop has three layers: `jaw-dev` =
+> output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
+> (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
 
 **External/current design evidence:** For live product-reference claims, current
@@ -39,14 +39,14 @@ changed, or browser-rendered source evidence, read the active `search` skill and
 follow its query-rewrite, source-fetch, and evidence-status rules. Use browser
 fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 > **Rule class note (UX-STYLE-01):** Everything in this skill that expresses taste —
 > product personalities, design-isms, preset tokens, aesthetic vocabulary — is
 > `STYLE_SAMPLE`: examples to draw from, never universal requirements. Objective UX
-> correctness (state coverage, accessibility, readability) is owned by `dev-frontend`
+> correctness (state coverage, accessibility, readability) is owned by `jaw-dev-frontend`
 > §1.5 and stays STRICT/DEFAULT.
 
 ## Modular References
@@ -193,7 +193,7 @@ Ask: "주로 어떤 화면에서 볼 건가요?" / "What's the primary viewing d
 | 모바일 위주 (Mobile-first) | Mobile layout → tablet → desktop expansion | Thumb zone, touch targets, minimal density |
 | 둘 다 중요 (Both equally) | Design mobile AND desktop as separate compositions, not one adapted from the other | Most work — section order/composition may differ |
 
-Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
+Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `../jaw-dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
 
 ### Step 6 — Reference
 
@@ -216,7 +216,7 @@ When the user gives feedback without specifics, translate:
 
 ---
 
-## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see dev §0.1 Patch Fast-Path.)
+## 2. Design Read (MANDATORY for new pages, components, or layouts. Optional for ≤5-line patches — see jaw-dev §0.1 Patch Fast-Path.)
 
 Before generating ANY frontend code, produce a Design Read. If the project has a `DESIGN.md` file, read it first — its tokens and prose override everything below.
 
@@ -258,7 +258,7 @@ From the Design Read, derive and declare three dials before any code:
 ```
 DESIGN_VARIANCE: <1-10>
 MOTION_INTENSITY: <1-10>
-Product density profile: <D1-D8> (see dev-frontend/references/core/product-density.md)
+Product density profile: <D1-D8> (see ../jaw-dev-frontend/references/core/product-density.md)
 Reasoning: <one sentence explaining why these values match the brief>
 ```
 
@@ -268,15 +268,14 @@ Inference rules:
 - Creative/portfolio/editorial → VARIANCE 6-9, MOTION 4-7, density D1-D3
 - Dashboard/SaaS/admin → VARIANCE 2-4, MOTION 1-2, density D4-D5
 - "Complex" in brief → increase density profile (functional depth), NOT VARIANCE or MOTION
-- "Simple" in brief → decrease all three proportionally
+- "Simple" in brief → determine whether it means fewer choices, less decoration, or less information; reduce only that complexity and derive density from task needs
 
 "복잡하다" = high DESIGN_VARIANCE is WRONG. Complexity means more features/data/flows, not more visual tricks (carousels, parallax, animations).
 #### Dial Presets (UX-DIAL-PRESET-01, STYLE_SAMPLE)
 
-Source: taste-skill v2, via codexclaw. Exact tuples for common use cases. Presets are
-authoritative **specializations** that may exceed the inference ranges above — Agency
-motion 8 exceeds the general landing 5-7 range on purpose. When a preset exists for the
-exact use case, use it directly and adjust from the Design Read.
+Preset tuples are style samples, even when outside the rough ranges. Prefer the
+brief, existing design system, accessibility, and observed task evidence;
+document a different choice without calling it failure.
 
 | Use case | Variance | Motion | Density | Notes |
 |----------|---|---|---|-------|
@@ -298,24 +297,27 @@ first, then move from it:
 - Preserve: variance = match existing, motion = match + 1, density = match existing.
 - Overhaul: variance = existing + 2, motion = existing + 2, density = match existing.
 - "Complex" in the brief increases **density**, never variance or motion.
-- "Simple" decreases variance and motion; density stays or increases.
+- "Simple" calls for clarifying whether the user wants fewer choices, less decoration, or less information; adjust only the relevant dial, with density set by task needs.
 
 Clamp all arithmetic to 1-10 and D1-D8. An existing SaaS surface at 7/6/4 preserves to
 7/7/4 and overhauls to 9/8/4.
 
 #### Audience-first ownership (UX-AUDIENCE-01, DEFAULT)
 
-The **audience** picks the aesthetic, not the model's taste. When audience signal and
-model preference conflict, audience wins. The presets above encode audience
-expectations — a public-sector audience expects trust-first restraint, an agency
-audience expects high variance — so reaching past a preset because the result feels
-plain is the failure this rule names. Override with stated rationale only.
+The **audience** picks the aesthetic, not the model's taste. When audience evidence
+and a preset conflict, audience evidence wins. A public-sector audience may need
+trust-first restraint; an agency audience may support high variance. Derive the
+choice from the actual audience and brief, and state the rationale.
 
 
 ### Anti-Default Discipline
 Do not default to: warm beige backgrounds, centered hero, three equal feature cards, generic glassmorphism, Inter + slate-900, card-based everything. These are LLM defaults. Reach past them BASED ON the design read.
 
 If the brief is ambiguous, ask ONE clarifying question. Not a multi-question dump.
+
+An award example is dated evidence, not a blanket exemption or ban. Recheck its
+original source, surface fit, and accessibility via `references/design-trends.md`
+and `references/compositional-patterns.md`.
 
 ### DESIGN.md persistence
 ### Image-First Direction Discovery (UX-IMAGE-FIRST-01, DEFAULT)

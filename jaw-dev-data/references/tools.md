@@ -2,7 +2,7 @@
 
 **Last reviewed**: 2026-07-02
 
-Code snippets and interop examples for the three core data processing engines. For the decision matrix and selection flow, use `dev-data/SKILL.md` §6.
+Code snippets and interop examples for the three core data processing engines. For the decision matrix and selection flow, use `../SKILL.md` §6.
 
 ---
 

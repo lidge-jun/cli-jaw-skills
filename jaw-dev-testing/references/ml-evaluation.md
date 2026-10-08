@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-06-16
 **Applies to**: Python (DeepEval 2.x, RAGAS 0.2+, MLflow 3.x), LLM and classical ML evaluation
 **When to read**: Model evaluation strategy, LLM quality gates, CI eval integration, `task_tags: ml`
-**Canonical owner**: `dev-testing` — evaluation methodology, CI integration, quality gates
-**Non-goals**: Model training (→ `dev-data/references/ml-pipeline.md`), model serving (→ `dev-backend/references/core/ml-serving.md`), prompt design (→ `dev-backend/references/core/llm-integration.md`)
+**Canonical owner**: `jaw-dev-testing` — evaluation methodology, CI integration, quality gates
+**Non-goals**: Model training (→ `../../jaw-dev-data/references/ml-pipeline.md`), model serving (→ `../../jaw-dev-backend/references/core/ml-serving.md`), prompt design (→ `../../jaw-dev-backend/references/core/llm-integration.md`)
 
 ---
 

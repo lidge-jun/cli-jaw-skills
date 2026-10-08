@@ -2,7 +2,7 @@
 
 LLM-integrated systems inherit classical supply-chain risks plus new attack surfaces where natural language is the control plane.
 Use this file when the system ingests external text into LLM context, retrieves documents for RAG, consumes tool/agent output, or exposes prompt-driven workflows to users.
-Cross-references: `agentic-ai-security.md` ASI01/ASI06/ASI07, `dev-backend` refs `llm-integration.md` §6.
+Cross-references: `agentic-ai-security.md` ASI01/ASI06/ASI07, `jaw-dev-backend` refs `llm-integration.md` §6.
 
 ## §1 Indirect Prompt Injection
 
@@ -137,5 +137,5 @@ describe("prompt injection defense", () => {
 
 Cross-references:
 - Agent-level defenses: `references/agentic-ai-security.md` ASI01 (prompt injection), ASI06 (supply chain), ASI07 (memory poisoning)
-- LLM integration patterns: `dev-backend` refs `llm-integration.md` §6 (security hardening)
-- Agent config audit: `dev-security` §8 (MCP vetting, sandbox, blast radius)
+- LLM integration patterns: `jaw-dev-backend` refs `llm-integration.md` §6 (security hardening)
+- Agent config audit: `jaw-dev-security` §8 (MCP vetting, sandbox, blast radius)

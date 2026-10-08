@@ -4,7 +4,7 @@ Source: sol research (OWASP Agentic Skills Top 10, tech-leads-club/agent-skills,
 
 ## OWASP AST01-10 Coverage
 
-| AST ID | Threat | Codexclaw Mitigation |
+| AST ID | Threat | Jaw Mitigation |
 |--------|--------|---------------------|
 | AST01 | Malicious skill content | Review skill SKILL.md before installation; check for embedded commands, data exfiltration URLs, or instruction overrides |
 | AST02 | Compromised supply chain | Pin skill versions to commit SHA; verify publisher identity; content-hash skill files at installation |

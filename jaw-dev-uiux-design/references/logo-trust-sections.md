@@ -2,8 +2,8 @@
 
 Design guidance for integration/partner/client logo sections. These are trust signals, not UI components.
 
-Read `dev-frontend/references/core/logo-sections.md` for the CSS implementation.
-Read `dev-frontend/references/core/brand-asset-sourcing.md` for SVG sourcing.
+Read `../../jaw-dev-frontend/references/core/logo-sections.md` for the CSS implementation.
+Read `../../jaw-dev-frontend/references/core/brand-asset-sourcing.md` for SVG sourcing.
 
 ---
 

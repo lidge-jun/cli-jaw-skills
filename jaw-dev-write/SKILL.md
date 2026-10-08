@@ -1,6 +1,6 @@
 ---
 name: jaw-dev-write
-description: "MUST USE when revising Korean prose the agent is about to send or has already written — 윤문, removing translationese and AI idioms, fixing register/tone breaks, varying rhythm, replacing abstract endings, while preserving meaning exactly. Applies to chat answers, docs, READMEs, release notes, commit bodies, issue/PR text, and UI copy. Generation for a specific platform/audience belongs to k-writing; this skill revises. Triggers: 윤문, 다듬어, 다듬어줘, 자연스럽게, 매끄럽게, 교정, 고쳐줘, AI투, 번역투, 어색해, Korean polish, proofread Korean, dev-write."
+description: "MUST USE when revising Korean prose the agent is about to send or has already written — 윤문, removing translationese and AI idioms, fixing register/tone breaks, varying rhythm, replacing abstract endings, while preserving meaning exactly. Applies to chat answers, docs, READMEs, release notes, commit bodies, issue/PR text, and UI copy. Generation for a specific platform/audience belongs to k-writing; this skill revises. Triggers: 윤문, 다듬어, 다듬어줘, 자연스럽게, 매끄럽게, 교정, 고쳐줘, AI투, 번역투, 어색해, Korean polish, proofread Korean, jaw-dev-write."
 metadata:
   short-description: "Korean prose revision: AI-tell removal, register consistency, meaning-exact editing."
   keywords: "윤문, 번역투, AI투, 교정, register, tone, Korean, polish, revision, proofread"
@@ -26,9 +26,9 @@ metadata:
 4. **문체도 뜻이다.** 문어체는 문어체로, 구어체는 구어체로, 존댓말은 존댓말로 남는다.
    문체 안에서 깨진 곳을 고치는 것이지 다른 문체로 옮기는 게 아니다.
 
-## 윤문 프로토콜 (순서대로, 고친 뒤 그 패스를 다시 돌린다)
+## 윤문 프로토콜 (REPORT-POLISH-01; 순서대로, 고친 뒤 그 패스를 다시 돌린다)
 
-### 패스 1 — 문체·어조 일관성 (S1)
+### 패스 1 — 문체·어조 일관성 (S1, REPORT-REGISTER-01)
 
 첫 문장과 마지막 문장의 문체와 높임 수준이 같아야 한다. 반말 글 안에 "~합니다" 섬이
 없어야 하고, 존댓말 글 안에 "~해/~야"가 없어야 하며, 편한 글에 "~하겠습니다" 격식
@@ -70,3 +70,5 @@ CAT-3(AI 관용구), CAT-5(톤 파괴)로 훑는다. S1은 즉시 고친다. 표
 
 한국어가 아닌 텍스트. 혼용 문서에서는 한국어 산문만 고치고 코드와 영어는 그대로 둔다.
 새 글을 처음부터 쓰는 일은 `k-writing` 또는 해당 표면을 소유한 스킬의 몫이다.
+보고서·설명문의 구조는 먼저 [jaw-dev의 reader-documents](../jaw-dev/references/reader-documents.md)에서 정한다.
+이 스킬은 구조를 정한 뒤 한국어 문장만 윤문한다.

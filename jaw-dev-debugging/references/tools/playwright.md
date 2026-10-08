@@ -2,13 +2,13 @@
 
 Use Playwright as a debugging tool (not just a test runner) when the bug is in
 a web surface: visual, routing, network, or state-dependent behavior.
-Lineage: lazycodex `tools/playwright-cli.md`, adapted for codexclaw, ported here.
+Lineage: lazycodex `tools/playwright-cli.md`, adapted for Jaw.
 
 ## When to Use (vs the Manager embedded browser)
 
 Playwright is for DETERMINISTIC repro: a spec file that fails red and passes
 green. For one-shot exploratory QA, use the native browser tools per
-`dev-testing` QA-TOOL-LADDER-01.
+`jaw-dev-testing` QA-TOOL-LADDER-01.
 
 ## Quick Repro Spec
 

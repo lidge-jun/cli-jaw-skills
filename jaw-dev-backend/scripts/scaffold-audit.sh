@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Usage: scaffold-audit.sh [project-path]
-# Checks backend/scaffolding conventions owned by dev-scaffolding.
+# Checks backend/scaffolding conventions owned by jaw-dev-scaffolding.
 
 DIR="${1:-.}"
 PASS=0
@@ -23,7 +23,7 @@ check() {
   fi
 }
 
-echo "🔍 Auditing '$DIR' against backend/scaffolding conventions (see dev-scaffolding)"
+echo "🔍 Auditing '$DIR' against backend/scaffolding conventions (see jaw-dev-scaffolding)"
 echo ""
 
 # 1. Feature-based structure (no controllers/ models/ services/ at src root)

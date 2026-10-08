@@ -85,6 +85,10 @@ Model-gated parallel research (2-4 lanes) is already defined in `jaw-search/SKIL
 protocol adds only that each lane returns provenance records — claim, title, publisher,
 date, URL, tier, contradictions — and never a report draft.
 
+Deduplicate URLs and reuse opened sources across lanes. Retry a transient timeout, rate
+limit, or connector failure at most once while other work continues; do not repeat a
+persistent unchanged failure. Record the remaining gap if the retry fails.
+
 ## SEARCH-DEEP-07 — Ledger and report-source.md
 
 Keep one claim-to-source ledger for the whole task: claim, source title, publisher, date,
@@ -95,6 +99,21 @@ answer, analysis by sub-question, limitations and disagreements, and sources. Ci
 gapless sequential numbers and a terminal source list, so pruning a source during
 synthesis never leaves a hole. Claims that reached only Tier 1 are listed separately as
 open questions and never promoted silently.
+
+Before synthesis, independently reopen the sources behind the highest-impact claims.
+Check the exact claim, date, and source identity again, and record the spot-check or
+any correction in the ledger. A secondary summary does not replace this check.
+
+### REPORT-RESEARCH-01 — Handoff to a report owner
+
+Hand off the route (`source-only`, `bounded-lookup`, or `deep-research`), the allowed
+source boundary, source languages and output language, each question ID with its
+answering claim IDs, unresolved gaps, and the budget and stop reason. The handoff
+describes the research already done; it does not promise an exporter or validator.
+A `source-only` route cannot claim sources discovered by a search. A load-bearing
+claim backed only by a snippet remains unresolved. List every unanswered question
+as a gap under its exact ID. Keep translated quotations tied to their original
+source and label the translation.
 
 ## SEARCH-DEEP-08 — Deliverable
 

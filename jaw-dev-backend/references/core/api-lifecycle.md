@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-07-02
 **Applies to**: REST APIs (Express 5.x / Fastify 5.x / any HTTP framework), OpenAPI 3.1+
 **When to read**: API versioning, deprecation planning, breaking change detection, `task_tags: api_lifecycle`
-**Canonical owner**: `dev-backend` — versioning strategy and deprecation mechanics
-**Non-goals**: API design patterns (→ `api-design.md`), authentication (→ `dev-security`), deployment strategy (→ `dev-devops`)
+**Canonical owner**: `jaw-dev-backend` — versioning strategy and deprecation mechanics
+**Non-goals**: API design patterns (→ `api-design.md`), authentication (→ `jaw-dev-security`), deployment strategy (→ `jaw-dev-devops`)
 
 ---
 
@@ -222,7 +222,7 @@ When a breaking change is intentional, require a migration guide link in the PR 
 | Topic | Canonical Source | What This File Does NOT Cover |
 |-------|-----------------|-------------------------------|
 | REST conventions, response envelope, pagination | `api-design.md` §RESTful, §Envelope | URL design, HTTP methods, error codes |
-| Contract testing between API versions | `dev-testing` SKILL.md §5 | Test framework selection, CI pipeline |
-| New API version scaffolding | `dev-scaffolding` SKILL.md §11 | File generation, ADR templates |
-| Canary deployment per version | `dev-devops` (when available) | Blue-green, rolling, traffic splitting |
-| OpenAPI spec authoring rules | `dev-scaffolding/references/api-docs.md` (when available) | Spec file structure, example authoring |
+| Contract testing between API versions | `jaw-dev-testing` SKILL.md §5 | Test framework selection, CI pipeline |
+| New API version scaffolding | `jaw-dev-scaffolding` SKILL.md §11 | File generation, ADR templates |
+| Canary deployment per version | `jaw-dev-devops` (when available) | Blue-green, rolling, traffic splitting |
+| OpenAPI spec authoring rules | `../../../jaw-dev-scaffolding/references/api-docs.md` (when available) | Spec file structure, example authoring |

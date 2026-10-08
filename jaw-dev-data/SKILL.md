@@ -12,9 +12,9 @@ metadata:
 Production-grade data engineering patterns for building reliable data systems.
 Activates by change surface for data pipelines, analytics, SQL-heavy work, schema evolution, backfills, and reporting.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## When to Activate
 
@@ -25,13 +25,13 @@ Activates by change surface for data pipelines, analytics, SQL-heavy work, schem
 - Performing data analysis, aggregation, or reporting
 - Choosing between batch and streaming architectures
 
-**Do not activate for plain app CRUD SQL, OLTP query tuning, or transactional schema design.** Route those to `dev-backend/references/stacks/database.md`. This skill owns analytics, ETL/ELT, pipelines, data quality, and reporting.
+**Do not activate for plain app CRUD SQL, OLTP query tuning, or transactional schema design.** Route those to `jaw-dev-backend/references/stacks/database.md`. This skill owns analytics, ETL/ELT, pipelines, data quality, and reporting.
 
 ## External/current data evidence
 
 For current external dataset contracts, source freshness, pipeline/tool version
 behavior, provider data API changes, or public benchmark/source claims, read the
-active `search` skill and follow its query-rewrite, source-fetch, and
+active `jaw-search` skill and follow its query-rewrite, source-fetch, and
 evidence-status rules. Use browser fetch/open/text/get-dom/snapshot only after
 candidate URLs exist and the claim needs browser-verifiable source evidence.
 
@@ -45,7 +45,7 @@ Before delivering:
 - [ ] Data-quality checks cover nulls, uniqueness, ranges, freshness, and row counts
 - [ ] Volume and latency justify the chosen engine: pandas, Polars, DuckDB, SQL warehouse, Spark/Flink
 - [ ] Invalid records have a dead-letter/quarantine path with enough context to debug
-- [ ] PII/governance classification is complete or delegated to `dev-security`/§7
+- [ ] PII/governance classification is complete or delegated to `jaw-dev-security`/§7
 - [ ] Output format and downstream contract are explicit
 
 ---
@@ -95,7 +95,7 @@ Before any transformation, validate incoming data:
 ✅ Check: Required fields are not null
 ✅ Check: Values are within expected ranges
 ✅ Check: No unexpected duplicate keys
-❌ Fail: If any check fails, write to error log with row details. Don't silently drop.
+❌ Fail: Quarantine invalid rows under the dataset's access and retention policy; log redacted identifiers and diagnostics, never raw PII. Don't silently drop.
 ```
 
 ---
@@ -131,7 +131,7 @@ When using dbt for transformations, follow the **staging → intermediate → ma
 
 | Scenario | Pattern |
 |----------|---------|
-| **Invalid records** | Write to dead-letter table/file for manual review. Preserve every record for debugging. |
+| **Invalid records** | Quarantine under the dataset’s access/retention policy; retain only authorized evidence and log redacted diagnostics. |
 | **Source unavailable** | Retry with exponential backoff (1s, 2s, 4s). Alert after 3 failures. |
 | **Schema mismatch** | Halt pipeline. Log expected vs. actual schema. Don't attempt partial loads. |
 | **Duplicate records** | Use upsert (INSERT ON CONFLICT UPDATE) or deduplicate with window functions. |
@@ -298,7 +298,7 @@ mindshare claims.
 |--------|--------|--------|--------|
 | **Best for** | <100MB, exploration, ML prep | >100MB, batch ETL, performance | SQL analytics, ad-hoc queries |
 | **Execution** | Single-threaded, eager | Multi-threaded Rust, lazy eval | Vectorized, auto disk spill |
-| **Speed (groupby/join)** | Baseline | 5-10x faster | Matches Polars on SQL-native |
+| **Speed (groupby/join)** | Benchmark on representative input | Depends on expressions, data, and execution mode | Depends on query plan, data, and memory |
 | **Memory** | Full load into RAM | Streaming, lazy chains | Spill-to-disk for out-of-core |
 | **API style** | DataFrame (imperative) | DataFrame (expression-based) | SQL-first |
 | **ML interop** | Excellent (scikit-learn, etc.) | Good (`.to_pandas()`) | Good (`.fetchdf()`) |
@@ -355,20 +355,20 @@ See `references/governance.md` for detailed implementation patterns, row-level s
 
 ## 8. Query Performance Guidelines
 
-Ownership note: this section covers analytical SQL, warehouse/lakehouse queries, and pipeline transforms. Plain app CRUD SQL, OLTP schema design, and transactional query tuning belong to `dev-backend/references/stacks/database.md`.
+Ownership note: this section covers analytical SQL, warehouse/lakehouse queries, and pipeline transforms. Plain app CRUD SQL, OLTP schema design, and transactional query tuning belong to `jaw-dev-backend/references/stacks/database.md`.
 
-- Every query that runs in production: EXPLAIN ANALYZE before deploy
+- Start with non-executing EXPLAIN. EXPLAIN ANALYZE executes the statement, including writes and possible external effects; use only with authorized execution, isolated representative data, and a resource budget. Rollback does not prove absence of external side effects.
 - Slow query threshold: > 100ms for OLTP, > 5s for OLAP/analytics
 - Index strategy: B-tree for equality/range, GIN for array/JSONB, GiST for geo
 - Missing index detection: `pg_stat_user_tables` → seq_scan / idx_scan ratio
 - Partition tables > 10M rows if query patterns allow time-range or hash partitioning
 - Never `SELECT *` in production code — specify columns
 
-For pipeline observability, follow the OpenTelemetry patterns in `dev-backend/references/core/observability.md`. Instrument pipeline stages as spans, data quality checks as events.
+For pipeline observability, follow the OpenTelemetry patterns in `jaw-dev-backend/references/core/observability.md`. Instrument pipeline stages as spans, data quality checks as events.
 
-When pipeline errors surface through APIs, use the AppError taxonomy from `dev-backend/SKILL.md` §3. Map pipeline failures to appropriate HTTP status codes (422 for validation, 502 for upstream failures, 503 for capacity).
+When pipeline errors surface through APIs, follow the existing API error contract (`jaw-dev-backend/SKILL.md` §3) and map failures to appropriate HTTP status codes (422 for validation, 502 for upstream failures, 503 for capacity).
 
-For data API patterns (pagination of large datasets, cursor-based access, streaming responses), see `dev-backend/references/core/api-design.md`.
+For data API patterns (pagination of large datasets, cursor-based access, streaming responses), see `jaw-dev-backend/references/core/api-design.md`.
 
 ---
 
@@ -378,14 +378,14 @@ Data engineering does not exist in isolation. Cross-reference these skills when 
 
 | Companion | When to Consult | Key Sections |
 |-----------|-----------------|--------------|
-| `dev-backend` | Exposing data via API, response envelope shape, pagination | §5 API Response Contract, §2 Layered Architecture |
-| `dev-security` | PII handling, data classification, access controls, audit logging, input validation policy (per dev-security §10 ownership matrix) | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
-| `dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend & API Testing, §3 Contract Testing |
-| `dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §15 Backend Contract & Security Alignment |
+| `jaw-dev-backend` | Exposing data via API, response envelope shape, pagination | §5 API Response Contract, §2 Layered Architecture |
+| `jaw-dev-security` | PII handling, data classification, access controls, audit logging, input validation policy (per jaw-dev-security §10 ownership matrix) | §1 Input Validation, §4 Secrets, §8 Pre-Flight |
+| `jaw-dev-testing` | Pipeline validation, contract tests for data APIs, CI gates | §2 Backend & API Testing, §3 Contract Testing |
+| `jaw-dev-frontend` | Downstream reporting/dashboard consumers, data format expectations | §15 Backend Contract & Security Alignment |
 
 **Integration patterns:**
-- Data APIs serving frontend dashboards must use the standard response envelope (`dev-backend` §5)
-- PII pipelines must classify columns and apply masking per `dev-security` guidance before this skill's §7 rules
+- Data APIs preserve existing and protocol-native contracts (`jaw-dev-backend` §5); do not wrap GraphQL, gRPC, SSE, or an established API to match a sample envelope
+- PII pipelines must classify columns and apply masking per `jaw-dev-security` guidance before this skill's §7 rules
 - Data contract changes (§4 Data Contracts) must notify downstream consumers including frontend teams
 
 ---

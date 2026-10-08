@@ -8,7 +8,7 @@ What to emit and where, for surfaces that are **not** production services.
 | --- | --- | --- |
 | One-shot CLI | this document | a command that prints a map, a doctor report, a query result |
 | Long-running local server | process stdout/stderr transport: this document's `LOG-CONSUMER-01` / `LOG-ONCE-01` only. HTTP and request instrumentation: `jaw-dev-backend` | a local jaw-dev server |
-| Production-deployed service | `jaw-dev-backend` `references/core/observability.md` (JSON, traceId, OTel conventions) | a deployed API |
+| Production-deployed service | `jaw-dev-backend` `../../jaw-dev-backend/references/core/observability.md` (JSON, traceId, OTel conventions) | a deployed API |
 
 Where they overlap on a deployed service, `jaw-dev-backend` wins.
 
@@ -49,8 +49,8 @@ different reader, different purpose. Removing either one loses a consumer.
 
 This document does not redefine any of these:
 
-- Following existing conventions — `jaw-dev/SKILL.md` §Conventions.
-- Where log statements belong — `jaw-dev-debugging/references/methodologies.md`.
-- Surfacing async failures at a clear boundary — `jaw-dev/SKILL.md` §5 Safety Rules.
+- Following existing conventions — `../SKILL.md` §Conventions.
+- Where log statements belong — `../../jaw-dev-debugging/references/methodologies.md`.
+- Surfacing async failures at a clear boundary — `../SKILL.md` §5 Safety Rules.
 - Service log levels, JSON transport, trace fields, logger libraries —
-  `jaw-dev-backend/references/core/observability.md`.
+  `../../jaw-dev-backend/references/core/observability.md`.
