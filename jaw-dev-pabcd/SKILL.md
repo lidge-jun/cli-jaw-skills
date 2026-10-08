@@ -209,7 +209,7 @@ Read [Plan phase](references/phase-plan.md) for the loop-spec, consultation when
 
 ### §3.1 Implementation-Unit Documents
 
-For C2+ planning or any multi-cycle roadmap, read [Implementation units](references/implementation-units.md) (DIFFLEVEL-ROADMAP-01, LEXICO-SPLIT-01, UNIT-RESIDENCE-01). Use the repository-approved plan location; never create private records in a public checkout. C0 creates no numbered record; C1 records only inside an already-existing unit. C2+ follows the approved unit convention. For projects allowing in-tree records, `devlog/_plan/YYMMDD_slug/` remains the default placeholder; repositories forbidding them use an approved external location.
+For C2+ planning or any multi-cycle roadmap, read [Implementation units](references/implementation-units.md) (DIFFLEVEL-ROADMAP-01, LEXICO-SPLIT-01, UNIT-RESIDENCE-01). Use the repository-approved plan location; never create private records in a public checkout. C0 creates no numbered record; C1 records only inside an already-existing unit. C2+ follows the approved unit convention. For projects allowing in-tree records, `devlog/_plan/YYMMDD_slug/` remains the default placeholder; repositories forbidding them use an approved external location. Documents use decade-range numbering (000-009 research/spec/MOC, 010-019 phase 1, ...); never bare `PLAN.md`, `DIFF_PLAN.md`, `PHASES.md` or `RCA.md` (LEXICO-SPLIT-01).
 
 ### A — Plan Audit
 
