@@ -1,10 +1,9 @@
 # Implementation Log (devlog) Routine — the documentation loop inside PABCD
 
 Canonical spec for the per-implementation-unit documentation routine that rides the
-PABCD cycle. Companion to `dev-pabcd/SKILL.md` §3.1 (numbering) and
-`dev-scaffolding/SKILL.md` §2.1 (folder proposal rules). Read before any development
-work: unit residence is universal (UNIT-RESIDENCE-01) — the full routine below is for
-C2+/multi-phase work; C0-C1 leaves a numbered record doc (see the last section).
+PABCD cycle. Companion to `jaw-dev-pabcd/SKILL.md` §3.1 (numbering) and
+`jaw-dev-scaffolding/SKILL.md` §2.1 (folder proposal rules). Read before any development
+work that needs a unit; the C0/C1 exemptions and UNIT-RESIDENCE-01 live in `../../jaw-dev-pabcd/references/implementation-units.md`. The full routine below is for C2+/multi-phase work.
 
 ## The unit: one implementation unit = one plan folder
 
@@ -40,7 +39,7 @@ to diff-level in the FIRST P (or the design-only Phase-0 pass) —
 DIFFLEVEL-ROADMAP-01. P of each later cycle re-verifies its pre-written doc against
 the current codebase (stale check) and amends it BEFORE building; it never writes
 the doc fresh mid-unit. The attestation log in `00_plan.md` is the continuity spine
-— each new P quotes the previous D conclusion from it (see `dev-pabcd` §10
+— each new P quotes the previous D conclusion from it (see `jaw-dev-pabcd` §10
 LOOP-CONTINUITY-01).
 
 ## Mapping to mainstream developer practice (translation table)
@@ -58,7 +57,7 @@ standard", translate:
 | A-phase doc audit | Design review / RFC final-comment-period — review BEFORE code |
 | Evidence in C, attestation in D | CI gate records + review sign-off |
 | `_fin/` closure record | Shipped postmortem + changelog entry |
-| Hard-to-reverse decisions | ADR (see `dev-scaffolding` §2.1 — separate, immutable) |
+| Hard-to-reverse decisions | ADR (see `jaw-dev-scaffolding` §2.1 — separate, immutable) |
 | Issue/ticket | Still useful: one issue per unit LINKING to the folder; sub-issues for tracking granularity |
 
 Two deliberate differences from common practice, kept on purpose:
@@ -68,13 +67,10 @@ Two deliberate differences from common practice, kept on purpose:
    here it is a hard gate because the executor (an agent) will otherwise
    confidently build from a flawed plan.
 
-## Ceremony scales; residence does not
+## Reader narrative vs evidence
 
-Every piece of work lands in an implementation unit (UNIT-RESIDENCE-01). The full
-routine above (master plan + all-phase diff-level docs + doc audit) is mandatory for
-C4, for any multi-phase unit regardless of class, and for C3 when state must persist
-across turns/agents or contracts/architecture need a durable audit trail. C0-C1
-fast-path work skips the ceremony but still leaves a numbered record doc in its
-owning unit (what changed · why the fast path applied · verification evidence);
-create a minimal unit folder if none exists. Over-documenting small work is process
-slop — but "small" scales the ceremony down, never the record away.
+The top plan answers what was decided and why, in terms a new reader can act on. Put raw receipts, probe logs, and check tails in linked evidence rather than inline narrative. See `../../jaw-dev/references/reader-documents.md` for the canonical reader-document rules; link each material claim to its evidence.
+
+## Ceremony follows the class
+
+The full routine above (master plan, all-phase diff-level docs, and doc audit) applies to C4, any multi-phase unit, and C3 when state must persist across turns or contracts need a durable audit trail. For C0/C1, follow `../../jaw-dev-pabcd/references/implementation-units.md`: C0 has no numbered record; C1 records change, reason, and proof only inside an existing owning unit. Do not create a unit solely for C1.

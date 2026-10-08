@@ -13,9 +13,9 @@ Build reliable, secure, and maintainable server-side applications.
 This skill has modular references for specialized guidance — read the relevant ones before coding.
 It activates by change surface whenever work primarily touches APIs, servers, services, jobs, data access, schemas, migrations, or operational backend behavior.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ## Modular References
 
@@ -42,7 +42,7 @@ For C2 ordinary slices, `crud-api.md` alone suffices; read `api-design.md`/`arch
 
 When backend decisions depend on current external API docs, API lifecycle
 changes, LLM/RAG provider behavior, dependency freshness, or package/source
-evidence, read the active `search` skill and follow its query-rewrite,
+evidence, read the active `jaw-search` skill and follow its query-rewrite,
 source-fetch, and evidence-status rules.
 
 ---
@@ -134,40 +134,40 @@ See `references/core/api-design.md` for protocol-specific patterns.
 
 Rules for SSE, WebSocket, and any connection held open beyond a single request-response cycle.
 
-**Lifecycle Rules:**
+**Lifecycle examples (HEURISTIC):** tune heartbeat, cap, drain, and duration to protocol, proxy, capacity, and product needs. The common six-connection browser limit concerns HTTP/1.x; HTTP/2 stream limits are negotiated. These values are not universal failure thresholds.
 
 | Parameter | Default | Rationale |
 |-----------|---------|-----------|
-| Heartbeat interval | 15-30s | Detect dead connections before TCP timeout (varies by proxy) |
+| Heartbeat interval | Route-specific | Keep the stream observable within proxy limits |
 | Reconnection backoff | Exponential 1s-30s with jitter | Prevent thundering herd on server restart |
-| Max connection duration | 1h (SSE), 24h (WebSocket) | Force reconnect to rebalance and prevent memory leaks |
-| Connections per client | Cap at 6 (SSE) or 1-2 (WebSocket) | Browser limits + server memory budget |
+| Max connection duration | Route-specific | Rebalance within the declared proxy and resource budget |
+| Connections per client | Route-specific | Account for HTTP version and server capacity |
 
 **Server-Side Requirements:**
 
-- **Connection registry:** Track all active connections in-memory (Map by client/session ID). Required for graceful drain and debugging.
-- **Graceful drain on deploy:** Stop accepting new connections → send "reconnect" frame to existing → wait drain timeout → close.
-- **Memory budget:** Allocate max memory per connection (e.g., 2KB buffer). Monitor total; reject new connections when approaching limit.
-- **Backpressure:** If client stops consuming, buffer up to N messages then drop oldest or disconnect.
+- **Connection tracking:** Track active connections as needed for capacity, drain, and debugging; use the repository’s established registry.
+- **Graceful drain on deploy:** Stop accepting new connections, finish or close streams within the route budget, and let clients reconnect by their existing protocol. Do not invent a wire frame.
+- **Memory budget:** Bound per-connection buffers, monitor total use, and reject new connections at the established capacity limit.
+- **Backpressure:** If a client stops consuming, use the route-defined bounded buffer and loss/disconnect policy.
 
-**Pattern — "202 + Job ID" for Long Operations:**
+**Pattern — "202 + Job ID" when the API defines an asynchronous job:**
 
-Instead of holding a connection open for a slow operation:
+For that contract, instead of holding a connection open for the work:
 ```
 POST /generate → 202 { jobId: "j_abc123" }
 GET /jobs/j_abc123 → { status: "processing", progress: 0.6 }
                    → { status: "complete", result: {...} }
 ```
-Use SSE/WebSocket only for push notifications about job status — not for the operation itself.
+A job API may push status over SSE/WebSocket; an existing streaming API may deliver its own operation result. For example, cli-jaw `GET /api/events` preserves data-only SSE, flushes headers promptly, rejects at capacity with 503, and sends a visible data ping. Do not add an `event:` field or fixed one-hour cutoff to that route.
 
 **Banned:**
 
 | Banned | Fix |
 |--------|-----|
-| Unbounded connections (no cap, no registry) | Connection registry + cap per client + global max |
-| No heartbeat (rely on TCP keepalive only) | Application-level heartbeat every 15-30s |
+| Unbounded connections (no cap, no registry) | Track clients and enforce protocol-aware capacity limits |
+| No heartbeat where proxy/clients require visibility | Use the route-defined heartbeat interval and frame format |
 | Blocking event loop per connection (sync work in message handler) | Offload to worker thread or queue; handler stays async |
-| Holding connection open for >5s synchronous work | Return 202 + job ID; notify via push when done |
+| Work exceeding the declared response budget or blocking the event loop | Queue, stream, or isolate according to the route contract |
 | No reconnection logic on client side | Implement exponential backoff with jitter |
 
 ---
@@ -178,7 +178,7 @@ Use SSE/WebSocket only for push notifications about job status — not for the o
 Routes → Controllers → Services → Repositories → Database
   │          │             │            │
   │          │             │            └── Data access only
-  │          │             └── Business logic (validation at controller boundary — service trusts caller per dev-architecture §4)
+  │          │             └── Business logic (validation at controller boundary — service trusts caller per jaw-dev-architecture §4)
   │          └── Parse HTTP, format response
   └── URL mapping, middleware
 ```
@@ -218,7 +218,7 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 
 | Condition | Use Queue | Use Direct |
 |-----------|-----------|------------|
-| Execution time >5s | Yes | No |
+| Work exceeds the measured request/proxy budget (5s is only an example) | Usually | Streaming or bounded direct work may fit |
 | Must be retryable on failure | Yes | No |
 | Fire-and-forget (caller doesn't wait) | Yes | No |
 | <1s, idempotent, caller needs immediate result | No | Yes |
@@ -260,7 +260,7 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 
 | Banned | Fix |
 |--------|-----|
-| Synchronous long operation blocking HTTP response (>5s) | Enqueue + return 202 + job ID |
+| Work exceeds the declared request budget or blocks the event loop | Queue, stream, or isolate according to the actual contract |
 | Queue without DLQ | Always configure DLQ; alert on DLQ depth > 0 |
 | Infinite retries (no max) | Set maxRetries=3 with exponential backoff |
 | No idempotency (duplicate jobs on retry) | Idempotency key on every enqueue; dedup in worker |
@@ -281,11 +281,11 @@ When work exceeds what an HTTP response cycle should hold open, use a queue.
 | Rate limit     | 429  | info          |
 | Internal error | 500  | error + stack |
 
-Use a centralized `AppError` class (DEFAULT — when the repo already has an error convention, follow it instead). Distinguish operational vs programmer errors.
+Follow the repository error convention. A centralized `AppError` class is one option where already selected; distinguish operational from programmer errors.
 
-### Error Taxonomy (AppError Hierarchy)
+### Error Taxonomy (optional AppError hierarchy)
 
-Create an AppError base class with statusCode, code, and isOperational properties. Extend for each error type (ValidationError, NotFoundError, etc.).
+If the repository chooses AppError, a base class may carry statusCode, code, and isOperational. Do not introduce a parallel hierarchy into an established Result/error model.
 
 ### Result Pattern (conditional)
 
@@ -296,7 +296,7 @@ Consider the Result/Either pattern (e.g. neverthrow) for recoverable domain erro
 | **neverthrow** | Default choice — small explicit `Result<T, E>` for recoverable domain errors |
 | **Effect** | Only when the app benefits from a full effect runtime: typed errors, retries, resources, concurrency, tracing, service composition |
 
-**Rule:** Use `Result` where recoverable/domain errors are first-class. Reserve `try/catch` for error boundaries (middleware, top-level handlers) only.
+Use Result only when selected for this repository. Otherwise propagate errors to a clear handling boundary; do not add wrappers or change public error contracts by preference.
 
 ---
 
@@ -320,9 +320,9 @@ Apply in this sequence (order matters):
 
 ## 5. API Response Contract
 
-API endpoints should use a **stable response envelope** (DEFAULT) unless the protocol (GraphQL, gRPC, SSE) defines its own or the repo already has a different established contract — follow the existing contract first. Envelope, OTel, health checks, and deployment-readiness checks are production-surface concerns (`dev` §0.4 shared definition), conditional by project scope, not universal blockers.
+API endpoints should use a **stable response envelope** (DEFAULT) unless the protocol (GraphQL, gRPC, SSE) defines its own or the repo already has a different established contract — follow the existing contract first. Envelope, OTel, health checks, and deployment-readiness checks are production-surface concerns (`jaw-dev` §0.4 shared definition), conditional by project scope, not universal blockers.
 
-**Rules:**
+**For APIs that choose this envelope:**
 - `success` boolean at top level — never infer from HTTP status alone
 - `error.code` is machine-readable (UPPER_SNAKE), `error.message` is human-readable
 - `meta.requestId` on every response — enables cross-service tracing
@@ -425,19 +425,19 @@ When the app serves web pages (SSR/SSG):
 
 ## 12. Pre-Flight Checklist
 
-- Analytical data / ETL / pipeline quality: load `dev-data`.
-- API consumer context / frontend contract alignment: load `dev-frontend`.
-- Test strategy / verification harnesses / QA execution: load `dev-testing`.
-- Backend failure RCA methodology: load `dev-debugging`.
-- New project setup / file placement conventions: load `dev-scaffolding`.
+- Analytical data / ETL / pipeline quality: load `jaw-dev-data`.
+- API consumer context / frontend contract alignment: load `jaw-dev-frontend`.
+- Test strategy / verification harnesses / QA execution: load `jaw-dev-testing`.
+- Backend failure RCA methodology: load `jaw-dev-debugging`.
+- New project setup / file placement conventions: load `jaw-dev-scaffolding`.
 
 Before delivering:
-- [ ] Consistent response envelope on every endpoint
+- [ ] Existing/protocol response contract preserved; shared envelope only where applicable (§5)
 - [ ] Input validation with schema (Zod, Pydantic, etc.)
 - [ ] Authentication middleware on protected routes
 - [ ] Rate limiting on public endpoints
 - [ ] Structured JSON logging with `requestId` and `traceId`
-- [ ] Error handler returns proper HTTP codes via `AppError` hierarchy
+- [ ] Error handler preserves the repository error convention and correct HTTP mapping; AppError is optional
 - [ ] No raw SQL in service layer
 - [ ] No hardcoded secrets
 - [ ] Migrations have rollback
@@ -445,5 +445,5 @@ Before delivering:
 - [ ] Health endpoints: `/health` (liveness) and `/ready` (readiness) — see `references/core/health-checks.md`
 - [ ] API performance: p95 reads ≤ 200ms, slow queries logged with EXPLAIN (§9)
 - [ ] SEO endpoints: sitemap.xml + robots.txt if serving web pages (§10)
-- [ ] Security review: delegate to `dev-security/SKILL.md` for production readiness
+- [ ] Security review: delegate to `jaw-dev-security/SKILL.md` for production readiness
 - [ ] Stack-specific rules followed (see `references/stacks/`)

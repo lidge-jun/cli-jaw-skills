@@ -1,9 +1,9 @@
 ---
 name: jaw-dev-debugging
-description: "MUST USE for any real runtime debugging in any language — crashes, silent failures, wrong output, build/test failures, flaky tests, performance regressions, and integration bugs. A 5-phase root-cause method: architecture check → investigate → analyze → hypothesize → implement. Triggers: debug this, why is X failing, flaky test, fix the crash, root cause, error, stack trace, regression, 왜 안 돼, 디버깅, 원인 분석."
+description: "MUST USE for runtime debugging and logic analysis of unknown systems. Covers crashes, wrong output, build/test failures, flaky tests, regressions, integration bugs, and comprehension without a defect. Triggers: debug this, why is X failing, root cause, how does X work, figure out how, reverse engineer, 왜 안 돼, 디버깅, 원인 분석, 로직 파악, 뜯어봐."
 metadata:
   short-description: "5-phase systematic root-cause debugging method for real failures in any language."
-  keywords: "debug, error, stack trace, root cause, flaky, regression, crash, bisect, trace-first, replay"
+  keywords: "debug, error, stack trace, root cause, flaky, regression, crash, bisect, trace-first, replay, logic analysis, comprehension, unknown system, reverse engineering"
   last-verified: "2026-07-02"
 ---
 
@@ -14,18 +14,18 @@ This skill is the **thinking process** for fixing bugs. It activates by change s
 build failures, performance regressions, integration bugs.
 
 **Boundary**: This skill covers how to reason about bugs. For test harness,
-reproduction frameworks, and verification tooling, see `dev-testing`. For
+reproduction frameworks, and verification tooling, see `jaw-dev-testing`. For
 domain-specific context (API errors, hydration issues, query performance),
-consult `dev-backend` or `dev-frontend`.
+consult `jaw-dev-backend` or `jaw-dev-frontend`. Comprehension without a defect—understanding an unknown app, API, tool, or codebase—routes to `references/logic-analysis.md`.
 
-> **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
+> **C0/C1 work (small local patches):** See `jaw-dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
-> **`dev` is canonical:** `dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
+> **`jaw-dev` is canonical:** `jaw-dev` §0.2 Rule Classes, §3 Verification Gate, and §5 Safety Rules apply to all work governed by this skill.
 
 ```
-dev-debugging = root cause methodology (the thinking)
-dev-testing   = test harness for reproducing/verifying (the tooling)
-dev §2        = summary pointer to this skill (the overview)
+jaw-dev-debugging = root cause methodology (the thinking)
+jaw-dev-testing   = test harness for reproducing/verifying (the tooling)
+jaw-dev §2        = summary pointer to this skill (the overview)
 ```
 
 ---
@@ -33,8 +33,7 @@ dev §2        = summary pointer to this skill (the overview)
 ## Core Principle
 
 Check if the problem is structural before debugging code.
-Complete root cause investigation before proposing any fix.
-If Phase 1 is not done, keep investigating.
+Before a permanent fix, investigate and explain the cause. During an active incident, an already-authorized reversible mitigation may precede full root-cause analysis; follow `jaw-dev-devops` incident policy and preserve evidence. Diagnosis alone never authorizes a code fix, rollback, production access, or external issue submission.
 
 ---
 
@@ -59,7 +58,7 @@ stream of "bugs" that are really design consequences.
 | Signal | Interpretation |
 |--------|---------------|
 | Same class of bug recurring (3rd time fixing similar issue) | Design problem — add a constraint at the architecture level |
-| Bug spans multiple modules / crosses 2+ boundaries | Boundary/coupling issue — see `dev-architecture` |
+| Bug spans multiple modules / crosses 2+ boundaries | Boundary/coupling issue — see `jaw-dev-architecture` |
 | Fix would require changing 3+ files simultaneously | Likely structural — single-responsibility violation |
 | Symptom appears far from cause (error in UI, root in DB layer) | Tracing/observability gap — instrument boundaries first |
 
@@ -145,7 +144,7 @@ Work through these steps; skip only if clearly irrelevant to the problem at hand
 
 When the bug depends on third-party library/API/framework behavior, current
 error workarounds, upstream issues, changelogs, or migration guides, read the
-active `search` skill and follow its source-fetch and evidence-status rules
+active `jaw-search` skill and follow its source-fetch and evidence-status rules
 before treating external material as proof.
 
 ### Phase 3: Hypothesis and Testing
@@ -201,21 +200,26 @@ say so and treat the diagnosis as unconfirmed rather than quietly upgrading
 correlation to causation.
 
 1. **Write a failing test first** — the test reproduces the bug. It should fail
-   before the fix. Use `dev-testing` for TDD patterns and test harness setup.
+   before the fix. Use `jaw-dev-testing` for TDD patterns and test harness setup.
 
 2. **Make the minimal fix** — address the root cause, not symptoms. One logical
    change only.
 
-3. **Verify**: the test passes, no regressions (run the full test suite:
-   `npm test` / `pytest` / equivalent).
+3. **Verify**: reproduce the repaired behavior and run affected checks at the `jaw-dev` §3 / `jaw-dev-testing` risk floor. Respect explicit execution constraints.
 
 4. **Check for similar patterns** — does the same bug class exist elsewhere in
-   the codebase? Search for it. Fix all instances, not just the one you found.
+   the codebase? Search for it. Fix instances within the authorized scope; report additional affected areas instead of silently expanding the patch.
 
 5. **Document** — final report and commit message explain root cause AND fix,
    including rejected hypotheses and rejection evidence. Not "fixed bug"
    but "fix: race condition in session middleware caused by missing await on
    Redis write."
+
+---
+
+## Logic Analysis (comprehension without a defect)
+
+For an unfamiliar app, API, tool, or codebase with no defect to repair, use `references/logic-analysis.md`. Define a falsifiable question, isolate side effects, inventory interfaces, hypothesize, observe, model, and prove one behavior with a minimal authorized client. Report unavailable tools and partial evidence honestly. For example, cli-jaw registers `GET /api/events` in `server.ts`; trace its handler in `src/routes/events.ts` to understand its data-only SSE wire format.
 
 ---
 
@@ -254,9 +258,9 @@ Slop debugging is spray-and-pray: guess, patch, pray, repeat.
 | Skimming stack traces | Read every line of stack trace, note line numbers |
 | Silent `catch` blocks that suppress errors | Log with context (`[module] error.message`), re-throw or handle |
 | Modifying failing tests to pass | Fix the code, not the test — a failing test is evidence |
-| Claiming "fixed" without running verification | Run full test suite, show green output, verify the original symptom |
+| Claiming "fixed" without running verification | Run affected checks and reproduce the repaired behavior at the `jaw-dev` §3 risk floor |
 | Copy-pasting a fix without understanding | Understand why the fix works, then adapt to your codebase |
-| Suppressive try/catch (catch-and-ignore, catch-and-return-null) | Fix at the source. Boundary catch with logging/re-throw is fine — see dev-architecture §4. |
+| Suppressive try/catch (catch-and-ignore, catch-and-return-null) | Fix at the source. Boundary catch with logging/re-throw is fine — see jaw-dev-architecture §4. |
 | Guessing at types, nulls, or undefined values | Add diagnostic logging, inspect actual runtime values |
 | "It works now" after changing something unrelated | Correlation ≠ causation — revert the change and test again |
 | Letting an AI auto-repair loop (test healer, auto-fix) mask the defect | Agentic repair aids run only AFTER root cause is understood; keep the failing repro as evidence |
@@ -344,9 +348,9 @@ Root cause pattern: Test passes in isolation but fails in suite due to shared mu
 ### Escalate When:
 
 - **Repeated fix attempts failed** — likely architectural; needs human judgment
-- **Undocumented library behavior** — file an issue upstream, work around it
+- **Undocumented library behavior** — document evidence and propose an upstream report or workaround; posting requires separate authorization
 - **Environment-specific** — requires access you don't have (prod DB, cloud IAM)
-- **Security-sensitive** — don't debug auth/crypto/payment alone; flag for human review
+- **Security-sensitive** — follow `jaw-dev-security` controls and `jaw-dev-devops` incident policy; escalate according to the actual risk
 - **Multi-team dependency** — bug is in another team's service or API contract
 - **Stalled**: if investigation stalls, reassess approach
 
@@ -378,6 +382,7 @@ action item that prevents the same class of bug from recurring.
 | File | When to Read | What It Covers |
 |------|-------------|----------------|
 | `references/methodologies.md` | Choosing a debug approach | Five Whys, bisection, differential diagnosis, subtraction, systematic logging |
+| `references/logic-analysis.md` | Understanding a system without a defect | Controlled observation, incremental model, proof, and honest limits |
 | `references/async-debugging.md` | Concurrency issues | Race conditions, deadlocks, event loop blocking, promise/callback |
 | `references/tool-guides.md` | Quick cheatsheet | Node inspector basics, pdb basics, Chrome DevTools, git bisect, DB EXPLAIN |
 | `references/postmortem-template.md` | After resolving a significant incident | Blameless postmortem template |
@@ -408,24 +413,24 @@ main reason these are worth loading.
 
 | Skill | Relationship |
 |-------|-------------|
-| `dev` §2 | Summary of this methodology. This skill is the full version. |
-| `dev-testing` | Phase 4 "write failing test first" → use `dev-testing` for test patterns and harness. `dev-testing` provides the tooling; this skill provides the thinking. |
-| `dev-backend` | Server-side debugging context: API errors, database issues, middleware chains. |
-| `dev-frontend` | Client-side debugging context: hydration, rendering, DevTools, layout shifts. |
-| `dev-code-reviewer` | Code review catches bugs before they ship — prevention beats debugging. |
+| `jaw-dev` §2 | Summary of this methodology. This skill is the full version. |
+| `jaw-dev-testing` | Phase 4 "write failing test first" → use `jaw-dev-testing` for test patterns and harness. `jaw-dev-testing` provides the tooling; this skill provides the thinking. |
+| `jaw-dev-backend` | Server-side debugging context: API errors, database issues, middleware chains. |
+| `jaw-dev-frontend` | Client-side debugging context: hydration, rendering, DevTools, layout shifts. |
+| `jaw-dev-code-reviewer` | Code review catches bugs before they ship — prevention beats debugging. |
 
 ---
 
 ## Security-Sensitive Bugs
 
-For security-sensitive bugs (auth bypass, data leak, injection), follow the incident response in `dev-security/SKILL.md` before applying a fix.
+For security-sensitive bugs (auth bypass, data leak, injection), follow `jaw-dev-security` controls and `jaw-dev-devops` incident policy before applying a fix.
 
 ---
 
 ## Compact Summary
 
 When context is limited, preserve: (1) Phase 0 — is it a bug or a design problem?,
-(2) Core principle — no fixes without root cause,
+(2) Core principle — investigate before permanent repair; authorized reversible incident mitigation can come first,
 (3) phases 0-4 — architecture check → investigate → analyze → hypothesize → implement,
 (4) Repeated Failure Rule — after repeated failures, reassess, (5) one variable at a time,
-(6) evidence over intuition, (7) failing test first.
+(6) evidence over intuition, (7) failing test first, (8) comprehension without a defect uses `references/logic-analysis.md`.
