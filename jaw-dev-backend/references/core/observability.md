@@ -178,7 +178,7 @@ Queue: kafka.SEND orders.created   (operation + topic)
 
 | Banned | Symptom | Fix |
 |--------|---------|-----|
-| Alert on every error | Alert fatigue, ignored pages | Burn-rate alerting tied to SLO (see `dev-devops` `sre-foundations.md`) |
+| Alert on every error | Alert fatigue, ignored pages | Burn-rate alerting tied to SLO (see `jaw-dev-devops` `sre-foundations.md`) |
 | Single-window threshold | Too many false positives | Multi-window: short (5m) AND long (1h) both fire |
 | No SLO reference | Arbitrary thresholds | Derive alert threshold from SLO error budget |
 | Duplicate alerts | Multiple pages for same incident | Dedup by service+symptom, not by signal |
@@ -186,8 +186,8 @@ Queue: kafka.SEND orders.created   (operation + topic)
 
 ### Burn-Rate Alert Integration
 
-For SLO-based alerting with burn rates, see `dev-devops/references/sre-foundations.md` §3.
-This file owns the **code instrumentation** (OTel setup, spans, logging); `dev-devops` owns the
+For SLO-based alerting with burn rates, see `../../../jaw-dev-devops/references/sre-foundations.md` §3.
+This file owns the **code instrumentation** (OTel setup, spans, logging); `jaw-dev-devops` owns the
 **alerting rules** (Prometheus rules, burn-rate formulas, error budget policy).
 
 ---
@@ -253,5 +253,5 @@ Link RUM data back to server traces via `traceId` for end-to-end latency attribu
 
 ### Cross-Reference
 
-- Alerting rules and SLO-based monitoring → `dev-devops/references/sre-foundations.md`
-- Dashboard infrastructure and Grafana provisioning → `dev-devops/references/sre-foundations.md` §1
+- Alerting rules and SLO-based monitoring → `../../../jaw-dev-devops/references/sre-foundations.md`
+- Dashboard infrastructure and Grafana provisioning → `../../../jaw-dev-devops/references/sre-foundations.md` §1

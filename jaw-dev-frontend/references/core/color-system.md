@@ -3,7 +3,7 @@
 Implementation owner for color tokens: layering, modern color functions,
 framework wiring, and contrast verification. Palette GENERATION and judgment
 (hue budget, scales, tools) are owned by
-`dev-uiux-design/references/color-system.md` — read it for what colors to
+`../../../jaw-dev-uiux-design/references/color-system.md` — read it for what colors to
 pick; read this for how to ship them. Runtime theme selection, FOWT
 prevention, and toggle behavior stay in `theme-switching.md`.
 Feature facts below verified 2026-07-07 (MDN/Tailwind/shadcn/W3C, Tier 2).

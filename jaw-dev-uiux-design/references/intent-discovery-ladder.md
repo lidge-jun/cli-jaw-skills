@@ -64,7 +64,7 @@ Ask: "주로 어떤 화면에서 볼 건가요?" / "What's the primary viewing d
 | 모바일 위주 (Mobile-first) | Mobile layout → tablet → desktop expansion | Thumb zone, touch targets, minimal density |
 | 둘 다 중요 (Both equally) | Design mobile AND desktop as separate compositions | Most work — section order/composition may differ |
 
-Cross-ref: `references/responsive-nav.md` for canonical breakpoints, `dev-frontend/references/core/mobile-ux.md` for mobile rules.
+Cross-ref: `references/responsive-nav.md` for canonical breakpoints, `../../jaw-dev-frontend/references/core/mobile-ux.md` for mobile rules.
 
 ## Step 6 — Reference
 

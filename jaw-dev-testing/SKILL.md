@@ -8,11 +8,11 @@ metadata:
 ---
 # Testing & QA
 Balance: ~40% Backend/API, ~40% Frontend/E2E (Playwright), ~20% Cross-cutting (CI, Security, TDD, Coverage) -- directional guidance, not a hard ratio.
-**Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `dev-debugging`.
+**Scope**: test harnesses, fixtures, mock policy, runners, Playwright, CI gates, coverage. Root-cause analysis and debugging playbooks → `jaw-dev-debugging`.
 - This skill owns test adequacy; `jaw-dev-code-reviewer` owns finding severity and review process.
-- CI pipeline ownership and deployment verification: see `dev-devops`.
-- Data pipeline testing and ETL validation: see `dev-data`.
-- Design direction context for rendered verification: see `dev-uiux-design`.
+- CI pipeline ownership and deployment verification: see `jaw-dev-devops`.
+- Data pipeline testing and ETL validation: see `jaw-dev-data`.
+- Design direction context for rendered verification: see `jaw-dev-uiux-design`.
 This skill activates by change surface when work needs verification depth, regression coverage, or a reproducible test harness.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
@@ -69,13 +69,13 @@ source-fetch and evidence-status rules.
 | DB query / migration / transaction | real DB integration test | fake repository for SQL correctness |
 | frontend consuming backend JSON | contract test | manual-only verification |
 | rendered critical flow | Playwright smoke | asserting internal React state |
-| rendered artifact (visual correctness) | render-grounding loop (dev-pabcd C-RENDER-GROUNDING-01) | static parse / tsc alone |
+| rendered artifact (visual correctness) | render-grounding loop (jaw-dev-pabcd C-RENDER-GROUNDING-01) | static parse / tsc alone |
 ### 1.5 General Rules
 - Write tests for **new features, bug fixes, refactors, and behavior changes**.
 - Prefer **one behavioral concern per test**.
 - Use factories / builders for setup; avoid repeated inline blobs.
 - A fast real dependency beats a mock. A mock beats an untested branch.
-- If the failure is mysterious, **delegate methodology to `dev-debugging`**, then return here for the regression harness.
+- If the failure is mysterious, **delegate methodology to `jaw-dev-debugging`**, then return here for the regression harness.
 - **STRICT (TEST-ANTI-FLAKE-01):** A time-based flake is a bug. Do not use sleep-based synchronization, retry-as-fix, or green-on-retry acceptance without a deterministic cause and harness correction.
 - Verification depth follows `dev` §3 `DEV-VERIFY-FLOOR-01`; CRUD per-operation negative coverage is owned by `references/core/crud-test-matrix.md`.
 
@@ -84,7 +84,7 @@ source-fetch and evidence-status rules.
 When the real evaluator is scarce, paid, rate-limited, or opaque and local tests are
 proxy metrics for a score/objective, apply §9.5 (single owner of GATE-ORACLE-VALIDITY-01,
 GATE-PREFIX-HORIZON-01, GATE-INVARIANT-EV-01, GATE-HOLDOUT-LEAKAGE-01,
-GATE-AGREEMENT-STATS-01). Pairs with `dev-pabcd` §10 Optimization-Loop Meta-Rules.
+GATE-AGREEMENT-STATS-01). Pairs with `jaw-dev-pabcd` §10 Optimization-Loop Meta-Rules.
 
 ### 1.6 Property-Based & Mutation Testing (verified 2026-07-02)
 
@@ -279,10 +279,10 @@ scaffolding tests when a stronger interface or acceptance test covers the same p
 | Chicago / classicist | domain logic and transforms |
 | **Hybrid** | most production code |
 Default to **Hybrid**: mock external systems, keep internal collaboration real unless it becomes too slow or unstable.
-### 6.5 Boundary with dev-debugging
-- `dev-testing` owns the **regression harness** and enforcement loop.
-- `dev-debugging` owns **root-cause methodology** once a failure is mysterious or multi-layered.
-- After `dev-debugging` isolates the cause, come back here to lock it in with tests.
+### 6.5 Boundary with jaw-dev-debugging
+- `jaw-dev-testing` owns the **regression harness** and enforcement loop.
+- `jaw-dev-debugging` owns **root-cause methodology** once a failure is mysterious or multi-layered.
+- After `jaw-dev-debugging` isolates the cause, come back here to lock it in with tests.
 ---
 ## 6.6 AI-Assisted Development Regressions
 
@@ -364,12 +364,12 @@ When the project supports a sandbox/mock mode, use it for fast DB-free regressio
 
 ### Observability Verification
 
-Verify trace propagation in integration tests. Assert that spans appear for critical paths. Check structured log format matches the schema in `dev-backend/references/core/observability.md`.
+Verify trace propagation in integration tests. Assert that spans appear for critical paths. Check structured log format matches the schema in `../jaw-dev-backend/references/core/observability.md`.
 
 ---
 
 ## 8. Security Testing
-**→ Delegated**: threat modeling and secure design policy belong to `dev-security`.
+**→ Delegated**: threat modeling and secure design policy belong to `jaw-dev-security`.
 This section covers the **automated test hooks and CI gates** that enforce those rules.
 ### 8.1 Minimum Security Stack
 ```text
@@ -395,7 +395,7 @@ semgrep:
     - run: semgrep ci --config p/default --config p/javascript --config p/typescript --config p/python
 ```
 (Open-source alternative engine: Opengrep, the LGPL-2.1 community fork — see
-`dev-security/references/static-analysis.md`.)
+`../jaw-dev-security/references/static-analysis.md`.)
 ### 8.4 Security Regressions
 Test missing auth (expect 401) and verify error.code matches contract for every auth-protected endpoint.
 ### 8.5 Rules
@@ -445,7 +445,7 @@ These are project/risk-based, not universal minimums. Adjust for your context.
 
 Use these rules when the true evaluator is scarce, paid, rate-limited, or opaque and
 local checks are only proxy metrics for a score/objective. PABCD loop response to
-repeated candidate deaths is owned by `dev-pabcd` §10 Optimization-Loop Meta-Rules.
+repeated candidate deaths is owned by `jaw-dev-pabcd` §10 Optimization-Loop Meta-Rules.
 
 - **STRICT (GATE-ORACLE-VALIDITY-01):** When the true evaluator/oracle is rate-limited
   (limited submissions, paid runs) and local metrics are proxies, evaluator validity is a

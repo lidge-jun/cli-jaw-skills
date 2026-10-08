@@ -138,7 +138,7 @@ SDK generation runs in CI after spec validation passes. Commit generated files â
 
 ## 6. Cross-References
 
-- **API design patterns**: `dev-backend/references/core/api-design.md`
-- **API lifecycle & deprecation**: `dev-backend/references/core/api-lifecycle.md` (Wave 1)
-- **Health checks**: `dev-backend/references/core/health-checks.md`
-- **CI/CD pipeline integration**: `dev-devops` (Wave 2)
+- **API design patterns**: `../../jaw-dev-backend/references/core/api-design.md`
+- **API lifecycle & deprecation**: `../../jaw-dev-backend/references/core/api-lifecycle.md` (Wave 1)
+- **Health checks**: `../../jaw-dev-backend/references/core/health-checks.md`
+- **CI/CD pipeline integration**: `jaw-dev-devops` (Wave 2)

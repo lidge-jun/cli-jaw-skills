@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-06-16
 **Applies to**: iOS 18+, Android 15+, cross-platform (RN/Flutter/KMP)
 **When to read**: Native mobile app UX decisions, platform conventions, deep linking, app store submission, `task_tags: mobile_native`
-**Canonical owner**: `dev-uiux-design` — platform UX judgment (when/why)
-**Non-goals**: Framework selection and code patterns (→ `dev-frontend/references/stacks/mobile-native.md`), push/offline API (→ `dev-backend/references/core/mobile-api.md`), mobile web UX (→ `dev-frontend/references/core/mobile-ux.md`)
+**Canonical owner**: `jaw-dev-uiux-design` — platform UX judgment (when/why)
+**Non-goals**: Framework selection and code patterns (→ `../../jaw-dev-frontend/references/stacks/mobile-native.md`), push/offline API (→ `../../jaw-dev-backend/references/core/mobile-api.md`), mobile web UX (→ `../../jaw-dev-frontend/references/core/mobile-ux.md`)
 
 ---
 

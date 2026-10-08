@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-06-16
 **Applies to**: Python (FastAPI 0.115+, vLLM 0.8+, BentoML 1.4+), GPU inference (CUDA 12.x)
 **When to read**: ML model deployment, inference API design, GPU worker patterns, `task_tags: ml`
-**Canonical owner**: `dev-backend` — serving architecture, API layer, runtime selection
-**Non-goals**: Model training pipelines (→ `dev-data/references/ml-pipeline.md`), evaluation (→ `dev-testing/references/ml-evaluation.md`), prompt/RAG patterns (→ `llm-integration.md`)
+**Canonical owner**: `jaw-dev-backend` — serving architecture, API layer, runtime selection
+**Non-goals**: Model training pipelines (→ `../../../jaw-dev-data/references/ml-pipeline.md`), evaluation (→ `../../../jaw-dev-testing/references/ml-evaluation.md`), prompt/RAG patterns (→ `llm-integration.md`)
 
 ---
 

@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-06-16
 **Applies to**: Python (MLflow 3.x, Dagster 1.9+, DVC 3.x), GPU training (PyTorch 2.6+)
 **When to read**: ML training pipelines, experiment tracking, feature stores, data versioning, `task_tags: ml`
-**Canonical owner**: `dev-data` — pipeline orchestration, data versioning, feature engineering
-**Non-goals**: Model serving (→ `dev-backend/references/core/ml-serving.md`), LLM integration (→ `dev-backend/references/core/llm-integration.md`), model evaluation (→ `dev-testing/references/ml-evaluation.md`)
+**Canonical owner**: `jaw-dev-data` — pipeline orchestration, data versioning, feature engineering
+**Non-goals**: Model serving (→ `../../jaw-dev-backend/references/core/ml-serving.md`), LLM integration (→ `../../jaw-dev-backend/references/core/llm-integration.md`), model evaluation (→ `../../jaw-dev-testing/references/ml-evaluation.md`)
 
 ---
 

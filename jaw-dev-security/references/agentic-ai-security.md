@@ -31,7 +31,7 @@ Map each risk to concrete operating rules, not abstract awareness.
 ## ASI05: Insecure Output Handling
 - Threat: Generated code or content is unsafe even if the agent followed the task literally.
 - Agent failure mode: Producing raw SQL concatenation, unsafe HTML rendering, or insecure cookie settings.
-- Relevant rule: Security-sensitive code must pass `dev-security` gates.
+- Relevant rule: Security-sensitive code must pass `jaw-dev-security` gates.
 - Required mitigation: Apply secure-by-default templates, parameterized queries, CSP-aware rendering, and cookie hardening.
 
 ## ASI06: Tool Poisoning and Supply Chain Abuse
@@ -75,7 +75,7 @@ Use these operating translations when writing or reviewing agentic features:
 
 ## Practical Guardrails for This Skill Ecosystem
 
-- Auth, payment, file upload, logging, and secret changes must run the `dev-security` pre-flight checklist.
+- Auth, payment, file upload, logging, and secret changes must run the `jaw-dev-security` pre-flight checklist.
 - Review flows should block on high-severity SAST or secret-scan findings before manual review begins.
 - Frontend agent work must respect CSP, XSS, and cookie-storage rules even when the UI change seems cosmetic.
 - Backend and data workflows must classify PII before logging, exporting, or syncing it.

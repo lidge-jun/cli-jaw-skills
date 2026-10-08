@@ -7,7 +7,7 @@ for tool choice.
 
 ## Grounded visual verdict (QA-VISUAL-COMPANION-01)
 
-Load `jaw-dev-frontend` anti-slop and `references/core/visual-verification.md`
+Load `jaw-dev-frontend` anti-slop and `../../jaw-dev-frontend/references/core/visual-verification.md`
 for a visual pass. Load `jaw-dev-uiux-design` when judging design direction,
 not for a mechanical render check. Cite applicable FE/UX rule IDs and a
 location in each finding. “Looks good” without checked criteria is not a

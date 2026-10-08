@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-06-16
 **Applies to**: REST/GraphQL APIs serving mobile clients (iOS, Android, cross-platform)
 **When to read**: Building or modifying APIs consumed by mobile apps, `task_tags: mobile_native`
-**Canonical owner**: `dev-backend` — API design and server-side patterns for mobile
-**Non-goals**: Framework selection (→ `dev-frontend/references/stacks/mobile-native.md`), native UX (→ `dev-uiux-design/references/mobile-native-ux.md`), general API design (→ `api-design.md`)
+**Canonical owner**: `jaw-dev-backend` — API design and server-side patterns for mobile
+**Non-goals**: Framework selection (→ `../../../jaw-dev-frontend/references/stacks/mobile-native.md`), native UX (→ `../../../jaw-dev-uiux-design/references/mobile-native-ux.md`), general API design (→ `api-design.md`)
 
 ---
 

@@ -6,7 +6,7 @@ Sources: Apple HIG Materials, rendered product measurements, and practitioner
 notes reviewed on 2026-07-07. Treat these as dated provenance and refresh live
 product behavior before making current-state claims.
 Design judgment (is glass domain-correct at all?) is owned by
-`dev-uiux-design` - this file owns material recipes. Top-bar composition,
+`jaw-dev-uiux-design` - this file owns material recipes. Top-bar composition,
 slots, and scroll choreography live in `references/core/top-bar.md`.
 
 ---

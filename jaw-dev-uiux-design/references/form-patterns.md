@@ -109,6 +109,6 @@ Step Indicator (1/3, 2/3, 3/3)
 
 ## Cross-references
 
-- Mobile form rules: `dev-frontend/references/core/mobile-ux.md`
+- Mobile form rules: `../../jaw-dev-frontend/references/core/mobile-ux.md`
 - Validation UX states: `ux-states.md` §9
-- Schema validation: `dev-frontend/SKILL.md` §10 (Zod + react-hook-form)
+- Schema validation: `../../jaw-dev-frontend/SKILL.md` §10 (Zod + react-hook-form)

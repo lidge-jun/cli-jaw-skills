@@ -1,7 +1,7 @@
 # Logo Sections — Integration Grids, Marquees & Brand Walls
 
 Patterns for displaying partner/integration logos. These sections are trust signals, not navigation.
-For design judgment (when/why to use each pattern), see `dev-uiux-design/references/logo-trust-sections.md`.
+For design judgment (when/why to use each pattern), see `../../../jaw-dev-uiux-design/references/logo-trust-sections.md`.
 
 ---
 

@@ -4,7 +4,7 @@ Canonical owner for top-bar composition: geometry, slots, scroll-state
 contract, spawned surfaces, and verification hooks. Material recipes live in
 `liquid-glass.md`; do not duplicate opacity/blur recipes here. The top-bar
 domain GATE lives in this file (FE-TOPBAR-DOMAIN-01 below); broader brand/
-style judgment beyond that gate lives in `dev-uiux-design`.
+style judgment beyond that gate lives in `jaw-dev-uiux-design`.
 
 ---
 

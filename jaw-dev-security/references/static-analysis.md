@@ -173,7 +173,7 @@ jobs:
 - Go: `govulncheck`, Semgrep, gitleaks.
 - Polyglot repositories: CodeQL plus the language-native tools above.
 
-Use this file with `dev-testing` for blocking CI gates and with `dev-code-reviewer` for review-start criteria.
+Use this file with `jaw-dev-testing` for blocking CI gates and with `jaw-dev-code-reviewer` for review-start criteria.
 
 ## 2026 Landscape Update (verified 2026-07-02)
 

@@ -22,7 +22,7 @@ No pattern is an accessibility exemption. Viewport locks, hidden navigation, tin
 - **Maturity:** Core
 - **Compatible isms:** Liquid Editorial, Neobrutalism, Bauhaus, Memphis Design, Organic Capsule
 - **Direction gate:** Use for campaigns, culture, entertainment, launches, and creative portfolios where entry is part of the premise. Do not use for task software, public services, urgent information, repeat visits, or any audience that needs immediate content access; always provide skip and keyboard paths.
-- **Implementation pointer:** `dev-frontend/references/core/motion.md` for interaction and `motion-media.md` for reduced-motion budgets; `a11y-patterns.md` for operable entry controls.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/motion.md` for interaction and `motion-media.md` for reduced-motion budgets; `a11y-patterns.md` for operable entry controls.
 - **Representative sites:** Messenger, Don't Board Me, 21 Hrs, Brunello, Cobloc
 
 ### Proof-Object Hero
@@ -33,7 +33,7 @@ No pattern is an accessibility exemption. Viewport locks, hidden navigation, tin
 - **Maturity:** Core
 - **Compatible isms:** Material Design, Flat Design, Swiss / International Typographic Style, Neobrutalism, Liquid Editorial, Organic Capsule
 - **Direction gate:** Use for software, hardware, technical products, tools, and services whose value becomes clearer through direct evidence. Do not use a generic right-side mockup, illegible fake UI, or interaction that hides the primary proposition; regulated and procurement audiences need explicit supporting copy.
-- **Implementation pointer:** `dev-frontend/references/core/asset-requirements.md` for hero proof assets and `responsive-viewport.md` for responsive staging.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/asset-requirements.md` for hero proof assets and `responsive-viewport.md` for responsive staging.
 - **Representative sites:** Igloo, Longbow, Interfere, Sky Clock, Drams
 
 ### Poster Hero
@@ -44,7 +44,7 @@ No pattern is an accessibility exemption. Viewport locks, hidden navigation, tin
 - **Maturity:** Core
 - **Compatible isms:** Swiss / International Typographic Style, Bauhaus, Liquid Editorial, AI Serif Editorial, Neobrutalism
 - **Direction gate:** Use for editorial, fashion, culture, campaigns, type launches, and portfolios with a short, ownable statement. Do not use when users must compare features immediately, the message localizes unpredictably, or oversized type displaces operational tasks.
-- **Implementation pointer:** `dev-frontend/references/core/typography-wrapping.md` for authored wraps and responsive type; `layout-discipline.md` for crop and spacing control.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/typography-wrapping.md` for authored wraps and responsive type; `layout-discipline.md` for crop and spacing control.
 - **Representative sites:** PP Neue Montreal, Benjamin Hoang, Shopify Design, Materials¹
 
 ### Atmospheric Product Portrait
@@ -55,7 +55,7 @@ No pattern is an accessibility exemption. Viewport locks, hidden navigation, tin
 - **Maturity:** Emerging
 - **Compatible isms:** Organic Capsule, Liquid Editorial, AI Serif Editorial, Liquid Glass, Art Deco
 - **Direction gate:** Use for premium consumer, beauty, health, fashion, hospitality, and objects where material feeling influences purchase. Do not use for evidence-heavy B2B, public-service, or accessibility-critical tasks, or when stock imagery cannot carry a specific product truth.
-- **Implementation pointer:** `dev-frontend/references/core/asset-requirements.md` for media production and poster states; `performance-budget.md` for cinematic asset budgets.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/asset-requirements.md` for media production and poster states; `performance-budget.md` for cinematic asset budgets.
 - **Representative sites:** Augen, Sky Clock, Vero, RISK
 
 ## Motion Patterns
@@ -70,7 +70,7 @@ Retrieval vocabulary: **transformed-scroll** maps to the scroll-linked axis row 
 - **Maturity:** Emerging
 - **Compatible isms:** Liquid Editorial, Neobrutalism, Bauhaus, Memphis Design, Organic Capsule
 - **Direction gate:** Use for bounded experiences, product worlds, interactive stories, and creative showcases where sequential scenes are the content. Do not use for documentation, ecommerce catalogs, long-form reading, repeated-work tools, or audiences relying on native scrolling and assistive technology; provide direct controls and a linear route.
-- **Implementation pointer:** `dev-frontend/references/core/motion-scroll.md` for scroll/state choreography and `motion-media.md` for reduced motion; `a11y-patterns.md` for keyboard and semantic alternatives.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/motion-scroll.md` for scroll/state choreography and `motion-media.md` for reduced motion; `a11y-patterns.md` for keyboard and semantic alternatives.
 - **Representative sites:** RISK, Meech213, Beats in Space, Zauberberg
 
 ### Loader-as-System-Onboarding
@@ -81,7 +81,7 @@ Retrieval vocabulary: **transformed-scroll** maps to the scroll-linked axis row 
 - **Maturity:** Emerging
 - **Compatible isms:** Bauhaus, Swiss / International Typographic Style, Liquid Editorial, Neobrutalism, Memphis Design
 - **Direction gate:** Use only when a genuinely heavy experiential surface needs startup time and the onboarding explains a recurring interaction. Do not add a loader to mask avoidable performance, delay repeat visits, or gate essential content; honor reduced motion and remembered skip state.
-- **Implementation pointer:** `dev-frontend/references/core/motion-cinematic.md` for intro sequencing and `motion-media.md` for controls; `performance-budget.md` for loading honesty.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/motion-cinematic.md` for intro sequencing and `motion-media.md` for controls; `performance-budget.md` for loading honesty.
 - **Representative sites:** Cobloc, SSTR, House of Honey
 
 ### Single-Verb Motion System
@@ -92,7 +92,7 @@ Retrieval vocabulary: **transformed-scroll** maps to the scroll-linked axis row 
 - **Maturity:** Core
 - **Compatible isms:** Any ism when the verb is domain-specific; strongest with Bauhaus, Swiss / International Typographic Style, Liquid Editorial, Neobrutalism, and Liquid Glass
 - **Direction gate:** Use when the product, identity, or narrative has a clear action that can govern multiple states. Do not force an abstract verb onto unrelated components, mix several signature motions, or animate repeated-work tools beyond concise feedback.
-- **Implementation pointer:** `dev-frontend/references/core/motion.md` for motion hierarchy, `motion-cinematic.md` for choreography, and `motion-media.md` for honesty.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/motion.md` for motion hierarchy, `motion-cinematic.md` for choreography, and `motion-media.md` for honesty.
 - **Representative sites:** Cobloc, SSTR, Interfere, RISK, PP Neue Montreal
 
 ## Navigation Patterns
@@ -107,7 +107,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Liquid Editorial, Swiss / International Typographic Style, Bauhaus, Neobrutalism, Skeuomorphism
 - **Direction gate:** Use for narrative, exhibition, map, portfolio, and product-world experiences whose content supplies a clear mental model. Do not use when destinations are numerous, users must jump predictably between tasks, or meaning depends on hover or visual metaphor alone; retain landmarks and an alternate menu.
-- **Implementation pointer:** `dev-frontend/references/core/a11y-patterns.md` for semantic navigation and `responsive-viewport.md` for mobile fallback.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/a11y-patterns.md` for semantic navigation and `responsive-viewport.md` for mobile fallback.
 - **Representative sites:** 21 Hrs, Interfere, Medium Rare, James Walsh
 
 ### Edge-Rail Navigation Frame
@@ -118,7 +118,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Flat Design, Swiss / International Typographic Style, Liquid Editorial, Neobrutalism, Bauhaus
 - **Direction gate:** Use for portfolios, exhibitions, editorial showcases, and cinematic brand surfaces with 2–5 stable destinations. Do not use microtype or edge placement for dense product IA, touch-first audiences, localization with long labels, or controls that cannot meet target-size and contrast requirements.
-- **Implementation pointer:** `dev-frontend/references/core/layout-discipline.md` for fixed perimeter geometry; `a11y-patterns.md` and `responsive-viewport.md` for targets and collapse behavior.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/layout-discipline.md` for fixed perimeter geometry; `a11y-patterns.md` and `responsive-viewport.md` for targets and collapse behavior.
 - **Representative sites:** Benjamin Hoang, RISK, Angela Ricciardi, Cantor8, Vero
 
 ### Adaptive Overlay Chrome
@@ -129,7 +129,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Emerging
 - **Compatible isms:** Liquid Glass, Organic Capsule, Liquid Editorial, Flat Design, AI Serif Editorial
 - **Direction gate:** Use for media-led stories and full-bleed chapter systems where persistent controls must cross light and dark material. Do not use if contrast can be solved with stable tokens, if state changes flicker, or if the audience needs a conventional high-certainty header.
-- **Implementation pointer:** `dev-frontend/references/core/top-bar.md` for overlay states, `color-system.md` for contrast tokens, and `motion.md` for transition restraint.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/top-bar.md` for overlay states, `color-system.md` for contrast tokens, and `motion.md` for transition restraint.
 - **Representative sites:** Vero, RISK, Augen
 
 ## Typography Patterns
@@ -142,7 +142,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Swiss / International Typographic Style, Liquid Editorial, Bauhaus, Neobrutalism, AI Serif Editorial
 - **Direction gate:** Use for foundries, rebrands, editorial launches, design tools, and products whose typographic system is genuine evidence. Do not use specimen theatrics when the chosen font is generic, licensing/loading is unresolved, or content comprehension and localization are more important than display behavior.
-- **Implementation pointer:** `dev-frontend/references/core/typography-wrapping.md` for responsive specimen behavior; `performance-budget.md` for font loading.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/typography-wrapping.md` for responsive specimen behavior; `performance-budget.md` for font loading.
 - **Representative sites:** PP Neue Montreal, Shopify Design, SSTR, Cobloc
 
 ## Content Structure Patterns
@@ -155,7 +155,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Emerging
 - **Compatible isms:** Flat Design, Swiss / International Typographic Style, Liquid Editorial, Neobrutalism, Memphis Design
 - **Direction gate:** Use for small, highly visual portfolios and exhibitions where exploration is itself a selection criterion. Do not use for large archives, mobile-primary audiences, keyboard-dependent workflows, or recruiter/client tasks that need fast scanning; provide an index/list mode.
-- **Implementation pointer:** `dev-frontend/references/core/responsive-viewport.md` for viewport and mobile alternatives; `a11y-patterns.md` for non-pointer access.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/responsive-viewport.md` for viewport and mobile alternatives; `a11y-patterns.md` for non-pointer access.
 - **Representative sites:** Meech213, Beats in Space, Zauberberg, Angela Ricciardi
 
 ### Editorial Index / Roster
@@ -166,7 +166,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Swiss / International Typographic Style, Liquid Editorial, Bauhaus, Flat Design, Neobrutalism, AI Serif Editorial
 - **Direction gate:** Use for portfolios, archives, studios, publications, annual reports, and collections where comparison and sequence matter. Do not use when items need rich visual comparison at a glance or when labels alone are ambiguous; preserve thumbnails or summaries on focus/tap, not hover only.
-- **Implementation pointer:** `dev-frontend/references/core/layout-discipline.md` for list/grid rhythm; `typography-wrapping.md` for row hierarchy.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/layout-discipline.md` for list/grid rhythm; `typography-wrapping.md` for row hierarchy.
 - **Representative sites:** Medium Rare, James Walsh, Jacky Winter, Making Software, Foundation Labs
 
 ### Edge-Peek Continuation Cue
@@ -177,7 +177,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Liquid Editorial, Swiss / International Typographic Style, Flat Design, Organic Capsule, Neobrutalism
 - **Direction gate:** Use in sequential portfolios, horizontal galleries, chapter stories, and full-screen viewers where spatial continuation is central. Do not rely on it as the only control, use it where clipping looks accidental, or obscure content on small screens; pair it with labels, counters, or buttons.
-- **Implementation pointer:** `dev-frontend/references/core/layout-discipline.md` for controlled overflow; `responsive-viewport.md` for mobile continuation cues.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/layout-discipline.md` for controlled overflow; `responsive-viewport.md` for mobile continuation cues.
 - **Representative sites:** Angela Ricciardi, RISK, Vero, SiteInspire unusual-layout portfolio examples
 
 ### Instrument-Panel Editorial
@@ -188,7 +188,7 @@ Retrieval vocabulary: **hidden/minimal navigation** maps to the dated hidden-nav
 - **Maturity:** Core
 - **Compatible isms:** Swiss / International Typographic Style, Bauhaus, Neobrutalism, Liquid Editorial, Material Design
 - **Direction gate:** Use for engineering, architecture, research, industrial products, technical culture, and data-rich editorial stories where metadata is meaningful. Do not add fake coordinates, diagnostics, or tiny mono labels as sci-fi decoration; nonexpert audiences need plain-language interpretation and readable defaults.
-- **Implementation pointer:** `dev-frontend/references/core/layout-discipline.md` for grid and framing; `product-density.md` for information density; `typography-wrapping.md` for utility type.
+- **Implementation pointer:** `../../jaw-dev-frontend/references/core/layout-discipline.md` for grid and framing; `product-density.md` for information density; `typography-wrapping.md` for utility type.
 - **Representative sites:** SSTR, Longbow, Making Software, Monolog, Cantor8
 
 ## Composition rule

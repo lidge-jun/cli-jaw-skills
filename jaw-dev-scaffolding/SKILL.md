@@ -122,7 +122,7 @@ Phase document naming uses decade-range prefixes (LEXICO-SPLIT-01). For the cano
 - The numeric prefix is the source of ordering. Never use bare semantic filenames (`PLAN.md`, `DIFF_PLAN.md`, `PHASES.md`, `RCA.md`).
 - When adding a document, scan siblings and choose the next unused prefix in the correct decade.
 
-Before introducing `structure/` or `devlog/` folders, follow the repository’s instructions and the existing convention. If a new convention needs a decision, show a concrete proposed tree. Once a unit convention exists, create subfolders when the canonical `../jaw-dev-pabcd/references/implementation-units.md` policy requires one; do not create a new unit solely for C0/C1.
+Before introducing `structure/` or `devlog/` folders to an existing repository, follow its instructions and existing convention, then ask the user first. State when no source-of-truth docs were found, show a concrete proposed tree, give a specific recommendation, and confirm that you will not create the folder without approval. Once a unit convention exists, creating its subfolders is routine when the canonical `../jaw-dev-pabcd/references/implementation-units.md` policy requires one; do not create a new unit solely for C0/C1.
 
 ## 2.2 Project Skeleton
 

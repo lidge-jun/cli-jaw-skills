@@ -3,9 +3,9 @@
 Last reviewed: 2026-06-16
 Applies to: Turborepo 2.x, Nx 21.x
 When to read: Setting up or optimizing a monorepo build system
-Canonical owner: dev-scaffolding
+Canonical owner: jaw-dev-scaffolding
 
-Cross-ref: `dev-architecture` (module boundaries, dependency rules), `dev-devops` (CI optimization)
+Cross-ref: `jaw-dev-architecture` (module boundaries, dependency rules), `jaw-dev-devops` (CI optimization)
 
 ## 1. Decision Table: Turborepo vs Nx
 

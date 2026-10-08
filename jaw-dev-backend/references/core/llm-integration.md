@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-07-02
 **Applies to**: Python (LangChain 1.x, LlamaIndex 0.12+), TypeScript (Vercel AI SDK 4.x+), any LLM provider
 **When to read**: RAG implementation, LLM API integration, structured output, prompt engineering, `task_tags: ml`
-**Canonical owner**: `dev-backend` — integration patterns, API layer, provider abstraction
-**Non-goals**: Model serving infrastructure (→ `ml-serving.md`), ML training (→ `dev-data/references/ml-pipeline.md`), security (→ `dev-security/references/llm-supply-chain.md`)
+**Canonical owner**: `jaw-dev-backend` — integration patterns, API layer, provider abstraction
+**Non-goals**: Model serving infrastructure (→ `ml-serving.md`), ML training (→ `../../../jaw-dev-data/references/ml-pipeline.md`), security (→ `../../../jaw-dev-security/references/llm-supply-chain.md`)
 
 ---
 
@@ -207,7 +207,7 @@ system_prompt = f"""You are a helpful assistant that..."""
 
 ## §6 Security
 
-Cross-reference `dev-security/references/llm-supply-chain.md` for the full LLM security guide.
+Cross-reference `../../../jaw-dev-security/references/llm-supply-chain.md` for the full LLM security guide.
 
 **Minimum inline rules:**
 

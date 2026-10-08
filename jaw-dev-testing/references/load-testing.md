@@ -1,11 +1,11 @@
 # Load & Performance Testing
 
-> Deep reference for `dev-testing` §1.3 risk-first priorities and CI pipeline performance gates.
+> Deep reference for `jaw-dev-testing` §1.3 risk-first priorities and CI pipeline performance gates.
 
 **Last reviewed**: 2026-06-16
 **Applies to**: k6 0.52.x, Locust 2.x, Node 22+, Python 3.12+
 **When to read**: `task_tags` includes `performance`, `load_test`, or C3+ production-facing API work
-**Canonical owner**: `dev-testing` — infrastructure-level performance (auto-scaling, resource sizing) → `dev-devops`
+**Canonical owner**: `jaw-dev-testing` — infrastructure-level performance (auto-scaling, resource sizing) → `jaw-dev-devops`
 
 ---
 
@@ -181,13 +181,13 @@ Before merging a load test change:
 - [ ] CI workflow updated (`smoke` on PR, `load` on main)
 - [ ] Results exported as JSON/HTML, not screenshots
 - [ ] Measure → Profile → Verify loop documented for any optimization claim
-- [ ] Cross-ref: `dev-devops` for infra-level scaling; `ci-pipeline.md` for pipeline placement
+- [ ] Cross-ref: `jaw-dev-devops` for infra-level scaling; `ci-pipeline.md` for pipeline placement
 
 ---
 
 ## Cross-References
 
-- `dev-testing` §5 CI Pipeline — pipeline stage ordering
+- `jaw-dev-testing` §5 CI Pipeline — pipeline stage ordering
 - `references/ci-pipeline.md` — full GHA/GitLab CI templates
-- `dev-backend` §9 — p95 SLO definitions and observability
-- `dev-devops` — infrastructure-level performance (auto-scaling, resource allocation)
+- `jaw-dev-backend` §9 — p95 SLO definitions and observability
+- `jaw-dev-devops` — infrastructure-level performance (auto-scaling, resource allocation)

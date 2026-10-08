@@ -38,9 +38,9 @@ Review as a skeptical, independent outsider. Executor claims, passing tests, AI 
 
 ## External/current review evidence
 
-`dev-testing` owns test adequacy and QA execution.
-`dev-debugging` owns RCA when review discovers a runtime failure.
-`dev-architecture` owns coupling and boundary placement.
+`jaw-dev-testing` owns test adequacy and QA execution.
+`jaw-dev-debugging` owns RCA when review discovers a runtime failure.
+`jaw-dev-architecture` owns coupling and boundary placement.
 
 For dependency CVEs, release-note claims, package maintainer/source checks,
 provider behavior, or other current/public evidence used in a review, read the
@@ -94,7 +94,7 @@ choose only checks relevant to this review.
 5. **Maintainability** — Naming, structure, complexity, test coverage, documentation
 6. **Style** — Last priority. Don't bikeshed formatting when there are real issues.
 
-Delegation: coupling classification belongs to `dev-architecture` §3; boundary and validation-location findings belong to `dev-architecture` §4.
+Delegation: coupling classification belongs to `jaw-dev-architecture` §3; boundary and validation-location findings belong to `jaw-dev-architecture` §4.
 
 ### Review Mindset
 
@@ -120,7 +120,7 @@ Flag these during review:
 | Issue | Threshold | Severity |
 |-------|-----------|----------|
 | Long function | >50 lines | Medium |
-| Large file | >400 lines | Medium; apply `dev-architecture` §1 canonical split rule |
+| Large file | >400 lines | Medium; apply `jaw-dev-architecture` §1 canonical split rule |
 | God class | >20 methods | High |
 | Too many parameters | >5 | Medium |
 | Deep nesting | >4 levels | Medium |
@@ -134,7 +134,7 @@ Flag these during review:
 
 ### File Size Guidance
 
-Canonical rule imported from `dev-architecture` §1: **>400 LOC -> split (DEFAULT)**.
+Canonical rule imported from `jaw-dev-architecture` §1: **>400 LOC -> split (DEFAULT)**.
 
 | Range | Interpretation |
 |-------|---------------|
@@ -188,11 +188,11 @@ Dead code is a maintenance tax — remove rather than comment out.
 | Magic numbers | `if (retries > 3)` | Named constant: `MAX_RETRIES = 3` |
 | Primitive obsession | Passing 5 related strings around | Create a data object/type |
 | Direct mutation | `user.name = 'x'`, `arr.push(y)` | Immutable: `{...obj, name: 'x'}`, `[...arr, y]` |
-| Missing boundary validation | Business logic handles raw user input | Delegate placement to `dev-architecture` §4; schema/content depth to `dev-security` |
+| Missing boundary validation | Business logic handles raw user input | Delegate placement to `jaw-dev-architecture` §4; schema/content depth to `jaw-dev-security` |
 
 ### Security
 
-This section owns the mandatory review pre-scan; `dev-security` owns security
+This section owns the mandatory review pre-scan; `jaw-dev-security` owns security
 policy and deep analysis. Use this checklist for hardcoded secrets, injection,
 validation, auth, authorization, and logging findings.
 
@@ -217,7 +217,7 @@ validation, auth, authorization, and logging findings.
 
 ## 3.5 Security Review Quick-Check
 
-For **every review**, scan for these OWASP-aligned red flags. Delegate to `dev-security/SKILL.md` for deep analysis.
+For **every review**, scan for these OWASP-aligned red flags. Delegate to `../jaw-dev-security/SKILL.md` for deep analysis.
 
 ### Must-Check (Every PR)
 
@@ -240,7 +240,7 @@ For **every review**, scan for these OWASP-aligned red flags. Delegate to `dev-s
 | Dep vulnerabilities | New dependencies added | No `npm audit`/`pip-audit` run |
 | Lockfile changes | `package-lock.json` modified | Unexpected dependency resolution changes |
 
-> **Deep security analysis** → invoke `dev-security/SKILL.md`. This checklist catches surface-level issues during code review; `dev-security` provides OWASP Top 10 depth, ASVS checklists, and static analysis integration.
+> **Deep security analysis** → invoke `../jaw-dev-security/SKILL.md`. This checklist catches surface-level issues during code review; `jaw-dev-security` provides OWASP Top 10 depth, ASVS checklists, and static analysis integration.
 
 ---
 
@@ -390,15 +390,15 @@ the diff is substantially AI-generated (agent commits, Copilot/Cursor bulk chang
 | Check | AI failure mode | Action |
 |-------|-----------------|--------|
 | Invented APIs | Plausible-but-nonexistent methods/options | Verify each unfamiliar API against the installed version's docs |
-| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `dev-security` §6.5 |
+| Hallucinated dependencies | Package names that don't exist (slopsquatting attack surface) | Verify existence/maintainer/provenance before install — gate owned by `jaw-dev-security` §6.5 |
 | Missing authz edges | Happy-path handlers without ownership checks | Trace every new endpoint against §3.5 BOLA check |
 | Shallow/mirroring tests | Tests restating the implementation, tautologies | Apply REVIEW-REGRESS-01; require behavior-level assertions |
-| Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `dev-testing` §6.7 detection table |
+| Test-induced defense | Production guards added to satisfy unrealistic tests | Delegate to `jaw-dev-testing` §6.7 detection table |
 | Scope drift | Abstractions/refactors beyond the request | Flag; one logical change per PR (dev §1) |
 
 **Agentic/security review trigger (DEFAULT):** if a PR adds MCP servers, tools, agents,
 RAG components, persistent memory, delegated credentials, or autonomous actions, invoke
-`dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
+`jaw-dev-security` and map risks to the OWASP LLM Top 10 (2025) and the OWASP Top 10 for
 Agentic Applications 2026.
 
 ### AI Slop Cleanup Checklist (REVIEW-SLOP-01)
@@ -415,8 +415,8 @@ if/elif for type discrimination -> match/case, `object` annotation -> Protocol/T
 
 **Structural:** (4) Needless abstraction (pass-through wrappers, single-use helpers,
 speculative indirection). (5) Boundary violations (wrong-layer imports, hidden
-coupling; delegate to dev-architecture). (6) Oversized modules (>250 pure LOC is a
-slop-cleanup smell, not a split mandate; dev-architecture owns >400L canonical split).
+coupling; delegate to jaw-dev-architecture). (6) Oversized modules (>250 pure LOC is a
+slop-cleanup smell, not a split mandate; jaw-dev-architecture owns >400L canonical split).
 
 **Hidden cost:** (7) Performance equivalences (O(n^2) where O(n) exists, repeated
 computation). (8) Scope leaks (mutable global state, scattered env reads).

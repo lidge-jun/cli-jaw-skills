@@ -3,8 +3,8 @@
 **Last reviewed**: 2026-07-02
 **Applies to**: Expo SDK 57 / React Native 0.86 / React 19.2.3, Flutter 3.44+, Kotlin Multiplatform 2.2+, Swift 6, Jetpack Compose M3 1.4+
 **When to read**: Native mobile app development, cross-platform framework selection, change-surface: native mobile
-**Canonical owner**: `dev-frontend` — framework selection and component patterns
-**Non-goals**: Mobile web responsive (→ `responsive-viewport.md`, `mobile-ux.md`), push/offline/auth API (→ `dev-backend/references/core/mobile-api.md`), native UX conventions (→ `dev-uiux-design/references/mobile-native-ux.md`)
+**Canonical owner**: `jaw-dev-frontend` — framework selection and component patterns
+**Non-goals**: Mobile web responsive (→ `responsive-viewport.md`, `mobile-ux.md`), push/offline/auth API (→ `../../../jaw-dev-backend/references/core/mobile-api.md`), native UX conventions (→ `../../../jaw-dev-uiux-design/references/mobile-native-ux.md`)
 
 ---
 
@@ -13,11 +13,11 @@
 | Need | Go To |
 |------|-------|
 | Framework selection + component patterns | This file |
-| iOS HIG vs Material 3, gestures, deep linking | `dev-uiux-design/references/mobile-native-ux.md` |
-| Push notifications, offline sync, mobile BFF | `dev-backend/references/core/mobile-api.md` |
-| Mobile web responsive layout | `dev-frontend/references/core/responsive-viewport.md` |
-| Mobile web UX (thumb zone, sticky CTA) | `dev-frontend/references/core/mobile-ux.md` |
-| App store screenshots, icon specs | `dev-uiux-design/references/mobile-native-ux.md` §5 |
+| iOS HIG vs Material 3, gestures, deep linking | `../../../jaw-dev-uiux-design/references/mobile-native-ux.md` |
+| Push notifications, offline sync, mobile BFF | `../../../jaw-dev-backend/references/core/mobile-api.md` |
+| Mobile web responsive layout | `../core/responsive-viewport.md` |
+| Mobile web UX (thumb zone, sticky CTA) | `../core/mobile-ux.md` |
+| App store screenshots, icon specs | `../../../jaw-dev-uiux-design/references/mobile-native-ux.md` §5 |
 
 ---
 
@@ -277,5 +277,5 @@ struct UserView: View {
 - [ ] KMP: Shared module compiles for all target platforms (`./gradlew :shared:allTests`)
 - [ ] Native: Swift 6 strict concurrency mode enabled; Compose compiler 2.1+
 - [ ] Deep linking configured (→ `mobile-native-ux.md` §3)
-- [ ] Push notification token management (→ `dev-backend/references/core/mobile-api.md` §2)
+- [ ] Push notification token management (→ `../../../jaw-dev-backend/references/core/mobile-api.md` §2)
 - [ ] App store assets prepared (→ `mobile-native-ux.md` §5)

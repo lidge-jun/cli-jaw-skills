@@ -4,7 +4,7 @@ Utility scripts for backend development workflows.
 
 ## scaffold-audit.sh
 
-Audit existing project structure for compliance with the backend/scaffolding conventions owned by `dev-scaffolding`.
+Audit existing project structure for compliance with the backend/scaffolding conventions owned by `jaw-dev-scaffolding`.
 
 ```bash
 bash scripts/scaffold-audit.sh [project-path]

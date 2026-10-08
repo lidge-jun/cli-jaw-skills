@@ -19,18 +19,18 @@ Activates by change surface when:
 - Handling logo dark mode variants, OG images, or social sharing meta
 
 Read this before style-specific references when the user cannot articulate a clear design direction.
-For rendered anti-slop tell detection and implementation-level banned patterns, defer to `dev-frontend/references/core/anti-slop.md`. This skill owns concept/taste-level anti-slop judgment (is this direction generic or domain-wrong?).
+For rendered anti-slop tell detection and implementation-level banned patterns, defer to `../jaw-dev-frontend/references/core/anti-slop.md`. This skill owns concept/taste-level anti-slop judgment (is this direction generic or domain-wrong?).
 
-**Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `dev-frontend` §5 / `dev-frontend/references/core/anti-slop.md § Emoji Slop`.
+**Emoji ban (stub):** no emoji as UI visual elements (STRICT). Canonical rule, scope, and exemptions: `jaw-dev-frontend` §5 / `../jaw-dev-frontend/references/core/anti-slop.md § Emoji Slop`.
 
-**Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop concept/taste judgment, and design-system decisions. `dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, rendered tell detection, and rendered verification. After choosing the design direction here, load `dev-frontend` for concrete implementation.
+**Role separation:** This skill owns design judgment: intent discovery, information architecture, UX state meaning, typography/color/layout direction, product personality, brand vocabulary, anti-slop concept/taste judgment, and design-system decisions. `jaw-dev-frontend` owns implementation: HTML/CSS/components, responsive mechanics, accessibility wiring, runtime behavior, rendered tell detection, and rendered verification. After choosing the design direction here, load `jaw-dev-frontend` for concrete implementation.
 
-> **Role boundary (canonical — identical in `dev` and `dev-frontend`):**
-> `dev` owns universal process, evidence, and safety rules. `dev-uiux-design` owns
-> design intent, direction, and concept judgment. `dev-frontend` owns concrete frontend
+> **Role boundary (canonical — identical in `dev` and `jaw-dev-frontend`):**
+> `dev` owns universal process, evidence, and safety rules. `jaw-dev-uiux-design` owns
+> design intent, direction, and concept judgment. `jaw-dev-frontend` owns concrete frontend
 > implementation and rendered tell enforcement. Anti-slop has three layers: `dev` =
-> output/process hygiene (FAMILY-SLOP-01), `dev-uiux-design` = concept/taste judgment
-> (is this direction generic or domain-wrong?), `dev-frontend` = rendered implementation
+> output/process hygiene (FAMILY-SLOP-01), `jaw-dev-uiux-design` = concept/taste judgment
+> (is this direction generic or domain-wrong?), `jaw-dev-frontend` = rendered implementation
 > tell detection and removal (FE-AI-TELL-01).
 
 **External/current design evidence:** For live product-reference claims, current
@@ -46,7 +46,7 @@ fetch/open/text/get-dom/snapshot only after candidate URLs exist.
 > **Rule class note (UX-STYLE-01):** Everything in this skill that expresses taste —
 > product personalities, design-isms, preset tokens, aesthetic vocabulary — is
 > `STYLE_SAMPLE`: examples to draw from, never universal requirements. Objective UX
-> correctness (state coverage, accessibility, readability) is owned by `dev-frontend`
+> correctness (state coverage, accessibility, readability) is owned by `jaw-dev-frontend`
 > §1.5 and stays STRICT/DEFAULT.
 
 ## Modular References
@@ -193,7 +193,7 @@ Ask: "주로 어떤 화면에서 볼 건가요?" / "What's the primary viewing d
 | 모바일 위주 (Mobile-first) | Mobile layout → tablet → desktop expansion | Thumb zone, touch targets, minimal density |
 | 둘 다 중요 (Both equally) | Design mobile AND desktop as separate compositions, not one adapted from the other | Most work — section order/composition may differ |
 
-Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
+Cross-ref: `references/responsive-nav.md` for canonical breakpoints and container query patterns, `../jaw-dev-frontend/references/core/mobile-ux.md` for mobile-specific composition rules.
 
 ### Step 6 — Reference
 
@@ -258,7 +258,7 @@ From the Design Read, derive and declare three dials before any code:
 ```
 DESIGN_VARIANCE: <1-10>
 MOTION_INTENSITY: <1-10>
-Product density profile: <D1-D8> (see dev-frontend/references/core/product-density.md)
+Product density profile: <D1-D8> (see ../jaw-dev-frontend/references/core/product-density.md)
 Reasoning: <one sentence explaining why these values match the brief>
 ```
 
