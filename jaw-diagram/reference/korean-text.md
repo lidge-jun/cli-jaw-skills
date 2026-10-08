@@ -50,7 +50,7 @@ Or via CSS:
 1. **Outside the jaw host, set `font-family` with a fallback chain** — never rely on a single font name. Inside inline SVG in the chat, set none and let the host provide it.
 2. **Use `dominant-baseline="central"`** for vertical centering of Korean text in boxes
 3. **Increase line height** for Korean text: `dy="1.4em"` vs `dy="1.2em"` for Latin
-4. **Test with `view_image`** after rendering — Korean characters can silently fall back to
+4. **Inspect a rendered screenshot** (for example `cli-jaw browser screenshot`) after rendering — Korean characters can silently fall back to
    a different font with mismatched metrics
 
 ### Mixed Korean/English Text
@@ -104,11 +104,11 @@ svg.append('g')
   .style('font-size', '12px');
 ```
 
-### Codex Visualize Skill Integration
+### Inline HTML widgets
 
-When creating inline HTML visualizations for Codex (using the `visualize` skill contract):
+When an inline HTML widget carries Korean text:
 
-1. **Load Korean web font** from the allowed CDN list:
+1. **Load a Korean web font**:
    ```html
    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
    ```
@@ -120,17 +120,17 @@ When creating inline HTML visualizations for Codex (using the `visualize` skill 
    }
    ```
 
-3. **Follow the visualize skill's color variables** (`--foreground`, `--card`, etc.)
-   for theme compatibility
+3. **Use the jaw theme variables** (`var(--text)`, `var(--surface)`, `var(--border)`, `var(--accent)`)
+   from `module-interactive.md` for theme compatibility
 
-4. **Keep the fragment under 1 MB** — aggregate Korean text data instead of inlining
+4. **Keep the widget small** — aggregate Korean text data instead of inlining
    full datasets
 
 ### Visual Verification
 
 After generating any visualization with Korean text:
 
-1. Render to image (screenshot or `view_image`)
+1. Render to an image (for example `cli-jaw browser screenshot`) and read it back
 2. Check for:
    - Tofu boxes (missing font fallback)
    - Text overflow (Korean characters wider than Latin)
