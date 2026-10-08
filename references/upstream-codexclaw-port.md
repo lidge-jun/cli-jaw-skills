@@ -39,7 +39,8 @@ their absence is otherwise invisible.
 | kwrite | jaw-dev-write (only additions; the jaw skill is newer on generation and revision boundaries) |
 | recall | jaw-memory |
 | worktree-guardian | generic worktree and branch safety in jaw-dev-devops; nothing else |
-| lunasearch, remote, skill-hub, repo-map, ast-grep | not ported in this pass (see N-A) |
+| lunasearch, remote, skill-hub, ast-grep | not ported (see N-A) |
+| repo-map | existing standalone skill here; nothing in this delta changes it |
 
 Rules that span owners keep one home: hosted CI evidence and stacked-PR rules live in jaw-dev,
 desktop acceptance (DESKTOP-*) in jaw-dev-devops, reader-document rules (including REPORT-STORY-00)
@@ -75,5 +76,7 @@ related ids) in jaw-diagram. The others point to them.
 | dev-visualizer scripts and assets, port-maintenance, upstream sync files | An upstream report exporter and its maintenance; cli-jaw has no such command. The rules they enforce are ported as guidance in jaw-diagram. |
 | durable goalplan schema, receipts, final gate, QA validate-evidence.mjs | codexclaw state files and validators with no cli-jaw consumer. |
 | lunasearch, remote, skill-hub, agents/openai.yaml files | A fixed model lane, an unrelated onboarding skill, a deprecated redirect, and Codex display metadata. |
+| ast-grep | A codexclaw helper script; the delta only added its license notice, and cli-jaw ships no ast-grep skill. |
+| VIZ-SCOPE-01 | Governs upstream-first maintenance of a separate visualizer project; jaw-diagram is maintained here. |
 | REPORT-VOICE-01 | Referenced upstream but never defined there. |
 | QA-01, VIZ-01, UTF-16, DS-01, DS-02, PK-01, RT-01, UI-01..03, READER-01 | Text that only looks like a rule id (abbreviations, sample rows, a character encoding). |
